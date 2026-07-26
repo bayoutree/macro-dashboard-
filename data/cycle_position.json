@@ -1,0 +1,97 @@
+{
+  "update_time": "2026-07-26",
+  "note": "基于2026年7月22日完成的宏观周期深度研究，待后续迭代为自动判断",
+  "kongbo": {
+    "current_phase": "第五轮萧条尾声→第六轮回升初期",
+    "phase_code": "trough_to_recovery",
+    "confidence": "medium",
+    "key_evidence": [
+      "AI技术突破标志第六轮康波起点",
+      "旧动能(地产)出清已到位",
+      "中美周期位置收敛",
+      "全球科技巨头AI基建投入空前"
+    ],
+    "uncertainty": "第六轮康波确切起始时间存在分歧，关键信号是AI渗透率能否系统性提升企业利润率",
+    "history": [
+      {"round": 1, "name": "蒸汽时代", "start": 1782, "end": 1845},
+      {"round": 2, "name": "钢铁与铁路", "start": 1845, "end": 1892},
+      {"round": 3, "name": "电气时代", "start": 1892, "end": 1948},
+      {"round": 4, "name": "石油与汽车", "start": 1948, "end": 1991},
+      {"round": 5, "name": "信息技术", "start": 1991, "end": 2025},
+      {"round": 6, "name": "AI与新能源", "start": 2025, "end": null}
+    ]
+  },
+  "juglar": {
+    "us": {
+      "phase": "上升段（复苏期）",
+      "phase_code": "expansion",
+      "start": 2020,
+      "expected_end": "2027-2029",
+      "key_driver": "半导体制造业投资+AI资本开支",
+      "evidence": ["非金融企业杠杆率下降", "固定投资增长强劲", "信息处理设备投资占比33.2%"]
+    },
+    "cn": {
+      "phase": "上升初期（新周期启动）",
+      "phase_code": "early_expansion",
+      "start": 2025,
+      "expected_end": "2032-2033",
+      "key_driver": "高技术制造业+AI+新能源",
+      "evidence": ["技改投资增速>整体固投", "高技术制造业投资>房地产投资", "计算机设备投资+28.3%"],
+      "risk": "传统制造业投资同比-0.4%，结构分化显著"
+    },
+    "eu": {
+      "phase": "下行末期→接近触底",
+      "phase_code": "late_contraction",
+      "expected_bottom": "2026H2-2027H1",
+      "key_issue": "化工产能利用率74-78%历史低位，天然气价格3.3x美国",
+      "evidence": ["机械制造业零增长", "化工投资连降3年", "45%化工企业削减本土投资"]
+    }
+  },
+  "kitchin": {
+    "us": {
+      "phase": "补库中后期",
+      "phase_code": "mid_restocking",
+      "risk": "Q3后可能转向被动补库（需求转弱+库存增加）",
+      "evidence": ["ISM PMI 53.3%连续6月扩张", "客户库存42.3%连续21月过低", "PCE 4.1%通胀粘性"]
+    },
+    "cn": {
+      "phase": "补库初期（K型分化）",
+      "phase_code": "early_restocking_divergent",
+      "detail": "上游(AI链/有色)补库，下游(消费/纺织/医药)已去库",
+      "evidence": ["PMI 50.3%重回扩张", "产成品库存47.7%仍在收缩", "PPI 5月+3.9%但出厂价48.2%<荣枯线"]
+    },
+    "eu": {
+      "phase": "去库尾声",
+      "phase_code": "late_destocking",
+      "detail": "行业极度分化，风电疯狂补库vs汽车后市场持续去库",
+      "evidence": ["德国制造业PMI 50.1%接近荣枯线", "化工产量同比-3%", "出口同比-2.5%"]
+    }
+  },
+  "resonance": {
+    "matrix": {
+      "us": {"kongbo": "萧条→回升", "juglar": "上升段", "kitchin": "补库中后期", "combined": "温和扩张，但二次通胀风险上升"},
+      "cn": {"kongbo": "萧条→回升元年", "juglar": "上升初期", "kitchin": "K型补库", "combined": "新旧动能分化加剧，内生需求修复不牢固"},
+      "eu": {"kongbo": "萧条→回升", "juglar": "下行末期", "kitchin": "去库尾声", "combined": "整体滞后中美6-12个月，结构性出清未完"}
+    },
+    "overall_regime": "总量弱复苏+结构强分化",
+    "key_window": "2026H2-2027是三周期共振确认的关键窗口",
+    "bull_signals": [
+      "美国客户库存指数转向正常化(>45%)",
+      "中国PPI连续3月+且幅度扩大",
+      "欧洲PMI连续3月>50",
+      "AI企业盈利系统性提升"
+    ],
+    "bear_signals": [
+      "美国ISM价格指数持续>80",
+      "中国房地产资金来源降幅再次扩大",
+      "中东冲突→油价>90→美联储鹰派",
+      "半导体资本开支增速骤降至+20%以下"
+    ],
+    "asset_implication": {
+      "stock": "结构性行情，AI/新能源领涨，传统承压",
+      "bond": "低配，利率在底部上行风险大",
+      "commodity": "工业金属结构性牛市，黄金配置价值高",
+      "gold": "标配→超配（货币对冲+避险）"
+    }
+  }
+}

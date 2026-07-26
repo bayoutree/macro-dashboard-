@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宏观资产配置看板</title>
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- ECharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Tailwind 配置扩展 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bull: '#22c55e',
+            bear: '#ef4444',
+            neutral: '#6b7280',
+            bg: { DEFAULT: '#0f172a', card: '#1e293b', hover: '#334155' },
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bg text-gray-200 min-h-screen font-sans">
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <nav id="topnav" class="sticky top-0 z-50 bg-bg/95 backdrop-blur border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-white tracking-tight">宏观资产配置看板</h1>
+      <div class="flex items-center gap-4">
+        <span id="update-time" class="text-sm text-gray-400"></span>
+        <button id="btn-refresh" onclick="refreshAll()" class="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded text-white transition">
+          刷新数据
+        </button>
+      </div>
+    </div>
+    <!-- 锚点导航 -->
+    <div class="max-w-7xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto text-sm">
+      <a href="#section-l1" class="nav-pill">L1 经济周期</a>
+      <a href="#section-l2" class="nav-pill">L2 宏观指标</a>
+      <a href="#section-l3" class="nav-pill">L3 资产估值</a>
+      <a href="#section-l4" class="nav-pill">L4 技术走势</a>
+      <a href="#section-l5" class="nav-pill">L5 综合结论</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-12">
+
+    <!-- ============================================================ -->
+    <!-- L1 经济周期 -->
+    <!-- ============================================================ -->
+    <section id="section-l1" class="scroll-mt-28">
+      <h2 class="section-title">L1 · 经济周期定位</h2>
+
+      <!-- 康波周期 -->
+      <div id="kongbo-card" class="card mb-6">
+        <h3 class="card-title">康德拉季耶夫长波（康波）</h3>
+        <div id="kongbo-phase" class="text-2xl font-bold text-bull mb-2"></div>
+        <p id="kongbo-confidence" class="text-sm text-gray-400 mb-3"></p>
+        <ul id="kongbo-evidence" class="evidence-list"></ul>
+        <!-- 康波历史时间线 -->
+        <div id="kongbo-timeline" class="mt-4 flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- 朱格拉周期（三经济体卡片） -->
+      <div class="mb-6">
+        <h3 class="card-title mb-3">朱格拉周期（设备投资周期 · 7-11年）</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="juglar-us" class="card-sub"></div>
+          <div id="juglar-cn" class="card-sub"></div>
+          <div id="juglar-eu" class="card-sub"></div>
+        </div>
+      </div>
+
+      <!-- 库存周期（三经济体卡片） -->
+      <div class="mb-6">
+        <h3 class="card-title mb-3">基钦周期（库存周期 · 3-5年）</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="kitchin-us" class="card-sub"></div>
+          <div id="kitchin-cn" class="card-sub"></div>
+          <div id="kitchin-eu" class="card-sub"></div>
+        </div>
+      </div>
+
+      <!-- 三周期共振 -->
+      <div id="resonance-card" class="card">
+        <h3 class="card-title">三周期共振</h3>
+        <div id="resonance-content" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- L2 宏观指标 -->
+    <!-- ============================================================ -->
+    <section id="section-l2" class="scroll-mt-28">
+      <h2 class="section-title">L2 · 宏观指标</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 美国 -->
+        <div>
+          <h3 class="card-title mb-3">🇺🇸 美国</h3>
+          <!-- 领先指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">领先指标</h4>
+            <div id="us-leading" class="indicator-grid"></div>
+          </div>
+          <!-- 同步指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">同步指标</h4>
+            <div id="us-coincident" class="indicator-grid"></div>
+          </div>
+          <!-- 滞后指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">滞后指标</h4>
+            <div id="us-lagging" class="indicator-grid"></div>
+          </div>
+        </div>
+
+        <!-- 中国 -->
+        <div>
+          <h3 class="card-title mb-3">🇨🇳 中国</h3>
+          <!-- 领先指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">领先指标</h4>
+            <div id="cn-leading" class="indicator-grid"></div>
+          </div>
+          <!-- 同步指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">同步指标</h4>
+            <div id="cn-coincident" class="indicator-grid"></div>
+          </div>
+          <!-- 滞后指标 -->
+          <div class="card mb-4">
+            <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-2">滞后指标</h4>
+            <div id="cn-lagging" class="indicator-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- L3 资产估值 -->
+    <!-- ============================================================ -->
+    <section id="section-l3" class="scroll-mt-28">
+      <h2 class="section-title">L3 · 资产估值</h2>
+
+      <!-- 美股 -->
+      <div class="card mb-6">
+        <h3 class="card-title">美股估值</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div id="shiller-pe-card" class="metric-card"></div>
+          <div id="buffett-card" class="metric-card"></div>
+          <div id="erp-card" class="metric-card"></div>
+          <div id="fwd-pe-card" class="metric-card"></div>
+        </div>
+        <div id="chart-shiller-pe" class="chart-container"></div>
+      </div>
+
+      <!-- A股 -->
+      <div class="card mb-6">
+        <h3 class="card-title">A股估值</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+          <div id="hs300-pe-card" class="metric-card"></div>
+          <div id="hs300-pb-card" class="metric-card"></div>
+          <div id="csi500-pe-card" class="metric-card"></div>
+        </div>
+        <div id="chart-hs300" class="chart-container"></div>
+      </div>
+
+      <!-- 美债 -->
+      <div class="card mb-6">
+        <h3 class="card-title">美债 · 利率结构</h3>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div id="yield-10y-card" class="metric-card"></div>
+          <div id="real-rate-card" class="metric-card"></div>
+          <div id="inf-exp-card" class="metric-card"></div>
+        </div>
+        <div id="chart-yield-decomp" class="chart-container"></div>
+      </div>
+
+      <!-- 黄金 -->
+      <div class="card mb-6">
+        <h3 class="card-title">黄金</h3>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div id="gold-price-card" class="metric-card"></div>
+          <div id="gold-central-bank-card" class="metric-card"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div id="chart-gold-realrate" class="chart-container"></div>
+          <div id="chart-gold-central" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- 商品 -->
+      <div class="card mb-6">
+        <h3 class="card-title">大宗商品</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div id="chart-copper" class="chart-container"></div>
+          <div id="chart-crude" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- 估值仪表盘 -->
+      <div class="card">
+        <h3 class="card-title">估值分位仪表盘</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div id="gauge-shiller" class="chart-container-sm"></div>
+          <div id="gauge-fwdpe" class="chart-container-sm"></div>
+          <div id="gauge-hs300pe" class="chart-container-sm"></div>
+          <div id="gauge-hs300pb" class="chart-container-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- L4 技术走势 -->
+    <!-- ============================================================ -->
+    <section id="section-l4" class="scroll-mt-28">
+      <h2 class="section-title">L4 · 技术走势</h2>
+
+      <!-- 多资产归一化对比 -->
+      <div class="card mb-6">
+        <h3 class="card-title">多资产归一化走势（基准 = 100）</h3>
+        <div class="flex gap-2 mb-3 flex-wrap" id="norm-range-btns"></div>
+        <div id="chart-normalized" class="chart-container"></div>
+      </div>
+
+      <!-- 各资产独立走势 -->
+      <div class="card mb-6">
+        <h3 class="card-title">资产走势详情</h3>
+        <div class="flex gap-2 mb-3 flex-wrap" id="asset-tabs"></div>
+        <div class="flex gap-2 mb-3 flex-wrap" id="asset-range-btns"></div>
+        <div id="chart-asset-detail" class="chart-container"></div>
+        <div id="asset-detail-meta" class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+      </div>
+
+      <!-- 波动率 VIX -->
+      <div class="card">
+        <h3 class="card-title">波动率指标</h3>
+        <div id="chart-vix" class="chart-container"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- L5 综合结论 -->
+    <!-- ============================================================ -->
+    <section id="section-l5" class="scroll-mt-28">
+      <h2 class="section-title">L5 · 综合结论</h2>
+
+      <!-- 各层结论卡片 -->
+      <div id="layer-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"></div>
+
+      <!-- 大类资产配置建议 -->
+      <div class="card mb-6">
+        <h3 class="card-title">大类资产配置建议</h3>
+        <div id="allocation-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- 关键风险 -->
+      <div class="card">
+        <h3 class="card-title">关键风险</h3>
+        <ul id="risk-list" class="space-y-2"></ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="border-t border-gray-800 py-6 mt-12 text-center text-gray-500 text-sm">
+    <p>宏观资产配置看板 · 数据仅供参考，不构成投资建议</p>
+  </footer>
+
+  <!-- ========== JS 模块加载 ========== -->
+  <script src="js/config.js"></script>
+  <script src="js/cycle.js"></script>
+  <script src="js/macro.js"></script>
+  <script src="js/valuation.js"></script>
+  <script src="js/technical.js"></script>
+  <script src="js/summary.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

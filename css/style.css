@@ -1,0 +1,148 @@
+/* ========================================
+   宏观资产配置看板 - 自定义深色主题样式
+   ======================================== */
+
+/* 基础字体 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* 导航锚点按钮 */
+.nav-pill {
+  @apply px-3 py-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition whitespace-nowrap;
+}
+.nav-pill.active {
+  @apply text-white bg-gray-700;
+}
+
+/* 区块标题 */
+.section-title {
+  @apply text-lg font-bold text-white mb-4 pb-2 border-b border-gray-700;
+}
+
+/* 主卡片 */
+.card {
+  @apply bg-bg-card rounded-xl p-5 border border-gray-700/50;
+}
+.card-title {
+  @apply text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3;
+}
+
+/* 子卡片（朱格拉/基钦各经济体） */
+.card-sub {
+  @apply bg-gray-800/60 rounded-lg p-4 border border-gray-700/40 hover:border-gray-600 transition;
+}
+.card-sub h4 {
+  @apply text-sm font-bold text-white mb-1;
+}
+.card-sub .phase-label {
+  @apply text-base font-semibold mb-2;
+}
+.card-sub .detail-text {
+  @apply text-xs text-gray-400 leading-relaxed;
+}
+
+/* 指标网格（L2宏观） */
+.indicator-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-3;
+}
+
+/* 单个指标卡 */
+.indicator-item {
+  @apply bg-gray-800/50 rounded-lg p-3 flex flex-col;
+}
+.indicator-item .ind-name {
+  @apply text-xs text-gray-500 mb-1;
+}
+.indicator-item .ind-value {
+  @apply text-xl font-bold text-white;
+}
+.indicator-item .ind-date {
+  @apply text-xs text-gray-500 mt-1;
+}
+.indicator-item .ind-chart {
+  @apply w-full h-12 mt-2;
+}
+
+/* 指标度量卡（L3估值） */
+.metric-card {
+  @apply bg-gray-800/50 rounded-lg p-4 text-center;
+}
+.metric-card .mc-label {
+  @apply text-xs text-gray-500 mb-1;
+}
+.metric-card .mc-value {
+  @apply text-2xl font-bold text-white;
+}
+.metric-card .mc-pct {
+  @apply text-xs text-gray-400 mt-1;
+}
+
+/* 图表容器 */
+.chart-container {
+  @apply w-full h-80;
+}
+.chart-container-sm {
+  @apply w-full h-52;
+}
+
+/* 证据列表 */
+.evidence-list {
+  @apply space-y-1 text-sm text-gray-300;
+}
+.evidence-list li {
+  @apply flex items-start gap-2;
+}
+.evidence-list li::before {
+  content: '▸';
+  @apply text-gray-500 mt-0.5 flex-shrink-0;
+}
+
+/* 时间线标签 */
+.timeline-tag {
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-gray-800 text-gray-400 border border-gray-700;
+}
+
+/* 信号色 */
+.signal-bull { color: #22c55e; }
+.signal-bear { color: #ef4444; }
+.signal-neutral { color: #6b7280; }
+.signal-mixed { color: #f59e0b; }
+.signal-pending { color: #8b5cf6; }
+
+/* 配置建议标签 */
+.allocation-tag {
+  @apply inline-block px-2 py-1 rounded text-xs font-medium;
+}
+.allocation-tag.overweight { background: rgba(34,197,94,0.15); color: #22c55e; }
+.allocation-tag.market-weight { background: rgba(107,114,128,0.15); color: #9ca3af; }
+.allocation-tag.underweight { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+/* 占位符（数据未加载） */
+.placeholder-msg {
+  @apply text-sm text-gray-500 italic py-8 text-center;
+}
+
+/* 范围按钮 */
+.range-btn {
+  @apply px-3 py-1 text-xs rounded bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600 transition cursor-pointer;
+}
+.range-btn.active {
+  @apply text-white bg-blue-600;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #1e293b; }
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card, .card-sub {
+  animation: fadeIn 0.4s ease-out;
+}
