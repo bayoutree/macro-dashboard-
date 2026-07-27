@@ -82,7 +82,13 @@ def main():
         pmi.name = "ISM_PMI_FALLBACK"
         logger.info(f"  ✓ ISM PMI 回填: {len(pmi)} 个数据点 (来源: ISM官方报告)")
 
-    oecd_cli = fetch_series(fred, "USALORSGPNOSTSAM", "2019-01-01")
+    # OECD CLI: Original series USALORSGPNOSTSAM discontinued at 2023-11.
+    # Use USALOLITOAASTSAM (Composite Leading Indicator: Amplitude Adjusted) instead.
+    oecd_cli = fetch_series(fred, "USALOLITOAASTSAM", "2019-01-01")
+    if oecd_cli.empty:
+        # Fallback to old series if new one is unavailable
+        logger.warning("  ⚠ USALOLITOAASTSAM 不可用，尝试旧系列 USALORSGPNOSTSAM")
+        oecd_cli = fetch_series(fred, "USALORSGPNOSTSAM", "2019-01-01")
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/4] 同步指标...")
@@ -245,6 +251,8 @@ def main():
     data_notes = {}
     if pmi is not None and hasattr(pmi, 'name') and pmi.name == "ISM_PMI_FALLBACK":
         data_notes["ism_pmi"] = "ISM Manufacturing PMI removed from FRED; data sourced from ISM official reports (ismrob.org)"
+    # OECD CLI series migration note
+    data_notes["oecd_cli"] = "OECD CLI series: USALORSGPNOSTSAM (discontinued 2023-11) replaced by USALOLITOAASTSAM (Composite Leading Indicator: Amplitude Adjusted)"
 
     output = {
         "update_time": today_str(),
