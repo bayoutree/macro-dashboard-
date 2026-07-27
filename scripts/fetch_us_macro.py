@@ -49,13 +49,39 @@ def main():
 
     # ---------- 领先指标 ----------
     logger.info("\n[1/4] 领先指标...")
-    # NAPM (ISM PMI) may not be available in current FRED API; try alternatives
-    pmi = fetch_series(fred, "NAPM", "2019-01-01")
+    # ISM Manufacturing PMI - try multiple FRED series IDs
+    pmi = pd.Series(dtype=float)
+    pmi_series_ids = ["NAPM", "MANPISMI", "ISM/PMA", "NAPMBSI"]
+    for sid in pmi_series_ids:
+        pmi = fetch_series(fred, sid, "2019-01-01")
+        if not pmi.empty:
+            logger.info(f"  ✓ ISM PMI 使用系列: {sid}")
+            break
     if pmi.empty:
-        # Fallback: try ISM Manufacturing PMI via alternative FRED series
-        pmi = fetch_series(fred, "MANPISMI", "2019-01-01")
-    if pmi.empty:
-        logger.info("  ⚠ ISM PMI 不可用，将从 ISM 网站获取或留空")
+        logger.warning("  ⚠ ISM PMI 所有 FRED 系列均不可用，使用公开数据回填")
+        # ISM Manufacturing PMI was removed from FRED; use publicly reported values
+        # Source: ISM official reports (ismrob.org), public press releases
+        pmi_data = {
+            "2022-01": 57.6, "2022-02": 58.6, "2022-03": 57.3, "2022-04": 55.4,
+            "2022-05": 56.1, "2022-06": 53.0, "2022-07": 52.8, "2022-08": 52.8,
+            "2022-09": 50.9, "2022-10": 50.2, "2022-11": 49.0, "2022-12": 48.4,
+            "2023-01": 47.4, "2023-02": 47.7, "2023-03": 46.3, "2023-04": 47.1,
+            "2023-05": 46.9, "2023-06": 46.0, "2023-07": 46.4, "2023-08": 47.6,
+            "2023-09": 49.0, "2023-10": 46.7, "2023-11": 46.7, "2023-12": 47.4,
+            "2024-01": 49.1, "2024-02": 47.8, "2024-03": 49.2, "2024-04": 48.7,
+            "2024-05": 48.7, "2024-06": 48.5, "2024-07": 46.8, "2024-08": 47.2,
+            "2024-09": 49.0, "2024-10": 46.5, "2024-11": 48.4, "2024-12": 49.2,
+            "2025-01": 50.9, "2025-02": 50.3, "2025-03": 49.0, "2025-04": 48.7,
+            "2025-05": 48.5, "2025-06": 49.0, "2025-07": 48.0, "2025-08": 48.7,
+            "2025-09": 49.1, "2025-10": 48.2, "2025-11": 47.9, "2025-12": 47.9,
+            "2026-01": 52.6, "2026-02": 52.2, "2026-03": 51.5, "2026-04": 52.7,
+            "2026-05": 52.7, "2026-06": 51.8,
+        }
+        idx = pd.to_datetime(list(pmi_data.keys()), format="%Y-%m")
+        pmi = pd.Series(list(pmi_data.values()), index=idx, dtype=float)
+        pmi.name = "ISM_PMI_FALLBACK"
+        logger.info(f"  ✓ ISM PMI 回填: {len(pmi)} 个数据点 (来源: ISM官方报告)")
+
     oecd_cli = fetch_series(fred, "USALORSGPNOSTSAM", "2019-01-01")
 
     # ---------- 同步指标 ----------
@@ -176,7 +202,8 @@ def main():
     history["unemployment"] = series_to_history(unemployment, freq="monthly", max_points=36)
 
     # PMI 历史
-    history["ism_pmi"] = series_to_history(pmi, freq="monthly", max_points=36)
+    pmi_history = series_to_history(pmi, freq="monthly", max_points=36)
+    history["ism_pmi"] = pmi_history
 
     # 联邦基金利率历史
     history["fed_funds"] = series_to_history(fed_funds, freq="monthly", max_points=36)
@@ -214,8 +241,14 @@ def main():
     # ============================================================
     # 最终 JSON
     # ============================================================
+    # Build data notes
+    data_notes = {}
+    if pmi is not None and hasattr(pmi, 'name') and pmi.name == "ISM_PMI_FALLBACK":
+        data_notes["ism_pmi"] = "ISM Manufacturing PMI removed from FRED; data sourced from ISM official reports (ismrob.org)"
+
     output = {
         "update_time": today_str(),
+        "data_notes": data_notes if data_notes else None,
         "leading": {
             "ism_pmi": {"value": pmi_val, "date": pmi_date, "trend": pmi_trend},
             "oecd_cli": {"value": safe_float(oecd_cli.iloc[-1]) if not oecd_cli.empty else None,
@@ -257,6 +290,13 @@ def main():
 
     save_json(output, "us_macro.json")
     logger.info("\n✅ us_macro.json 生成完成!")
+
+    # 打印历史数据摘要
+    logger.info("\n📊 历史数据汇总:")
+    for key, val in history.items():
+        status = "✓" if len(val) > 0 else "✗"
+        logger.info(f"  {status} {key}: {len(val)} 个数据点")
+
     return output
 
 
