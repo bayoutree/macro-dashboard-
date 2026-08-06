@@ -53,18 +53,10 @@ const Utils = {
     const years = range === '1y' ? 1 : range === '2y' ? 2 : 5;
     const cutoff = new Date(now.getFullYear() - years, now.getMonth(), now.getDate());
 
-    const filtered = history.filter(item => {
+    return history.filter(item => {
       const d = this.parseDate(item.date);
       return d && d >= cutoff;
     });
-
-    // Fallback: if filtered data has fewer than 5 points (e.g. quarterly GDP,
-    // or stale data like old OECD CLI), show all available data instead of blank chart
-    if (filtered.length < 5) {
-      return history;
-    }
-
-    return filtered;
   },
 
   parseDate(dateStr) {
