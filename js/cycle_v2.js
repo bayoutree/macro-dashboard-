@@ -242,7 +242,7 @@ const CycleV2Module = (() => {
               fontWeight: 700,
               position: 'insideEndTop' 
             },
-            data: [{ xAxis: ${JSON.stringify(timeline.current_year_mark || 2026)} }]
+            data: [{ xAxis: timeline.current_year_mark || 2026 }]
           },
           data: []
         }
