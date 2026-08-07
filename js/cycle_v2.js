@@ -976,8 +976,10 @@ const CycleV2Module = (() => {
         { key: 'output_gap', id: `chart-merrill-output-${region}`, color: COLORS.blue },
         { key: 'core_cpi', id: `chart-merrill-cpi-${region}`, color: COLORS.bearish },
         { key: 'ppi_yoy', id: `chart-merrill-ppi-${region}`, color: COLORS.neutral },
-        ${region === 'us' ? `{ key: 'breakeven_inflation', id: \`chart-merrill-breakeven-\${region}\`, color: COLORS.purple },` : ''}
       ];
+      if (region === 'us') {
+        indConfigs.push({ key: 'breakeven_inflation', id: `chart-merrill-breakeven-${region}`, color: COLORS.purple });
+      }
 
       indConfigs.forEach(cfg => {
         const raw = indicators[cfg.key];
@@ -1251,29 +1253,28 @@ const CycleV2Module = (() => {
     if (!container || !indicators) return;
     
     let html = '<div class="indicator-descriptions-grid">';
-    Object.keys(indicators).forEach(key => {
-      const meta = INDICATOR_META[key];
-      const ind = indicators[key];
+    Object.keys(indicators).forEach(function(key) {
+      var meta = INDICATOR_META[key];
+      var ind = indicators[key];
       if (!meta || !ind) return;
-      const currentVal = ind.current !== undefined ? ind.current : (ind.history && ind.history.length ? ind.history[ind.history.length-1].value : '--');
-      const unit = ind.unit || '';
-      html += \`
-        <div class="indicator-desc-card">
-          <div class="indicator-desc-name">\${meta.name}</div>
-          <div class="indicator-desc-def">\${meta.def}</div>
-          <div class="indicator-desc-meta">
-            <span>📊 来源: \${meta.source}</span>
-            <span>🔄 频率: \${meta.freq}</span>
-            <span>📍 当前: \${currentVal}\${unit}</span>
-          </div>
-          <div class="indicator-desc-watch">👁️ 关注: \${meta.watch}</div>
-        </div>\`;
+      var currentVal = ind.current !== undefined ? ind.current : (ind.history && ind.history.length ? ind.history[ind.history.length-1].value : '--');
+      var unit = ind.unit || '';
+      html += '<div class="indicator-desc-card">' +
+        '<div class="indicator-desc-name">' + meta.name + '</div>' +
+        '<div class="indicator-desc-def">' + meta.def + '</div>' +
+        '<div class="indicator-desc-meta">' +
+          '<span>📊 来源: ' + meta.source + '</span>' +
+          '<span>🔄 频率: ' + meta.freq + '</span>' +
+          '<span>📍 当前: ' + currentVal + unit + '</span>' +
+        '</div>' +
+        '<div class="indicator-desc-watch">👁️ 关注: ' + meta.watch + '</div>' +
+      '</div>';
     });
     html += '</div>';
     container.innerHTML = html;
   }
 
-  // ========== Main Render ==========
+    // ========== Main Render ==========
   function render(data) {
     const container = document.getElementById('cycle-content');
     if (!container || !data) return;
