@@ -215,5 +215,57 @@ function normalizeCycleData(raw) {
     }
   }
 
+  // === 9. Perez: Map data field names to code-expected names ===
+  if (data.perez?.indicators) {
+    const pzInd = data.perez.indicators;
+    // ipo_density → ipo_count
+    if (pzInd.ipo_density && !pzInd.ipo_count) {
+      pzInd.ipo_count = pzInd.ipo_density;
+    }
+    // passive_fund_ratio → passive_fund_share
+    if (pzInd.passive_fund_ratio && !pzInd.passive_fund_share) {
+      pzInd.passive_fund_share = pzInd.passive_fund_ratio;
+    }
+  }
+
+  // === 10. Kitchin CN: Map CN-specific field names ===
+  if (data.kitchin?.cn?.indicators) {
+    const cnInd = data.kitchin.cn.indicators;
+    // inventory_stock → inv_sales_ratio
+    if (cnInd.inventory_stock && !cnInd.inv_sales_ratio) {
+      cnInd.inv_sales_ratio = cnInd.inventory_stock.history || cnInd.inventory_stock;
+    }
+    // ppi_yoy → pmi_inventory_diff (CN uses PPI as proxy)
+    if (cnInd.ppi_yoy && !cnInd.pmi_inventory_diff) {
+      cnInd.pmi_inventory_diff = cnInd.ppi_yoy.history || cnInd.ppi_yoy;
+    }
+    // pmi_new_orders may already exist, but handle if it has history wrapper
+    if (cnInd.pmi_new_orders?.history && !Array.isArray(cnInd.pmi_new_orders)) {
+      cnInd.pmi_new_orders = cnInd.pmi_new_orders.history;
+    }
+    // Ensure inv_sales_ratio is an array if it has history wrapper
+    if (cnInd.inv_sales_ratio?.history && !Array.isArray(cnInd.inv_sales_ratio)) {
+      cnInd.inv_sales_ratio = cnInd.inv_sales_ratio.history;
+    }
+  }
+
+  // === 11. Kitchin US: Ensure indicators are arrays ===
+  if (data.kitchin?.us?.indicators) {
+    const usInd = data.kitchin.us.indicators;
+    if (usInd.inv_sales_ratio?.history && !Array.isArray(usInd.inv_sales_ratio)) {
+      usInd.inv_sales_ratio = usInd.inv_sales_ratio.history;
+    }
+    if (usInd.pmi_new_orders?.history && !Array.isArray(usInd.pmi_new_orders)) {
+      usInd.pmi_new_orders = usInd.pmi_new_orders.history;
+    }
+    if (usInd.pmi_inventory_diff?.history && !Array.isArray(usInd.pmi_inventory_diff)) {
+      usInd.pmi_inventory_diff = usInd.pmi_inventory_diff.history;
+    }
+  }
+
+  // === 12. Merrill Clock CN: No breakeven_inflation, keep only available indicators ===
+  // CN only has output_gap, core_cpi, ppi_yoy — no breakeven_inflation
+  // The rendering code will dynamically check which indicators exist
+
   return data;
 }

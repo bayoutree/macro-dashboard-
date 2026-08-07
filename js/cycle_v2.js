@@ -182,21 +182,26 @@ const CycleV2Module = (() => {
                   <div style="font-size:11px;color:#94a3b8;margin-top:2px">${d.value[1]} - ${d.value[2]}</div>`;
         }
       }),
-      grid: { top: 20, right: 30, bottom: 40, left: 120 },
+      grid: { top: 24, right: 40, bottom: 44, left: 130 },
       xAxis: {
         type: 'value',
-        min: 1991,
-        max: 2026,
+        min: 1990,
+        max: 2027,
         axisLine: { lineStyle: { color: COLORS.borderSubtle } },
-        axisLabel: { color: COLORS.textMuted, fontSize: 11, formatter: '{value}' },
-        splitLine: { lineStyle: { color: 'rgba(30,41,59,0.5)', type: 'dashed' } },
+        axisLabel: { color: COLORS.textMuted, fontSize: 11, formatter: '{value}', margin: 12 },
+        splitLine: { lineStyle: { color: 'rgba(30,41,59,0.4)', type: 'dashed' } },
       },
       yAxis: {
         type: 'category',
         data: categories,
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { color: COLORS.textSecondary, fontSize: 12, fontWeight: 600 },
+        axisLabel: { 
+          color: COLORS.textSecondary, 
+          fontSize: 11, 
+          fontWeight: 600,
+          margin: 8,
+        },
       },
       series: [
         {
@@ -228,9 +233,16 @@ const CycleV2Module = (() => {
           markLine: {
             silent: true,
             symbol: 'none',
-            lineStyle: { color: COLORS.bearish, width: 2, type: 'solid' },
-            label: { show: true, formatter: '2026', color: COLORS.bearish, fontSize: 11, position: 'start' },
-            data: [{ xAxis: 2026 }]
+            lineStyle: { color: '#f97316', width: 2.5, type: 'dashed' },
+            label: { 
+              show: true, 
+              formatter: function() { return '▼ 当前'; },
+              color: '#f97316', 
+              fontSize: 11, 
+              fontWeight: 700,
+              position: 'insideEndTop' 
+            },
+            data: [{ xAxis: ${JSON.stringify(timeline.current_year_mark || 2026)} }]
           },
           data: []
         }
@@ -395,10 +407,9 @@ const CycleV2Module = (() => {
 
     // Indicator cards
     const indicatorDefs = [
-      { key: 'finance_real_ratio', name: '金融资本/生产资本比值', tall: true },
       { key: 'vc_pe_funding', name: 'VC/PE融资额' },
-      { key: 'ipo_count', name: 'IPO数量' },
-      { key: 'passive_fund_share', name: '被动基金占比' },
+      { key: 'ipo_density', name: 'IPO数量' },
+      { key: 'passive_fund_ratio', name: '被动基金占比' },
       { key: 'hy_spread', name: '高收益债利差' },
       { key: 'yield_curve', name: '利率曲线' },
     ];
@@ -445,36 +456,26 @@ const CycleV2Module = (() => {
     const indicators = pz.indicators || {};
 
     const indicatorConfigs = [
-      { key: 'finance_real_ratio', thresholdLines: true },
       { key: 'vc_pe_funding' },
-      { key: 'ipo_count' },
-      { key: 'passive_fund_share' },
+      { key: 'ipo_density' },
+      { key: 'passive_fund_ratio' },
       { key: 'hy_spread' },
       { key: 'yield_curve' },
     ];
 
     indicatorConfigs.forEach(cfg => {
       const indData = indicators[cfg.key];
-      if (!indData || !indData.data || !indData.data.length) {
-        // If it's simple array format
-        if (Array.isArray(indData) && indData.length) {
-          createChart(`chart-perez-${cfg.key}`, {
-            tooltip: Object.assign(tooltipConfig(), { trigger: 'axis' }),
-            grid: gridConfig(),
-            xAxis: { type: 'category', data: indData.map(d => d.date || d.year || ''), axisLine: { lineStyle: { color: COLORS.borderSubtle } }, axisLabel: { color: COLORS.textMuted, fontSize: 10 } },
-            yAxis: { type: 'value', scale: true, axisLine: { show: false }, axisLabel: { color: COLORS.textMuted, fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(30,41,59,0.4)', type: 'dashed' } } },
-            series: [{ type: 'line', data: indData.map(d => d.value), smooth: 0.3, symbol: 'none', lineStyle: { width: 2, color: COLORS.purple }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:COLORS.purple+'25'},{offset:1,color:COLORS.purple+'00'}]) } }],
-          });
-        }
-        return;
-      }
+      if (!indData) return;
+      const hist = indData.data || indData.history || (Array.isArray(indData) ? indData : []);
+      if (!hist || !hist.length) return;
 
       const series = [{
         type: 'line',
-        data: indData.data.map(d => [d.date || d.year || d.x, d.value || d.y]),
+        data: hist.map(d => [d.date || d.year || d.x, d.value || d.y]),
         smooth: 0.3,
-        symbol: 'none',
-        lineStyle: { width: 2, color: COLORS.purple },
+        symbol: 'circle',
+        symbolSize: 4,
+        lineStyle: { width: 2.5, color: COLORS.purple },
         areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:COLORS.purple+'25'},{offset:1,color:COLORS.purple+'00'}]) },
       }];
 
@@ -495,7 +496,7 @@ const CycleV2Module = (() => {
       createChart(`chart-perez-${cfg.key}`, {
         tooltip: Object.assign(tooltipConfig(), { trigger: 'axis' }),
         grid: gridConfig(),
-        xAxis: { type: 'time', axisLine: { lineStyle: { color: COLORS.borderSubtle } }, axisLabel: { color: COLORS.textMuted, fontSize: 10 }, splitLine: { show: false } },
+        xAxis: { type: 'category', data: hist.map(d => d.date || d.year || ''), axisLine: { lineStyle: { color: COLORS.borderSubtle } }, axisLabel: { color: COLORS.textMuted, fontSize: 10, rotate: hist.length > 8 ? 30 : 0 } },
         yAxis: { type: 'value', scale: true, axisLine: { show: false }, axisLabel: { color: COLORS.textMuted, fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(30,41,59,0.4)', type: 'dashed' } } },
         series: series,
       });
@@ -684,15 +685,15 @@ const CycleV2Module = (() => {
           </div>` : ''}
           <div class="cycle-indicator-grid mt-4">
             <div class="cycle-indicator-card">
-              <div class="indicator-title">库存/销售比</div>
+              <div class="indicator-title">${region === 'cn' ? '工业企业库存增速' : '库存/销售比'}</div>
               <div class="indicator-chart" id="chart-kitchin-inv-sales-${region}"></div>
             </div>
             <div class="cycle-indicator-card">
-              <div class="indicator-title">PMI新订单</div>
+              <div class="indicator-title">${region === 'cn' ? 'PMI新订单指数' : 'ISM新订单'}</div>
               <div class="indicator-chart" id="chart-kitchin-pmi-new-${region}"></div>
             </div>
             <div class="cycle-indicator-card">
-              <div class="indicator-title">PMI库存差</div>
+              <div class="indicator-title">${region === 'cn' ? 'PPI同比' : 'PMI库存差'}</div>
               <div class="indicator-chart" id="chart-kitchin-pmi-diff-${region}"></div>
             </div>
           </div>
@@ -793,21 +794,23 @@ const CycleV2Module = (() => {
       const indicators = d.indicators || {};
 
       const chartConfigs = [
-        { key: 'inv_sales_ratio', id: `chart-kitchin-inv-sales-${region}`, color: COLORS.blue },
-        { key: 'pmi_new_orders', id: `chart-kitchin-pmi-new-${region}`, color: COLORS.bullish },
-        { key: 'pmi_inventory_diff', id: `chart-kitchin-pmi-diff-${region}`, color: COLORS.purple },
+        { key: region === 'cn' ? 'inventory_stock' : 'inventory_to_sales', id: `chart-kitchin-inv-sales-${region}`, color: COLORS.blue },
+        { key: region === 'cn' ? 'pmi_new_orders' : 'ism_new_orders', id: `chart-kitchin-pmi-new-${region}`, color: COLORS.bullish },
+        { key: region === 'cn' ? 'ppi_yoy' : 'pmi_inventory_diff', id: `chart-kitchin-pmi-diff-${region}`, color: COLORS.purple },
       ];
 
       chartConfigs.forEach(cfg => {
-        const indData = indicators[cfg.key] || [];
-        if (!indData.length) return;
+        const raw = indicators[cfg.key];
+        if (!raw) return;
+        const indData = Array.isArray(raw) ? raw : (raw.history || raw.data || []);
+        if (!indData || !indData.length) return;
 
         createChart(cfg.id, {
           tooltip: Object.assign(tooltipConfig(), { trigger: 'axis' }),
           grid: gridConfig(),
           xAxis: { type: 'category', data: indData.map(dd => dd.date || dd.period || ''), axisLine: { lineStyle: { color: COLORS.borderSubtle } }, axisLabel: { color: COLORS.textMuted, fontSize: 9, interval: Math.floor(indData.length / 4) } },
           yAxis: { type: 'value', scale: true, axisLine: { show: false }, axisLabel: { color: COLORS.textMuted, fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(30,41,59,0.4)', type: 'dashed' } } },
-          series: [{ type: 'line', data: indData.map(dd => dd.value), smooth: 0.3, symbol: 'none', lineStyle: { width: 2, color: cfg.color }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:cfg.color+'25'},{offset:1,color:cfg.color+'00'}]) } }],
+          series: [{ type: 'line', data: indData.map(dd => dd.value), smooth: 0.3, symbol: 'circle', symbolSize: 4, lineStyle: { width: 2.5, color: cfg.color }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:cfg.color+'25'},{offset:1,color:cfg.color+'00'}]) } }],
         });
       });
     });
@@ -860,17 +863,17 @@ const CycleV2Module = (() => {
               <div class="indicator-chart" id="chart-merrill-output-${region}"></div>
             </div>
             <div class="cycle-indicator-card">
-              <div class="indicator-title">核心CPI</div>
+              <div class="indicator-title">${region === 'cn' ? '核心CPI' : '核心PCE'}</div>
               <div class="indicator-chart" id="chart-merrill-cpi-${region}"></div>
             </div>
             <div class="cycle-indicator-card">
-              <div class="indicator-title">PPI</div>
+              <div class="indicator-title">PPI同比</div>
               <div class="indicator-chart" id="chart-merrill-ppi-${region}"></div>
             </div>
-            <div class="cycle-indicator-card">
+            ${region === 'us' ? `<div class="cycle-indicator-card">
               <div class="indicator-title">Breakeven通胀</div>
               <div class="indicator-chart" id="chart-merrill-breakeven-${region}"></div>
-            </div>
+            </div>` : ''}
           </div>
         </div>`;
     }
@@ -972,20 +975,22 @@ const CycleV2Module = (() => {
       const indConfigs = [
         { key: 'output_gap', id: `chart-merrill-output-${region}`, color: COLORS.blue },
         { key: 'core_cpi', id: `chart-merrill-cpi-${region}`, color: COLORS.bearish },
-        { key: 'ppi', id: `chart-merrill-ppi-${region}`, color: COLORS.neutral },
-        { key: 'breakeven', id: `chart-merrill-breakeven-${region}`, color: COLORS.purple },
+        { key: 'ppi_yoy', id: `chart-merrill-ppi-${region}`, color: COLORS.neutral },
+        ${region === 'us' ? `{ key: 'breakeven_inflation', id: \`chart-merrill-breakeven-\${region}\`, color: COLORS.purple },` : ''}
       ];
 
       indConfigs.forEach(cfg => {
-        const indData = indicators[cfg.key] || [];
-        if (!indData.length) return;
+        const raw = indicators[cfg.key];
+        if (!raw) return;
+        const indData = Array.isArray(raw) ? raw : (raw.history || raw.data || []);
+        if (!indData || !indData.length) return;
 
         createChart(cfg.id, {
           tooltip: Object.assign(tooltipConfig(), { trigger: 'axis' }),
           grid: gridConfig(),
           xAxis: { type: 'category', data: indData.map(dd => dd.date || dd.period || ''), axisLine: { lineStyle: { color: COLORS.borderSubtle } }, axisLabel: { color: COLORS.textMuted, fontSize: 9, interval: Math.floor(indData.length / 4) } },
           yAxis: { type: 'value', scale: true, axisLine: { show: false }, axisLabel: { color: COLORS.textMuted, fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(30,41,59,0.4)', type: 'dashed' } } },
-          series: [{ type: 'line', data: indData.map(dd => dd.value), smooth: 0.3, symbol: 'none', lineStyle: { width: 2, color: cfg.color }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:cfg.color+'25'},{offset:1,color:cfg.color+'00'}]) } }],
+          series: [{ type: 'line', data: indData.map(dd => dd.value), smooth: 0.3, symbol: 'circle', symbolSize: 4, lineStyle: { width: 2.5, color: cfg.color }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:cfg.color+'25'},{offset:1,color:cfg.color+'00'}]) } }],
         });
       });
     });
@@ -1218,6 +1223,56 @@ const CycleV2Module = (() => {
       </div>`;
   }
 
+  // ========== Indicator Descriptions ===========
+  const INDICATOR_META = {
+    // Perez
+    'vc_pe_funding': { name: 'VC/PE融资额', def: '全球风险投资和私募股权融资总额', source: 'Crunchbase, PitchBook', freq: '季度', watch: 'Frenzy期融资额激增是泡沫信号；Turning Point后大幅收缩' },
+    'ipo_density': { name: 'IPO数量', def: '全球IPO上市数量', source: 'Renaissance Capital', freq: '年度', watch: 'IPO密集发行是市场过热的典型特征，>1500家/年需警惕' },
+    'passive_fund_ratio': { name: '被动基金占比', def: '被动型基金净流入占总净流入比例', source: 'ICI, EPFR', freq: '季度', watch: '>30%表示Frenzy顶部区域，资金从主动管理流向被动指数' },
+    'hy_spread': { name: '高收益债利差', def: '高收益债与国债的信用利差', source: 'ICE BofA Index', freq: '日度', watch: '利差急剧收窄→市场狂热；急剧走阔→Turning Point信号' },
+    'yield_curve': { name: '美国10Y-2Y利差', def: '10年期与2年期国债收益率之差', source: 'Fed', freq: '日度', watch: '曲线倒挂→金融条件收紧→Turning Point信号' },
+    // Kitchin
+    'inventory_stock': { name: '工业企业库存增速', def: '中国工业企业产成品存货同比增速', source: '国家统计局', freq: '月度', watch: '增速由负转正→补库启动；由正转负→去库开始' },
+    'inventory_to_sales': { name: '库存/销售比', def: '美国制造业库存与销售比值', source: 'Census Bureau', freq: '月度', watch: '比值上升→被动补库；比值下降→主动去库' },
+    'pmi_new_orders': { name: 'PMI新订单指数', def: '采购经理指数中的新订单分项', source: '国家统计局/ISM', freq: '月度', watch: '>50扩张，<50收缩；领先库存周期1-2个季度' },
+    'ism_new_orders': { name: 'ISM新订单指数', def: '美国ISM制造业新订单指数', source: 'ISM', freq: '月度', watch: '>50扩张，<50收缩；美国库存周期领先指标' },
+    'ppi_yoy': { name: 'PPI同比', def: '工业生产者出厂价格指数同比', source: '国家统计局', freq: '月度', watch: 'PPI转正→企业盈利改善→全面补库信号' },
+    'pmi_inventory_diff': { name: 'PMI库存差', def: 'PMI产成品库存-原材料库存差值', source: 'ISM', freq: '月度', watch: '差值扩大→被动补库；差值缩小→主动去库' },
+    // Merrill Clock
+    'output_gap': { name: '产出缺口', def: '实际GDP与潜在GDP的偏差百分比', source: 'IMF/国家统计局', freq: '季度', watch: '缺口由负转正→经济过热；由正转负→衰退风险' },
+    'core_cpi': { name: '核心CPI', def: '剔除食品和能源的消费者物价指数', source: 'BLS/国家统计局', freq: '月度', watch: '核心CPI持续>2%→通胀压力；<1%→通缩风险' },
+    'breakeven_inflation': { name: 'Breakeven通胀', def: '名义国债与TIPS的收益率差，反映市场通胀预期', source: 'Fed', freq: '日度', watch: 'Breakeven上升→通胀预期升温；下降→通缩预期' },
+    // Credit Impulse
+    'credit_impulse': { name: '信贷脉冲', def: '社融增量/GDP的环比变化，衡量信贷扩张加速度', source: '央行/PBOC', freq: '月度', watch: '脉冲由负转正→领先经济增长2-3个季度，是最有效的领先指标' },
+  };
+
+  function renderIndicatorDescriptions(sectionId, indicators) {
+    const container = document.getElementById(sectionId + '-descriptions');
+    if (!container || !indicators) return;
+    
+    let html = '<div class="indicator-descriptions-grid">';
+    Object.keys(indicators).forEach(key => {
+      const meta = INDICATOR_META[key];
+      const ind = indicators[key];
+      if (!meta || !ind) return;
+      const currentVal = ind.current !== undefined ? ind.current : (ind.history && ind.history.length ? ind.history[ind.history.length-1].value : '--');
+      const unit = ind.unit || '';
+      html += \`
+        <div class="indicator-desc-card">
+          <div class="indicator-desc-name">\${meta.name}</div>
+          <div class="indicator-desc-def">\${meta.def}</div>
+          <div class="indicator-desc-meta">
+            <span>📊 来源: \${meta.source}</span>
+            <span>🔄 频率: \${meta.freq}</span>
+            <span>📍 当前: \${currentVal}\${unit}</span>
+          </div>
+          <div class="indicator-desc-watch">👁️ 关注: \${meta.watch}</div>
+        </div>\`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
   // ========== Main Render ==========
   function render(data) {
     const container = document.getElementById('cycle-content');
@@ -1245,6 +1300,12 @@ const CycleV2Module = (() => {
       renderKitchinCharts(data);
       renderMerrillClockCharts(data);
       renderCreditImpulseCharts(data);
+      // Render indicator descriptions
+      if (data.perez?.indicators) renderIndicatorDescriptions('perez', data.perez.indicators);
+      if (data.kitchin?.cn?.indicators) renderIndicatorDescriptions('kitchin-cn', data.kitchin.cn.indicators);
+      if (data.kitchin?.us?.indicators) renderIndicatorDescriptions('kitchin-us', data.kitchin.us.indicators);
+      if (data.merrill_clock?.cn?.indicators) renderIndicatorDescriptions('merrill-cn', data.merrill_clock.cn.indicators);
+      if (data.merrill_clock?.us?.indicators) renderIndicatorDescriptions('merrill-us', data.merrill_clock.us.indicators);
       // Setup resize observer after all charts created
       setupResizeObserver();
     });

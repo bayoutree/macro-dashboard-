@@ -2494,6 +2494,20 @@
         "signal": "neutral_bearish",
         "reasoning": "佩雷斯Frenzy后期利好风险资产，但联储QT+监管趋严构成逆风。波动性极高。",
         "color": "#f59e0b"
+      },
+      {
+        "asset": "美元",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "reasoning": "康波交替期美元信用体系面临重构压力，但短期受益于美债收益率上行。中长期看，去美元化趋势+财政赤字扩大构成逆风。关注DXY是否跌破100关键位。",
+        "color": "#f59e0b"
+      },
+      {
+        "asset": "人民币",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "reasoning": "信贷脉冲回升+经济复苏支撑汇率。央行稳汇率意愿强，但美联储政策路径和中美利差仍是关键变量。关注USD/CNY是否站稳7.2下方。",
+        "color": "#10b981"
       }
     ],
     "key_risks": [
