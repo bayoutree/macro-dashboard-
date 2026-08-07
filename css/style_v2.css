@@ -831,3 +831,64 @@
   border-radius: 3px;
   flex-shrink: 0;
 }
+
+/* ========== Indicator Descriptions ========== */
+.cycle-indicator-descriptions {
+  margin-top: 16px;
+}
+
+.indicator-descriptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.indicator-desc-card {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+
+.indicator-desc-card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.indicator-desc-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+
+.indicator-desc-def {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.indicator-desc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.indicator-desc-meta span {
+  background: rgba(30, 41, 59, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.indicator-desc-watch {
+  font-size: 11px;
+  color: #3b82f6;
+  line-height: 1.5;
+  border-top: 1px solid rgba(30, 41, 59, 0.5);
+  padding-top: 6px;
+}
