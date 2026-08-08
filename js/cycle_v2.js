@@ -142,7 +142,7 @@ const CycleV2Module = (() => {
     if (!timeline || !timeline.cycles) return;
 
     const cycles = timeline.cycles;
-    const categories = cycles.map(c => c.name).reverse();
+    const categories = cycles.map(c => c.name);
 
     // Build data items for custom series (gantt bars)
     const ganttData = [];
@@ -175,7 +175,7 @@ const CycleV2Module = (() => {
         formatter: function(params) {
           const d = params.data;
           if (!d || !d.value) return '';
-          const catIdx = categories.length - 1 - d.value[0];
+          const catIdx = d.value[0];
           const catName = cycles[catIdx]?.name || '';
           return `<div style="font-size:11px;color:#64748b">${catName}</div>
                   <div style="font-weight:600;color:#e2e8f0;margin-top:4px">${d.value[3]}</div>
@@ -447,6 +447,7 @@ const CycleV2Module = (() => {
           </div>
         </div>
         <div class="cycle-indicator-grid">${indicatorCards}</div>
+        <div id="perez-descriptions"></div>
       </div>`;
   }
 
@@ -697,6 +698,7 @@ const CycleV2Module = (() => {
               <div class="indicator-chart" id="chart-kitchin-pmi-diff-${region}"></div>
             </div>
           </div>
+          <div id="kitchin-${region}-descriptions"></div>
         </div>`;
     }
 
@@ -875,6 +877,7 @@ const CycleV2Module = (() => {
               <div class="indicator-chart" id="chart-merrill-breakeven-${region}"></div>
             </div>` : ''}
           </div>
+          <div id="merrill-${region}-descriptions"></div>
         </div>`;
     }
 
