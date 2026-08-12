@@ -11,6 +11,7 @@
   
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/style_v2.css">
+  <link rel="stylesheet" href="css/style_timing.css">
   <script>
     tailwind.config = {
       theme: {
@@ -80,6 +81,9 @@
         <button class="tab-btn" data-tab="allocation" onclick="app.switchTab('allocation')">
           <span class="mr-1.5">📊</span>资产配置
         </button>
+        <button class="tab-btn" data-tab="timing" onclick="app.switchTab('timing')">
+          <span class="mr-1.5">⏱️</span>A股择时
+        </button>
       </div>
     </div>
   </nav>
@@ -120,6 +124,11 @@
       <div id="allocation-content"></div>
     </div>
 
+    <!-- Timing Tab -->
+    <div id="tab-timing" class="tab-content hidden">
+      <div id="timing-content"></div>
+    </div>
+
   </main>
 
   <!-- Footer -->
@@ -145,5 +154,6 @@
   <script src="js/cycle_v2.js"></script>
   <script src="js/data_normalize.js"></script>
   <script src="js/app_v2_patch.js"></script>
+  <script src="js/timing_v2.js"></script>
 </body>
 </html>
