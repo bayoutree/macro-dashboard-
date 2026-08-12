@@ -1,22 +1,22 @@
 {
   "update_date": "2026-08-12",
   "version": "v2.0",
-  "composite_score": 49.1,
+  "composite_score": 48.8,
   "position_range": "40%-55%",
   "market_status": "中性区间，略偏暖",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 59.8,
+      "score": 59.5,
       "weight": 18,
-      "weighted_score": 10.76,
+      "weighted_score": 10.71,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 81.6,
+          "value": 81.3,
           "unit": "%分位",
-          "score": 82.0,
+          "score": 81.0,
           "sub_weight": 35,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -624,9 +624,9 @@
     },
     "liquidity": {
       "name": "宏观流动性",
-      "score": 47.6,
+      "score": 46.6,
       "weight": 17,
-      "weighted_score": 8.09,
+      "weighted_score": 7.92,
       "signal": "中性偏松",
       "indicators": {
         "social_financing_trend": {
@@ -798,7 +798,7 @@
         "m1_m2_scissors": {
           "name": "M1-M2剪刀差",
           "value": "负值收窄中",
-          "score": 38,
+          "score": 33,
           "sub_weight": 20,
           "bottom_signal": "从-8%收窄",
           "top_signal": ">+5%扩张",
@@ -973,7 +973,7 @@
         "hs300_erp": {
           "name": "沪深300 ERP",
           "value": "5.61%",
-          "percentile": "34.9%",
+          "percentile": "35.1%",
           "score": 30,
           "sub_weight": 50,
           "bottom_threshold": ">6%",
@@ -2256,9 +2256,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 41.7,
+      "score": 41.2,
       "weight": 18,
-      "weighted_score": 7.51,
+      "weighted_score": 7.42,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
@@ -2370,8 +2370,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 25,
-          "score": 25.762286525429538,
+          "value": 23,
+          "score": 23.688413604934123,
           "sub_weight": 25,
           "bottom_threshold": "<20",
           "top_threshold": ">80",
@@ -3374,7 +3374,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.39)",
+          "value": "小盘中性(%B=0.42)",
           "score": 45,
           "sub_weight": 20,
           "bottom_signal": "比值触底回升",
@@ -3533,10 +3533,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.39)",
+      "current_value": "小盘中性(%B=0.42)",
       "status": "小盘走强",
       "signal": "可关注",
-      "detail": "小盘风格小盘中性(%B=0.39)"
+      "detail": "小盘风格小盘中性(%B=0.42)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
