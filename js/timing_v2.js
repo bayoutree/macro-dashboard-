@@ -7,6 +7,8 @@ const TimingTab = {
   data: null,
   radarChart: null,
   scoreGaugeChart: null,
+  miniCharts: [],
+  miniChartObserver: null,
 
   async init() {
     try {
@@ -64,6 +66,7 @@ const TimingTab = {
     requestAnimationFrame(() => {
       this.renderRadarChart(d);
       this.renderScoreGauge(d);
+      this.renderMiniCharts();
     });
   },
 
@@ -158,11 +161,16 @@ const TimingTab = {
           <div class="timing-dim-indicators">
             ${Object.entries(dim.indicators).map(([iKey, ind]) => {
               const indScoreClass = this.getScoreClass(ind.score);
+              const hasHistory = ind.history && ind.history.length > 0;
               return `
-                <div class="timing-dim-indicator">
-                  <span class="timing-dim-indicator-name">${ind.name}</span>
-                  <span class="timing-dim-indicator-value">${ind.value}${ind.unit ? ind.unit : ''}</span>
-                  <span class="timing-dim-indicator-score score-${indScoreClass}" style="color:${this.getScoreColor(ind.score)}">${ind.score}</span>
+                <div class="timing-dim-indicator ${hasHistory ? 'has-chart' : ''}">
+                  <div class="timing-dim-indicator-row">
+                    <span class="timing-dim-indicator-name">${ind.name}</span>
+                    <span class="timing-dim-indicator-value">${ind.value}${ind.unit ? ind.unit : ''}</span>
+                    <span class="timing-dim-indicator-score score-${indScoreClass}" style="color:${this.getScoreColor(ind.score)}">${ind.score}</span>
+                  </div>
+                  ${hasHistory ? `<div class="timing-mini-chart" id="mini-chart-${key}-${iKey}" data-history='${JSON.stringify(ind.history)}' data-score="${ind.score}"></div>` : ''}
+                  ${ind.description ? `<div class="timing-dim-indicator-desc">${ind.description}</div>` : ''}
                 </div>
               `;
             }).join('')}
@@ -369,6 +377,106 @@ const TimingTab = {
 
     html += '</div></div>';
     return html;
+  },
+
+  // ========== Mini Sparkline Charts ==========
+
+  renderMiniCharts() {
+    // Dispose previous mini charts
+    this.miniCharts.forEach(c => c.dispose());
+    this.miniCharts = [];
+    if (this.miniChartObserver) {
+      this.miniChartObserver.disconnect();
+      this.miniChartObserver = null;
+    }
+
+    const containers = document.querySelectorAll('.timing-mini-chart');
+    if (!containers.length) return;
+
+    this.miniChartObserver = new ResizeObserver(() => {
+      this.miniCharts.forEach(c => c.resize());
+    });
+
+    containers.forEach(el => {
+      let history = [];
+      try {
+        history = JSON.parse(el.getAttribute('data-history') || '[]');
+      } catch(e) { return; }
+      if (!history.length) return;
+
+      const score = parseFloat(el.getAttribute('data-score') || '50');
+      const color = this.getScoreColor(score);
+
+      const chart = echarts.init(el);
+      this.miniCharts.push(chart);
+      this.miniChartObserver.observe(el);
+
+      const dates = history.map(h => h.date);
+      const values = history.map(h => h.value);
+
+      const option = {
+        animation: true,
+        animationDuration: 600,
+        grid: { top: 4, bottom: 4, left: 4, right: 4 },
+        xAxis: {
+          type: 'category',
+          data: dates,
+          show: false,
+          boundaryGap: false,
+        },
+        yAxis: {
+          type: 'value',
+          show: false,
+          scale: true,
+        },
+        series: [{
+          type: 'line',
+          data: values,
+          smooth: true,
+          symbol: 'none',
+          lineStyle: { width: 1.5, color: color },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: color.replace(')', ', 0.25)').replace('rgb', 'rgba') },
+              { offset: 1, color: color.replace(')', ', 0.02)').replace('rgb', 'rgba') },
+            ]),
+          },
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: { color: color, width: 1, type: 'dashed', opacity: 0.5 },
+            data: [{ xAxis: dates.length - 1 }],
+            label: { show: false },
+          },
+        }],
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+          textStyle: { color: '#e2e8f0', fontSize: 10 },
+          formatter: function(params) {
+            if (!params || !params[0]) return '';
+            return `${params[0].axisValue}<br/>${params[0].value}`;
+          },
+        },
+      };
+
+      // Fix area gradient for hex colors
+      const hexToRgba = (hex, alpha) => {
+        const r = parseInt(hex.slice(1,3), 16);
+        const g = parseInt(hex.slice(3,5), 16);
+        const b = parseInt(hex.slice(5,7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+      };
+      option.series[0].areaStyle = {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: hexToRgba(color, 0.25) },
+          { offset: 1, color: hexToRgba(color, 0.02) },
+        ]),
+      };
+
+      chart.setOption(option);
+    });
   },
 
   // ========== ECharts Rendering ==========
@@ -582,6 +690,12 @@ const TimingTab = {
     if (this.scoreGaugeChart) {
       this.scoreGaugeChart.dispose();
       this.scoreGaugeChart = null;
+    }
+    this.miniCharts.forEach(c => c.dispose());
+    this.miniCharts = [];
+    if (this.miniChartObserver) {
+      this.miniChartObserver.disconnect();
+      this.miniChartObserver = null;
     }
   },
 };

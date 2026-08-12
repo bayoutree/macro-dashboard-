@@ -57,6 +57,7 @@ def main():
 
     # ---------- A股指数 ----------
     logger.info("\n[4/6] A股指数: 上证, 沪深300...")
+    # 使用新浪数据源 (更稳定)
     sse_df = safe_call(ak.stock_zh_index_daily, symbol="sh000001")
     time.sleep(1)
     hs300_df = safe_call(ak.stock_zh_index_daily, symbol="sh000300")
@@ -72,174 +73,78 @@ def main():
     csi500_pe_df = safe_call(ak.stock_index_pe_lg, symbol="中证500")
 
     # ============================================================
-    # 解析各指标最新值 & 构建历史数据
+    # 解析各指标最新值
     # ============================================================
-    logger.info("\n解析指标值 & 构建历史数据...")
+    logger.info("\n解析指标值...")
 
     # --- PMI (数据按时间降序，第一行最新) ---
     pmi_val, pmi_date = None, None
-    pmi_history = []
     if not pmi_df.empty:
         try:
+            # 列: 月份, 制造业-指数, 制造业-同比增长, 非制造业-指数, 非制造业-同比增长
             pmi_val = safe_float(pmi_df['制造业-指数'].iloc[0])
+            # 解析月份: "2026年06月份" → "2026-06"
             raw_month = str(pmi_df['月份'].iloc[0])
+            import re
             m = re.search(r'(\d{4})年(\d{1,2})月', raw_month)
             if m:
                 pmi_date = f"{m.group(1)}-{m.group(2).zfill(2)}"
             logger.info(f"  PMI: {pmi_val}, 日期: {pmi_date}")
-
-            # 构建 PMI 历史: 反转数据框使其按时间升序
-            pmi_df_sorted = pmi_df.iloc[::-1].reset_index(drop=True)
-            for _, row in pmi_df_sorted.iterrows():
-                try:
-                    val = safe_float(row['制造业-指数'])
-                    raw = str(row['月份'])
-                    m = re.search(r'(\d{4})年(\d{1,2})月', raw)
-                    if m and val is not None:
-                        date_label = f"{m.group(1)}-{m.group(2).zfill(2)}"
-                        pmi_history.append({"date": date_label, "value": val})
-                except Exception:
-                    pass
-            # 只保留最近36个月
-            pmi_history = pmi_history[-36:]
-            logger.info(f"  PMI 历史: {len(pmi_history)} 个数据点")
         except Exception as e:
             logger.warning(f"  解析PMI失败: {e}")
 
-    # --- 社融 (数据按时间升序，最后一行最新) ---
-    shrzgm_val, shrzgm_date = None, None
-    shrzgm_history = []
-    if not shrzgm_df.empty:
-        try:
-            shrzgm_val = safe_float(shrzgm_df['社会融资规模增量'].iloc[-1])
-            raw_month = str(shrzgm_df['月份'].iloc[-1])
-            if len(raw_month) >= 6:
-                shrzgm_date = f"{raw_month[:4]}-{raw_month[4:6]}"
-            logger.info(f"  社融: {shrzgm_val} 亿元, 日期: {shrzgm_date}")
-
-            # 构建社融历史
-            for _, row in shrzgm_df.iterrows():
-                try:
-                    val = safe_float(row['社会融资规模增量'])
-                    raw = str(row['月份'])
-                    if val is not None and len(raw) >= 6:
-                        date_label = f"{raw[:4]}-{raw[4:6]}"
-                        shrzgm_history.append({"date": date_label, "value": val})
-                except Exception:
-                    pass
-            shrzgm_history = shrzgm_history[-36:]
-            logger.info(f"  社融历史: {len(shrzgm_history)} 个数据点")
-        except Exception as e:
-            logger.warning(f"  解析社融失败: {e}")
-
     # --- GDP (数据按时间降序) ---
     gdp_val, gdp_date = None, None
-    gdp_history = []
     if not gdp_df.empty:
         try:
+            # 列: 季度, 国内生产总值-绝对值, 国内生产总值-同比增长, ...
+            # 优先取单季度数据(第1季度/第1-4季度)
             for idx in range(len(gdp_df)):
-                quarter_str_val = str(gdp_df['季度'].iloc[idx])
-                if '第1季度' in quarter_str_val and '第1-' not in quarter_str_val:
+                quarter_str = str(gdp_df['季度'].iloc[idx])
+                if '第1季度' in quarter_str and '第1-' not in quarter_str:
                     gdp_val = safe_float(gdp_df['国内生产总值-同比增长'].iloc[idx])
-                    gdp_date = quarter_str_val
+                    gdp_date = quarter_str
                     break
             if gdp_val is None:
                 gdp_val = safe_float(gdp_df['国内生产总值-同比增长'].iloc[0])
                 gdp_date = str(gdp_df['季度'].iloc[0])
             logger.info(f"  GDP: {gdp_val}%, 日期: {gdp_date}")
-
-            # 构建 GDP 历史: 只取单季度数据（含"第1季度"但不含"第1-"），反转使其升序
-            gdp_quarterly = []
-            for _, row in gdp_df.iterrows():
-                q = str(row['季度'])
-                val = safe_float(row['国内生产总值-同比增长'])
-                if val is not None:
-                    # 标准化季度名称
-                    # 格式如 "2026年第1季度" 或 "2025年第1-4季度"
-                    m_match = re.match(r'(\d{4})年', q)
-                    if m_match:
-                        year = m_match.group(1)
-                        if '第1季度' in q and '第1-' not in q:
-                            gdp_quarterly.append({"date": f"{year}Q1", "value": val})
-                        elif '第2季度' in q and '第1-' not in q and '第1-2' not in q:
-                            gdp_quarterly.append({"date": f"{year}Q2", "value": val})
-                        elif '第3季度' in q and '第1-' not in q and '第1-3' not in q:
-                            gdp_quarterly.append({"date": f"{year}Q3", "value": val})
-                        elif '第4季度' in q or '第1-4季度' in q:
-                            gdp_quarterly.append({"date": f"{year}Q4", "value": val})
-
-            # 去重（保留最后出现的即最新的）
-            seen = {}
-            for item in gdp_quarterly:
-                seen[item["date"]] = item["value"]
-            gdp_history = [{"date": k, "value": v} for k, v in sorted(seen.items())]
-            gdp_history = gdp_history[-16:]  # 最近16个季度
-            logger.info(f"  GDP 历史: {len(gdp_history)} 个数据点")
         except Exception as e:
             logger.warning(f"  解析GDP失败: {e}")
 
     # --- CPI (数据按时间降序) ---
     cpi_val, cpi_date = None, None
-    cpi_history = []
     if not cpi_df.empty:
         try:
+            # 列: 月份, 全国-当月, 全国-同比增长, 全国-环比增长, ...
             cpi_val = safe_float(cpi_df['全国-同比增长'].iloc[0])
             raw_month = str(cpi_df['月份'].iloc[0])
             m = re.search(r'(\d{4})年(\d{1,2})月', raw_month)
             if m:
                 cpi_date = f"{m.group(1)}-{m.group(2).zfill(2)}"
             logger.info(f"  CPI: {cpi_val}%, 日期: {cpi_date}")
-
-            # 构建 CPI 历史: 反转使其升序
-            cpi_df_sorted = cpi_df.iloc[::-1].reset_index(drop=True)
-            for _, row in cpi_df_sorted.iterrows():
-                try:
-                    val = safe_float(row['全国-同比增长'])
-                    raw = str(row['月份'])
-                    m = re.search(r'(\d{4})年(\d{1,2})月', raw)
-                    if m and val is not None:
-                        date_label = f"{m.group(1)}-{m.group(2).zfill(2)}"
-                        cpi_history.append({"date": date_label, "value": val})
-                except Exception:
-                    pass
-            cpi_history = cpi_history[-36:]
-            logger.info(f"  CPI 历史: {len(cpi_history)} 个数据点")
         except Exception as e:
             logger.warning(f"  解析CPI失败: {e}")
 
     # --- PPI (数据按时间降序) ---
     ppi_val, ppi_date = None, None
-    ppi_history = []
     if not ppi_df.empty:
         try:
+            # 列: 月份, 当月, 当月同比增长, 累计
             ppi_val = safe_float(ppi_df['当月同比增长'].iloc[0])
             raw_month = str(ppi_df['月份'].iloc[0])
             m = re.search(r'(\d{4})年(\d{1,2})月', raw_month)
             if m:
                 ppi_date = f"{m.group(1)}-{m.group(2).zfill(2)}"
             logger.info(f"  PPI: {ppi_val}%, 日期: {ppi_date}")
-
-            # 构建 PPI 历史: 反转使其升序
-            ppi_df_sorted = ppi_df.iloc[::-1].reset_index(drop=True)
-            for _, row in ppi_df_sorted.iterrows():
-                try:
-                    val = safe_float(row['当月同比增长'])
-                    raw = str(row['月份'])
-                    m = re.search(r'(\d{4})年(\d{1,2})月', raw)
-                    if m and val is not None:
-                        date_label = f"{m.group(1)}-{m.group(2).zfill(2)}"
-                        ppi_history.append({"date": date_label, "value": val})
-                except Exception:
-                    pass
-            ppi_history = ppi_history[-36:]
-            logger.info(f"  PPI 历史: {len(ppi_history)} 个数据点")
         except Exception as e:
             logger.warning(f"  解析PPI失败: {e}")
 
-    # --- M2 ---
+    # --- M2 (列: 商品, 日期, 今值, 预测值, 前值; 按时间升序) ---
     m2_val, m2_date = None, None
     if not m2_df.empty:
         try:
+            # 找最新有值的记录
             m2_sorted = m2_df.dropna(subset=['今值'])
             if not m2_sorted.empty:
                 last_row = m2_sorted.iloc[-1]
@@ -249,7 +154,20 @@ def main():
         except Exception as e:
             logger.warning(f"  解析M2失败: {e}")
 
-    # --- A股指数 ---
+    # --- 社融 (数据按时间升序，最后一行最新) ---
+    shrzgm_val, shrzgm_date = None, None
+    if not shrzgm_df.empty:
+        try:
+            # 列: 月份, 社会融资规模增量, ...
+            shrzgm_val = safe_float(shrzgm_df['社会融资规模增量'].iloc[-1])
+            raw_month = str(shrzgm_df['月份'].iloc[-1])  # e.g. "202604"
+            if len(raw_month) >= 6:
+                shrzgm_date = f"{raw_month[:4]}-{raw_month[4:6]}"
+            logger.info(f"  社融: {shrzgm_val} 亿元, 日期: {shrzgm_date}")
+        except Exception as e:
+            logger.warning(f"  解析社融失败: {e}")
+
+    # --- A股指数 (stock_zh_index_daily 返回 date/open/high/low/close/volume) ---
     sse_val, sse_date = None, None
     sse_series = pd.Series(dtype=float)
     if not sse_df.empty and 'close' in sse_df.columns:
@@ -274,7 +192,7 @@ def main():
         except Exception as e:
             logger.warning(f"  解析沪深300失败: {e}")
 
-    # --- 中国10Y国债收益率 ---
+    # --- 中国10Y国债收益率 (bond_gb_zh_sina: date/open/high/low/close/volume) ---
     cn10y_val, cn10y_date = None, None
     cn10y_history = []
     if not cn_bond.empty and 'close' in cn_bond.columns:
@@ -288,15 +206,19 @@ def main():
         except Exception as e:
             logger.warning(f"  解析国债收益率失败: {e}")
 
-    # --- 沪深300 PE ---
+    # --- 沪深300 PE/PB (stock_index_pe_lg) ---
     hs300_pe_val = None
     hs300_pe_pct = None
     hs300_pe_history = []
     if not hs300_pe_df.empty:
         try:
-            pe_col = '滚动市盈率'
+            # 列: 日期, 指数, 等权静态市盈率, 静态市盈率, 静态市盈率中位数, 等权滚动市盈率, 滚动市盈率, 滚动市盈率中位数
+            pe_col = '滚动市盈率'  # 即 TTM PE
+            pb_col = None  # PE接口不含PB
             if pe_col in hs300_pe_df.columns:
                 hs300_pe_val = safe_float(hs300_pe_df[pe_col].dropna().iloc[-1])
+
+                # 计算历史分位
                 pe_series = hs300_pe_df.set_index('日期')[pe_col].dropna()
                 pe_series.index = pd.to_datetime(pe_series.index)
                 if len(pe_series) > 100:
@@ -308,21 +230,17 @@ def main():
 
     # --- 中证500 PE ---
     csi500_pe_val = None
-    csi500_pe_history = []
     if not csi500_pe_df.empty:
         try:
             pe_col = '滚动市盈率'
             if pe_col in csi500_pe_df.columns:
                 csi500_pe_val = safe_float(csi500_pe_df[pe_col].dropna().iloc[-1])
-                pe_series = csi500_pe_df.set_index('日期')[pe_col].dropna()
-                pe_series.index = pd.to_datetime(pe_series.index)
-                csi500_pe_history = series_to_history(pe_series, freq="daily", max_points=60)
             logger.info(f"  中证500 PE(TTM): {csi500_pe_val}")
         except Exception as e:
             logger.warning(f"  解析中证500 PE失败: {e}")
 
     # ============================================================
-    # 构建历史数据字典
+    # 构建历史数据
     # ============================================================
     history = {}
 
@@ -339,32 +257,6 @@ def main():
 
     # PE 历史
     history["hs300_pe"] = hs300_pe_history
-
-    # === 新增：补齐缺失指标的历史数据 ===
-
-    # PMI 历史
-    if pmi_history:
-        history["pmi"] = pmi_history
-
-    # 社融历史
-    if shrzgm_history:
-        history["social_financing"] = shrzgm_history
-
-    # GDP 历史
-    if gdp_history:
-        history["gdp_growth"] = gdp_history
-
-    # CPI 历史
-    if cpi_history:
-        history["cpi_yoy"] = cpi_history
-
-    # PPI 历史
-    if ppi_history:
-        history["ppi_yoy"] = ppi_history
-
-    # 中证500 PE 历史
-    if csi500_pe_history:
-        history["csi500_pe"] = csi500_pe_history
 
     # ============================================================
     # 输出 JSON
@@ -412,12 +304,6 @@ def main():
 
     save_json(output, "cn_macro.json")
     logger.info("\n✅ cn_macro.json 生成完成!")
-
-    # 打印历史数据摘要
-    logger.info("\n📊 历史数据汇总:")
-    for key, val in history.items():
-        logger.info(f"  {key}: {len(val)} 个数据点")
-
     return output
 
 

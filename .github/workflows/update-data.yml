@@ -1,0 +1,135 @@
+# ============================================================
+# 宏观看板 - 每日自动数据更新
+# ============================================================
+# 功能:
+#   1. 计算六维择时评分 (timing_scores.json)
+#   2. 更新中国/美国宏观数据
+#   3. 更新全球资产价格
+#   4. 更新资产估值
+#   5. 生成看板综合结论
+#
+# 调度:
+#   - 工作日 UTC 10:00 (北京时间 18:00) 自动执行
+#   - 支持手动触发 (workflow_dispatch)
+#
+# 前置条件:
+#   - 在 GitHub repo Settings > Secrets 中设置:
+#     - FRED_API_KEY: FRED API 密钥 (https://fred.stlouisfed.org/docs/api/api_key.html)
+# ============================================================
+
+name: Daily Data Update
+
+on:
+  schedule:
+    # UTC 10:00 = 北京时间 18:00, 周一到周五
+    - cron: '0 10 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '运行模式 (full=完整更新, timing=仅择时评分, dry-run=连通性检查)'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - timing
+          - dry-run
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ----------------------------------------------------------
+      # 1. 代码检出
+      # ----------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 完整历史, 便于计算分位
+
+      # ----------------------------------------------------------
+      # 2. Python 环境
+      # ----------------------------------------------------------
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scripts/requirements.txt
+
+      # ----------------------------------------------------------
+      # 3. 安装依赖
+      # ----------------------------------------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+          # 额外确保关键包
+          pip install akshare requests pandas numpy openpyxl
+
+      # ----------------------------------------------------------
+      # 4. 运行数据更新
+      # ----------------------------------------------------------
+      - name: Run data update (full)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full'
+        run: python scripts/update_data.py
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          PYTHONUNBUFFERED: '1'
+
+      - name: Run data update (timing only)
+        if: github.event.inputs.mode == 'timing'
+        run: python scripts/update_data.py --timing
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          PYTHONUNBUFFERED: '1'
+
+      - name: Run data update (dry-run)
+        if: github.event.inputs.mode == 'dry-run'
+        run: python scripts/update_data.py --dry-run
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          PYTHONUNBUFFERED: '1'
+
+      # ----------------------------------------------------------
+      # 5. 提交数据变更
+      # ----------------------------------------------------------
+      - name: Commit and push data changes
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add data/
+          
+          # 检查是否有变更
+          if git diff --cached --quiet; then
+            echo "📋 数据无变更, 跳过提交"
+          else
+            # 生成提交信息
+            DATE=$(date +%Y-%m-%d)
+            TIME=$(date +%H:%M)
+            
+            # 统计变更文件
+            CHANGED_FILES=$(git diff --cached --name-only | wc -l)
+            echo "📊 变更文件数: ${CHANGED_FILES}"
+            git diff --cached --stat
+            
+            git commit -m "📊 自动数据更新 ${DATE} ${TIME} CST" \
+                        -m "更新文件: $(git diff --cached --name-only | tr '\n' ', ')" \
+                        -m "运行环境: GitHub Actions"
+            git push
+            echo "✅ 数据已推送"
+          fi
+
+      # ----------------------------------------------------------
+      # 6. 失败通知 (可选)
+      # ----------------------------------------------------------
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ 数据更新失败，请检查 GitHub Actions 日志"
+          echo "失败步骤: ${{ job.status }}"
+          # 如果有飞书/钉钉 webhook，可以在这里发送通知
+          # curl -X POST "${{ secrets.WEBHOOK_URL }}" -d '{"msg_type":"text","content":{"text":"宏观看板数据更新失败"}}'
