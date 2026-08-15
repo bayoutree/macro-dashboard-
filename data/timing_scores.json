@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "update_date": "2026-08-14",
+=======
+  "update_date": "2026-08-15",
+>>>>>>> b4b0c1c (✨ 新增A股研究Tab：右侧趋势确认 + 底部结论 + API修复)
   "version": "v2.0",
   "composite_score": 48.4,
   "position_range": "40%-55%",
@@ -562,7 +566,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.1,
+          "value": 8.4,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -738,7 +742,11 @@
         },
         "interest_rate": {
           "name": "利率水平",
+<<<<<<< HEAD
           "value": "降息周期(1.69%)",
+=======
+          "value": "降息周期(1.68%)",
+>>>>>>> b4b0c1c (✨ 新增A股研究Tab：右侧趋势确认 + 底部结论 + API修复)
           "score": 35,
           "sub_weight": 30,
           "bottom_signal": "降息周期",
@@ -972,7 +980,11 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP",
+<<<<<<< HEAD
           "value": "5.65%",
+=======
+          "value": "5.67%",
+>>>>>>> b4b0c1c (✨ 新增A股研究Tab：右侧趋势确认 + 底部结论 + API修复)
           "percentile": "35.8%",
           "score": 30,
           "sub_weight": 50,
@@ -1192,7 +1204,11 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
+<<<<<<< HEAD
           "value": "2.91%",
+=======
+          "value": "2.92%",
+>>>>>>> b4b0c1c (✨ 新增A股研究Tab：右侧趋势确认 + 底部结论 + API修复)
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -1411,7 +1427,11 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
+<<<<<<< HEAD
           "value": "1.12%",
+=======
+          "value": "1.13%",
+>>>>>>> b4b0c1c (✨ 新增A股研究Tab：右侧趋势确认 + 底部结论 + API修复)
           "score": 50,
           "sub_weight": 15,
           "bottom_threshold": ">3%",

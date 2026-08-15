@@ -63,6 +63,9 @@
       case 'allocation':
         TabRenderers.renderAllocation(this.data.assetValuation, this.data.assetPrices, this.data.dashboardSummary);
         break;
+      case 'timing':
+        if (typeof TimingTab !== 'undefined') TimingTab.init();
+        break;
     }
   };
 
@@ -77,6 +80,11 @@
       } catch (e) {
         console.warn('[V2] Error disposing CycleV2Module:', e);
       }
+    }
+
+    // 如果当前是 timing tab，dispose 图表
+    if (this.currentTab === 'timing' && typeof TimingTab !== 'undefined') {
+      try { TimingTab.dispose(); } catch (e) {}
     }
 
     this.currentTab = tab;

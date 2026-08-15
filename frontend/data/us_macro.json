@@ -1,13 +1,10 @@
 {
-  "update_time": "2026-07-27",
-  "data_notes": {
-    "ism_pmi": "ISM Manufacturing PMI removed from FRED; data sourced from ISM official reports (ismrob.org)"
-  },
+  "update_time": "2026-07-26",
   "leading": {
     "ism_pmi": {
-      "value": 51.8,
-      "date": "2026-06",
-      "trend": "expanding"
+      "value": null,
+      "date": null,
+      "trend": "unknown"
     },
     "oecd_cli": {
       "value": 100.4912,
@@ -595,152 +592,7 @@
         "value": 4.2
       }
     ],
-    "ism_pmi": [
-      {
-        "date": "2023-07",
-        "value": 46.4
-      },
-      {
-        "date": "2023-08",
-        "value": 47.6
-      },
-      {
-        "date": "2023-09",
-        "value": 49.0
-      },
-      {
-        "date": "2023-10",
-        "value": 46.7
-      },
-      {
-        "date": "2023-11",
-        "value": 46.7
-      },
-      {
-        "date": "2023-12",
-        "value": 47.4
-      },
-      {
-        "date": "2024-01",
-        "value": 49.1
-      },
-      {
-        "date": "2024-02",
-        "value": 47.8
-      },
-      {
-        "date": "2024-03",
-        "value": 49.2
-      },
-      {
-        "date": "2024-04",
-        "value": 48.7
-      },
-      {
-        "date": "2024-05",
-        "value": 48.7
-      },
-      {
-        "date": "2024-06",
-        "value": 48.5
-      },
-      {
-        "date": "2024-07",
-        "value": 46.8
-      },
-      {
-        "date": "2024-08",
-        "value": 47.2
-      },
-      {
-        "date": "2024-09",
-        "value": 49.0
-      },
-      {
-        "date": "2024-10",
-        "value": 46.5
-      },
-      {
-        "date": "2024-11",
-        "value": 48.4
-      },
-      {
-        "date": "2024-12",
-        "value": 49.2
-      },
-      {
-        "date": "2025-01",
-        "value": 50.9
-      },
-      {
-        "date": "2025-02",
-        "value": 50.3
-      },
-      {
-        "date": "2025-03",
-        "value": 49.0
-      },
-      {
-        "date": "2025-04",
-        "value": 48.7
-      },
-      {
-        "date": "2025-05",
-        "value": 48.5
-      },
-      {
-        "date": "2025-06",
-        "value": 49.0
-      },
-      {
-        "date": "2025-07",
-        "value": 48.0
-      },
-      {
-        "date": "2025-08",
-        "value": 48.7
-      },
-      {
-        "date": "2025-09",
-        "value": 49.1
-      },
-      {
-        "date": "2025-10",
-        "value": 48.2
-      },
-      {
-        "date": "2025-11",
-        "value": 47.9
-      },
-      {
-        "date": "2025-12",
-        "value": 47.9
-      },
-      {
-        "date": "2026-01",
-        "value": 52.6
-      },
-      {
-        "date": "2026-02",
-        "value": 52.2
-      },
-      {
-        "date": "2026-03",
-        "value": 51.5
-      },
-      {
-        "date": "2026-04",
-        "value": 52.7
-      },
-      {
-        "date": "2026-05",
-        "value": 52.7
-      },
-      {
-        "date": "2026-06",
-        "value": 51.8
-      }
-    ],
+    "ism_pmi": [],
     "fed_funds": [
       {
         "date": "2023-07",

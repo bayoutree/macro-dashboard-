@@ -970,33 +970,25 @@ class TimingScoreEngine:
         """两融余额/流通市值"""
         try:
             ak = self.init_akshare()
-            # 两融数据
-            margin_df = safe_ak_call(ak.stock_margin_sse, start_date=(datetime.now() - timedelta(days=30)).strftime("%Y%m%d"))
+            # 使用 macro_china_market_margin_sh 获取融资融券余额数据
+            margin_df = safe_ak_call(ak.macro_china_market_margin_sh)
             if margin_df is not None and not margin_df.empty:
-                # 最新两融余额
-                latest = margin_df.iloc[-1] if len(margin_df) > 0 else None
-                if latest is not None:
-                    # 获取融资融券余额
-                    balance_col = None
-                    for col in margin_df.columns:
-                        if '余额' in str(col) or 'balance' in str(col).lower():
-                            balance_col = col
-                            break
+                if '融资融券余额' in margin_df.columns:
+                    # 取最新数据，值为元，转为亿元
+                    latest_balance = safe_float(margin_df['融资融券余额'].iloc[-1])
+                    if latest_balance:
+                        balance_yi = latest_balance / 1e8
+                        # 估算两融/流通市值比例
+                        # 简化: 从上期数据获取比例
+                        prev = load_json("timing_scores.json")
+                        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("value", "2.66%")
+                        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("score", 48)
 
-                    if balance_col:
-                        margin_balance = safe_float(margin_df[balance_col].iloc[-1])
-                        if margin_balance:
-                            # 估算流通市值 (约 60-80万亿)
-                            # 简化: 从上期数据获取比例
-                            prev = load_json("timing_scores.json")
-                            prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("value", "2.66%")
-                            prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("score", 48)
-
-                            logger.info(f"      两融余额: {margin_balance/1e8:.0f}亿, 使用上期比例 {prev_val}")
-                            try:
-                                return prev_score, float(prev_val.replace('%', ''))
-                            except:
-                                return 48, 2.66
+                        logger.info(f"      两融余额: {balance_yi:.0f}亿, 使用上期比例 {prev_val}")
+                        try:
+                            return prev_score, float(prev_val.replace('%', ''))
+                        except:
+                            return 48, 2.66
         except Exception as e:
             logger.warning(f"      两融数据异常: {e}")
 
@@ -1850,6 +1842,899 @@ class TimingScoreEngine:
 
 
 # ============================================================
+# 右侧趋势确认评分引擎 (v2.0 两层混合)
+# ============================================================
+
+class TimingRightEngine:
+    """
+    右侧趋势确认模块
+    =================
+    24个信号 (牛市12 + 熊市12)，满分各120分
+    第一层：信号灯（条件触发 OR逻辑，逐级升级）
+    第二层：打分制补充（仅无灯时启用）
+    """
+
+    def __init__(self):
+        self.ak = None
+        self._idx_df = None  # 缓存沪深300日K线
+        self._idx_weekly = None  # 缓存周K线
+        self._idx_monthly = None  # 缓存月K线
+        self._today = today_str()
+
+    def init_akshare(self):
+        if self.ak is None:
+            import akshare as ak
+            self.ak = ak
+        return self.ak
+
+    # ---------- 数据获取辅助 ----------
+
+    def _get_index_daily(self, symbol="sh000300"):
+        """获取指数日K线（沪深300）"""
+        if self._idx_df is not None:
+            return self._idx_df
+        try:
+            ak = self.init_akshare()
+            df = safe_ak_call(ak.stock_zh_index_daily, symbol=symbol)
+            if df is not None and not df.empty:
+                df['date'] = pd.to_datetime(df['date'])
+                df = df.sort_values('date').reset_index(drop=True)
+                self._idx_df = df
+                return df
+        except Exception as e:
+            logger.warning(f"      获取指数日K失败: {e}")
+        return pd.DataFrame()
+
+    def _get_weekly_kline(self, symbol="sh000300"):
+        """将日K重采样为周K"""
+        if self._idx_weekly is not None:
+            return self._idx_weekly
+        df = self._get_index_daily(symbol)
+        if df.empty:
+            return pd.DataFrame()
+        try:
+            df = df.set_index('date')
+            weekly = df.resample('W').agg({
+                'open': 'first', 'high': 'max', 'low': 'min',
+                'close': 'last', 'volume': 'sum'
+            }).dropna()
+            weekly = weekly.reset_index()
+            self._idx_weekly = weekly
+            return weekly
+        except Exception as e:
+            logger.warning(f"      周K重采样失败: {e}")
+            return pd.DataFrame()
+
+    def _get_monthly_kline(self, symbol="sh000300"):
+        """将日K重采样为月K"""
+        if self._idx_monthly is not None:
+            return self._idx_monthly
+        df = self._get_index_daily(symbol)
+        if df.empty:
+            return pd.DataFrame()
+        try:
+            df = df.set_index('date')
+            monthly = df.resample('ME').agg({
+                'open': 'first', 'high': 'max', 'low': 'min',
+                'close': 'last', 'volume': 'sum'
+            }).dropna()
+            monthly = monthly.reset_index()
+            self._idx_monthly = monthly
+            return monthly
+        except Exception as e:
+            logger.warning(f"      月K重采样失败: {e}")
+            return pd.DataFrame()
+
+    def _calc_macd(self, close_series, fast=12, slow=26, signal=9):
+        """计算MACD: 返回 (diff, dea, macd_hist)"""
+        ema_fast = close_series.ewm(span=fast, adjust=False).mean()
+        ema_slow = close_series.ewm(span=slow, adjust=False).mean()
+        diff = ema_fast - ema_slow
+        dea = diff.ewm(span=signal, adjust=False).mean()
+        hist = (diff - dea) * 2
+        return diff, dea, hist
+
+    # ---------- 牛市早期信号 ----------
+
+    def _sig_standing_60ma(self):
+        """站稳60日线：连续5日站上60日线 + 60日线拐头向上"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 65:
+            return False, "数据不足"
+        try:
+            df['ma60'] = df['close'].rolling(60).mean()
+            last5 = df.tail(5)
+            above = (last5['close'] > last5['ma60']).all()
+            # 60日线拐头: 近5日MA60斜率>0
+            ma60_recent = df['ma60'].tail(10).dropna()
+            turning_up = len(ma60_recent) >= 5 and ma60_recent.iloc[-1] > ma60_recent.iloc[-5]
+            triggered = bool(above and turning_up)
+            val = f"{'站上' if above else '未站稳'}60日线, MA60{'上行' if turning_up else '走平/下行'}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_weekly_macd_gold(self):
+        """周线MACD金叉：周线DIFF上穿DEA"""
+        df = self._get_weekly_kline()
+        if df.empty or len(df) < 30:
+            return False, "数据不足"
+        try:
+            diff, dea, _ = self._calc_macd(df['close'])
+            # 金叉: 当前DIF>DEA 且 前一期DIF<=DEA
+            cross_up = (diff.iloc[-1] > dea.iloc[-1]) and (diff.iloc[-2] <= dea.iloc[-2])
+            # 或近4周内有金叉
+            recent_cross = False
+            for i in range(-4, 0):
+                if i-1 >= -len(diff) and diff.iloc[i] > dea.iloc[i] and diff.iloc[i-1] <= dea.iloc[i-1]:
+                    recent_cross = True
+            triggered = bool(cross_up or recent_cross)
+            val = f"DIFF={diff.iloc[-1]:.2f}, DEA={dea.iloc[-1]:.2f}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_margin_recovery(self):
+        """两融余额回升：连续4周环比正增长"""
+        try:
+            ak = self.init_akshare()
+            # 使用 macro_china_market_margin_sh 获取融资融券余额数据
+            df = safe_ak_call(ak.macro_china_market_margin_sh)
+            if df is not None and not df.empty and '融资融券余额' in df.columns:
+                df['日期'] = pd.to_datetime(df['日期'])
+                df = df.sort_values('日期').tail(120)  # 近120天
+                # 按周重采样，取每周最后一个交易日的融资融券余额
+                df = df.set_index('日期')
+                weekly = df['融资融券余额'].resample('W').last().dropna()
+                # 转为亿元
+                weekly_yi = weekly / 1e8
+                if len(weekly_yi) >= 5:
+                    # 检查最近4周是否连续环比正增长（即连续3次环比为正）
+                    changes = weekly_yi.diff().dropna()
+                    last4_changes = changes.tail(4)
+                    rising = bool((last4_changes > 0).all())
+                    val = f"近周两融余额: {weekly_yi.iloc[-1]:.0f}亿"
+                    return rising, val
+            # fallback
+            prev = load_json("timing_right_scores.json")
+            sig = self._find_signal(prev, "两融余额回升")
+            if sig:
+                return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_volume_expansion(self):
+        """成交放量：20日均量上穿60日均量"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 65:
+            return False, "数据不足"
+        try:
+            df['vol_ma20'] = df['volume'].rolling(20).mean()
+            df['vol_ma60'] = df['volume'].rolling(60).mean()
+            # 当前20日均量>60日均量
+            cross = df['vol_ma20'].iloc[-1] > df['vol_ma60'].iloc[-1]
+            # 且近期发生上穿
+            recent_cross = False
+            for i in range(-5, 0):
+                if (df['vol_ma20'].iloc[i] > df['vol_ma60'].iloc[i] and
+                    df['vol_ma20'].iloc[i-1] <= df['vol_ma60'].iloc[i-1]):
+                    recent_cross = True
+            triggered = bool(cross and (recent_cross or df['vol_ma20'].iloc[-5:].gt(df['vol_ma60'].iloc[-5:]).all()))
+            val = f"20日均量/60日均量={df['vol_ma20'].iloc[-1]/df['vol_ma60'].iloc[-1]:.2f}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_breadth_repair(self):
+        """市场宽度修复：站上20日均线个股占比>50%且扩大"""
+        try:
+            ak = self.init_akshare()
+            # 使用上证全A指数近似的宽度
+            # 简化：用沪深300成分股站上20MA的比例
+            df = self._get_index_daily()
+            if df.empty or len(df) < 25:
+                return False, "数据不足"
+            df['ma20'] = df['close'].rolling(20).mean()
+            above_pct = (df['close'].iloc[-1] > df['ma20'].iloc[-1])
+            # 精确计算需要全市场个股数据，这里用指数近似
+            # 宽度修复更多需要全市场统计，简化为指数在MA20上方
+            expanding = df['close'].iloc[-5:].values[-1] > df['ma20'].iloc[-5:].values[0] if len(df) >= 25 else False
+            val = f"指数{'站上' if above_pct else '未站上'}20日线"
+            # 由于无法获取全市场个股数据，标记为近似
+            return False, val + " (需全市场数据确认)"
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_industry_capital_buyback(self):
+        """产业资本转增持：净增持转正且连续2周"""
+        try:
+            ak = self.init_akshare()
+            # 获取上交所产业资本增减持数据
+            df_sse = safe_ak_call(ak.stock_share_hold_change_sse)
+            frames = []
+            if df_sse is not None and not df_sse.empty:
+                frames.append(df_sse)
+            # 尝试获取深交所数据（可能较慢，超时跳过）
+            try:
+                import signal as sig_mod
+                old_handler = sig_mod.signal(sig_mod.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("timeout")))
+                sig_mod.alarm(30)  # 30秒超时
+                df_szse = safe_ak_call(ak.stock_share_hold_change_szse)
+                sig_mod.alarm(0)
+                if df_szse is not None and not df_szse.empty:
+                    frames.append(df_szse)
+            except Exception:
+                pass  # 深交所数据获取失败不影响整体
+            if not frames:
+                prev = load_json("timing_right_scores.json")
+                sig = self._find_signal(prev, "产业资本转增持")
+                if sig:
+                    return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+                return False, "数据待获取"
+            df = pd.concat(frames, ignore_index=True)
+            if '变动数' in df.columns and '变动日期' in df.columns:
+                df['变动日期'] = pd.to_datetime(df['变动日期'])
+                df['变动数'] = pd.to_numeric(df['变动数'], errors='coerce')
+                # 按周汇总净变动量（正=增持，负=减持）
+                df = df.set_index('变动日期')
+                weekly_net = df['变动数'].resample('W').sum().dropna()
+                if len(weekly_net) >= 3:
+                    last2 = weekly_net.tail(2)
+                    # 净增持转正且连续2周
+                    triggered = bool((last2 > 0).all())
+                    val = f"近2周净变动: {last2.iloc[0]:.0f}股, {last2.iloc[1]:.0f}股"
+                    return triggered, val
+            prev = load_json("timing_right_scores.json")
+            sig = self._find_signal(prev, "产业资本转增持")
+            if sig:
+                return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_northbound_inflow(self):
+        """北向配置型资金持续净流入：连续2周净流入>100亿"""
+        try:
+            ak = self.init_akshare()
+            # 分别获取沪股通和深股通数据，合并当日成交净买额
+            df_sh = safe_ak_call(ak.stock_hsgt_hist_em, symbol="沪股通")
+            df_sz = safe_ak_call(ak.stock_hsgt_hist_em, symbol="深股通")
+            frames = []
+            for df in [df_sh, df_sz]:
+                if df is not None and not df.empty and '日期' in df.columns and '当日成交净买额' in df.columns:
+                    df = df[['日期', '当日成交净买额']].copy()
+                    df['日期'] = pd.to_datetime(df['日期'])
+                    df['当日成交净买额'] = pd.to_numeric(df['当日成交净买额'], errors='coerce')
+                    frames.append(df)
+            if not frames:
+                return False, "数据待获取"
+            combined = pd.concat(frames, ignore_index=True)
+            # 按日期合并（沪股通+深股通 = 北向资金）
+            combined = combined.groupby('日期')['当日成交净买额'].sum().reset_index()
+            combined = combined.dropna(subset=['当日成交净买额'])
+            combined = combined.set_index('日期').sort_index()
+            # 按周汇总
+            weekly_flow = combined['当日成交净买额'].resample('W').sum()
+            if len(weekly_flow) >= 2:
+                last2 = weekly_flow.tail(2)
+                # 数据单位为亿元，判断连续2周净流入>100亿
+                triggered = bool((last2 > 100).all())
+                val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
+                return triggered, val
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_volume_price_coord(self):
+        """量价配合（正向）：指数上涨伴随成交额放大，量价齐升5日以上"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 10:
+            return False, "数据不足"
+        try:
+            last5 = df.tail(5)
+            price_up = last5['close'].iloc[-1] > last5['close'].iloc[0]
+            vol_expanding = last5['volume'].iloc[-1] > last5['volume'].iloc[0]
+            # 量价齐升: 上涨日成交量>下跌日
+            coord_days = 0
+            for i in range(1, len(last5)):
+                if (last5['close'].iloc[i] > last5['close'].iloc[i-1] and
+                    last5['volume'].iloc[i] > last5['volume'].iloc[i-1]):
+                    coord_days += 1
+                elif (last5['close'].iloc[i] < last5['close'].iloc[i-1] and
+                      last5['volume'].iloc[i] < last5['volume'].iloc[i-1]):
+                    coord_days += 1
+            triggered = bool(price_up and vol_expanding and coord_days >= 3)
+            val = f"5日量价配合度: {coord_days}/4天"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    # ---------- 牛市确认信号 ----------
+
+    def _sig_above_250ma(self):
+        """突破年线并站稳：连续5日站上250日线且不回落"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 255:
+            return False, "数据不足"
+        try:
+            df['ma250'] = df['close'].rolling(250).mean()
+            last5 = df.tail(5)
+            above = (last5['close'] > last5['ma250']).all()
+            val = f"{'站上' if above else '未站稳'}250日线, 当前{df['close'].iloc[-1]:.0f} vs MA250={df['ma250'].iloc[-1]:.0f}"
+            return bool(above), val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_monthly_macd_gold(self):
+        """月线MACD金叉：月线DIFF上穿DEA或站上零轴"""
+        df = self._get_monthly_kline()
+        if df.empty or len(df) < 15:
+            return False, "数据不足"
+        try:
+            diff, dea, _ = self._calc_macd(df['close'])
+            cross_up = (diff.iloc[-1] > dea.iloc[-1]) and (diff.iloc[-2] <= dea.iloc[-2])
+            above_zero = diff.iloc[-1] > 0 and diff.iloc[-2] <= 0
+            triggered = bool(cross_up or above_zero)
+            val = f"月DIFF={diff.iloc[-1]:.2f}, DEA={dea.iloc[-1]:.2f}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_median_sync_up(self):
+        """全A中位数同步上涨：880009指数与宽基指数同步上行"""
+        try:
+            ak = self.init_akshare()
+            # 尝试获取万得全A中位数指数 880009
+            df_median = safe_ak_call(ak.stock_zh_index_daily, symbol="sh880009")
+            df_300 = self._get_index_daily()
+            if (df_median is not None and not df_median.empty and
+                not df_300.empty and len(df_median) >= 20 and len(df_300) >= 20):
+                med_up = df_median['close'].iloc[-1] > df_median['close'].iloc[-20]
+                idx_up = df_300['close'].iloc[-1] > df_300['close'].iloc[-20]
+                triggered = bool(med_up and idx_up)
+                val = f"中位数20日涨幅:{(df_median['close'].iloc[-1]/df_median['close'].iloc[-20]-1)*100:.1f}%, 沪深300:{(df_300['close'].iloc[-1]/df_300['close'].iloc[-20]-1)*100:.1f}%"
+                return triggered, val
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_earning_growth_positive(self):
+        """盈利增速转正：全A非金融净利润TTM同比转正"""
+        # 季度数据，需要从财报获取，通常滞后
+        # 简化：从现有数据或上期数据获取
+        try:
+            prev = load_json("timing_right_scores.json")
+            sig = self._find_signal(prev, "盈利增速转正")
+            if sig and sig.get("current_value") != "数据待获取":
+                return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+            return False, "数据待获取(需季度财报)"
+        except Exception:
+            return False, "数据待获取"
+
+    # ---------- 熊市早期信号 ----------
+
+    def _sig_below_60ma(self):
+        """跌破60日线：连续5日收于60日线下方"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 65:
+            return False, "数据不足"
+        try:
+            df['ma60'] = df['close'].rolling(60).mean()
+            last5 = df.tail(5)
+            below = (last5['close'] < last5['ma60']).all()
+            val = f"{'跌破' if below else '仍在'}60日线{'下方' if below else '上方'}"
+            return bool(below), val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_weekly_macd_dead(self):
+        """周线MACD死叉：周线DIFF下穿DEA"""
+        df = self._get_weekly_kline()
+        if df.empty or len(df) < 30:
+            return False, "数据不足"
+        try:
+            diff, dea, _ = self._calc_macd(df['close'])
+            cross_down = (diff.iloc[-1] < dea.iloc[-1]) and (diff.iloc[-2] >= dea.iloc[-2])
+            recent_cross = False
+            for i in range(-4, 0):
+                if i-1 >= -len(diff) and diff.iloc[i] < dea.iloc[i] and diff.iloc[i-1] >= dea.iloc[i-1]:
+                    recent_cross = True
+            triggered = bool(cross_down or recent_cross)
+            val = f"DIFF={diff.iloc[-1]:.2f}, DEA={dea.iloc[-1]:.2f}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_margin_decline(self):
+        """两融余额回落：连续4周下降"""
+        try:
+            ak = self.init_akshare()
+            # 使用 macro_china_market_margin_sh 获取融资融券余额数据
+            df = safe_ak_call(ak.macro_china_market_margin_sh)
+            if df is not None and not df.empty and '融资融券余额' in df.columns:
+                df['日期'] = pd.to_datetime(df['日期'])
+                df = df.sort_values('日期').tail(120)
+                df = df.set_index('日期')
+                weekly = df['融资融券余额'].resample('W').last().dropna()
+                weekly_yi = weekly / 1e8
+                if len(weekly_yi) >= 5:
+                    changes = weekly_yi.diff().dropna()
+                    last4_changes = changes.tail(4)
+                    declining = bool((last4_changes < 0).all())
+                    val = f"近周两融余额: {weekly_yi.iloc[-1]:.0f}亿"
+                    return declining, val
+            prev = load_json("timing_right_scores.json")
+            sig = self._find_signal(prev, "两融余额回落")
+            if sig:
+                return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_volume_shrink(self):
+        """成交萎缩：成交量持续低于60日均量"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 65:
+            return False, "数据不足"
+        try:
+            df['vol_ma60'] = df['volume'].rolling(60).mean()
+            last5 = df.tail(5)
+            below = (last5['volume'] < last5['vol_ma60']).all()
+            val = f"近5日成交量{'均低于' if below else '未完全低于'}60日均量"
+            return bool(below), val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_breadth_deterioration(self):
+        """宽度恶化：站上20日均线个股占比<30%且持续缩小"""
+        # 同 _sig_breadth_repair 类似，需要全市场数据
+        return False, "需全市场数据确认"
+
+    def _sig_industry_capital_sell(self):
+        """产业资本减持放大：净减持/成交额≥0.3%"""
+        try:
+            ak = self.init_akshare()
+            # 获取上交所产业资本增减持数据
+            df_sse = safe_ak_call(ak.stock_share_hold_change_sse)
+            frames = []
+            if df_sse is not None and not df_sse.empty:
+                frames.append(df_sse)
+            # 尝试获取深交所数据（超时跳过）
+            try:
+                import signal as sig_mod
+                old_handler = sig_mod.signal(sig_mod.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("timeout")))
+                sig_mod.alarm(30)
+                df_szse = safe_ak_call(ak.stock_share_hold_change_szse)
+                sig_mod.alarm(0)
+                if df_szse is not None and not df_szse.empty:
+                    frames.append(df_szse)
+            except Exception:
+                pass
+            if not frames:
+                prev = load_json("timing_right_scores.json")
+                sig = self._find_signal(prev, "产业资本减持放大")
+                if sig:
+                    return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+                return False, "数据待获取"
+            df = pd.concat(frames, ignore_index=True)
+            if '变动数' in df.columns and '变动日期' in df.columns and '本次变动平均价格' in df.columns:
+                df['变动日期'] = pd.to_datetime(df['变动日期'])
+                df['变动数'] = pd.to_numeric(df['变动数'], errors='coerce')
+                df['本次变动平均价格'] = pd.to_numeric(df['本次变动平均价格'], errors='coerce')
+                # 计算每笔变动金额 = 变动数 × 平均价格
+                df['变动金额'] = df['变动数'] * df['本次变动平均价格']
+                df = df.set_index('变动日期')
+                # 按周汇总净减持金额（负值=净减持）
+                weekly_net_amount = df['变动金额'].resample('W').sum().dropna()
+                if len(weekly_net_amount) >= 2:
+                    # 净减持（负值），判断绝对值是否足够大
+                    # 简化：净减持金额占市场成交额比（此处用周净减持额直接判断）
+                    last2 = weekly_net_amount.tail(2)
+                    # 净减持（值为负），连续2周为负且规模较大
+                    net_sell = -last2  # 转为正值
+                    # 0.3%阈值参考：简化为绝对值判断
+                    triggered = bool((last2 < 0).all())
+                    val = f"近2周净变动额: {last2.iloc[0]:.0f}元, {last2.iloc[1]:.0f}元"
+                    return triggered, val
+            prev = load_json("timing_right_scores.json")
+            sig = self._find_signal(prev, "产业资本减持放大")
+            if sig:
+                return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_northbound_outflow(self):
+        """北向配置型资金持续净流出：连续2周净流出>100亿"""
+        try:
+            ak = self.init_akshare()
+            # 分别获取沪股通和深股通数据，合并当日成交净买额
+            df_sh = safe_ak_call(ak.stock_hsgt_hist_em, symbol="沪股通")
+            df_sz = safe_ak_call(ak.stock_hsgt_hist_em, symbol="深股通")
+            frames = []
+            for df in [df_sh, df_sz]:
+                if df is not None and not df.empty and '日期' in df.columns and '当日成交净买额' in df.columns:
+                    df = df[['日期', '当日成交净买额']].copy()
+                    df['日期'] = pd.to_datetime(df['日期'])
+                    df['当日成交净买额'] = pd.to_numeric(df['当日成交净买额'], errors='coerce')
+                    frames.append(df)
+            if not frames:
+                return False, "数据待获取"
+            combined = pd.concat(frames, ignore_index=True)
+            combined = combined.groupby('日期')['当日成交净买额'].sum().reset_index()
+            combined = combined.dropna(subset=['当日成交净买额'])
+            combined = combined.set_index('日期').sort_index()
+            # 按周汇总
+            weekly_flow = combined['当日成交净买额'].resample('W').sum()
+            if len(weekly_flow) >= 2:
+                last2 = weekly_flow.tail(2)
+                # 数据单位为亿元，判断连续2周净流出>100亿（即净买额<-100亿）
+                triggered = bool((last2 < -100).all())
+                val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
+                return triggered, val
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"数据获取异常: {e}"
+
+    def _sig_volume_price_divergence(self):
+        """量价背离（顶部）：指数创新高但成交额未同步放大"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 25:
+            return False, "数据不足"
+        try:
+            last20 = df.tail(20)
+            price_high = last20['close'].iloc[-1] >= last20['close'].max() * 0.99
+            vol_high = last20['volume'].iloc[-1] >= last20['volume'].max() * 0.9
+            divergence = price_high and not vol_high
+            # 检查持续5日
+            if divergence:
+                div_days = 0
+                for i in range(-5, 0):
+                    p_new = df['close'].iloc[i] >= df['close'].iloc[i-20] * 0.99 if (i-20) >= -len(df) else False
+                    v_weak = df['volume'].iloc[i] < df['volume'].rolling(20).max().iloc[i] * 0.9
+                    if p_new and v_weak:
+                        div_days += 1
+                triggered = div_days >= 3
+                val = f"量价背离{div_days}天"
+            else:
+                triggered = False
+                val = "无量价背离"
+            return bool(triggered), val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    # ---------- 熊市确认信号 ----------
+
+    def _sig_below_250ma_failed_rebounce(self):
+        """跌破年线且反抽失败"""
+        df = self._get_index_daily()
+        if df.empty or len(df) < 255:
+            return False, "数据不足"
+        try:
+            df['ma250'] = df['close'].rolling(250).mean()
+            # 跌破: 最近20日内有跌破年线的情况
+            last20 = df.tail(20)
+            broke_below = (last20['close'] < last20['ma250']).any()
+            # 反抽失败: 尝试站回但未能连续站回
+            if broke_below:
+                # 检查最近5日是否在年线下方
+                last5 = df.tail(5)
+                failed_rebounce = (last5['close'] < last5['ma250']).sum() >= 3
+                triggered = bool(failed_rebounce)
+                val = f"{'跌破年线且反抽失败' if triggered else '跌破年线但尚未确认反抽失败'}"
+            else:
+                triggered = False
+                val = "仍在年线上方"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_monthly_macd_dead(self):
+        """月线MACD死叉：月线DIFF下穿DEA"""
+        df = self._get_monthly_kline()
+        if df.empty or len(df) < 15:
+            return False, "数据不足"
+        try:
+            diff, dea, _ = self._calc_macd(df['close'])
+            cross_down = (diff.iloc[-1] < dea.iloc[-1]) and (diff.iloc[-2] >= dea.iloc[-2])
+            below_zero = diff.iloc[-1] < 0 and diff.iloc[-2] >= 0
+            triggered = bool(cross_down or below_zero)
+            val = f"月DIFF={diff.iloc[-1]:.2f}, DEA={dea.iloc[-1]:.2f}"
+            return triggered, val
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_median_divergence_down(self):
+        """全A中位数背离下跌：宽基指数未跌但880009已下跌"""
+        try:
+            ak = self.init_akshare()
+            df_median = safe_ak_call(ak.stock_zh_index_daily, symbol="sh880009")
+            df_300 = self._get_index_daily()
+            if (df_median is not None and not df_median.empty and
+                not df_300.empty and len(df_median) >= 20):
+                med_change = (df_median['close'].iloc[-1] / df_median['close'].iloc[-20] - 1) * 100
+                idx_change = (df_300['close'].iloc[-1] / df_300['close'].iloc[-20] - 1) * 100
+                divergence = idx_change >= -2 and med_change < -3
+                val = f"中位数:{med_change:.1f}%, 沪深300:{idx_change:.1f}%"
+                return bool(divergence), val
+            return False, "数据待获取"
+        except Exception as e:
+            return False, f"计算异常: {e}"
+
+    def _sig_earning_growth_negative(self):
+        """盈利增速转负"""
+        prev = load_json("timing_right_scores.json")
+        sig = self._find_signal(prev, "盈利增速转负")
+        if sig and sig.get("current_value") != "数据待获取":
+            return sig.get("triggered", False), sig.get("current_value", "数据待获取")
+        return False, "数据待获取(需季度财报)"
+
+    # ---------- 辅助方法 ----------
+
+    def _find_signal(self, prev_data, name):
+        """从历史数据中查找指定信号"""
+        if not prev_data or 'signals' not in prev_data:
+            return None
+        for group_key, signals in prev_data['signals'].items():
+            for s in signals:
+                if s.get('name') == name:
+                    return s
+        return None
+
+    def _make_signal(self, name, triggered, score, current_value, data_source):
+        return {
+            "name": name,
+            "triggered": bool(triggered),
+            "score": score,
+            "current_value": str(current_value),
+            "data_source": data_source,
+            "update_time": self._today
+        }
+
+    # ---------- 主计算 ----------
+
+    def compute_all(self) -> dict:
+        """计算完整的右侧趋势确认"""
+        logger.info("\n" + "=" * 60)
+        logger.info("开始计算右侧趋势确认 (timing_right_scores.json)")
+        logger.info("=" * 60)
+
+        today = self._today
+
+        # ===== 牛市信号 =====
+        logger.info("  [牛市信号计算]")
+
+        # 早期牛市
+        early_bull = []
+        t, v = self._sig_standing_60ma()
+        logger.info(f"    站稳60日线: {t} ({v})")
+        early_bull.append(self._make_signal("站稳60日线", t, 12, v, "交易所行情"))
+
+        t, v = self._sig_weekly_macd_gold()
+        logger.info(f"    周线MACD金叉: {t} ({v})")
+        early_bull.append(self._make_signal("周线MACD金叉", t, 10, v, "交易所行情"))
+
+        t, v = self._sig_margin_recovery()
+        logger.info(f"    两融余额回升: {t} ({v})")
+        early_bull.append(self._make_signal("两融余额回升", t, 10, v, "交易所两融数据"))
+
+        t, v = self._sig_volume_expansion()
+        logger.info(f"    成交放量: {t} ({v})")
+        early_bull.append(self._make_signal("成交放量", t, 8, v, "交易所行情"))
+
+        t, v = self._sig_breadth_repair()
+        logger.info(f"    市场宽度修复: {t} ({v})")
+        early_bull.append(self._make_signal("市场宽度修复", t, 8, v, "交易所全市场统计"))
+
+        t, v = self._sig_industry_capital_buyback()
+        logger.info(f"    产业资本转增持: {t} ({v})")
+        early_bull.append(self._make_signal("产业资本转增持", t, 7, v, "交易所公告汇总"))
+
+        t, v = self._sig_northbound_inflow()
+        logger.info(f"    北向配置型资金持续净流入: {t} ({v})")
+        early_bull.append(self._make_signal("北向配置型资金持续净流入", t, 10, v, "沪深港通数据"))
+
+        t, v = self._sig_volume_price_coord()
+        logger.info(f"    量价配合: {t} ({v})")
+        early_bull.append(self._make_signal("量价配合", t, 5, v, "交易所行情"))
+
+        # 确认牛市
+        confirm_bull = []
+        t, v = self._sig_above_250ma()
+        logger.info(f"    突破年线并站稳: {t} ({v})")
+        confirm_bull.append(self._make_signal("突破年线并站稳", t, 15, v, "交易所行情"))
+
+        t, v = self._sig_monthly_macd_gold()
+        logger.info(f"    月线MACD金叉: {t} ({v})")
+        confirm_bull.append(self._make_signal("月线MACD金叉", t, 10, v, "交易所行情"))
+
+        t, v = self._sig_median_sync_up()
+        logger.info(f"    全A中位数同步上涨: {t} ({v})")
+        confirm_bull.append(self._make_signal("全A中位数同步上涨", t, 10, v, "交易所全市场统计"))
+
+        # 最强牛市
+        strong_confirm_bull = []
+        t, v = self._sig_earning_growth_positive()
+        logger.info(f"    盈利增速转正: {t} ({v})")
+        strong_confirm_bull.append(self._make_signal("盈利增速转正", t, 15, v, "上市公司财报"))
+
+        # ===== 熊市信号 =====
+        logger.info("  [熊市信号计算]")
+
+        early_bear = []
+        t, v = self._sig_below_60ma()
+        logger.info(f"    跌破60日线: {t} ({v})")
+        early_bear.append(self._make_signal("跌破60日线", t, 12, v, "交易所行情"))
+
+        t, v = self._sig_weekly_macd_dead()
+        logger.info(f"    周线MACD死叉: {t} ({v})")
+        early_bear.append(self._make_signal("周线MACD死叉", t, 10, v, "交易所行情"))
+
+        t, v = self._sig_margin_decline()
+        logger.info(f"    两融余额回落: {t} ({v})")
+        early_bear.append(self._make_signal("两融余额回落", t, 10, v, "交易所两融数据"))
+
+        t, v = self._sig_volume_shrink()
+        logger.info(f"    成交萎缩: {t} ({v})")
+        early_bear.append(self._make_signal("成交萎缩", t, 8, v, "交易所行情"))
+
+        t, v = self._sig_breadth_deterioration()
+        logger.info(f"    宽度恶化: {t} ({v})")
+        early_bear.append(self._make_signal("宽度恶化", t, 8, v, "交易所全市场统计"))
+
+        t, v = self._sig_industry_capital_sell()
+        logger.info(f"    产业资本减持放大: {t} ({v})")
+        early_bear.append(self._make_signal("产业资本减持放大", t, 7, v, "交易所公告汇总"))
+
+        t, v = self._sig_northbound_outflow()
+        logger.info(f"    北向配置型资金持续净流出: {t} ({v})")
+        early_bear.append(self._make_signal("北向配置型资金持续净流出", t, 10, v, "沪深港通数据"))
+
+        t, v = self._sig_volume_price_divergence()
+        logger.info(f"    量价背离: {t} ({v})")
+        early_bear.append(self._make_signal("量价背离", t, 5, v, "交易所行情"))
+
+        confirm_bear = []
+        t, v = self._sig_below_250ma_failed_rebounce()
+        logger.info(f"    跌破年线且反抽失败: {t} ({v})")
+        confirm_bear.append(self._make_signal("跌破年线且反抽失败", t, 15, v, "交易所行情"))
+
+        t, v = self._sig_monthly_macd_dead()
+        logger.info(f"    月线MACD死叉: {t} ({v})")
+        confirm_bear.append(self._make_signal("月线MACD死叉", t, 10, v, "交易所行情"))
+
+        t, v = self._sig_median_divergence_down()
+        logger.info(f"    全A中位数背离下跌: {t} ({v})")
+        confirm_bear.append(self._make_signal("全A中位数背离下跌", t, 10, v, "交易所全市场统计"))
+
+        strong_confirm_bear = []
+        t, v = self._sig_earning_growth_negative()
+        logger.info(f"    盈利增速转负: {t} ({v})")
+        strong_confirm_bear.append(self._make_signal("盈利增速转负", t, 15, v, "上市公司财报"))
+
+        # ===== 计分 =====
+        bull_score = sum(s['score'] for s in early_bull if s['triggered'])
+        bull_score += sum(s['score'] for s in confirm_bull if s['triggered'])
+        bull_score += sum(s['score'] for s in strong_confirm_bull if s['triggered'])
+
+        bear_score = sum(s['score'] for s in early_bear if s['triggered'])
+        bear_score += sum(s['score'] for s in confirm_bear if s['triggered'])
+        bear_score += sum(s['score'] for s in strong_confirm_bear if s['triggered'])
+
+        # ===== 第一层：信号灯判定 =====
+        # 规则：逐级升级，不允许跳级
+        # 先确定最高触发的层级
+        has_early_bull = any(s['triggered'] for s in early_bull)
+        has_confirm_bull = any(s['triggered'] for s in confirm_bull)
+        has_strong_bull = any(s['triggered'] for s in strong_confirm_bull)
+
+        has_early_bear = any(s['triggered'] for s in early_bear)
+        has_confirm_bear = any(s['triggered'] for s in confirm_bear)
+        has_strong_bear = any(s['triggered'] for s in strong_confirm_bear)
+
+        # 确定信号灯 (逐级升级)
+        signal_light = "none"
+        signal_direction = None
+
+        # 牛市方向
+        if has_strong_bull and has_confirm_bull:
+            signal_light = "green"
+            signal_direction = "bull"
+        elif has_confirm_bull and has_early_bull:
+            signal_light = "orange"
+            signal_direction = "bull"
+        elif has_early_bull:
+            signal_light = "yellow"
+            signal_direction = "bull"
+
+        # 熊市方向 (优先级更高——顶部确认更快)
+        if has_strong_bear and has_confirm_bear:
+            signal_light = "red"
+            signal_direction = "bear"
+        elif has_confirm_bear and has_early_bear:
+            if signal_light in ("none",):
+                signal_light = "orange"
+            elif signal_light == "yellow":
+                signal_light = "orange"  # 不跳级
+            signal_direction = "bear"
+        elif has_early_bear:
+            if signal_light == "none":
+                signal_light = "yellow"
+                signal_direction = "bear"
+            # 不覆盖已有的bull方向
+
+        # ===== 第二层：打分制补充（仅无灯时启用）=====
+        if signal_light == "none":
+            if bull_score > 40 and bear_score < 30:
+                trend_bias = "warm"
+            elif bear_score > 40 and bull_score < 30:
+                trend_bias = "cool"
+            elif bull_score > 30 and bear_score > 30:
+                trend_bias = "chaos"
+            elif bull_score < 25 and bear_score < 25:
+                trend_bias = "vacuum"
+            else:
+                trend_bias = "neutral"
+        else:
+            trend_bias = "neutral"
+
+        logger.info(f"\n  📊 牛分: {bull_score}/120, 熊分: {bear_score}/120")
+        logger.info(f"  🚦 信号灯: {signal_light}, 方向: {signal_direction}")
+        logger.info(f"  📊 趋势偏向: {trend_bias}")
+
+        # ===== 风格轮动 =====
+        style_rotation = self._calc_style_rotation()
+
+        output = {
+            "update_date": today,
+            "version": "v2.0",
+            "signal_light": signal_light,
+            "signal_direction": signal_direction,
+            "bull_score": bull_score,
+            "bear_score": bear_score,
+            "trend_bias": trend_bias,
+            "signals": {
+                "early_bull": early_bull,
+                "confirm_bull": confirm_bull,
+                "strong_confirm_bull": strong_confirm_bull,
+                "early_bear": early_bear,
+                "confirm_bear": confirm_bear,
+                "strong_confirm_bear": strong_confirm_bear,
+            },
+            "style_rotation": style_rotation,
+        }
+
+        return output
+
+    def _calc_style_rotation(self):
+        """计算风格轮动信息"""
+        result = {
+            "large_small": {"ratio": None, "trend": "数据待获取", "signal": "--"},
+            "dividend_premium": {"value": None, "signal": "--"}
+        }
+        try:
+            # 大小盘比值: 中证1000/沪深300
+            ak = self.init_akshare()
+            df_1000 = safe_ak_call(ak.stock_zh_index_daily, symbol="sh000852")
+            df_300 = self._get_index_daily("sh000300")
+            if (df_1000 is not None and not df_1000.empty and
+                not df_300.empty and len(df_1000) >= 5 and len(df_300) >= 5):
+                ratio = df_1000['close'].iloc[-1] / df_300['close'].iloc[-1]
+                prev_ratio = df_1000['close'].iloc[-20] / df_300['close'].iloc[-20] if len(df_1000) >= 20 else ratio
+                trend = "大盘占优" if ratio < prev_ratio else "小盘占优"
+                result["large_small"] = {
+                    "ratio": round(ratio, 4),
+                    "trend": trend,
+                    "signal": "小盘偏弱" if ratio < prev_ratio else "小盘走强"
+                }
+        except Exception as e:
+            logger.warning(f"      风格轮动计算异常: {e}")
+
+        return result
+
+
+# ============================================================
 # 其他数据文件更新 (编排已有脚本)
 # ============================================================
 
@@ -2020,6 +2905,15 @@ def main():
             logger.info("\n✅ timing_scores.json 更新完成!")
         except Exception as e:
             logger.error(f"❌ timing_scores 计算失败: {e}", exc_info=True)
+
+        # 右侧趋势确认
+        right_engine = TimingRightEngine()
+        try:
+            right_data = right_engine.compute_all()
+            save_json(right_data, "timing_right_scores.json")
+            logger.info("✅ timing_right_scores.json 更新完成!")
+        except Exception as e:
+            logger.error(f"❌ timing_right_scores 计算失败: {e}", exc_info=True)
         return
 
     # ============================================================
@@ -2039,6 +2933,19 @@ def main():
     except Exception as e:
         logger.error(f"❌ timing_scores 失败: {e}", exc_info=True)
         script_results["timing_scores"] = False
+
+    # Step 1b: 右侧趋势确认
+    logger.info("\n" + "🔥" * 30)
+    logger.info("Step 1b: 右侧趋势确认 (timing_right_scores.json)")
+    logger.info("🔥" * 30)
+    try:
+        right_engine = TimingRightEngine()
+        right_data = right_engine.compute_all()
+        save_json(right_data, "timing_right_scores.json")
+        script_results["timing_right_scores"] = True
+    except Exception as e:
+        logger.error(f"❌ timing_right_scores 失败: {e}", exc_info=True)
+        script_results["timing_right_scores"] = False
 
     # Step 2-6: 运行子脚本
     subscripts = [

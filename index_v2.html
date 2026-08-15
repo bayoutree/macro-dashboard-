@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宏观经济指标看板 | Macro Dashboard V2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style_v2.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-primary': '#0a1628',
+            'bg-card': '#111827',
+            'bg-card-hover': '#1a2332',
+            'border-subtle': '#1e293b',
+            'text-primary': '#e2e8f0',
+            'text-secondary': '#94a3b8',
+            'text-muted': '#64748b',
+            'accent-green': '#10b981',
+            'accent-red': '#ef4444',
+            'accent-amber': '#f59e0b',
+            'accent-blue': '#3b82f6',
+            'accent-purple': '#8b5cf6',
+            'accent-cyan': '#06b6d4',
+          },
+          fontFamily: {
+            'sans': ['Inter', 'system-ui', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-bg-primary text-text-primary font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-bg-primary/95 backdrop-blur-md border-b border-border-subtle">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📊</span>
+            <h1 class="text-lg font-bold text-text-primary tracking-tight">宏观经济指标看板</h1>
+          </div>
+          <span class="text-xs text-text-muted hidden sm:inline">Macro Dashboard V2</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="update-time" class="text-xs text-text-muted font-mono"></span>
+          <button id="refresh-btn" onclick="app.refresh()" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors group" title="刷新数据">
+            <svg class="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <nav class="sticky top-14 z-40 bg-bg-primary/95 backdrop-blur-md border-b border-border-subtle">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-1 py-2 overflow-x-auto scrollbar-hide">
+        <button class="tab-btn active" data-tab="china" onclick="app.switchTab('china')">
+          <span class="mr-1.5">🇨🇳</span>中国宏观
+        </button>
+        <button class="tab-btn" data-tab="us" onclick="app.switchTab('us')">
+          <span class="mr-1.5">🇺🇸</span>美国宏观
+        </button>
+        <button class="tab-btn" data-tab="cycle" onclick="app.switchTab('cycle')">
+          <span class="mr-1.5">🌐</span>全球周期
+        </button>
+        <button class="tab-btn" data-tab="allocation" onclick="app.switchTab('allocation')">
+          <span class="mr-1.5">📊</span>资产配置
+        </button>
+        <button class="tab-btn" data-tab="timing" onclick="app.switchTab('timing')">
+          <span class="mr-1.5">📈</span>A股研究
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- China Tab -->
+    <div id="tab-china" class="tab-content active">
+      <!-- Investment Advice Banner -->
+      <div id="china-advice-banner" class="mb-6"></div>
+      <!-- Leading Indicators -->
+      <div id="china-leading" class="mb-8"></div>
+      <!-- Coincident Indicators -->
+      <div id="china-coincident" class="mb-8"></div>
+      <!-- Lagging Indicators -->
+      <div id="china-lagging" class="mb-8"></div>
+      <!-- A-Share Valuation -->
+      <div id="china-valuation" class="mb-8"></div>
+    </div>
+
+    <!-- US Tab -->
+    <div id="tab-us" class="tab-content hidden">
+      <div id="us-advice-banner" class="mb-6"></div>
+      <div id="us-leading" class="mb-8"></div>
+      <div id="us-coincident" class="mb-8"></div>
+      <div id="us-lagging" class="mb-8"></div>
+      <div id="us-rates" class="mb-8"></div>
+    </div>
+
+    <!-- Cycle Tab -->
+    <div id="tab-cycle" class="tab-content hidden">
+      <div id="cycle-content"></div>
+    </div>
+
+    <!-- Allocation Tab -->
+    <div id="tab-allocation" class="tab-content hidden">
+      <div id="allocation-content"></div>
+    </div>
+
+    <!-- A股研究 Tab (左侧六维评分 + 右侧趋势确认) -->
+    <div id="tab-timing" class="tab-content hidden">
+      <link rel="stylesheet" href="css/style_timing.css">
+      <div id="timing-content"></div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-border-subtle py-4 mt-8">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-text-muted">
+      <p>数据仅供参考，不构成投资建议 · 数据来源：FRED、AKShare、World Gold Council</p>
+    </div>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-bg-primary/90 flex items-center justify-center z-[100]">
+    <div class="text-center">
+      <div class="inline-flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 bg-accent-blue rounded-full animate-pulse"></div>
+        <div class="w-2 h-2 bg-accent-purple rounded-full animate-pulse" style="animation-delay:0.2s"></div>
+        <div class="w-2 h-2 bg-accent-cyan rounded-full animate-pulse" style="animation-delay:0.4s"></div>
+      </div>
+      <p class="text-sm text-text-secondary">加载数据中...</p>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/cycle_v2.js"></script>
+  <script src="js/data_normalize.js"></script>
+  <script src="js/app_v2_patch.js"></script>
+  <script src="js/timing_v2.js"></script>
+</body>
+</html>
