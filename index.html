@@ -8,10 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/style_v2.css">
-  <link rel="stylesheet" href="css/style_timing.css">
   <script>
     tailwind.config = {
       theme: {
@@ -82,7 +80,7 @@
           <span class="mr-1.5">📊</span>资产配置
         </button>
         <button class="tab-btn" data-tab="timing" onclick="app.switchTab('timing')">
-          <span class="mr-1.5">⏱️</span>A股择时
+          <span class="mr-1.5">📈</span>A股研究
         </button>
       </div>
     </div>
@@ -124,8 +122,9 @@
       <div id="allocation-content"></div>
     </div>
 
-    <!-- Timing Tab -->
+    <!-- A股研究 Tab (左侧六维评分 + 右侧趋势确认) -->
     <div id="tab-timing" class="tab-content hidden">
+      <link rel="stylesheet" href="css/style_timing.css">
       <div id="timing-content"></div>
     </div>
 

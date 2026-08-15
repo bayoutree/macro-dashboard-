@@ -97,11 +97,22 @@ jobs:
       # ----------------------------------------------------------
       # 5. 提交数据变更
       # ----------------------------------------------------------
+      # ----------------------------------------------------------
+      # 5b. 同步数据到 frontend/data/ (兼容旧版前端)
+      # ----------------------------------------------------------
+      - name: Sync data to frontend/data
+        run: |
+          cp data/*.json frontend/data/ 2>/dev/null || true
+          echo "✅ Data synced to frontend/data/"
+
+      # ----------------------------------------------------------
+      # 6. 提交数据变更
+      # ----------------------------------------------------------
       - name: Commit and push data changes
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/
+          git add data/ frontend/data/
           
           # 检查是否有变更
           if git diff --cached --quiet; then
@@ -124,7 +135,7 @@ jobs:
           fi
 
       # ----------------------------------------------------------
-      # 6. 失败通知 (可选)
+      # 7. 失败通知 (可选)
       # ----------------------------------------------------------
       - name: Notify on failure
         if: failure()

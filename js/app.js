@@ -743,7 +743,7 @@ const TabRenderers = {
       { name: '美债', icon: '🏛️', detail: `10Y ${data.rates?.yield_10y?.value || '--'}%, 实际利率 ${data.rates?.real_rate_10y?.value || '--'}%` },
       { name: '黄金', icon: '🥇', detail: `通胀预期 ${data.rates?.inflation_expectation?.value || '--'}%` },
       { name: '商品', icon: '🛢️', detail: `PPI ${data.lagging?.ppi_yoy?.value ? data.lagging.ppi_yoy.value.toFixed(1) : '--'}%` },
-      { name: '美元', icon: '💵', detail: `联邦基金利率 ${data.lagging?.fed_funds_rate?.value || '--'}` },
+      { name: '美元', icon: '💵', detail: `联邦基金利率 ${data.lagging?.fed_funds_rate?.value ? data.lagging.fed_funds_rate.value + '%' : '--'}` },
     ];
     document.getElementById('us-advice-banner').innerHTML = Components.adviceBanner(usAssets, summary);
 
@@ -870,7 +870,7 @@ const TabRenderers = {
       history: data.history?.fed_funds || [],
       chartColor: CONFIG.chartColorDown,
       assetImpacts: { '美股': '-', '美债': '-', '黄金': '-', '商品': '-', '美元': '+' },
-      signalText: `联邦基金利率 ${data.lagging?.fed_funds_rate?.value || '--'}，${data.lagging?.fed_funds_rate?.value === '3.63%' ? '降息周期进行中' : '政策利率高位'}`,
+      signalText: `联邦基金利率 ${data.lagging?.fed_funds_rate?.value ? data.lagging.fed_funds_rate.value + '%' : '--'}，${(data.lagging?.fed_funds_rate?.value || 0) < 4 ? '降息周期进行中' : '政策利率高位'}`,
     }));
 
     document.getElementById('us-lagging').innerHTML = lagHtml + `<div class="grid-3">${lagCards.join('')}</div>`;
