@@ -1,10 +1,10 @@
 {
-  "update_date": "2026-08-15",
+  "update_date": "2026-08-17",
   "version": "v2.0",
   "signal_light": "yellow",
   "signal_direction": "bear",
   "bull_score": 15,
-  "bear_score": 20,
+  "bear_score": 25,
   "trend_bias": "neutral",
   "signals": {
     "early_bull": [
@@ -14,31 +14,31 @@
         "score": 12,
         "current_value": "未站稳60日线, MA60走平/下行",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "周线MACD金叉",
         "triggered": false,
         "score": 10,
-        "current_value": "DIFF=10.66, DEA=42.19",
+        "current_value": "DIFF=12.24, DEA=36.20",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "两融余额回升",
         "triggered": false,
         "score": 10,
-        "current_value": "近周两融余额: 13729亿",
+        "current_value": "近周两融余额: 13716亿",
         "data_source": "交易所两融数据",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "成交放量",
         "triggered": false,
         "score": 8,
-        "current_value": "20日均量/60日均量=0.87",
+        "current_value": "20日均量/60日均量=0.85",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "市场宽度修复",
@@ -46,7 +46,7 @@
         "score": 8,
         "current_value": "指数站上20日线 (需全市场数据确认)",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "产业资本转增持",
@@ -54,7 +54,7 @@
         "score": 7,
         "current_value": "近2周净变动: 0股, 435500股",
         "data_source": "交易所公告汇总",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "北向配置型资金持续净流入",
@@ -62,7 +62,7 @@
         "score": 10,
         "current_value": "近2周净流入: 0亿, 0亿",
         "data_source": "沪深港通数据",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "量价配合",
@@ -70,7 +70,7 @@
         "score": 5,
         "current_value": "5日量价配合度: 1/4天",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ],
     "confirm_bull": [
@@ -78,17 +78,17 @@
         "name": "突破年线并站稳",
         "triggered": true,
         "score": 15,
-        "current_value": "站上250日线, 当前4666 vs MA250=4648",
+        "current_value": "站上250日线, 当前4741 vs MA250=4650",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "月线MACD金叉",
         "triggered": false,
         "score": 10,
-        "current_value": "月DIFF=233.05, DEA=215.40",
+        "current_value": "月DIFF=239.06, DEA=216.60",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "全A中位数同步上涨",
@@ -96,7 +96,7 @@
         "score": 10,
         "current_value": "数据待获取",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ],
     "strong_confirm_bull": [
@@ -106,7 +106,7 @@
         "score": 15,
         "current_value": "数据待获取(需季度财报)",
         "data_source": "上市公司财报",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ],
     "early_bear": [
@@ -116,23 +116,23 @@
         "score": 12,
         "current_value": "跌破60日线下方",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "周线MACD死叉",
         "triggered": false,
         "score": 10,
-        "current_value": "DIFF=10.66, DEA=42.19",
+        "current_value": "DIFF=12.24, DEA=36.20",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "两融余额回落",
         "triggered": false,
         "score": 10,
-        "current_value": "近周两融余额: 13729亿",
+        "current_value": "近周两融余额: 13716亿",
         "data_source": "交易所两融数据",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "成交萎缩",
@@ -140,7 +140,7 @@
         "score": 8,
         "current_value": "近5日成交量均低于60日均量",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "宽度恶化",
@@ -148,7 +148,7 @@
         "score": 8,
         "current_value": "需全市场数据确认",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "产业资本减持放大",
@@ -156,7 +156,7 @@
         "score": 7,
         "current_value": "近2周净变动额: 0元, 4320275元",
         "data_source": "交易所公告汇总",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "北向配置型资金持续净流出",
@@ -164,15 +164,15 @@
         "score": 10,
         "current_value": "近2周净流入: 0亿, 0亿",
         "data_source": "沪深港通数据",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "量价背离",
-        "triggered": false,
+        "triggered": true,
         "score": 5,
-        "current_value": "无量价背离",
+        "current_value": "量价背离3天",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ],
     "confirm_bear": [
@@ -182,15 +182,15 @@
         "score": 15,
         "current_value": "跌破年线但尚未确认反抽失败",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "月线MACD死叉",
         "triggered": false,
         "score": 10,
-        "current_value": "月DIFF=233.05, DEA=215.40",
+        "current_value": "月DIFF=239.06, DEA=216.60",
         "data_source": "交易所行情",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       },
       {
         "name": "全A中位数背离下跌",
@@ -198,7 +198,7 @@
         "score": 10,
         "current_value": "数据待获取",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ],
     "strong_confirm_bear": [
@@ -208,13 +208,13 @@
         "score": 15,
         "current_value": "数据待获取(需季度财报)",
         "data_source": "上市公司财报",
-        "update_time": "2026-08-15"
+        "update_time": "2026-08-17"
       }
     ]
   },
   "style_rotation": {
     "large_small": {
-      "ratio": 1.6652,
+      "ratio": 1.6807,
       "trend": "小盘占优",
       "signal": "小盘走强"
     },
@@ -222,5 +222,12 @@
       "value": null,
       "signal": "--"
     }
-  }
+  },
+  "history": [
+    {
+      "date": "2026-08-17",
+      "bull_score": 15,
+      "bear_score": 25
+    }
+  ]
 }
