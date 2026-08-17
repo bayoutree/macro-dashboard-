@@ -126,6 +126,48 @@ const Utils = {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   },
+
+  /**
+   * 生成数据时间戳 banner HTML
+   * @param {string|string[]} updateTimes - 单个时间字符串或数组（多个数据源）
+   * @param {string} label - 可选的标签前缀，如 "中国宏观"
+   * @returns {string} HTML string
+   */
+  renderTimestampBanner(updateTimes, label = '') {
+    if (!updateTimes) return '';
+    const times = Array.isArray(updateTimes) ? updateTimes.filter(Boolean) : [updateTimes].filter(Boolean);
+    if (!times.length) return '';
+
+    // 计算距今天数（取最早的时间来判断）
+    const now = new Date();
+    let maxDaysAgo = 0;
+    times.forEach(t => {
+      const d = new Date(t);
+      if (!isNaN(d.getTime())) {
+        const days = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+        if (days > maxDaysAgo) maxDaysAgo = days;
+      }
+    });
+
+    let colorClass = '';
+    let warningIcon = '';
+    if (maxDaysAgo > 14) {
+      colorClass = 'ts-banner-stale';
+      warningIcon = '⚠️';
+    } else if (maxDaysAgo > 7) {
+      colorClass = 'ts-banner-warn';
+      warningIcon = '⚡';
+    }
+
+    const timeStr = times.join(' / ');
+    const prefix = label ? `${label} · ` : '';
+
+    return `<div class="data-timestamp-banner ${colorClass}">
+      <span class="ts-banner-icon">🕐</span>
+      <span class="ts-banner-text">${prefix}数据截至: ${timeStr}</span>
+      ${warningIcon ? `<span class="ts-banner-warn">${warningIcon} ${maxDaysAgo}天未更新</span>` : ''}
+    </div>`;
+  },
 };
 
 // ========== Chart Manager ==========
@@ -550,7 +592,10 @@ const TabRenderers = {
       { name: '商品', icon: '🛢️', detail: `PPI ${data.lagging?.ppi_yoy?.value || '--'}%` },
       { name: '人民币', icon: '💴', detail: `M2增速 ${data.lagging?.m2_yoy?.value || '--'}%` },
     ];
-    document.getElementById('china-advice-banner').innerHTML = Components.adviceBanner(cnAssets, summary);
+
+    // Data timestamp banner
+    const tsBanner = Utils.renderTimestampBanner(data.update_time, '中国宏观');
+    document.getElementById('china-advice-banner').innerHTML = tsBanner + Components.adviceBanner(cnAssets, summary);
 
     // Leading indicators
     const leadingHtml = Components.sectionHeader('📈', '领先指标', '领先于经济周期的指标，用于预判未来经济走势');
@@ -745,7 +790,10 @@ const TabRenderers = {
       { name: '商品', icon: '🛢️', detail: `PPI ${data.lagging?.ppi_yoy?.value ? data.lagging.ppi_yoy.value.toFixed(1) : '--'}%` },
       { name: '美元', icon: '💵', detail: `联邦基金利率 ${data.lagging?.fed_funds_rate?.value ? data.lagging.fed_funds_rate.value + '%' : '--'}` },
     ];
-    document.getElementById('us-advice-banner').innerHTML = Components.adviceBanner(usAssets, summary);
+
+    // Data timestamp banner
+    const tsBanner = Utils.renderTimestampBanner(data.update_time, '美国宏观');
+    document.getElementById('us-advice-banner').innerHTML = tsBanner + Components.adviceBanner(usAssets, summary);
 
     // Leading indicators
     const leadingHtml = Components.sectionHeader('📈', '领先指标', 'Leading indicators for US economy');
@@ -950,7 +998,8 @@ const TabRenderers = {
     const kitchin = data.kitchin || {};
     const resonance = data.resonance || {};
 
-    let html = '';
+    // Data timestamp banner
+    let html = Utils.renderTimestampBanner(data.update_time, '全球周期');
 
     // Konbō Cycle
     html += Components.sectionHeader('🌊', '康波周期（长波 ~50-60年）', '技术革命驱动的长周期，当前正处于第五轮萧条尾声→第六轮初期');
@@ -1145,7 +1194,11 @@ const TabRenderers = {
 
   // ===== Allocation Tab =====
   renderAllocation(valData, priceData, summaryData) {
-    let html = '';
+    // Data timestamp banner (asset_prices.json + asset_valuation.json)
+    let html = Utils.renderTimestampBanner(
+      [priceData?.update_time, valData?.update_time],
+      '资产配置'
+    );
 
     // Asset Valuation Dashboard
     html += Components.sectionHeader('💰', '资产估值仪表板', '核心估值指标与历史分位');

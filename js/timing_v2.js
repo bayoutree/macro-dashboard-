@@ -12,6 +12,7 @@ const TimingTab = {
   scoreGaugeChart: null,
   bullBarChart: null,
   bearBarChart: null,
+  historyChart: null,
   miniCharts: [],
   miniChartObserver: null,
 
@@ -92,6 +93,7 @@ const TimingTab = {
       if (rd) {
         this.renderBullBar(rd);
         this.renderBearBar(rd);
+        this.renderHistoryChart(rd);
       }
     });
   },
@@ -217,7 +219,182 @@ const TimingTab = {
         </div>
       </div>
     `;
+
+    // History trend chart container (only if history data exists)
+    if (rd.history && rd.history.length >= 2) {
+      html += `
+        <div class="trp-history-section">
+          <div class="trp-section-title">📈 分数走势 (近${rd.history.length}日)</div>
+          <div id="trp-history-chart" class="trp-history-chart"></div>
+        </div>
+      `;
+    }
+
     return html;
+  },
+
+  renderHistoryChart(rd) {
+    if (!rd.history || rd.history.length < 2) return;
+
+    // Dispose previous chart if any
+    if (this.historyChart) {
+      try { this.historyChart.dispose(); } catch(e) {}
+      this.historyChart = null;
+    }
+
+    const container = document.getElementById('trp-history-chart');
+    if (!container) return;
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
+    this.historyChart = chart;
+
+    const dates = rd.history.map(h => h.date);
+    const bullScores = rd.history.map(h => h.bull_score);
+    const bearScores = rd.history.map(h => h.bear_score);
+
+    const option = {
+      animation: true,
+      animationDuration: 800,
+      grid: {
+        top: 28,
+        right: 16,
+        bottom: 28,
+        left: 16,
+        containLabel: true,
+      },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: '#1e293b',
+        borderColor: '#334155',
+        borderWidth: 1,
+        textStyle: {
+          color: '#e2e8f0',
+          fontSize: 12,
+          fontFamily: 'JetBrains Mono',
+        },
+        padding: [8, 12],
+        formatter: function(params) {
+          let tip = `<div style="font-weight:600;margin-bottom:4px">${params[0].axisValue}</div>`;
+          params.forEach(p => {
+            tip += `<div style="display:flex;align-items:center;gap:6px">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color}"></span>
+              <span>${p.seriesName}: <b>${p.value}</b>分</span>
+            </div>`;
+          });
+          return tip;
+        },
+      },
+      legend: {
+        show: true,
+        top: 2,
+        right: 0,
+        textStyle: { color: '#94a3b8', fontSize: 11 },
+        itemWidth: 14,
+        itemHeight: 8,
+        data: ['牛分', '熊分'],
+      },
+      xAxis: {
+        type: 'category',
+        data: dates,
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: '#1e293b' } },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#64748b',
+          fontSize: 10,
+          fontFamily: 'JetBrains Mono',
+          formatter: function(val) {
+            // Show MM-DD format, only every few labels
+            return val.substring(5);
+          },
+          interval: function(index, total) {
+            if (total <= 15) return 0;
+            if (total <= 30) return Math.floor(total / 6) - 1;
+            if (total <= 60) return Math.floor(total / 6) - 1;
+            return Math.floor(total / 5) - 1;
+          },
+        },
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        max: 120,
+        splitNumber: 4,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#64748b',
+          fontSize: 10,
+          fontFamily: 'JetBrains Mono',
+        },
+        splitLine: {
+          lineStyle: { color: 'rgba(148, 163, 184, 0.08)', type: 'dashed' },
+        },
+      },
+      series: [
+        {
+          name: '牛分',
+          type: 'line',
+          data: bullScores,
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 4,
+          showSymbol: rd.history.length <= 30,
+          lineStyle: { width: 2, color: '#10b981' },
+          itemStyle: { color: '#10b981' },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(16, 185, 129, 0.15)' },
+              { offset: 1, color: 'rgba(16, 185, 129, 0.01)' },
+            ]),
+          },
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: { type: 'dashed', width: 1 },
+            label: {
+              fontSize: 9,
+              fontFamily: 'JetBrains Mono',
+              position: 'insideEndTop',
+            },
+            data: [
+              { yAxis: 30, lineStyle: { color: 'rgba(148, 163, 184, 0.2)' }, label: { formatter: '30', color: '#475569' } },
+              { yAxis: 50, lineStyle: { color: 'rgba(148, 163, 184, 0.25)' }, label: { formatter: '50', color: '#64748b' } },
+              { yAxis: 80, lineStyle: { color: 'rgba(148, 163, 184, 0.3)' }, label: { formatter: '80', color: '#94a3b8' } },
+            ],
+          },
+        },
+        {
+          name: '熊分',
+          type: 'line',
+          data: bearScores,
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 4,
+          showSymbol: rd.history.length <= 30,
+          lineStyle: { width: 2, color: '#ef4444' },
+          itemStyle: { color: '#ef4444' },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(239, 68, 68, 0.12)' },
+              { offset: 1, color: 'rgba(239, 68, 68, 0.01)' },
+            ]),
+          },
+        },
+      ],
+    };
+
+    chart.setOption(option);
+
+    // Handle resize
+    if (!this._historyResizeObserver) {
+      this._historyResizeObserver = new ResizeObserver(() => {
+        if (this.historyChart) {
+          try { this.historyChart.resize(); } catch(e) {}
+        }
+      });
+    }
+    this._historyResizeObserver.observe(container);
   },
 
   renderSignalGroups(rd) {
@@ -995,6 +1172,8 @@ const TimingTab = {
   dispose() {
     if (this.radarChart) { this.radarChart.dispose(); this.radarChart = null; }
     if (this.scoreGaugeChart) { this.scoreGaugeChart.dispose(); this.scoreGaugeChart = null; }
+    if (this.historyChart) { this.historyChart.dispose(); this.historyChart = null; }
+    if (this._historyResizeObserver) { this._historyResizeObserver.disconnect(); this._historyResizeObserver = null; }
     this.miniCharts.forEach(c => c.dispose());
     this.miniCharts = [];
     if (this.miniChartObserver) { this.miniChartObserver.disconnect(); this.miniChartObserver = null; }

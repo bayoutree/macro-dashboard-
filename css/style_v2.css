@@ -892,3 +892,56 @@
   border-top: 1px solid rgba(30, 41, 59, 0.5);
   padding-top: 6px;
 }
+
+/* ========== Data Timestamp Banner ========== */
+.data-timestamp-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #1e293b;
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+}
+
+.ts-banner-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ts-banner-text {
+  flex: 1;
+}
+
+.ts-banner-warn {
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Warning state: >7 days stale */
+.data-timestamp-banner.ts-banner-warn {
+  border-left-color: #f59e0b;
+  color: #94a3b8;
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.data-timestamp-banner.ts-banner-warn .ts-banner-warn {
+  color: #f59e0b;
+}
+
+/* Stale state: >14 days stale */
+.data-timestamp-banner.ts-banner-stale {
+  border-left-color: #ef4444;
+  color: #94a3b8;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.data-timestamp-banner.ts-banner-stale .ts-banner-warn {
+  color: #ef4444;
+}

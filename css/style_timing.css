@@ -1280,3 +1280,17 @@ details[open] > .trp-group-header::before {
   font-family: 'JetBrains Mono', monospace;
   flex-wrap: wrap;
 }
+
+/* ========== Right Panel History Chart ========== */
+.trp-history-section {
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.trp-history-chart {
+  width: 100%;
+  height: 190px;
+  margin-top: 4px;
+}

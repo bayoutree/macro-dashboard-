@@ -1282,7 +1282,13 @@ const CycleV2Module = (() => {
     const container = document.getElementById('cycle-content');
     if (!container || !data) return;
 
+    // Data timestamp banner
     let html = '';
+    if (typeof Utils !== 'undefined' && Utils.renderTimestampBanner) {
+      html += Utils.renderTimestampBanner(data.update_time, '全球周期');
+    } else if (data.update_time) {
+      html += `<div class="data-timestamp-banner"><span class="ts-banner-icon">🕐</span><span class="ts-banner-text">全球周期 · 数据截至: ${escapeHtml(data.update_time)}</span></div>`;
+    }
     html += renderOverviewHTML(data);
     html += renderTimelineHTML(data);
     html += renderKongboHTML(data);

@@ -2705,6 +2705,38 @@ class TimingRightEngine:
             "style_rotation": style_rotation,
         }
 
+        # ===== 历史分数记录 (用于前端趋势图) =====
+        import json as _json
+        history = []
+        try:
+            old_path = DATA_DIR / "timing_right_scores.json"
+            if old_path.exists():
+                with open(old_path, "r", encoding="utf-8") as _f:
+                    old_data = _json.load(_f)
+                old_history = old_data.get("history", [])
+                if isinstance(old_history, list):
+                    history = old_history
+        except Exception as e:
+            logger.warning(f"  读取历史分数记录失败: {e}")
+
+        # 追加/更新今天的数据
+        today_entry = {
+            "date": today,
+            "bull_score": bull_score,
+            "bear_score": bear_score,
+        }
+        # 如果今天的数据已存在（最后一条），则更新
+        if history and history[-1].get("date") == today:
+            history[-1] = today_entry
+        else:
+            history.append(today_entry)
+
+        # 截断到最近90天
+        if len(history) > 90:
+            history = history[-90:]
+
+        output["history"] = history
+
         return output
 
     def _calc_style_rotation(self):
