@@ -1,7 +1,7 @@
 {
-  "update_date": "2026-08-17",
+  "update_date": "2026-08-18",
   "version": "v2.0",
-  "composite_score": 48.7,
+  "composite_score": 48.6,
   "position_range": "40%-55%",
   "market_status": "中性区间，略偏暖",
   "dimensions": {
@@ -14,7 +14,7 @@
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 82.8,
+          "value": 83.3,
           "unit": "%分位",
           "score": 83.0,
           "sub_weight": 35,
@@ -234,7 +234,7 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 49.4,
+          "value": 49.3,
           "unit": "%分位",
           "score": 49.0,
           "sub_weight": 20,
@@ -562,7 +562,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.4,
+          "value": 8.1,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -972,8 +972,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP",
-          "value": "5.59%",
-          "percentile": "33.7%",
+          "value": "5.58%",
+          "percentile": "33.6%",
           "score": 30,
           "sub_weight": 50,
           "bottom_threshold": ">6%",
@@ -2256,10 +2256,10 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 40.1,
+      "score": 39.5,
       "weight": 18,
-      "weighted_score": 7.22,
-      "signal": "中性",
+      "weighted_score": 7.11,
+      "signal": "偏恐惧",
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
@@ -2370,8 +2370,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 19,
-          "score": 19.282937535150094,
+          "value": 17,
+          "score": 17.01591383434377,
           "sub_weight": 25,
           "bottom_threshold": "<20",
           "top_threshold": ">80",
