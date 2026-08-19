@@ -1400,15 +1400,15 @@ const TabRenderers = {
     if (!container || !fullHistory || fullHistory.length === 0) return;
 
     const filtered = Utils.filterHistoryByRange(fullHistory, currentRange);
-    if (filtered.length === 0) return;
+    const renderData = filtered.length > 0 ? filtered : fullHistory;
 
     // Determine color based on trend
-    const lastVal = filtered[filtered.length - 1].value;
-    const firstVal = filtered[0].value;
+    const lastVal = renderData[renderData.length - 1].value;
+    const firstVal = renderData[0].value;
     const isUp = lastVal >= firstVal;
     const color = isUp ? CONFIG.chartColorUp : CONFIG.chartColorDown;
 
-    ChartManager.createMiniChart(containerId, filtered, { color, showArea: true });
+    ChartManager.createMiniChart(containerId, renderData, { color, showArea: true });
   },
 };
 
