@@ -108,6 +108,15 @@ const TimingTab = {
     // 1. Signal Lights
     html += this.renderSignalLights(rd);
 
+    // 1.5 Status Note (bull-bear conflict)
+    if (rd.status_note && rd.status_note.length > 0) {
+      html += `
+        <div class="trp-status-note">
+          <span class="trp-status-note-text">${rd.status_note}</span>
+        </div>
+      `;
+    }
+
     // 2. Score Progress Bars
     html += this.renderScoreBars(rd);
 
@@ -161,6 +170,29 @@ const TimingTab = {
     }
 
     html += '</div>';
+
+    // P1#7: 牛熊信号冲突备注
+    const bullTriggered = (rd.signals?.confirm_bull || []).some(s => s.triggered) || (rd.signals?.strong_confirm_bull || []).some(s => s.triggered);
+    const bearTriggered = (rd.signals?.confirm_bear || []).some(s => s.triggered) || (rd.signals?.strong_confirm_bear || []).some(s => s.triggered);
+    const earlyBullTriggered = (rd.signals?.early_bull || []).some(s => s.triggered);
+    const earlyBearTriggered = (rd.signals?.early_bear || []).some(s => s.triggered);
+
+    let statusNote = '';
+    if (bullTriggered && earlyBearTriggered) {
+      statusNote = '牛市中继回调 — 大趋势向上，中期在调整';
+    } else if (bearTriggered && earlyBullTriggered) {
+      statusNote = '熊市中继反弹 — 大趋势向下，短期在修复';
+    } else if (earlyBullTriggered && earlyBearTriggered) {
+      statusNote = '多空交织 — 牛熊早期信号同时触发，建议观望';
+    }
+
+    if (statusNote) {
+      html += `
+        <div class="trp-status-note" style="margin-top:8px;padding:6px 10px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);border-radius:6px;font-size:12px;color:#fbbf24;text-align:center;">
+          ⚠️ ${statusNote}
+        </div>
+      `;
+    }
 
     // Trend bias label
     const biasLabels = {
@@ -428,11 +460,13 @@ const TimingTab = {
       `;
 
       signals.forEach(s => {
+        // P1#5: 显示站稳天数（如"突破年线并站稳"信号）
+        const daysAbove = s.consecutive_days_above != null ? ` · 站稳${s.consecutive_days_above}/5天` : '';
         html += `
           <div class="trp-signal-row ${s.triggered ? 'triggered' : ''}">
             <span class="trp-signal-status">${s.triggered ? '✅' : '❌'}</span>
             <div class="trp-signal-info">
-              <div class="trp-signal-name">${s.name} <span class="trp-signal-score">(${s.score}分)</span></div>
+              <div class="trp-signal-name">${s.name} <span class="trp-signal-score">(${s.score}分)</span>${daysAbove ? `<span style="color:#fbbf24;font-size:10px;margin-left:4px">${daysAbove}</span>` : ''}</div>
               <div class="trp-signal-meta">
                 <span class="trp-signal-value">${s.current_value || '--'}</span>
                 <span class="trp-signal-source">📌 ${s.data_source}</span>
