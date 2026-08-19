@@ -18,9 +18,10 @@ const TimingTab = {
 
   async init() {
     try {
+      const _tv = Date.now();
       const [leftResp, rightResp] = await Promise.all([
-        fetch('data/timing_scores.json'),
-        fetch('data/timing_right_scores.json')
+        fetch(`data/timing_scores.json?_v=${_tv}`, { cache: 'no-store' }),
+        fetch(`data/timing_right_scores.json?_v=${_tv}`, { cache: 'no-store' })
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();
@@ -776,6 +777,7 @@ const TimingTab = {
             ${Object.entries(dim.indicators).map(([iKey, ind]) => {
               const indScoreClass = this.getScoreClass(ind.score);
               const hasHistory = ind.history && ind.history.length > 0;
+              const lastDate = hasHistory ? ind.history[ind.history.length - 1].date : (ind.date || '');
               return `
                 <div class="timing-dim-indicator ${hasHistory ? 'has-chart' : ''}">
                   <div class="timing-dim-indicator-row">
@@ -783,6 +785,7 @@ const TimingTab = {
                     <span class="timing-dim-indicator-value">${ind.value}${ind.unit ? ind.unit : ''}</span>
                     <span class="timing-dim-indicator-score score-${indScoreClass}" style="color:${this.getScoreColor(ind.score)}">${ind.score}</span>
                   </div>
+                  <div class="timing-dim-indicator-date">${lastDate ? '📅 ' + lastDate : ''}</div>
                   ${hasHistory ? `<div class="timing-mini-chart" id="mini-chart-${key}-${iKey}" data-history='${JSON.stringify(ind.history)}' data-score="${ind.score}"></div>` : ''}
                   ${ind.description ? `<div class="timing-dim-indicator-desc">${ind.description}</div>` : ''}
                 </div>

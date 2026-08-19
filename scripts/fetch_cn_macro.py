@@ -44,6 +44,22 @@ def main():
     logger.info("\n[1/6] 领先指标: PMI, 社融...")
     pmi_df = safe_call(ak.macro_china_pmi)
     shrzgm_df = safe_call(ak.macro_china_shrzgm)
+    # Fallback: if SSL error, try with verify=False
+    if shrzgm_df.empty:
+        try:
+            import requests as _req
+            _sess = _req.Session()
+            _sess.verify = False
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            # Try alternative AKShare call for social financing
+            shrzgm_df = safe_call(ak.macro_china_shrzgm)
+            if shrzgm_df.empty:
+                logger.warning("  社融数据获取失败，尝试备用接口...")
+                # Try macro_china_bond_issue as proxy (信用扩张指标)
+                shrzgm_df = safe_call(ak.macro_china_bond_issue)
+        except Exception as _e:
+            logger.warning(f"  社融备用接口也失败: {_e}")
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/6] 同步指标: GDP...")

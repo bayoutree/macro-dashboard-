@@ -800,16 +800,18 @@ const TabRenderers = {
     const leadingHtml = Components.sectionHeader('📈', '领先指标', 'Leading indicators for US economy');
     const leadingCards = [];
 
-    const oecdHist = data.history?.oecd_cli || [];
-    leadingCards.push(Components.indicatorCard('us-oecd', {
-      title: 'OECD CLI',
-      date: data.leading?.oecd_cli?.date || '--',
-      value: data.leading?.oecd_cli?.value,
-      change: Utils.computeChange(oecdHist),
-      history: oecdHist,
-      chartColor: CONFIG.chartColorNeutral,
+    // OECD CLI replaced by ISM PMI (OECD CLI stale since 2023-11)
+    // ISM Manufacturing PMI - real-time leading indicator
+    const ismHist = data.history?.ism_pmi || [];
+    leadingCards.push(Components.indicatorCard('us-ism-pmi', {
+      title: 'ISM 制造业PMI',
+      date: data.leading?.ism_pmi?.date || '--',
+      value: data.leading?.ism_pmi?.value,
+      change: Utils.computeChange(ismHist),
+      history: ismHist,
+      chartColor: data.leading?.ism_pmi?.value >= 50 ? CONFIG.chartColorUp : CONFIG.chartColorDown,
       assetImpacts: { '美股': '+', '美债': '-', '黄金': '0', '商品': '+', '美元': '0' },
-      signalText: `OECD CLI ${data.leading?.oecd_cli?.value ? data.leading.oecd_cli.value.toFixed(2) : '--'}，${data.leading?.oecd_cli?.value > 100 ? '高于趋势水平' : '低于趋势水平'}`,
+      signalText: `ISM制造业PMI ${data.leading?.ism_pmi?.value || '--'}，${data.leading?.ism_pmi?.value >= 50 ? '扩张区间' : '收缩区间'}`,
     }));
 
     const yieldSpreadHist = data.history?.yield_spread_10y_2y || [];
@@ -825,17 +827,7 @@ const TabRenderers = {
       signalText: `10Y-2Y利差 ${data.leading?.yield_curve_10y_2y?.value || '--'}%，${data.leading?.yield_curve_10y_2y?.value > 0 ? '曲线正常化' : '曲线倒挂，衰退信号'}`,
     }));
 
-    // ISM PMI placeholder
-    leadingCards.push(Components.indicatorCard('us-ism-pmi', {
-      title: 'ISM PMI',
-      date: data.leading?.ism_pmi?.date || '待更新',
-      value: data.leading?.ism_pmi?.value,
-      change: null,
-      history: data.history?.ism_pmi || [],
-      chartColor: '#f59e0b',
-      assetImpacts: { '美股': '+', '美债': '-', '黄金': '0', '商品': '+', '美元': '0' },
-      signalText: 'ISM PMI 数据待更新',
-    }));
+    // (ISM PMI moved above to replace stale OECD CLI)
 
     document.getElementById('us-leading').innerHTML = leadingHtml + `<div class="grid-3">${leadingCards.join('')}</div>`;
 
@@ -971,7 +963,7 @@ const TabRenderers = {
   },
 
   renderUSCharts(data) {
-    this.renderMiniChartsForContainer('us-oecd', data.history?.oecd_cli || []);
+    // OECD CLI removed (stale since 2023-11), replaced by ISM PMI above
     this.renderMiniChartsForContainer('us-yield-spread', data.history?.yield_spread_10y_2y || []);
     this.renderMiniChartsForContainer('us-ism-pmi', data.history?.ism_pmi || []);
     this.renderMiniChartsForContainer('us-gdp', data.history?.gdp_growth || []);
@@ -1453,9 +1445,11 @@ const app = {
       ['dashboardSummary', 'dashboard_summary.json'],
     ];
 
+    // Cache-busting: force fresh data on every load
+    const _v = Date.now();
     const results = await Promise.allSettled(
       files.map(([, filename]) =>
-        fetch(`${CONFIG.dataDir}/${filename}`).then(r => {
+        fetch(`${CONFIG.dataDir}/${filename}?_v=${_v}`, { cache: 'no-store' }).then(r => {
           if (!r.ok) throw new Error(`Failed to load ${filename}`);
           return r.json();
         })
@@ -1550,8 +1544,7 @@ const app = {
       'cn-10y-bond': data.cnMacro?.history?.cn_10y_bond,
       'cn-val-hs300pe': data.cnMacro?.history?.hs300_pe,
       'cn-val-csi500pe': data.cnMacro?.history?.csi500_pe,
-      // US
-      'us-oecd': data.usMacro?.history?.oecd_cli,
+      // US (OECD CLI removed, replaced by ISM PMI)
       'us-yield-spread': data.usMacro?.history?.yield_spread_10y_2y,
       'us-ism-pmi': data.usMacro?.history?.ism_pmi,
       'us-gdp': data.usMacro?.history?.gdp_growth,

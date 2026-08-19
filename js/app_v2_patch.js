@@ -28,7 +28,7 @@
 
     // 额外加载 V2 周期数据
     try {
-      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v2.json`);
+      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v2.json?_v=${Date.now()}`, { cache: 'no-store' });
       if (resp.ok) {
         const rawData = await resp.json();
         this.data.cyclePositionV2 = normalizeCycleData(rawData);

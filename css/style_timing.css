@@ -331,6 +331,13 @@
   margin-left: 8px;
 }
 
+.timing-dim-indicator-date {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
 /* ========== Style Rotation Section ========== */
 .timing-style-section {
   margin-bottom: 28px;
