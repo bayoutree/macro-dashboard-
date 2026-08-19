@@ -623,7 +623,7 @@ const TabRenderers = {
       value: data.leading?.social_financing?.value,
       unit: data.leading?.social_financing?.unit || '亿元',
       change: null,
-      history: [],
+      history: data.history?.social_financing || [],
       chartColor: '#8b5cf6',
       assetImpacts: { 'A股': '+', '债券': '-', '黄金': '0', '商品': '+', '人民币': '0' },
       signalText: `社融增量 ${data.leading?.social_financing?.value || '--'} 亿元，反映信用扩张力度`,
@@ -753,7 +753,7 @@ const TabRenderers = {
       value: data.valuation?.csi500_pe?.value,
       unit: '倍',
       percentile: null,
-      history: [],
+      history: data.history?.csi500_pe || [],
       chartColor: '#8b5cf6',
     }));
 
@@ -768,7 +768,7 @@ const TabRenderers = {
   renderChinaCharts(data) {
     // Render all mini charts for China tab
     this.renderMiniChartsForContainer('cn-pmi', data.history?.pmi || []);
-    this.renderMiniChartsForContainer('cn-social-fin', []);
+    this.renderMiniChartsForContainer('cn-social-fin', data.history?.social_financing || []);
     this.renderMiniChartsForContainer('cn-hs300-pe', data.history?.hs300_pe || []);
     this.renderMiniChartsForContainer('cn-gdp', data.history?.gdp_growth || []);
     this.renderMiniChartsForContainer('cn-sse', data.history?.sse_index || []);
@@ -777,6 +777,7 @@ const TabRenderers = {
     this.renderMiniChartsForContainer('cn-ppi', data.history?.ppi_yoy || []);
     this.renderMiniChartsForContainer('cn-10y-bond', data.history?.cn_10y_bond || []);
     this.renderMiniChartsForContainer('cn-val-hs300pe', data.history?.hs300_pe || []);
+    this.renderMiniChartsForContainer('cn-val-csi500pe', data.history?.csi500_pe || []);
   },
 
   // ===== US Macro Tab =====
@@ -1539,7 +1540,7 @@ const app = {
     const historyMap = {
       // China
       'cn-pmi': data.cnMacro?.history?.pmi,
-      'cn-social-fin': [],
+      'cn-social-fin': data.cnMacro?.history?.social_financing,
       'cn-hs300-pe': data.cnMacro?.history?.hs300_pe,
       'cn-gdp': data.cnMacro?.history?.gdp_growth,
       'cn-sse': data.cnMacro?.history?.sse_index,
@@ -1548,6 +1549,7 @@ const app = {
       'cn-ppi': data.cnMacro?.history?.ppi_yoy,
       'cn-10y-bond': data.cnMacro?.history?.cn_10y_bond,
       'cn-val-hs300pe': data.cnMacro?.history?.hs300_pe,
+      'cn-val-csi500pe': data.cnMacro?.history?.csi500_pe,
       // US
       'us-oecd': data.usMacro?.history?.oecd_cli,
       'us-yield-spread': data.usMacro?.history?.yield_spread_10y_2y,

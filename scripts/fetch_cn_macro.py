@@ -239,6 +239,19 @@ def main():
         except Exception as e:
             logger.warning(f"  解析中证500 PE失败: {e}")
 
+    # --- 中证500 PE 历史 ---
+    csi500_pe_history = []
+    if not csi500_pe_df.empty:
+        try:
+            pe_col = '滚动市盈率'
+            if pe_col in csi500_pe_df.columns:
+                csi500_pe_series = csi500_pe_df.set_index('日期')[pe_col].dropna()
+                csi500_pe_series.index = pd.to_datetime(csi500_pe_series.index)
+                csi500_pe_history = series_to_history(csi500_pe_series, freq="daily", max_points=60)
+            logger.info(f"  中证500 PE 历史: {len(csi500_pe_history)} 条")
+        except Exception as e:
+            logger.warning(f"  解析中证500 PE历史失败: {e}")
+
     # ============================================================
     # 构建历史数据
     # ============================================================
@@ -257,6 +270,116 @@ def main():
 
     # PE 历史
     history["hs300_pe"] = hs300_pe_history
+    history["csi500_pe"] = csi500_pe_history
+
+    # --- PMI 历史 (从 pmi_df 的 "制造业-指数" 列) ---
+    if not pmi_df.empty and '制造业-指数' in pmi_df.columns:
+        try:
+            # pmi_df 按时间降序，需反转为升序
+            pmi_hist_df = pmi_df.copy().iloc[::-1]
+            # 解析月份列: "2026年06月份" → "2026-06"
+            dates = []
+            for raw in pmi_hist_df['月份']:
+                raw_s = str(raw)
+                m = re.search(r'(\d{4})年(\d{1,2})月', raw_s)
+                if m:
+                    dates.append(f"{m.group(1)}-{m.group(2).zfill(2)}")
+                else:
+                    dates.append(None)
+            pmi_hist_df = pmi_hist_df.copy()
+            pmi_hist_df['parsed_date'] = dates
+            pmi_hist_df = pmi_hist_df.dropna(subset=['parsed_date', '制造业-指数'])
+            pmi_history = []
+            for _, row in pmi_hist_df.iterrows():
+                v = safe_float(row['制造业-指数'])
+                if v is not None:
+                    pmi_history.append({"date": row['parsed_date'], "value": v})
+            # 保留最近 max_points 条
+            pmi_history = pmi_history[-48:] if len(pmi_history) > 48 else pmi_history
+            history["pmi"] = pmi_history
+            logger.info(f"  PMI 历史: {len(pmi_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建PMI历史失败: {e}")
+
+    # --- 社融增量历史 (从 shrzgm_df 的 "社会融资规模增量" 列) ---
+    if not shrzgm_df.empty and '社会融资规模增量' in shrzgm_df.columns:
+        try:
+            # shrzgm_df 按时间升序，最后一行最新
+            shrzgm_history = []
+            for _, row in shrzgm_df.iterrows():
+                raw_month = str(row.get('月份', ''))
+                if len(raw_month) >= 6:
+                    date_label = f"{raw_month[:4]}-{raw_month[4:6]}"
+                    v = safe_float(row['社会融资规模增量'])
+                    if v is not None:
+                        shrzgm_history.append({"date": date_label, "value": v})
+            shrzgm_history = shrzgm_history[-48:] if len(shrzgm_history) > 48 else shrzgm_history
+            history["social_financing"] = shrzgm_history
+            logger.info(f"  社融增量历史: {len(shrzgm_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建社融增量历史失败: {e}")
+
+    # --- GDP 历史 (从 gdp_df 的 "国内生产总值-同比增长" 列，季度数据) ---
+    if not gdp_df.empty and '国内生产总值-同比增长' in gdp_df.columns:
+        try:
+            # gdp_df 按时间降序，需反转
+            gdp_hist_df = gdp_df.copy().iloc[::-1]
+            gdp_history = []
+            for _, row in gdp_hist_df.iterrows():
+                quarter_raw = str(row.get('季度', ''))
+                v = safe_float(row['国内生产总值-同比增长'])
+                if v is not None and quarter_raw:
+                    # 尝试解析季度: "2026年第1季度" → "2026Q1"
+                    import re as _re
+                    m = _re.search(r'(\d{4}).*?第(\d)季度', quarter_raw)
+                    if m:
+                        date_label = f"{m.group(1)}Q{m.group(2)}"
+                        gdp_history.append({"date": date_label, "value": v})
+            gdp_history = gdp_history[-48:] if len(gdp_history) > 48 else gdp_history
+            history["gdp_growth"] = gdp_history
+            logger.info(f"  GDP 历史: {len(gdp_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建GDP历史失败: {e}")
+
+    # --- CPI 历史 (从 cpi_df 的 "全国-同比增长" 列) ---
+    if not cpi_df.empty and '全国-同比增长' in cpi_df.columns:
+        try:
+            # cpi_df 按时间降序，需反转
+            cpi_hist_df = cpi_df.copy().iloc[::-1]
+            cpi_history = []
+            for _, row in cpi_hist_df.iterrows():
+                raw_month = str(row.get('月份', ''))
+                m = re.search(r'(\d{4})年(\d{1,2})月', raw_month)
+                if m:
+                    date_label = f"{m.group(1)}-{m.group(2).zfill(2)}"
+                    v = safe_float(row['全国-同比增长'])
+                    if v is not None:
+                        cpi_history.append({"date": date_label, "value": v})
+            cpi_history = cpi_history[-48:] if len(cpi_history) > 48 else cpi_history
+            history["cpi_yoy"] = cpi_history
+            logger.info(f"  CPI 历史: {len(cpi_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建CPI历史失败: {e}")
+
+    # --- PPI 历史 (从 ppi_df 的 "当月同比增长" 列) ---
+    if not ppi_df.empty and '当月同比增长' in ppi_df.columns:
+        try:
+            # ppi_df 按时间降序，需反转
+            ppi_hist_df = ppi_df.copy().iloc[::-1]
+            ppi_history = []
+            for _, row in ppi_hist_df.iterrows():
+                raw_month = str(row.get('月份', ''))
+                m = re.search(r'(\d{4})年(\d{1,2})月', raw_month)
+                if m:
+                    date_label = f"{m.group(1)}-{m.group(2).zfill(2)}"
+                    v = safe_float(row['当月同比增长'])
+                    if v is not None:
+                        ppi_history.append({"date": date_label, "value": v})
+            ppi_history = ppi_history[-48:] if len(ppi_history) > 48 else ppi_history
+            history["ppi_yoy"] = ppi_history
+            logger.info(f"  PPI 历史: {len(ppi_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建PPI历史失败: {e}")
 
     # ============================================================
     # 输出 JSON

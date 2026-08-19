@@ -96,10 +96,46 @@ const CycleV2Module = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ========== Stale Data Detection ==========
+  // Check if a date string is older than 3 months from now
+  function isStaleDate(dateStr, monthsThreshold = 3) {
+    if (!dateStr) return false;
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return false;
+      const now = new Date();
+      const threshold = new Date(now.getFullYear(), now.getMonth() - monthsThreshold, now.getDate());
+      return d < threshold;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Return staleness badge HTML for a date string
+  function staleDateBadge(dateStr) {
+    if (!dateStr) return '';
+    if (isStaleDate(dateStr, 6)) {
+      return `<span class="cycle-stale-badge stale-critical" title="数据超过6个月未更新">⚠ 数据陈旧</span>`;
+    }
+    if (isStaleDate(dateStr, 3)) {
+      return `<span class="cycle-stale-badge stale-warning" title="数据超过3个月未更新">⚡ 数据滞后</span>`;
+    }
+    return '';
+  }
+
+  // Get the latest date from a history array [{date, value}, ...]
+  function latestDateFromHistory(hist) {
+    if (!hist || !hist.length) return null;
+    return hist[hist.length - 1].date || null;
+  }
+
   // ========== Section 0: Overview ==========
   function renderOverviewHTML(data) {
     const summary = data?.synthesis?.cycle_positions_summary || [];
     if (!summary.length) return '';
+
+    // Collect all indicator dates from the data to detect stale sources
+    const staleIndicators = collectStaleIndicators(data);
 
     let cards = '';
     summary.forEach(item => {
@@ -113,6 +149,22 @@ const CycleV2Module = (() => {
         </div>`;
     });
 
+    // Stale data warning banner
+    let staleBanner = '';
+    if (staleIndicators.length > 0) {
+      const items = staleIndicators.slice(0, 5).map(s =>
+        `<span class="stale-item">${escapeHtml(s.name)} (${escapeHtml(s.date)})</span>`
+      ).join('');
+      staleBanner = `
+        <div class="cycle-stale-banner">
+          <span class="stale-banner-icon">⚠️</span>
+          <div class="stale-banner-content">
+            <div class="stale-banner-title">部分指标数据滞后 (超过3个月未更新)</div>
+            <div class="stale-banner-items">${items}${staleIndicators.length > 5 ? `<span class="stale-item">...等${staleIndicators.length - 5}项</span>` : ''}</div>
+          </div>
+        </div>`;
+    }
+
     return `
       <div class="cycle-section" id="section-overview">
         <div class="cycle-section-title">
@@ -121,7 +173,86 @@ const CycleV2Module = (() => {
           <span class="section-desc">九大周期维度当前位置与信号</span>
         </div>
         <div class="cycle-overview-grid">${cards}</div>
+        ${staleBanner}
       </div>`;
+  }
+
+  // Scan all indicator history arrays to find stale ones
+  function collectStaleIndicators(data) {
+    const stale = [];
+    const sections = [
+      { key: 'kongbo', label: '康波' },
+      { key: 'perez', label: '佩雷斯' },
+      { key: 'juglar', label: '朱格拉' },
+      { key: 'kitchin', label: '基钦' },
+      { key: 'merrill_clock', label: '美林时钟' },
+      { key: 'credit_impulse', label: '信贷脉冲' },
+    ];
+
+    function checkHistory(name, hist) {
+      if (!hist || !hist.length) return;
+      const lastDate = latestDateFromHistory(hist);
+      if (lastDate && isStaleDate(lastDate, 3)) {
+        stale.push({ name, date: lastDate });
+      }
+    }
+
+    // Kongbo indicators
+    const kb = data?.kongbo?.indicators || {};
+    Object.values(kb).forEach(ind => {
+      const name = ind.name || '';
+      ['us', 'cn'].forEach(r => {
+        if (ind[r]?.history) checkHistory(name + (r === 'us' ? '(美)' : '(中)'), ind[r].history);
+      });
+    });
+
+    // Perez indicators
+    const pz = data?.perez?.indicators || {};
+    Object.values(pz).forEach(ind => {
+      const hist = ind.data || ind.history || (Array.isArray(ind) ? ind : null);
+      if (hist) checkHistory(ind.name || '', hist);
+    });
+
+    // Juglar (us/cn)
+    ['us', 'cn'].forEach(region => {
+      const jInd = data?.juglar?.[region]?.indicators || {};
+      Object.values(jInd).forEach(ind => {
+        const hist = ind.history || (Array.isArray(ind) ? ind : null);
+        if (hist) checkHistory((ind.name || '') + (region === 'us' ? '(美)' : '(中)'), hist);
+      });
+    });
+
+    // Kitchin (us/cn)
+    ['us', 'cn'].forEach(region => {
+      const kInd = data?.kitchin?.[region]?.indicators || {};
+      Object.values(kInd).forEach(ind => {
+        const hist = ind.history || ind.data || (Array.isArray(ind) ? ind : null);
+        if (hist) checkHistory((ind.name || '') + (region === 'us' ? '(美)' : '(中)'), hist);
+      });
+    });
+
+    // Merrill Clock (us/cn)
+    ['us', 'cn'].forEach(region => {
+      const mInd = data?.merrill_clock?.[region]?.indicators || {};
+      Object.values(mInd).forEach(ind => {
+        const hist = Array.isArray(ind) ? ind : (ind.history || ind.data || null);
+        if (hist) checkHistory((ind.name || '') + (region === 'us' ? '(美)' : '(中)'), hist);
+      });
+    });
+
+    // Credit Impulse
+    const ciG = data?.credit_impulse?.global?.liquidity_index || data?.credit_impulse?.global?.data;
+    if (ciG) checkHistory('全球流动性指数', ciG);
+    ['cn', 'us'].forEach(region => {
+      const ciInd = data?.credit_impulse?.[region]?.indicators || data?.credit_impulse?.[region] || {};
+      Object.values(ciInd).forEach(ind => {
+        if (typeof ind !== 'object' || Array.isArray(ind)) return;
+        const hist = ind.history || ind.data || (Array.isArray(ind) ? ind : null);
+        if (hist) checkHistory(ind.name || '', hist);
+      });
+    });
+
+    return stale;
   }
 
   // ========== Section 1: Unified Timeline ==========

@@ -56,7 +56,25 @@ def main():
         pmi = fetch_series(fred, "MANPISMI", "2019-01-01")
     if pmi.empty:
         logger.info("  ⚠ ISM PMI 不可用，将从 ISM 网站获取或留空")
+    # OECD Composite Leading Indicator (CLI)
+    # Primary FRED series; if stale, try alternatives
     oecd_cli = fetch_series(fred, "USALORSGPNOSTSAM", "2019-01-01")
+    # Check staleness: if data older than 6 months, try fallback series
+    oecd_cli_stale = False
+    if not oecd_cli.empty:
+        from datetime import timedelta as _td
+        _cutoff = pd.Timestamp.today() - _td(days=180)
+        if pd.Timestamp(oecd_cli.index[-1]) < _cutoff:
+            oecd_cli_stale = True
+            logger.warning(f"  ⚠ OECD CLI 数据陈旧 (最新: {oecd_cli.index[-1]}), 尝试备用系列...")
+            # Try alternative FRED series for OECD CLI
+            oecd_cli_alt = fetch_series(fred, "CLIMNTH02_USA_OECDST", "2019-01-01")
+            if oecd_cli_alt.empty:
+                oecd_cli_alt = fetch_series(fred, "USAORSGPNOSTSAM", "2019-01-01")
+            if not oecd_cli_alt.empty and pd.Timestamp(oecd_cli_alt.index[-1]) > pd.Timestamp(oecd_cli.index[-1]):
+                oecd_cli = oecd_cli_alt
+                oecd_cli_stale = False
+                logger.info(f"  ✓ 使用备用 OECD CLI 序列, 最新: {oecd_cli.index[-1]}")
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/4] 同步指标...")
@@ -219,7 +237,8 @@ def main():
         "leading": {
             "ism_pmi": {"value": pmi_val, "date": pmi_date, "trend": pmi_trend},
             "oecd_cli": {"value": safe_float(oecd_cli.iloc[-1]) if not oecd_cli.empty else None,
-                         "date": ts_to_date_str(oecd_cli.index[-1]) if not oecd_cli.empty else None},
+                         "date": ts_to_date_str(oecd_cli.index[-1]) if not oecd_cli.empty else None,
+                         "stale": oecd_cli_stale if not oecd_cli.empty else True},
             "yield_curve_10y_2y": {"value": safe_float(spread_val), "date": ts_to_date_str(yield_spread.index[-1]) if not yield_spread.empty else None},
             "lei": {"value": None, "date": None}
         },

@@ -945,3 +945,77 @@
 .data-timestamp-banner.ts-banner-stale .ts-banner-warn {
   color: #ef4444;
 }
+
+/* ========== Stale Data Indicators ========== */
+.cycle-stale-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  background: rgba(245, 158, 11, 0.04);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 10px;
+}
+
+.stale-banner-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.stale-banner-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stale-banner-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f59e0b;
+  margin-bottom: 6px;
+}
+
+.stale-banner-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stale-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.12);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #f59e0b;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.cycle-stale-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cycle-stale-badge.stale-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.cycle-stale-badge.stale-critical {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
