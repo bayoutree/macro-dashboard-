@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-08-19",
+  "update_date": "2026-08-20",
   "version": "v2.0",
   "composite_score": 48.1,
   "position_range": "40%-55%",
@@ -14,7 +14,7 @@
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 79.4,
+          "value": 79.0,
           "unit": "%分位",
           "score": 79.0,
           "sub_weight": 35,
@@ -234,7 +234,7 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 43.8,
+          "value": 43.7,
           "unit": "%分位",
           "score": 44.0,
           "sub_weight": 20,
@@ -562,7 +562,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.1,
+          "value": 8.6,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -972,7 +972,7 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP",
-          "value": "5.71%",
+          "value": "5.72%",
           "percentile": "36.6%",
           "score": 30,
           "sub_weight": 50,
@@ -2370,7 +2370,7 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 14,
+          "value": 11,
           "score": 15,
           "sub_weight": 25,
           "bottom_threshold": "<20",
@@ -3374,7 +3374,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.35)",
+          "value": "小盘中性(%B=0.40)",
           "score": 45,
           "sub_weight": 20,
           "bottom_signal": "比值触底回升",
@@ -3533,10 +3533,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.35)",
+      "current_value": "小盘中性(%B=0.40)",
       "status": "小盘走强",
       "signal": "可关注",
-      "detail": "小盘风格小盘中性(%B=0.35)"
+      "detail": "小盘风格小盘中性(%B=0.40)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
