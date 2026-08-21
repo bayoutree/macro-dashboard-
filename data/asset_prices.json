@@ -496,9 +496,9 @@
       ]
     },
     "gold": {
-      "latest": 4640.3999,
-      "ma200": 4498.7515,
-      "drawdown_from_high": -12.7482,
+      "latest": 4647.0,
+      "ma200": 4498.7845,
+      "drawdown_from_high": -12.6241,
       "daily": [
         {
           "date": "2026-05-28",
@@ -738,14 +738,14 @@
         },
         {
           "date": "2026-08-21",
-          "value": 4640.3999
+          "value": 4647.0
         }
       ]
     },
     "copper": {
-      "latest": 6.58,
+      "latest": 6.5855,
       "ma200": 5.9064,
-      "drawdown_from_high": -1.835,
+      "drawdown_from_high": -1.7529,
       "daily": [
         {
           "date": "2026-05-28",
@@ -985,14 +985,14 @@
         },
         {
           "date": "2026-08-21",
-          "value": 6.58
+          "value": 6.5855
         }
       ]
     },
     "crude_oil": {
-      "latest": 86.45,
-      "ma200": 77.4688,
-      "drawdown_from_high": -23.4617,
+      "latest": 87.02,
+      "ma200": 77.4717,
+      "drawdown_from_high": -22.9571,
       "daily": [
         {
           "date": "2026-05-28",
@@ -1232,14 +1232,14 @@
         },
         {
           "date": "2026-08-21",
-          "value": 86.45
+          "value": 87.02
         }
       ]
     },
     "usd_index": {
-      "latest": 98.634,
-      "ma200": 99.183,
-      "drawdown_from_high": -2.9288,
+      "latest": 98.647,
+      "ma200": 99.1831,
+      "drawdown_from_high": -2.9161,
       "daily": [
         {
           "date": "2026-05-28",
@@ -1479,7 +1479,7 @@
         },
         {
           "date": "2026-08-21",
-          "value": 98.634
+          "value": 98.647
         }
       ]
     },
@@ -1729,9 +1729,9 @@
       ]
     },
     "btc": {
-      "latest": 77973.8438,
-      "ma200": 68971.7862,
-      "drawdown_from_high": -19.556,
+      "latest": 77753.6328,
+      "ma200": 68970.6851,
+      "drawdown_from_high": -19.7832,
       "daily": [
         {
           "date": "2026-06-23",
@@ -1971,7 +1971,7 @@
         },
         {
           "date": "2026-08-21",
-          "value": 77973.8438
+          "value": 77753.6328
         }
       ]
     }
