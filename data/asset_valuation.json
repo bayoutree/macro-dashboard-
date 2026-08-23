@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-08-22",
+  "update_time": "2026-08-23",
   "us_stock": {
     "shiller_pe": {
       "value": null,
@@ -1606,7 +1606,7 @@
   },
   "gold": {
     "price_usd": {
-      "value": 4624.1001,
+      "value": 4680.6001,
       "history": [
         {
           "date": "2026-05-28",
@@ -1846,7 +1846,7 @@
         },
         {
           "date": "2026-08-21",
-          "value": 4624.1001
+          "value": 4680.6001
         }
       ]
     },
@@ -2124,7 +2124,7 @@
   },
   "commodity": {
     "copper": {
-      "price": 6.5795,
+      "price": 6.587,
       "inventory": null,
       "history": [
         {
@@ -2365,7 +2365,7 @@
         },
         {
           "date": "2026-08-21",
-          "value": 6.5795
+          "value": 6.587
         }
       ]
     },
