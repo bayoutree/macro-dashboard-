@@ -496,9 +496,9 @@
       ]
     },
     "gold": {
-      "latest": 4695.0,
-      "ma200": 4505.709,
-      "drawdown_from_high": -11.7216,
+      "latest": 4696.5,
+      "ma200": 4505.7165,
+      "drawdown_from_high": -11.6934,
       "daily": [
         {
           "date": "2026-06-01",
@@ -738,14 +738,14 @@
         },
         {
           "date": "2026-08-25",
-          "value": 4695.0
+          "value": 4696.5
         }
       ]
     },
     "copper": {
-      "latest": 6.6355,
+      "latest": 6.64,
       "ma200": 5.9231,
-      "drawdown_from_high": -1.007,
+      "drawdown_from_high": -0.9399,
       "daily": [
         {
           "date": "2026-06-01",
@@ -985,14 +985,14 @@
         },
         {
           "date": "2026-08-25",
-          "value": 6.6355
+          "value": 6.64
         }
       ]
     },
     "crude_oil": {
-      "latest": 82.28,
-      "ma200": 77.7075,
-      "drawdown_from_high": -27.1536,
+      "latest": 82.43,
+      "ma200": 77.7083,
+      "drawdown_from_high": -27.0208,
       "daily": [
         {
           "date": "2026-06-01",
@@ -1232,14 +1232,14 @@
         },
         {
           "date": "2026-08-25",
-          "value": 82.28
+          "value": 82.43
         }
       ]
     },
     "usd_index": {
-      "latest": 98.981,
-      "ma200": 99.1717,
-      "drawdown_from_high": -2.5873,
+      "latest": 99.022,
+      "ma200": 99.1719,
+      "drawdown_from_high": -2.547,
       "daily": [
         {
           "date": "2026-06-01",
@@ -1479,7 +1479,7 @@
         },
         {
           "date": "2026-08-25",
-          "value": 98.981
+          "value": 99.022
         }
       ]
     },
@@ -1729,9 +1729,9 @@
       ]
     },
     "btc": {
-      "latest": 79225.4297,
-      "ma200": 69129.1821,
-      "drawdown_from_high": -18.2647,
+      "latest": 79358.4062,
+      "ma200": 69129.847,
+      "drawdown_from_high": -18.1276,
       "daily": [
         {
           "date": "2026-06-27",
@@ -1971,14 +1971,14 @@
         },
         {
           "date": "2026-08-25",
-          "value": 79225.4297
+          "value": 79358.4062
         }
       ]
     }
   },
   "volatility": {
     "vix": {
-      "latest": 15.81,
+      "latest": 15.83,
       "history": [
         {
           "date": "2026-06-01",
@@ -2218,7 +2218,7 @@
         },
         {
           "date": "2026-08-25",
-          "value": 15.81
+          "value": 15.83
         }
       ]
     }
