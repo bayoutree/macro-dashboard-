@@ -1,7 +1,7 @@
 {
-  "update_date": "2026-08-25",
+  "update_date": "2026-08-26",
   "version": "v2.0",
-  "composite_score": 47.7,
+  "composite_score": 47.0,
   "position_range": "40%-55%",
   "market_status": "中性区间，略偏暖",
   "dimensions": {
@@ -562,7 +562,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.5,
+          "value": 8.0,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -738,7 +738,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "降息周期(1.69%)",
+          "value": "降息周期(1.68%)",
           "score": 35,
           "sub_weight": 30,
           "bottom_signal": "降息周期",
@@ -1192,7 +1192,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.91%",
+          "value": "2.92%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -1411,7 +1411,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.12%",
+          "value": "1.13%",
           "score": 50,
           "sub_weight": 15,
           "bottom_threshold": ">3%",
@@ -2256,9 +2256,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 39.0,
+      "score": 35.2,
       "weight": 18,
-      "weighted_score": 7.02,
+      "weighted_score": 6.34,
       "signal": "偏恐惧",
       "indicators": {
         "fund_3y_annual": {
@@ -2590,7 +2590,7 @@
         "turnover_rate": {
           "name": "全A换手率",
           "value": "1.5%",
-          "score": 45,
+          "score": 30,
           "sub_weight": 25,
           "bottom_threshold": "<1.5%",
           "top_threshold": ">5%",
@@ -3374,7 +3374,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.40)",
+          "value": "小盘中性(%B=0.37)",
           "score": 45,
           "sub_weight": 20,
           "bottom_signal": "比值触底回升",
@@ -3533,10 +3533,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.40)",
+      "current_value": "小盘中性(%B=0.37)",
       "status": "小盘走强",
       "signal": "可关注",
-      "detail": "小盘风格小盘中性(%B=0.40)"
+      "detail": "小盘风格小盘中性(%B=0.37)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
