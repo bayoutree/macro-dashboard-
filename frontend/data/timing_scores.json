@@ -1,22 +1,22 @@
 {
-  "update_date": "2026-08-26",
+  "update_date": "2026-08-27",
   "version": "v2.0",
-  "composite_score": 47.0,
+  "composite_score": 46.0,
   "position_range": "40%-55%",
   "market_status": "中性区间，略偏暖",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 56.2,
+      "score": 50.2,
       "weight": 18,
-      "weighted_score": 10.12,
+      "weighted_score": 9.04,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 74.9,
+          "value": 63.8,
           "unit": "%分位",
-          "score": 75.0,
+          "score": 64.0,
           "sub_weight": 35,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -234,9 +234,9 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 41.4,
+          "value": 30.0,
           "unit": "%分位",
-          "score": 41.0,
+          "score": 30.0,
           "sub_weight": 20,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -562,7 +562,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.0,
+          "value": 7.9,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -738,7 +738,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "降息周期(1.68%)",
+          "value": "数据待更新",
           "score": 35,
           "sub_weight": 30,
           "bottom_signal": "降息周期",
@@ -972,8 +972,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP",
-          "value": "5.82%",
-          "percentile": "39.3%",
+          "value": "5.71%",
+          "percentile": "35.8%",
           "score": 30,
           "sub_weight": 50,
           "bottom_threshold": ">6%",
@@ -1192,7 +1192,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.92%",
+          "value": "2.85%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -1411,7 +1411,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.13%",
+          "value": "1.06%",
           "score": 50,
           "sub_weight": 15,
           "bottom_threshold": ">3%",
@@ -3374,7 +3374,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.37)",
+          "value": "小盘中性(%B=0.46)",
           "score": 45,
           "sub_weight": 20,
           "bottom_signal": "比值触底回升",
@@ -3533,10 +3533,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.37)",
+      "current_value": "小盘中性(%B=0.46)",
       "status": "小盘走强",
       "signal": "可关注",
-      "detail": "小盘风格小盘中性(%B=0.37)"
+      "detail": "小盘风格小盘中性(%B=0.46)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
@@ -3583,7 +3583,7 @@
         "dimension": "宏观流动性",
         "signal": "降息降准周期开启",
         "stars": 4,
-        "active": true
+        "active": false
       },
       {
         "dimension": "股债性价比",
