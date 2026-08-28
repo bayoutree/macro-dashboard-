@@ -1,22 +1,22 @@
 {
-  "update_date": "2026-08-27",
+  "update_date": "2026-08-28",
   "version": "v2.0",
-  "composite_score": 46.0,
+  "composite_score": 45.6,
   "position_range": "40%-55%",
   "market_status": "中性区间，略偏暖",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 50.2,
+      "score": 48.4,
       "weight": 18,
-      "weighted_score": 9.04,
+      "weighted_score": 8.71,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 63.8,
+          "value": 58.8,
           "unit": "%分位",
-          "score": 64.0,
+          "score": 59.0,
           "sub_weight": 35,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -562,7 +562,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.9,
+          "value": 7.7,
           "unit": "%",
           "score": 40,
           "sub_weight": 20,
@@ -738,7 +738,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "数据待更新",
+          "value": "降息周期(1.70%)",
           "score": 35,
           "sub_weight": 30,
           "bottom_signal": "降息周期",
@@ -972,8 +972,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP",
-          "value": "5.71%",
-          "percentile": "35.8%",
+          "value": "5.94%",
+          "percentile": "40.9%",
           "score": 30,
           "sub_weight": 50,
           "bottom_threshold": ">6%",
@@ -1192,7 +1192,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.85%",
+          "value": "2.90%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -1411,7 +1411,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.06%",
+          "value": "1.11%",
           "score": 50,
           "sub_weight": 15,
           "bottom_threshold": ">3%",
@@ -3583,7 +3583,7 @@
         "dimension": "宏观流动性",
         "signal": "降息降准周期开启",
         "stars": 4,
-        "active": false
+        "active": true
       },
       {
         "dimension": "股债性价比",
