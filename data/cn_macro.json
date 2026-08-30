@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-08-29",
+  "update_time": "2026-08-30",
   "leading": {
     "pmi": {
       "value": 49.2,
@@ -56,15 +56,15 @@
     "hs300_pe": {
       "value": 13.09,
       "percentile": 58.7549,
-      "date": "2026-08-29"
+      "date": "2026-08-30"
     },
     "hs300_pb": {
       "value": null,
-      "date": "2026-08-29"
+      "date": "2026-08-30"
     },
     "csi500_pe": {
       "value": 27.72,
-      "date": "2026-08-29"
+      "date": "2026-08-30"
     }
   },
   "history": {
