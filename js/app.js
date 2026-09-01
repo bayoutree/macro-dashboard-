@@ -1501,6 +1501,12 @@ const app = {
       case 'allocation':
         TabRenderers.renderAllocation(this.data.assetValuation, this.data.assetPrices, this.data.dashboardSummary);
         break;
+      case 'stock':
+        var iframe = document.getElementById('stock-iframe');
+        if (iframe && !iframe.src && iframe.dataset.src) {
+          iframe.src = iframe.dataset.src;
+        }
+        break;
     }
   },
 

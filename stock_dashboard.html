@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股周期定位研究 — 宏观看板改进原型</title>
+<style>
+:root {
+  --canvas: #070A14;
+  --surface: rgba(255,255,255,0.06);
+  --surface-hover: rgba(255,255,255,0.10);
+  --surface-strong: rgba(255,255,255,0.12);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --text-primary: #F7FAFF;
+  --text-secondary: #9AA7C7;
+  --text-muted: #5A6580;
+  --accent: #7C5CFF;
+  --accent-glow: rgba(124,92,255,0.3);
+  --cyan: #69E7FF;
+  --cyan-glow: rgba(105,231,255,0.2);
+  --green: #62FAD3;
+  --green-dim: rgba(98,250,211,0.15);
+  --yellow: #FFD76E;
+  --yellow-dim: rgba(255,215,110,0.15);
+  --red: #FF6B6B;
+  --red-dim: rgba(255,107,107,0.15);
+  --orange: #FFA94D;
+  --orange-dim: rgba(255,169,77,0.15);
+  --stage-a: #62FAD3;
+  --stage-b: #69E7FF;
+  --stage-c: #FFD76E;
+  --stage-d: #FF6B6B;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+  --gap-2xl: 48px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background gradient */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(124,92,255,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(105,231,255,0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: var(--gap-lg); }
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--gap-xl);
+  padding-bottom: var(--gap-md);
+  border-bottom: 1px solid var(--border);
+}
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-primary), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-left .subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+.update-badge {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.data-fresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+.data-fresh .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== STAGE GAUGE ===== */
+.stage-gauge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--gap-xl) var(--gap-xl) var(--gap-lg);
+  margin-bottom: var(--gap-lg);
+  backdrop-filter: blur(20px);
+}
+.stage-gauge-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--gap-md);
+}
+.stage-bar-container {
+  position: relative;
+  margin-bottom: var(--gap-md);
+}
+.stage-bar {
+  display: flex;
+  height: 48px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.stage-segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.stage-segment .stage-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.stage-segment .stage-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+.stage-segment .stage-sub {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.seg-a {
+  background: linear-gradient(135deg, rgba(98,250,211,0.20), rgba(98,250,211,0.10));
+  color: var(--stage-a);
+}
+.seg-b {
+  background: linear-gradient(135deg, rgba(105,231,255,0.20), rgba(105,231,255,0.10));
+  color: var(--stage-b);
+}
+.seg-c1 {
+  background: linear-gradient(135deg, rgba(255,215,110,0.20), rgba(255,215,110,0.10));
+  color: var(--stage-c);
+}
+.seg-c2 {
+  background: linear-gradient(135deg, rgba(255,169,77,0.25), rgba(255,169,77,0.12));
+  color: var(--orange);
+}
+.seg-d {
+  background: linear-gradient(135deg, rgba(255,107,107,0.20), rgba(255,107,107,0.10));
+  color: var(--stage-d);
+}
+/* Transition zone between B and C */
+.seg-b::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,215,110,0.12));
+  pointer-events: none;
+}
+
+/* Pointer */
+.stage-pointer {
+  position: absolute;
+  bottom: -14px;
+  left: 55%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+.stage-pointer .arrow {
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 10px solid var(--cyan);
+  filter: drop-shadow(0 0 6px var(--cyan-glow));
+}
+.stage-pointer .pointer-label {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  white-space: nowrap;
+  background: rgba(7,10,20,0.8);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(105,231,255,0.3);
+}
+
+/* Probability distribution */
+.prob-row {
+  display: flex;
+  gap: var(--gap-md);
+  margin-top: var(--gap-xl);
+  align-items: stretch;
+}
+.prob-item {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--gap-md);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+.prob-item.active {
+  border-color: rgba(105,231,255,0.4);
+  background: rgba(105,231,255,0.06);
+}
+.prob-item .prob-stage {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.prob-item .prob-value {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+.prob-item .prob-trend {
+  font-size: 11px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.prob-item .prob-trend.up { color: var(--green); }
+.prob-item .prob-trend.down { color: var(--red); }
+.prob-item .prob-trend.flat { color: var(--text-muted); }
+
+.prob-a .prob-stage { color: var(--stage-a); }
+.prob-a .prob-value { color: var(--stage-a); }
+.prob-b .prob-stage { color: var(--stage-b); }
+.prob-b .prob-value { color: var(--stage-b); }
+.prob-c1 .prob-stage { color: var(--stage-c); }
+.prob-c1 .prob-value { color: var(--stage-c); }
+.prob-c2 .prob-stage { color: var(--orange); }
+.prob-c2 .prob-value { color: var(--orange); }
+.prob-d .prob-stage { color: var(--stage-d); }
+.prob-d .prob-value { color: var(--stage-d); }
+
+/* Stage description */
+.stage-desc {
+  margin-top: var(--gap-lg);
+  padding: var(--gap-md);
+  background: rgba(105,231,255,0.04);
+  border: 1px solid rgba(105,231,255,0.15);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-md);
+}
+.stage-desc .stage-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.stage-desc .stage-text h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+.stage-desc .stage-text p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--gap-lg);
+  margin-bottom: var(--gap-lg);
+}
+
+/* ===== ANCHOR INDICATORS ===== */
+.anchor-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--gap-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+.section-title .badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-weight: 700;
+}
+.anchor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--gap-lg);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+}
+.anchor-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+.anchor-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--gap-md);
+}
+.anchor-card-header .indicator-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.anchor-card-header .timestamp {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.anchor-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-sm);
+}
+.anchor-value {
+  font-size: 36px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+.anchor-unit {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.anchor-percentile {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: var(--gap-md);
+}
+.anchor-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: var(--gap-md);
+}
+.status-green {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.status-yellow {
+  background: var(--yellow-dim);
+  color: var(--yellow);
+}
+.status-red {
+  background: var(--red-dim);
+  color: var(--red);
+}
+/* Sparkline */
+.sparkline-container {
+  height: 48px;
+  margin-top: var(--gap-sm);
+  position: relative;
+}
+.sparkline-container svg {
+  width: 100%;
+  height: 100%;
+}
+/* Historical reference line */
+.hist-ref {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: var(--gap-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hist-ref .ref-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* ===== INDICATOR GRID ===== */
+.indicators-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+.indicator-tabs {
+  display: flex;
+  gap: var(--gap-xs);
+  margin-bottom: var(--gap-sm);
+}
+.ind-tab {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+}
+.ind-tab.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ind-tab:hover:not(.active) {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.indicator-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-md);
+}
+.ind-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--gap-md);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.ind-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.ind-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--gap-sm);
+}
+.ind-card-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.ind-card-status {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.ind-card-status.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.ind-card-status.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.ind-card-status.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.ind-card-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.ind-card-interpret {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: var(--gap-sm);
+}
+.ind-card-time {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  opacity: 0.7;
+}
+
+/* Mini sparkline for ind-cards */
+.ind-card .mini-sparkline {
+  margin-top: 8px;
+  height: 28px;
+  width: 100%;
+  opacity: 0.85;
+}
+.ind-card .mini-sparkline svg {
+  width: 100%;
+  height: 28px;
+  display: block;
+}
+
+/* Stale data indicator */
+.ind-card.stale {
+  opacity: 0.6;
+  border-color: rgba(255,215,110,0.2);
+}
+.ind-card.stale::after {
+  content: '⚠ 数据滞后';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9px;
+  color: var(--yellow);
+  background: var(--yellow-dim);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===== BOTTOM ACTION BAR ===== */
+.action-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--gap-lg) var(--gap-xl);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+}
+.action-left {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-lg);
+}
+.action-stage {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+.action-stage-badge {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(105,231,255,0.12);
+  color: var(--cyan);
+  border: 1px solid rgba(105,231,255,0.3);
+}
+.action-position {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.action-position strong {
+  color: var(--text-primary);
+}
+.action-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-strong);
+}
+.action-ref {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+.action-ref strong {
+  color: var(--text-secondary);
+}
+.action-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+.warning-item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--yellow-dim);
+  color: var(--yellow);
+  border: 1px solid rgba(255,215,110,0.2);
+}
+.warning-item .warn-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ===== SWITCHING CONDITIONS TABLE ===== */
+.switch-table-section {
+  margin-top: var(--gap-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--gap-xl);
+  backdrop-filter: blur(20px);
+}
+.switch-table-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--gap-md);
+  color: var(--text-primary);
+}
+.switch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.switch-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: var(--gap-sm) var(--gap-md);
+  border-bottom: 1px solid var(--border-strong);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.switch-table td {
+  padding: var(--gap-sm) var(--gap-md);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+.switch-table tr:last-child td {
+  border-bottom: none;
+}
+.switch-table .condition-cell {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.switch-table .met {
+  color: var(--green);
+  font-weight: 600;
+}
+.switch-table .not-met {
+  color: var(--text-muted);
+}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  margin-top: var(--gap-lg);
+  padding: var(--gap-md);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+
+/* ===== POSITION GUIDE ===== */
+.position-guide {
+  margin-top: var(--gap-lg);
+  padding: var(--gap-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.position-guide-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--gap-md);
+}
+.position-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap-md);
+}
+.pg-card {
+  padding: var(--gap-md);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  background: var(--surface);
+  transition: all 0.2s ease;
+}
+.pg-card.pg-active {
+  border-color: var(--cyan);
+  background: var(--cyan-glow);
+  box-shadow: 0 0 12px rgba(105,231,255,0.15);
+}
+.pg-stage {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.pg-a .pg-stage { color: var(--stage-a); }
+.pg-b .pg-stage { color: var(--stage-b); }
+.pg-c1 .pg-stage { color: var(--stage-c); }
+.pg-c2 .pg-stage { color: var(--orange); }
+.pg-d .pg-stage { color: var(--stage-d); }
+.pg-position {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+.pg-direction {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .indicator-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .prob-row {
+    flex-wrap: wrap;
+  }
+  .prob-item {
+    flex: 1 1 45%;
+  }
+  .action-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .action-divider {
+    width: 100%;
+    height: 1px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page { padding: var(--gap-md); }
+  .indicator-grid { grid-template-columns: 1fr; }
+  .position-guide-grid { grid-template-columns: repeat(2, 1fr); }
+  .prob-row { flex-direction: column; }
+  .stage-bar { height: 40px; }
+  .stage-segment .stage-name { font-size: 12px; }
+  .anchor-value { font-size: 28px; }
+}
+
+/* ===== PRINT ===== */
+/* Focus states */
+.ind-tab:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body { background: #fff; color: #111; }
+  body::before { display: none; }
+  .stage-gauge, .anchor-card, .ind-card, .action-bar, .switch-table-section {
+    background: #f8f8f8;
+    border-color: #ddd;
+    backdrop-filter: none;
+  }
+  .anchor-value, .ind-card-value { color: #111; }
+  .text-secondary, .ind-card-interpret { color: #555; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1>股票看板</h1>
+      <div class="subtitle">基于 A/B/C/D 四段状态机 · 15指标实时跟踪 · 独立模块</div>
+    </div>
+    <div class="header-right">
+      <span class="update-badge">更新于 2026-08-30</span>
+      <span class="data-fresh"><span class="dot"></span>数据正常</span>
+    </div>
+  </header>
+
+  <!-- STAGE GAUGE -->
+  <section class="stage-gauge">
+    <div class="stage-gauge-title">市场周期阶段定位</div>
+
+    <div class="stage-bar-container">
+      <div class="stage-bar">
+        <div class="stage-segment seg-a">
+          <div class="stage-label">
+            <span class="stage-name">A · 春播</span>
+            <span class="stage-sub">深度低估</span>
+          </div>
+        </div>
+        <div class="stage-segment seg-b">
+          <div class="stage-label">
+            <span class="stage-name">B · 夏长</span>
+            <span class="stage-sub">结构性慢牛</span>
+          </div>
+        </div>
+        <div class="stage-segment seg-c1">
+          <div class="stage-label">
+            <span class="stage-name">C1 · 享受泡沫</span>
+            <span class="stage-sub">估值扩张</span>
+          </div>
+        </div>
+        <div class="stage-segment seg-c2">
+          <div class="stage-label">
+            <span class="stage-name">C2 · 准备跑路</span>
+            <span class="stage-sub">情绪过热</span>
+          </div>
+        </div>
+        <div class="stage-segment seg-d">
+          <div class="stage-label">
+            <span class="stage-name">D · 冬藏</span>
+            <span class="stage-sub">估值回归</span>
+          </div>
+        </div>
+      </div>
+      <!-- Pointer at ~55% (B段偏右，接近C) -->
+      <div class="stage-pointer">
+        <div class="arrow"></div>
+        <div class="pointer-label">当前位置</div>
+      </div>
+    </div>
+
+    <!-- Probability Distribution -->
+    <div class="prob-row">
+      <div class="prob-item prob-a">
+        <div class="prob-stage">A · 春播</div>
+        <div class="prob-value">5%</div>
+        <div class="prob-trend flat">— 持平</div>
+      </div>
+      <div class="prob-item prob-b active">
+        <div class="prob-stage">B · 夏长</div>
+        <div class="prob-value">65%</div>
+        <div class="prob-trend down">↓ 较上周 -5pp</div>
+      </div>
+      <div class="prob-item prob-c1">
+        <div class="prob-stage">C1 · 享受泡沫</div>
+        <div class="prob-value">20%</div>
+        <div class="prob-trend up">↑ 较上周 +3pp</div>
+      </div>
+      <div class="prob-item prob-c2">
+        <div class="prob-stage">C2 · 准备跑路</div>
+        <div class="prob-value">8%</div>
+        <div class="prob-trend up">↑ 较上周 +2pp</div>
+      </div>
+      <div class="prob-item prob-d">
+        <div class="prob-stage">D · 冬藏</div>
+        <div class="prob-value">2%</div>
+        <div class="prob-trend flat">— 持平</div>
+      </div>
+    </div>
+
+    <!-- Stage Description -->
+    <div class="stage-desc">
+      <div class="stage-icon">☀️</div>
+      <div class="stage-text">
+        <h2 style="font-size:15px;font-weight:700;color:var(--cyan);margin-bottom:4px;">B段 · 结构性震荡慢牛中段</h2>
+        <p>整体估值中枢附近，没有系统性泡沫也没有极端低估。ERP 远离大底区域但未进入高估泡沫。机构仓位不低、增量空间有限，行情高度结构化，收益主要来自板块轮动。注意 C 段信号正在积累（恐贪指数上行、两融走高），需持续关注切换条件。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT: Anchor + Grid -->
+  <div class="main-content">
+
+    <!-- ANCHOR INDICATORS (LEFT) -->
+    <aside class="anchor-section">
+      <div class="section-title">
+        锚定指标
+        <span class="badge">决定大方向</span>
+      </div>
+
+      <!-- ERP Card -->
+      <div class="anchor-card">
+        <div class="anchor-card-header">
+          <span class="indicator-name">万得全A 股权风险溢价 (ERP)</span>
+          <span class="timestamp">2026-08-28</span>
+        </div>
+        <div class="anchor-value-row">
+          <span class="anchor-value" style="color: var(--yellow);">2.15</span>
+          <span class="anchor-unit">%</span>
+        </div>
+        <div class="anchor-percentile">10年分位 48% · 中性偏划算区间</div>
+        <div class="anchor-status status-yellow">📊 中性区间 (1.6%~3.2%)</div>
+        <div class="sparkline-container">
+          <svg viewBox="0 0 200 48" preserveAspectRatio="none" role="img" aria-labelledby="erp-chart-title">
+            <title id="erp-chart-title">ERP 近12个月趋势：从 2.8% 下行至当前 2.15%，处于中性区间</title>
+            <defs>
+              <linearGradient id="erp-grad" x1="0" y1="0.0" x2="0" y2="1.0">
+                <stop offset="0%" stop-color="rgba(255,215,110,0.3)"/>
+                <stop offset="100%" stop-color="rgba(255,215,110,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,35 L16,32 L33,28 L50,30 L66,25 L83,20 L100,22 L116,18 L133,20 L150,25 L166,28 L183,30 L200,32 L200,48 L0,48Z" fill="url(#erp-grad)"/>
+            <path d="M0,35 L16,32 L33,28 L50,30 L66,25 L83,20 L100,22 L116,18 L133,20 L150,25 L166,28 L183,30 L200,32" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="0" y1="10.0" x2="200" y2="10.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
+            <text x="195" y="8" fill="var(--green)" font-size="7" text-anchor="end">3.2% 便宜</text>
+            <line x1="0" y1="26.0" x2="200" y2="26.0" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
+            <text x="195" y="46" fill="var(--red)" font-size="7" text-anchor="end">1.6% 偏贵</text>
+            <circle cx="200" cy="32" r="3" fill="var(--yellow)"/>
+          </svg>
+        </div>
+        <div class="hist-ref">
+          <span class="ref-dot"></span>
+          距 2024 大底 (ERP 3.5%) 还差 1.35pp
+        </div>
+      </div>
+
+      <!-- Buffett Indicator Card -->
+      <div class="anchor-card">
+        <div class="anchor-card-header">
+          <span class="indicator-name">巴菲特指标 (总市值/GDP)</span>
+          <span class="timestamp">2026-08-28</span>
+        </div>
+        <div class="anchor-value-row">
+          <span class="anchor-value" style="color: var(--cyan);">80</span>
+          <span class="anchor-unit">%</span>
+        </div>
+        <div class="anchor-percentile">10年分位 55% · B段合理区间</div>
+        <div class="anchor-status status-green">✅ 合理区间 (60%~95%)</div>
+        <div class="sparkline-container">
+          <svg viewBox="0 0 200 48" preserveAspectRatio="none" role="img" aria-labelledby="buff-chart-title">
+            <title id="buff-chart-title">巴菲特指标近12个月趋势：从 75% 上行至当前 80%，处于合理区间</title>
+            <defs>
+              <linearGradient id="buff-grad" x1="0" y1="0.0" x2="0" y2="1.0">
+                <stop offset="0%" stop-color="rgba(105,231,255,0.3)"/>
+                <stop offset="100%" stop-color="rgba(105,231,255,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,30 L16,28 L33,25 L50,27 L66,24 L83,22 L100,20 L116,18 L133,19 L150,21 L166,22 L183,20 L200,21 L200,48 L0,48Z" fill="url(#buff-grad)"/>
+            <path d="M0,30 L16,28 L33,25 L50,27 L66,24 L83,22 L100,20 L116,18 L133,19 L150,21 L166,22 L183,20 L200,21" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="0" y1="8.0" x2="200" y2="8.0" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
+            <text x="195" y="6" fill="var(--red)" font-size="7" text-anchor="end">105% 泡沫</text>
+            <line x1="0" y1="26.0" x2="200" y2="26.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
+            <text x="195" y="46" fill="var(--green)" font-size="7" text-anchor="end">60% 底部</text>
+            <circle cx="200" cy="21" r="3" fill="var(--cyan)"/>
+          </svg>
+        </div>
+        <div class="hist-ref">
+          <span class="ref-dot"></span>
+          距泡沫预警线 (105%) 还有 25pp
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONFIRMATION + BACKGROUND INDICATORS (RIGHT) -->
+    <section class="indicators-section">
+      <div class="section-title">
+        确认 & 背景指标
+        <span class="badge">交叉验证</span>
+      </div>
+
+      <div class="indicator-tabs">
+        <button class="ind-tab active" onclick="switchTab(this, 'confirm')">确认指标 (4)</button>
+        <button class="ind-tab" onclick="switchTab(this, 'background')">背景指标 (9)</button>
+        <button class="ind-tab" onclick="switchTab(this, 'all')">全部 (13)</button>
+      </div>
+
+      <!-- Confirmation Indicators Grid -->
+      <div class="indicator-grid" id="confirm-grid">
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">主动偏股基金仓位</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">91.8%</div>
+          <div class="ind-card-interpret">2016年以来 90%+ 高分位，公募增量空间有限</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="主动偏股基金仓位近期趋势">
+<title>主动偏股基金仓位近期趋势</title>
+<defs><linearGradient id="sg-主动偏股" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,25.7 L18.2,22.2 L36.4,18.8 L54.5,15.4 L72.7,11.9 L90.9,13.7 L109.1,8.5 L127.3,6.8 L145.5,5.1 L163.6,4.4 L181.8,3.4 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-主动偏股)" />
+<path d="M0.0,25.7 L18.2,22.2 L36.4,18.8 L54.5,15.4 L72.7,11.9 L90.9,13.7 L109.1,8.5 L127.3,6.8 L145.5,5.1 L163.6,4.4 L181.8,3.4 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-25</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">两融余额</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">1.75万亿</div>
+          <div class="ind-card-interpret">历史中等偏高，未达过热线(2.3万亿)</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="两融余额近期趋势">
+<title>两融余额近期趋势</title>
+<defs><linearGradient id="sg-两融余额" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,22.2 L18.2,25.7 L36.4,19.6 L54.5,17.0 L72.7,15.3 L90.9,13.6 L109.1,11.0 L127.3,8.4 L145.5,6.7 L163.6,4.9 L181.8,4.1 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-两融余额)" />
+<path d="M0.0,22.2 L18.2,25.7 L36.4,19.6 L54.5,17.0 L72.7,15.3 L90.9,13.6 L109.1,11.0 L127.3,8.4 L145.5,6.7 L163.6,4.9 L181.8,4.1 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-29</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">恐贪指数</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">42</div>
+          <div class="ind-card-interpret">中性偏冷，连续3周上行但尚未到贪婪区(&gt;70)</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="恐贪指数近期趋势">
+<title>恐贪指数近期趋势</title>
+<defs><linearGradient id="sg-恐贪指数" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,21.5 L18.2,25.7 L36.4,18.8 L54.5,16.1 L72.7,11.9 L90.9,14.7 L109.1,10.6 L127.3,7.8 L145.5,9.2 L163.6,6.5 L181.8,5.1 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-恐贪指数)" />
+<path d="M0.0,21.5 L18.2,25.7 L36.4,18.8 L54.5,16.1 L72.7,11.9 L90.9,14.7 L109.1,10.6 L127.3,7.8 L145.5,9.2 L163.6,6.5 L181.8,5.1 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-29</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">新发偏股基金</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">186亿</div>
+          <div class="ind-card-interpret">3月均规模低位温和，未出现爆款频出</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="新发偏股基金近期趋势">
+<title>新发偏股基金近期趋势</title>
+<defs><linearGradient id="sg-新发偏股" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,2.3 L18.2,15.7 L36.4,25.7 L54.5,22.3 L72.7,9.0 L90.9,19.0 L109.1,12.3 L127.3,17.3 L145.5,20.7 L163.6,15.7 L181.8,15.0 L200.0,13.7 L200,28 L0,28Z" fill="url(#sg-新发偏股)" />
+<path d="M0.0,2.3 L18.2,15.7 L36.4,25.7 L54.5,22.3 L72.7,9.0 L90.9,19.0 L109.1,12.3 L127.3,17.3 L145.5,20.7 L163.6,15.7 L181.8,15.0 L200.0,13.7" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="13.7" r="2.5" fill="var(--green)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-28</div>
+        </div>
+      </div>
+
+      <!-- Background Indicators Grid (hidden by default) -->
+      <div class="indicator-grid" id="background-grid" style="display:none;">
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">全A非金融盈利增速</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">+3.2%</div>
+          <div class="ind-card-interpret">温和修复中，未过热(&gt;8%)也未下行(&lt;-3%)</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="全A非金融盈利增速近期趋势">
+<title>全A非金融盈利增速近期趋势</title>
+<defs><linearGradient id="sg-全A非金" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,25.7 L18.2,23.5 L36.4,16.7 L54.5,14.0 L72.7,11.3 L90.9,9.8 L109.1,7.6 L127.3,6.0 L145.5,4.5 L163.6,3.4 L181.8,2.9 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-全A非金)" />
+<path d="M0.0,25.7 L18.2,23.5 L36.4,16.7 L54.5,14.0 L72.7,11.3 L90.9,9.8 L109.1,7.6 L127.3,6.0 L145.5,4.5 L163.6,3.4 L181.8,2.9 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-28</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">10Y美债收益率</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">4.35%</div>
+          <div class="ind-card-interpret">高位震荡，未突破5.0%约束线</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="10Y美债收益率近期趋势">
+<title>10Y美债收益率近期趋势</title>
+<defs><linearGradient id="sg-10Y美" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,11.7 L18.2,2.3 L36.4,7.0 L54.5,16.3 L72.7,21.0 L90.9,22.9 L109.1,19.1 L127.3,21.0 L145.5,22.9 L163.6,24.7 L181.8,25.7 L200.0,25.7 L200,28 L0,28Z" fill="url(#sg-10Y美)" />
+<path d="M0.0,11.7 L18.2,2.3 L36.4,7.0 L54.5,16.3 L72.7,21.0 L90.9,22.9 L109.1,19.1 L127.3,21.0 L145.5,22.9 L163.6,24.7 L181.8,25.7 L200.0,25.7" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+<circle cx="200.0" cy="25.7" r="2.5" fill="var(--yellow)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-30</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">北向资金(3月滚动)</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">+82亿</div>
+          <div class="ind-card-interpret">波动无单边趋势，非系统性流出</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="北向资金(3月滚动)近期趋势">
+<title>北向资金(3月滚动)近期趋势</title>
+<defs><linearGradient id="sg-北向资金" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,22.1 L18.2,25.7 L36.4,20.4 L54.5,15.1 L72.7,11.5 L90.9,8.9 L109.1,8.0 L127.3,6.2 L145.5,5.3 L163.6,4.5 L181.8,3.0 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-北向资金)" />
+<path d="M0.0,22.1 L18.2,25.7 L36.4,20.4 L54.5,15.1 L72.7,11.5 L90.9,8.9 L109.1,8.0 L127.3,6.2 L145.5,5.3 L163.6,4.5 L181.8,3.0 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-29</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">私募仓位</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">84%</div>
+          <div class="ind-card-interpret">年内高位，70%+私募仓位超80%</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="私募仓位近期趋势">
+<title>私募仓位近期趋势</title>
+<defs><linearGradient id="sg-私募仓位" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,22.3 L18.2,25.7 L36.4,19.0 L54.5,15.7 L72.7,12.3 L90.9,10.7 L109.1,9.0 L127.3,7.3 L145.5,5.7 L163.6,4.0 L181.8,3.2 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-私募仓位)" />
+<path d="M0.0,22.3 L18.2,25.7 L36.4,19.0 L54.5,15.7 L72.7,12.3 L90.9,10.7 L109.1,9.0 L127.3,7.3 L145.5,5.7 L163.6,4.0 L181.8,3.2 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-25</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">新增开户数(周)</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">28.6万</div>
+          <div class="ind-card-interpret">温和水平，未出现居民加速入场信号</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="新增开户数(周)近期趋势">
+<title>新增开户数(周)近期趋势</title>
+<defs><linearGradient id="sg-新增开户" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,20.2 L18.2,25.7 L36.4,14.8 L54.5,12.1 L72.7,9.4 L90.9,14.8 L109.1,12.1 L127.3,9.4 L145.5,6.7 L163.6,5.3 L181.8,4.0 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-新增开户)" />
+<path d="M0.0,20.2 L18.2,25.7 L36.4,14.8 L54.5,12.1 L72.7,9.4 L90.9,14.8 L109.1,12.1 L127.3,9.4 L145.5,6.7 L163.6,5.3 L181.8,4.0 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-27</div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">全A换手率</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">1.8%</div>
+          <div class="ind-card-interpret">中性，未突破历史90%分位(3.2%)</div>
+<div class="mini-sparkline">
+<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="全A换手率近期趋势">
+<title>全A换手率近期趋势</title>
+<defs><linearGradient id="sg-全A换手" x1="0" y1="0.0" x2="0" y2="1.0">
+<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+<path d="M0.0,19.8 L18.2,25.7 L36.4,16.9 L54.5,14.0 L72.7,11.1 L90.9,14.0 L109.1,11.1 L127.3,8.2 L145.5,6.7 L163.6,5.3 L181.8,3.8 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-全A换手)" />
+<path d="M0.0,19.8 L18.2,25.7 L36.4,16.9 L54.5,14.0 L72.7,11.1 L90.9,14.0 L109.1,11.1 L127.3,8.2 L145.5,6.7 L163.6,5.3 L181.8,3.8 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
+</svg></div>
+          <div class="ind-card-time">更新于 2026-08-29</div>
+        </div>
+      </div>
+
+
+<div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">中位数PE (全A)</span>
+            <span class="ind-card-status green"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--green);">32.5x</div>
+          <div class="ind-card-interpret">历史中等偏低，10年分位38%</div>
+          <div class="ind-card-time">更新于 2026-08-29</div>
+          <div class="mini-sparkline">
+            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="中位数PE近期趋势">
+              <title>中位数PE近期趋势</title>
+              <defs><linearGradient id="sg-mpe" x1="0" y1="0.0" x2="0" y2="1.0">
+                <stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,15 L16,16 L33,18 L50,17 L66,14 L83,13 L100,12 L116,14 L133,13 L150,12 L166,11 L183,12 L200,11 L200,28 L0,28Z" fill="url(#sg-mpe)" />
+              <path d="M0,15 L16,16 L33,18 L50,17 L66,14 L83,13 L100,12 L116,14 L133,13 L150,12 L166,11 L183,12 L200,11" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="200" cy="11" r="2.5" fill="var(--green)"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">财政支出增速</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">+3.8%</div>
+          <div class="ind-card-interpret">一般公共预算支出同比温和，未出现大幅发力</div>
+          <div class="ind-card-time">更新于 2026-08-20</div>
+          <div class="mini-sparkline">
+            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="财政支出增速近期趋势">
+              <title>财政支出增速近期趋势</title>
+              <defs><linearGradient id="sg-fis" x1="0" y1="0.0" x2="0" y2="1.0">
+                <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,10 L16,12 L33,14 L50,11 L66,15 L83,13 L100,16 L116,14 L133,15 L150,13 L166,14 L183,13 L200,14 L200,28 L0,28Z" fill="url(#sg-fis)" />
+              <path d="M0,10 L16,12 L33,14 L50,11 L66,15 L83,13 L100,16 L116,14 L133,15 L150,13 L166,14 L183,13 L200,14" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="200" cy="14" r="2.5" fill="var(--yellow)"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-card-header">
+            <span class="ind-card-name">30大中城市商品房成交面积</span>
+            <span class="ind-card-status yellow"></span>
+          </div>
+          <div class="ind-card-value" style="color: var(--yellow);">312万㎡</div>
+          <div class="ind-card-interpret">周度数据，同比-5%降幅收窄但未转正</div>
+          <div class="ind-card-time">更新于 2026-08-28</div>
+          <div class="mini-sparkline">
+            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="商品房成交近期趋势">
+              <title>商品房成交近期趋势</title>
+              <defs><linearGradient id="sg-re" x1="0" y1="0.0" x2="0" y2="1.0">
+                <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,18 L16,20 L33,16 L50,19 L66,15 L83,17 L100,14 L116,16 L133,13 L150,15 L166,12 L183,14 L200,13 L200,28 L0,28Z" fill="url(#sg-re)" />
+              <path d="M0,18 L16,20 L33,16 L50,19 L66,15 L83,17 L100,14 L116,16 L133,13 L150,15 L166,12 L183,14 L200,13" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="200" cy="13" r="2.5" fill="var(--yellow)"/>
+            </svg>
+          </div>
+        </div>
+
+      <!-- All indicators (hidden) -->
+
+            <!-- All indicators (hidden) -->
+      <div class="indicator-grid" id="all-grid" style="display:none;">
+        <!-- Populated by JS when tab is clicked -->
+      </div>
+    </section>
+  </div>
+
+  <!-- ACTION BAR -->
+  <section class="action-bar">
+    <div class="action-left">
+      <div class="action-stage">
+        <span class="action-stage-badge">B段 · 夏长</span>
+        <div class="action-position">
+          <div>目标仓位：<strong>60~80%</strong></div>
+          <div>操作方向：<strong>轮动为主，持有优质标的</strong></div>
+        </div>
+      </div>
+      <div class="action-divider"></div>
+      <div class="action-ref">
+        <strong>阶段特征：</strong>收益来自板块轮动和产业趋势，非整体性估值扩张。震荡频繁，中级回撤是常态。不追指数快牛，也不用熊市思维。
+      </div>
+    </div>
+    <div class="action-warnings">
+      <div class="warning-item">
+        <span class="warn-icon">⚠️</span>
+        恐贪指数连续3周上行(35→42)，接近C段早期关注区
+      </div>
+      <div class="warning-item">
+        <span class="warn-icon">⚠️</span>
+        公募仓位91.8%接近历史极值，增量子弹有限
+      </div>
+    </div>
+  </section>
+
+  <!-- POSITION GUIDE: All stages -->
+  <section class="position-guide">
+    <div class="position-guide-title">各阶段仓位参考</div>
+    <div class="position-guide-grid">
+      <div class="pg-card pg-a">
+        <div class="pg-stage">A · 春播</div>
+        <div class="pg-position">80~100%</div>
+        <div class="pg-direction">方向：成长股，左侧布局</div>
+      </div>
+      <div class="pg-card pg-b pg-active">
+        <div class="pg-stage">B · 夏长</div>
+        <div class="pg-position">60~80%</div>
+        <div class="pg-direction">方向：轮动，持有优质标的</div>
+      </div>
+      <div class="pg-card pg-c1">
+        <div class="pg-stage">C1 · 享受泡沫</div>
+        <div class="pg-position">40~60%</div>
+        <div class="pg-direction">方向：开始止盈，降低弹性仓位</div>
+      </div>
+      <div class="pg-card pg-c2">
+        <div class="pg-stage">C2 · 准备跑路</div>
+        <div class="pg-position">0~20%</div>
+        <div class="pg-direction">方向：防御为主，仅保留底仓</div>
+      </div>
+      <div class="pg-card pg-d">
+        <div class="pg-stage">D · 冬藏</div>
+        <div class="pg-position">0%</div>
+        <div class="pg-direction">方向：持有现金或短债，等待下一周期</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SWITCHING CONDITIONS TABLE -->
+  <section class="switch-table-section">
+    <div class="switch-table-title">阶段切换条件跟踪</div>
+    <table class="switch-table">
+      <caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">阶段切换条件跟踪表</caption>
+      <thead>
+        <tr>
+          <th style="width:160px;">切换方向</th>
+          <th>触发条件</th>
+          <th style="width:100px;">当前状态</th>
+          <th style="width:120px;">满足数/需满足</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--green); font-weight:600;">B → A (回到底部)</td>
+          <td class="condition-cell">ERP &gt; 3.2% · 政策加码 · 右侧信号形成</td>
+          <td class="condition-cell">0/3 项满足</td>
+          <td><span class="not-met">● 未触发</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--yellow); font-weight:600;">B → C (走向泡沫)</td>
+          <td class="condition-cell">
+            ERP &lt; 1.6% · 巴菲特 &gt; 105% · 恐贪 &gt; 70<br>
+            两融大幅走高 · 基金爆款频出 · 换手率 &gt; 90%分位
+          </td>
+          <td class="condition-cell">
+            <span class="not-met">ERP ✗</span> · <span class="not-met">巴菲特 ✗</span><br>
+            <span class="not-met">恐贪 ✗</span> · <span class="not-met">两融 ✗</span><br>
+            <span class="not-met">爆款 ✗</span> · <span class="not-met">换手 ✗</span>
+          </td>
+          <td><span class="not-met">0/6 项满足</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--red); font-weight:600;">→ D (系统性风险)</td>
+          <td class="condition-cell">地产-地方债务失控 · 全球流动性深度紧缩 · 盈利增速转负</td>
+          <td class="condition-cell">0/3 项满足</td>
+          <td><span class="not-met">● 未触发</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    ⚠️ 以上内容基于历史数据与统计规律，过去表现不代表未来。仓位为目标框架，请结合自身风险偏好独立决策。
+  </div>
+
+  </main>
+</div>
+
+<script>
+function switchTab(btn, tabName) {
+  // Update active tab
+  document.querySelectorAll('.ind-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Show/hide grids
+  document.getElementById('confirm-grid').style.display = tabName === 'confirm' || tabName === 'all' ? 'grid' : 'none';
+  document.getElementById('background-grid').style.display = tabName === 'background' || tabName === 'all' ? 'grid' : 'none';
+  document.getElementById('all-grid').style.display = 'none';
+
+  if (tabName === 'all') {
+    // Show all cards in a combined grid
+    document.getElementById('confirm-grid').style.display = 'grid';
+    document.getElementById('background-grid').style.display = 'grid';
+  }
+}
+
+// Add subtle hover effects
+// Hover effects handled by CSS
+</script>
+</body>
+</html>

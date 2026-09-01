@@ -82,6 +82,7 @@
         <button class="tab-btn" data-tab="timing" onclick="app.switchTab('timing')">
           <span class="mr-1.5">📈</span>A股研究
         </button>
+        <button class="tab-btn" data-tab="stock" onclick="app.switchTab('stock')"><span class="mr-1.5">📈</span>股票看板</button>
       </div>
     </div>
   </nav>
@@ -126,6 +127,7 @@
     <div id="tab-timing" class="tab-content hidden">
       <link rel="stylesheet" href="css/style_timing.css">
       <div id="timing-content"></div>
+    <div id="tab-stock" class="tab-content hidden"><iframe id="stock-iframe" src="" data-src="stock_dashboard.html" style="width:100%;min-height:calc(100vh - 160px);border:none;border-radius:8px;" loading="lazy" title="股票看板"></iframe></div>
     </div>
 
   </main>
