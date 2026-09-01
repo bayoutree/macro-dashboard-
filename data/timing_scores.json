@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-08-31",
+  "update_date": "2026-09-01",
   "version": "v2.0",
   "composite_score": 46.3,
   "position_range": "40%-55%",
@@ -14,9 +14,9 @@
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 58.4,
+          "value": 58.9,
           "unit": "%分位",
-          "score": 58.0,
+          "score": 59.0,
           "sub_weight": 35,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -234,9 +234,9 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 31.5,
+          "value": 29.8,
           "unit": "%分位",
-          "score": 32.0,
+          "score": 30.0,
           "sub_weight": 20,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -738,7 +738,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "降息周期(1.70%)",
+          "value": "降息周期(1.69%)",
           "score": 35,
           "sub_weight": 30,
           "bottom_signal": "降息周期",
@@ -965,17 +965,18 @@
     },
     "equity_bond": {
       "name": "股债性价比",
-      "score": 33.8,
+      "score": 35.0,
       "weight": 18,
-      "weighted_score": 6.08,
+      "weighted_score": 6.3,
       "signal": "股票有吸引力",
       "indicators": {
         "hs300_erp": {
-          "name": "沪深300 ERP",
+          "name": "沪深300 ERP (参考)",
           "value": "5.97%",
-          "percentile": "40.9%",
+          "percentile": "40.7%",
           "score": 30,
-          "sub_weight": 50,
+          "sub_weight": 25,
+          "note": "【参考】沪深300口径仅供参考，主指标为万得全A ERP",
           "bottom_threshold": ">6%",
           "top_threshold": "<2.5%",
           "history": [
@@ -1192,7 +1193,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.90%",
+          "value": "2.91%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -1411,7 +1412,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.11%",
+          "value": "1.12%",
           "score": 50,
           "sub_weight": 15,
           "bottom_threshold": ">3%",
@@ -1691,9 +1692,9 @@
     },
     "capital_flow": {
       "name": "资金面",
-      "score": 49.5,
+      "score": 47.7,
       "weight": 15,
-      "weighted_score": 7.42,
+      "weighted_score": 7.16,
       "signal": "正常偏高",
       "indicators": {
         "margin_ratio": {
@@ -1917,11 +1918,13 @@
         },
         "northbound": {
           "name": "北向资金趋势",
-          "value": "震荡",
-          "score": 55,
-          "sub_weight": 25,
-          "bottom_signal": "连续净流入",
-          "top_signal": "持续净流出",
+          "value": "⚠️数据已停更(2025-09起)",
+          "score": 50,
+          "sub_weight": 0,
+          "status": "deprecated",
+          "note": "AKShare北向资金接口停更，本版本移除该指标",
+          "bottom_signal": "—",
+          "top_signal": "—",
           "history": [
             {
               "date": "2025-08-16",
@@ -3374,7 +3377,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.49)",
+          "value": "小盘中性(%B=0.45)",
           "score": 45,
           "sub_weight": 20,
           "bottom_signal": "比值触底回升",
@@ -3533,10 +3536,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.49)",
+      "current_value": "小盘中性(%B=0.45)",
       "status": "小盘走强",
       "signal": "可关注",
-      "detail": "小盘风格小盘中性(%B=0.49)"
+      "detail": "小盘风格小盘中性(%B=0.45)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
