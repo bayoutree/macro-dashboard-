@@ -12,16 +12,14 @@ const TimingTab = {
   scoreGaugeChart: null,
   bullBarChart: null,
   bearBarChart: null,
-  historyChart: null,
   miniCharts: [],
   miniChartObserver: null,
 
   async init() {
     try {
-      const _tv = Date.now();
       const [leftResp, rightResp] = await Promise.all([
-        fetch(`data/timing_scores.json?_v=${_tv}`, { cache: 'no-store' }),
-        fetch(`data/timing_right_scores.json?_v=${_tv}`, { cache: 'no-store' })
+        fetch('data/timing_scores.json'),
+        fetch('data/timing_right_scores.json')
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();
@@ -94,7 +92,6 @@ const TimingTab = {
       if (rd) {
         this.renderBullBar(rd);
         this.renderBearBar(rd);
-        this.renderHistoryChart(rd);
       }
     });
   },
@@ -107,15 +104,6 @@ const TimingTab = {
 
     // 1. Signal Lights
     html += this.renderSignalLights(rd);
-
-    // 1.5 Status Note (bull-bear conflict)
-    if (rd.status_note && rd.status_note.length > 0) {
-      html += `
-        <div class="trp-status-note">
-          <span class="trp-status-note-text">${rd.status_note}</span>
-        </div>
-      `;
-    }
 
     // 2. Score Progress Bars
     html += this.renderScoreBars(rd);
@@ -171,29 +159,6 @@ const TimingTab = {
 
     html += '</div>';
 
-    // P1#7: 牛熊信号冲突备注
-    const bullTriggered = (rd.signals?.confirm_bull || []).some(s => s.triggered) || (rd.signals?.strong_confirm_bull || []).some(s => s.triggered);
-    const bearTriggered = (rd.signals?.confirm_bear || []).some(s => s.triggered) || (rd.signals?.strong_confirm_bear || []).some(s => s.triggered);
-    const earlyBullTriggered = (rd.signals?.early_bull || []).some(s => s.triggered);
-    const earlyBearTriggered = (rd.signals?.early_bear || []).some(s => s.triggered);
-
-    let statusNote = '';
-    if (bullTriggered && earlyBearTriggered) {
-      statusNote = '牛市中继回调 — 大趋势向上，中期在调整';
-    } else if (bearTriggered && earlyBullTriggered) {
-      statusNote = '熊市中继反弹 — 大趋势向下，短期在修复';
-    } else if (earlyBullTriggered && earlyBearTriggered) {
-      statusNote = '多空交织 — 牛熊早期信号同时触发，建议观望';
-    }
-
-    if (statusNote) {
-      html += `
-        <div class="trp-status-note" style="margin-top:8px;padding:6px 10px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);border-radius:6px;font-size:12px;color:#fbbf24;text-align:center;">
-          ⚠️ ${statusNote}
-        </div>
-      `;
-    }
-
     // Trend bias label
     const biasLabels = {
       warm: '🌤 偏暖 · 牛市信号聚集',
@@ -213,6 +178,28 @@ const TimingTab = {
     const bullPct = Math.min(100, (rd.bull_score / 120) * 100);
     const bearPct = Math.min(100, (rd.bear_score / 120) * 100);
 
+    // 触发数统计
+    const bullTriggers = rd.signals ? (
+      (rd.signals.early_bull || []).filter(s => s.triggered).length +
+      (rd.signals.confirm_bull || []).filter(s => s.triggered).length +
+      (rd.signals.strong_confirm_bull || []).filter(s => s.triggered).length
+    ) : 0;
+    const bearTriggers = rd.signals ? (
+      (rd.signals.early_bear || []).filter(s => s.triggered).length +
+      (rd.signals.confirm_bear || []).filter(s => s.triggered).length +
+      (rd.signals.strong_confirm_bear || []).filter(s => s.triggered).length
+    ) : 0;
+    const totalBull = rd.signals ? (
+      (rd.signals.early_bull || []).length +
+      (rd.signals.confirm_bull || []).length +
+      (rd.signals.strong_confirm_bull || []).length
+    ) : 0;
+    const totalBear = rd.signals ? (
+      (rd.signals.early_bear || []).length +
+      (rd.signals.confirm_bear || []).length +
+      (rd.signals.strong_confirm_bear || []).length
+    ) : 0;
+
     let html = `
       <div class="trp-score-bars">
         <div class="trp-section-title">📊 累计分数</div>
@@ -220,6 +207,7 @@ const TimingTab = {
           <div class="trp-bar-label">
             <span>🐂 牛分</span>
             <span class="trp-bar-value bull">${rd.bull_score}<span class="trp-bar-max">/120</span></span>
+            <span style="font-size:11px;color:#10b981;margin-left:4px;">(${bullTriggers}/${totalBull}项触发)</span>
           </div>
           <div class="trp-bar-track">
             <div class="trp-bar-thresholds">
@@ -234,6 +222,7 @@ const TimingTab = {
           <div class="trp-bar-label">
             <span>🐻 熊分</span>
             <span class="trp-bar-value bear">${rd.bear_score}<span class="trp-bar-max">/120</span></span>
+            <span style="font-size:11px;color:#ef4444;margin-left:4px;">(${bearTriggers}/${totalBear}项触发)</span>
           </div>
           <div class="trp-bar-track">
             <div class="trp-bar-thresholds">
@@ -252,182 +241,7 @@ const TimingTab = {
         </div>
       </div>
     `;
-
-    // History trend chart container (only if history data exists)
-    if (rd.history && rd.history.length >= 2) {
-      html += `
-        <div class="trp-history-section">
-          <div class="trp-section-title">📈 分数走势 (近${rd.history.length}日)</div>
-          <div id="trp-history-chart" class="trp-history-chart"></div>
-        </div>
-      `;
-    }
-
     return html;
-  },
-
-  renderHistoryChart(rd) {
-    if (!rd.history || rd.history.length < 2) return;
-
-    // Dispose previous chart if any
-    if (this.historyChart) {
-      try { this.historyChart.dispose(); } catch(e) {}
-      this.historyChart = null;
-    }
-
-    const container = document.getElementById('trp-history-chart');
-    if (!container) return;
-
-    const chart = echarts.init(container, null, { renderer: 'canvas' });
-    this.historyChart = chart;
-
-    const dates = rd.history.map(h => h.date);
-    const bullScores = rd.history.map(h => h.bull_score);
-    const bearScores = rd.history.map(h => h.bear_score);
-
-    const option = {
-      animation: true,
-      animationDuration: 800,
-      grid: {
-        top: 28,
-        right: 16,
-        bottom: 28,
-        left: 16,
-        containLabel: true,
-      },
-      tooltip: {
-        trigger: 'axis',
-        backgroundColor: '#1e293b',
-        borderColor: '#334155',
-        borderWidth: 1,
-        textStyle: {
-          color: '#e2e8f0',
-          fontSize: 12,
-          fontFamily: 'JetBrains Mono',
-        },
-        padding: [8, 12],
-        formatter: function(params) {
-          let tip = `<div style="font-weight:600;margin-bottom:4px">${params[0].axisValue}</div>`;
-          params.forEach(p => {
-            tip += `<div style="display:flex;align-items:center;gap:6px">
-              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color}"></span>
-              <span>${p.seriesName}: <b>${p.value}</b>分</span>
-            </div>`;
-          });
-          return tip;
-        },
-      },
-      legend: {
-        show: true,
-        top: 2,
-        right: 0,
-        textStyle: { color: '#94a3b8', fontSize: 11 },
-        itemWidth: 14,
-        itemHeight: 8,
-        data: ['牛分', '熊分'],
-      },
-      xAxis: {
-        type: 'category',
-        data: dates,
-        boundaryGap: false,
-        axisLine: { lineStyle: { color: '#1e293b' } },
-        axisTick: { show: false },
-        axisLabel: {
-          color: '#64748b',
-          fontSize: 10,
-          fontFamily: 'JetBrains Mono',
-          formatter: function(val) {
-            // Show MM-DD format, only every few labels
-            return val.substring(5);
-          },
-          interval: function(index, total) {
-            if (total <= 15) return 0;
-            if (total <= 30) return Math.floor(total / 6) - 1;
-            if (total <= 60) return Math.floor(total / 6) - 1;
-            return Math.floor(total / 5) - 1;
-          },
-        },
-      },
-      yAxis: {
-        type: 'value',
-        min: 0,
-        max: 120,
-        splitNumber: 4,
-        axisLine: { show: false },
-        axisTick: { show: false },
-        axisLabel: {
-          color: '#64748b',
-          fontSize: 10,
-          fontFamily: 'JetBrains Mono',
-        },
-        splitLine: {
-          lineStyle: { color: 'rgba(148, 163, 184, 0.08)', type: 'dashed' },
-        },
-      },
-      series: [
-        {
-          name: '牛分',
-          type: 'line',
-          data: bullScores,
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 4,
-          showSymbol: rd.history.length <= 30,
-          lineStyle: { width: 2, color: '#10b981' },
-          itemStyle: { color: '#10b981' },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(16, 185, 129, 0.15)' },
-              { offset: 1, color: 'rgba(16, 185, 129, 0.01)' },
-            ]),
-          },
-          markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: { type: 'dashed', width: 1 },
-            label: {
-              fontSize: 9,
-              fontFamily: 'JetBrains Mono',
-              position: 'insideEndTop',
-            },
-            data: [
-              { yAxis: 30, lineStyle: { color: 'rgba(148, 163, 184, 0.2)' }, label: { formatter: '30', color: '#475569' } },
-              { yAxis: 50, lineStyle: { color: 'rgba(148, 163, 184, 0.25)' }, label: { formatter: '50', color: '#64748b' } },
-              { yAxis: 80, lineStyle: { color: 'rgba(148, 163, 184, 0.3)' }, label: { formatter: '80', color: '#94a3b8' } },
-            ],
-          },
-        },
-        {
-          name: '熊分',
-          type: 'line',
-          data: bearScores,
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 4,
-          showSymbol: rd.history.length <= 30,
-          lineStyle: { width: 2, color: '#ef4444' },
-          itemStyle: { color: '#ef4444' },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(239, 68, 68, 0.12)' },
-              { offset: 1, color: 'rgba(239, 68, 68, 0.01)' },
-            ]),
-          },
-        },
-      ],
-    };
-
-    chart.setOption(option);
-
-    // Handle resize
-    if (!this._historyResizeObserver) {
-      this._historyResizeObserver = new ResizeObserver(() => {
-        if (this.historyChart) {
-          try { this.historyChart.resize(); } catch(e) {}
-        }
-      });
-    }
-    this._historyResizeObserver.observe(container);
   },
 
   renderSignalGroups(rd) {
@@ -460,13 +274,11 @@ const TimingTab = {
       `;
 
       signals.forEach(s => {
-        // P1#5: 显示站稳天数（如"突破年线并站稳"信号）
-        const daysAbove = s.consecutive_days_above != null ? ` · 站稳${s.consecutive_days_above}/5天` : '';
         html += `
           <div class="trp-signal-row ${s.triggered ? 'triggered' : ''}">
             <span class="trp-signal-status">${s.triggered ? '✅' : '❌'}</span>
             <div class="trp-signal-info">
-              <div class="trp-signal-name">${s.name} <span class="trp-signal-score">(${s.score}分)</span>${daysAbove ? `<span style="color:#fbbf24;font-size:10px;margin-left:4px">${daysAbove}</span>` : ''}</div>
+              <div class="trp-signal-name">${s.name} <span class="trp-signal-score">(${s.score}分)</span></div>
               <div class="trp-signal-meta">
                 <span class="trp-signal-value">${s.current_value || '--'}</span>
                 <span class="trp-signal-source">📌 ${s.data_source}</span>
@@ -545,6 +357,26 @@ const TimingTab = {
       marketPos = '顶部区域';
       posIcon = '🔴';
       posColor = 'bear';
+    }
+
+    // 吴伟志四季定位 (豆包ABCD双标)
+    let seasonName, seasonIcon, seasonDesc;
+    if (compositeScore < 35) {
+      seasonName = '🌱 春播季';
+      seasonIcon = '🌱';
+      seasonDesc = '对应豆包A段：底部区域，左侧布局期';
+    } else if (compositeScore < 58) {
+      seasonName = '☀️ 夏长季';
+      seasonIcon = '☀️';
+      seasonDesc = '对应豆包B段：牛市中期，持有为主';
+    } else if (compositeScore < 80) {
+      seasonName = '🍂 秋收季';
+      seasonIcon = '🍂';
+      seasonDesc = '对应豆包C段：牛市末期/顶部区域';
+    } else {
+      seasonName = '❄️ 冬藏季';
+      seasonIcon = '❄️';
+      seasonDesc = '对应豆包D段：熊市，清仓观望';
     }
 
     // Trend direction (based on signal light)
@@ -679,9 +511,9 @@ const TimingTab = {
               <div class="conclusion-sub">${signalLight === 'none' ? '信号灯: ⚪无' : '信号灯: ' + signalLight}</div>
             </div>
             <div class="conclusion-item">
-              <div class="conclusion-label">内部结构</div>
-              <div class="conclusion-value">${structIcon} ${structure}</div>
-              <div class="conclusion-sub">底${bottomActive}项 / 顶${topActive}项</div>
+              <div class="conclusion-label">四季定位</div>
+              <div class="conclusion-value">${seasonIcon} ${seasonName}</div>
+              <div class="conclusion-sub">${seasonDesc}</div>
             </div>
             <div class="conclusion-item conclusion-highlight">
               <div class="conclusion-label">💡 仓位建议</div>
@@ -811,7 +643,6 @@ const TimingTab = {
             ${Object.entries(dim.indicators).map(([iKey, ind]) => {
               const indScoreClass = this.getScoreClass(ind.score);
               const hasHistory = ind.history && ind.history.length > 0;
-              const lastDate = hasHistory ? ind.history[ind.history.length - 1].date : (ind.date || '');
               return `
                 <div class="timing-dim-indicator ${hasHistory ? 'has-chart' : ''}">
                   <div class="timing-dim-indicator-row">
@@ -819,7 +650,6 @@ const TimingTab = {
                     <span class="timing-dim-indicator-value">${ind.value}${ind.unit ? ind.unit : ''}</span>
                     <span class="timing-dim-indicator-score score-${indScoreClass}" style="color:${this.getScoreColor(ind.score)}">${ind.score}</span>
                   </div>
-                  <div class="timing-dim-indicator-date">${lastDate ? '📅 ' + lastDate : ''}</div>
                   ${hasHistory ? `<div class="timing-mini-chart" id="mini-chart-${key}-${iKey}" data-history='${JSON.stringify(ind.history)}' data-score="${ind.score}"></div>` : ''}
                   ${ind.description ? `<div class="timing-dim-indicator-desc">${ind.description}</div>` : ''}
                 </div>
@@ -1209,8 +1039,6 @@ const TimingTab = {
   dispose() {
     if (this.radarChart) { this.radarChart.dispose(); this.radarChart = null; }
     if (this.scoreGaugeChart) { this.scoreGaugeChart.dispose(); this.scoreGaugeChart = null; }
-    if (this.historyChart) { this.historyChart.dispose(); this.historyChart = null; }
-    if (this._historyResizeObserver) { this._historyResizeObserver.disconnect(); this._historyResizeObserver = null; }
     this.miniCharts.forEach(c => c.dispose());
     this.miniCharts = [];
     if (this.miniChartObserver) { this.miniChartObserver.disconnect(); this.miniChartObserver = null; }
