@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A股周期定位研究 — 宏观看板改进原型</title>
+<title>A股周期定位看板 V3</title>
 <style>
 :root {
   --canvas: #070A14;
@@ -44,9 +44,7 @@
   --gap-xl: 32px;
   --gap-2xl: 48px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   background: var(--canvas);
   color: var(--text-primary);
@@ -56,1385 +54,887 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
-/* Background gradient */
 body::before {
   content: '';
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
   background: radial-gradient(ellipse at 30% 20%, rgba(124,92,255,0.08) 0%, transparent 50%),
               radial-gradient(ellipse at 70% 80%, rgba(105,231,255,0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
+.page { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: var(--gap-lg); }
 
-.page { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: var(--gap-lg); }
-
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--gap-xl);
-  padding-bottom: var(--gap-md);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--gap-xl); padding-bottom: var(--gap-md);
   border-bottom: 1px solid var(--border);
 }
 .header-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--text-primary), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.header-left .subtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-md);
-}
-.update-badge {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
+.header-left .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: var(--gap-md); }
+.update-badge { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
 .data-fresh {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--green);
-  background: var(--green-dim);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--green); background: var(--green-dim);
+  padding: 4px 10px; border-radius: var(--radius-sm);
 }
 .data-fresh .dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s ease-in-out infinite;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); animation: pulse 2s ease-in-out infinite;
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
-/* ===== STAGE GAUGE ===== */
+/* STAGE GAUGE */
 .stage-gauge {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--gap-xl) var(--gap-xl) var(--gap-lg);
-  margin-bottom: var(--gap-lg);
-  backdrop-filter: blur(20px);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--gap-xl) var(--gap-xl) var(--gap-lg);
+  margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
 }
 .stage-gauge-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--gap-md);
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--gap-md);
 }
-.stage-bar-container {
-  position: relative;
-  margin-bottom: var(--gap-md);
-}
+.stage-bar-container { position: relative; margin-bottom: var(--gap-md); }
 .stage-bar {
-  display: flex;
-  height: 48px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--border);
+  display: flex; height: 48px; border-radius: var(--radius-md);
+  overflow: hidden; border: 1px solid var(--border);
 }
 .stage-segment {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
-  position: relative;
-  transition: all 0.3s ease;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; position: relative; transition: all 0.3s ease;
 }
-.stage-segment .stage-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.stage-segment .stage-name {
-  font-size: 15px;
-  font-weight: 700;
-}
-.stage-segment .stage-sub {
-  font-size: 10px;
-  font-weight: 400;
-  opacity: 0.7;
-}
-.seg-a {
-  background: linear-gradient(135deg, rgba(98,250,211,0.20), rgba(98,250,211,0.10));
-  color: var(--stage-a);
-}
-.seg-b {
-  background: linear-gradient(135deg, rgba(105,231,255,0.20), rgba(105,231,255,0.10));
-  color: var(--stage-b);
-}
-.seg-c1 {
-  background: linear-gradient(135deg, rgba(255,215,110,0.20), rgba(255,215,110,0.10));
-  color: var(--stage-c);
-}
-.seg-c2 {
-  background: linear-gradient(135deg, rgba(255,169,77,0.25), rgba(255,169,77,0.12));
-  color: var(--orange);
-}
-.seg-d {
-  background: linear-gradient(135deg, rgba(255,107,107,0.20), rgba(255,107,107,0.10));
-  color: var(--stage-d);
-}
-/* Transition zone between B and C */
-.seg-b::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 30%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,215,110,0.12));
-  pointer-events: none;
-}
+.stage-segment .stage-label { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stage-segment .stage-name { font-size: 15px; font-weight: 700; }
+.stage-segment .stage-sub { font-size: 10px; font-weight: 400; opacity: 0.7; }
+.seg-a { background: linear-gradient(135deg, rgba(98,250,211,0.20), rgba(98,250,211,0.10)); color: var(--stage-a); }
+.seg-b { background: linear-gradient(135deg, rgba(105,231,255,0.20), rgba(105,231,255,0.10)); color: var(--stage-b); }
+.seg-c1 { background: linear-gradient(135deg, rgba(255,215,110,0.20), rgba(255,215,110,0.10)); color: var(--stage-c); }
+.seg-c2 { background: linear-gradient(135deg, rgba(255,169,77,0.25), rgba(255,169,77,0.12)); color: var(--orange); }
+.seg-d { background: linear-gradient(135deg, rgba(255,107,107,0.20), rgba(255,107,107,0.10)); color: var(--stage-d); }
 
-/* Pointer */
 .stage-pointer {
-  position: absolute;
-  bottom: -14px;
-  left: 55%;
+  position: absolute; bottom: -14px; left: 55%;
   transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
+  display: flex; flex-direction: column; align-items: center; z-index: 2;
 }
 .stage-pointer .arrow {
   width: 0; height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
+  border-left: 8px solid transparent; border-right: 8px solid transparent;
   border-bottom: 10px solid var(--cyan);
   filter: drop-shadow(0 0 6px var(--cyan-glow));
 }
 .stage-pointer .pointer-label {
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cyan);
-  white-space: nowrap;
-  background: rgba(7,10,20,0.8);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(105,231,255,0.3);
+  margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--cyan);
+  white-space: nowrap; background: rgba(7,10,20,0.8);
+  padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid rgba(105,231,255,0.3);
 }
-
-/* Probability distribution */
-.prob-row {
-  display: flex;
-  gap: var(--gap-md);
-  margin-top: var(--gap-xl);
-  align-items: stretch;
-}
+.prob-row { display: flex; gap: var(--gap-md); margin-top: var(--gap-xl); align-items: stretch; }
 .prob-item {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--gap-md);
-  text-align: center;
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--gap-md); text-align: center;
   transition: all 0.2s ease;
 }
-.prob-item.active {
-  border-color: rgba(105,231,255,0.4);
-  background: rgba(105,231,255,0.06);
-}
-.prob-item .prob-stage {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-.prob-item .prob-value {
-  font-size: 28px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  line-height: 1;
-}
-.prob-item .prob-trend {
-  font-size: 11px;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
+.prob-item.active { border-color: rgba(105,231,255,0.4); background: rgba(105,231,255,0.06); }
+.prob-item .prob-stage { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.prob-item .prob-value { font-size: 28px; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
+.prob-item .prob-trend { font-size: 11px; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 .prob-item .prob-trend.up { color: var(--green); }
 .prob-item .prob-trend.down { color: var(--red); }
 .prob-item .prob-trend.flat { color: var(--text-muted); }
+.prob-a .prob-stage { color: var(--stage-a); } .prob-a .prob-value { color: var(--stage-a); }
+.prob-b .prob-stage { color: var(--stage-b); } .prob-b .prob-value { color: var(--stage-b); }
+.prob-c1 .prob-stage { color: var(--stage-c); } .prob-c1 .prob-value { color: var(--stage-c); }
+.prob-c2 .prob-stage { color: var(--orange); } .prob-c2 .prob-value { color: var(--orange); }
+.prob-d .prob-stage { color: var(--stage-d); } .prob-d .prob-value { color: var(--stage-d); }
 
-.prob-a .prob-stage { color: var(--stage-a); }
-.prob-a .prob-value { color: var(--stage-a); }
-.prob-b .prob-stage { color: var(--stage-b); }
-.prob-b .prob-value { color: var(--stage-b); }
-.prob-c1 .prob-stage { color: var(--stage-c); }
-.prob-c1 .prob-value { color: var(--stage-c); }
-.prob-c2 .prob-stage { color: var(--orange); }
-.prob-c2 .prob-value { color: var(--orange); }
-.prob-d .prob-stage { color: var(--stage-d); }
-.prob-d .prob-value { color: var(--stage-d); }
-
-/* Stage description */
 .stage-desc {
-  margin-top: var(--gap-lg);
-  padding: var(--gap-md);
-  background: rgba(105,231,255,0.04);
-  border: 1px solid rgba(105,231,255,0.15);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: flex-start;
-  gap: var(--gap-md);
+  margin-top: var(--gap-lg); padding: var(--gap-md);
+  background: rgba(105,231,255,0.04); border: 1px solid rgba(105,231,255,0.15);
+  border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: var(--gap-md);
 }
-.stage-desc .stage-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
-.stage-desc .stage-text h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--cyan);
-  margin-bottom: 4px;
-}
-.stage-desc .stage-text p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
+.stage-desc .stage-icon { font-size: 24px; flex-shrink: 0; }
+.stage-desc .stage-text h3 { font-size: 15px; font-weight: 700; color: var(--cyan); margin-bottom: 4px; }
+.stage-desc .stage-text p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 
-/* ===== MAIN CONTENT ===== */
-.main-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--gap-lg);
-  margin-bottom: var(--gap-lg);
-}
-
-/* ===== ANCHOR INDICATORS ===== */
-.anchor-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
-}
+/* SECTION */
 .section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--gap-sm);
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--gap-md);
+  display: flex; align-items: center; gap: var(--gap-sm);
 }
 .section-title .badge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--accent-glow);
-  color: var(--accent);
-  font-weight: 700;
-}
-.anchor-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--gap-lg);
-  backdrop-filter: blur(16px);
-  transition: all 0.2s ease;
-}
-.anchor-card:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
-}
-.anchor-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--gap-md);
-}
-.anchor-card-header .indicator-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.anchor-card-header .timestamp {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-.anchor-value-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--gap-sm);
-  margin-bottom: var(--gap-sm);
-}
-.anchor-value {
-  font-size: 36px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  line-height: 1;
-}
-.anchor-unit {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-.anchor-percentile {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: var(--gap-md);
-}
-.anchor-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: var(--gap-md);
-}
-.status-green {
-  background: var(--green-dim);
-  color: var(--green);
-}
-.status-yellow {
-  background: var(--yellow-dim);
-  color: var(--yellow);
-}
-.status-red {
-  background: var(--red-dim);
-  color: var(--red);
-}
-/* Sparkline */
-.sparkline-container {
-  height: 48px;
-  margin-top: var(--gap-sm);
-  position: relative;
-}
-.sparkline-container svg {
-  width: 100%;
-  height: 100%;
-}
-/* Historical reference line */
-.hist-ref {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: var(--gap-sm);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.hist-ref .ref-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--text-muted);
+  font-size: 10px; padding: 2px 6px; border-radius: var(--radius-sm);
+  background: var(--accent-glow); color: var(--accent); font-weight: 700;
 }
 
-/* ===== INDICATOR GRID ===== */
-.indicators-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
+/* ANCHOR CARDS */
+.anchor-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-lg);
+  margin-bottom: var(--gap-lg);
 }
-.indicator-tabs {
-  display: flex;
-  gap: var(--gap-xs);
-  margin-bottom: var(--gap-sm);
+.anchor-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--gap-lg);
+  backdrop-filter: blur(16px); transition: all 0.2s ease; position: relative;
 }
-.ind-tab {
-  padding: 6px 14px;
+.anchor-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.anchor-card-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-md);
+}
+.anchor-card-header .indicator-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.anchor-card-header .timestamp { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+.anchor-value-row { display: flex; align-items: baseline; gap: var(--gap-sm); margin-bottom: var(--gap-sm); }
+.anchor-value { font-size: 36px; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
+.anchor-unit { font-size: 14px; color: var(--text-secondary); }
+.anchor-percentile { font-size: 12px; color: var(--text-muted); margin-bottom: var(--gap-md); }
+.anchor-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
+  margin-bottom: var(--gap-md);
+}
+.status-green { background: var(--green-dim); color: var(--green); }
+.status-yellow { background: var(--yellow-dim); color: var(--yellow); }
+.status-red { background: var(--red-dim); color: var(--red); }
+
+.sparkline-container { height: 120px; margin-top: var(--gap-sm); position: relative; }
+.sparkline-container svg { width: 100%; height: 100%; }
+.hist-ref {
+  font-size: 11px; color: var(--text-muted); margin-top: var(--gap-sm);
+  display: flex; align-items: center; gap: 6px;
+}
+.hist-ref .ref-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted); }
+
+/* ERP liquidity sub-block */
+.liquidity-block {
+  margin-top: var(--gap-md); padding: var(--gap-sm) var(--gap-md);
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-secondary);
 }
-.ind-tab.active {
-  background: var(--accent-glow);
-  border-color: var(--accent);
-  color: var(--accent);
+.liquidity-row { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-sm); margin-bottom: 4px; }
+.liq-item { text-align: center; flex: 1; }
+.liq-label { font-size: 10px; color: var(--text-muted); }
+.liq-val { font-size: 16px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
+.liq-spread { text-align: center; padding: 0 var(--gap-md); }
+.liq-spread .liq-val { color: var(--cyan); }
+.liq-arrow { font-size: 11px; color: var(--red); }
+.liquidity-env {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 4px; font-size: 11px; color: var(--text-secondary);
 }
-.ind-tab:hover:not(.active) {
-  background: var(--surface);
-  color: var(--text-primary);
+.env-badge {
+  display: inline-block; padding: 1px 8px; border-radius: var(--radius-sm);
+  background: var(--green-dim); color: var(--green); font-weight: 600; font-size: 11px;
 }
-.indicator-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-md);
+
+/* CARD UPDATE TIME */
+.card-time {
+  font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);
+  opacity: 0.7; text-align: right; margin-top: var(--gap-xs);
+}
+.card-time.warn-yellow { color: var(--yellow); opacity: 1; }
+.card-time.warn-gray { color: var(--text-muted); opacity: 0.5; }
+
+/* MAIN MODEL GRID */
+.model-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap-md);
+  margin-bottom: var(--gap-lg);
 }
 .ind-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--gap-md);
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--gap-md);
+  transition: all 0.2s ease; position: relative; overflow: hidden;
 }
-.ind-card:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-}
-.ind-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--gap-sm);
-}
-.ind-card-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-.ind-card-status {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-}
+.ind-card:hover { background: var(--surface-hover); border-color: var(--border-strong); transform: translateY(-1px); }
+.ind-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-sm); }
+.ind-card-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.ind-card-status { width: 8px; height: 8px; border-radius: 50%; }
 .ind-card-status.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
 .ind-card-status.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
 .ind-card-status.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
-.ind-card-value {
-  font-size: 22px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.ind-card-interpret {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin-bottom: var(--gap-sm);
-}
-.ind-card-time {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  opacity: 0.7;
-}
+.ind-card-value { font-size: 22px; font-weight: 800; font-family: var(--font-mono); line-height: 1; margin-bottom: 4px; }
+.ind-card-interpret { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: var(--gap-sm); }
+.ind-card .mini-sparkline { margin-top: 8px; height: 28px; width: 100%; opacity: 0.85; }
+.ind-card .mini-sparkline svg { width: 100%; height: 28px; display: block; }
 
-/* Mini sparkline for ind-cards */
-.ind-card .mini-sparkline {
-  margin-top: 8px;
-  height: 28px;
-  width: 100%;
-  opacity: 0.85;
-}
-.ind-card .mini-sparkline svg {
-  width: 100%;
-  height: 28px;
-  display: block;
-}
+/* 1000/300 special card - taller sparkline */
+.ind-card.card-wide { grid-column: span 2; }
+.ind-card .sparkline-tall { margin-top: 8px; height: 120px; width: 100%; position: relative; }
+.ind-card .sparkline-tall svg { width: 100%; height: 120px; display: block; }
 
-/* Stale data indicator */
-.ind-card.stale {
-  opacity: 0.6;
-  border-color: rgba(255,215,110,0.2);
+/* SLOPE ARROW */
+.slope-arrow {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 11px; font-weight: 600; padding: 1px 6px;
+  border-radius: var(--radius-sm); margin-left: 4px;
 }
-.ind-card.stale::after {
-  content: '⚠ 数据滞后';
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 9px;
-  color: var(--yellow);
-  background: var(--yellow-dim);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-}
+.slope-down { background: var(--red-dim); color: var(--red); }
+.slope-up { background: var(--green-dim); color: var(--green); }
+.slope-flat { background: var(--yellow-dim); color: var(--yellow); }
 
-/* ===== BOTTOM ACTION BAR ===== */
+/* RISK WARNING BAR */
+.risk-warning {
+  display: none;
+  background: linear-gradient(135deg, rgba(255,107,107,0.25), rgba(255,107,107,0.15));
+  border: 1px solid rgba(255,107,107,0.4);
+  border-radius: var(--radius-md); padding: var(--gap-md) var(--gap-lg);
+  margin-bottom: var(--gap-lg);
+  color: var(--red); font-size: 14px; font-weight: 600;
+  text-align: center; backdrop-filter: blur(10px);
+  animation: riskPulse 2s ease-in-out infinite;
+}
+.risk-warning.visible { display: block; }
+@keyframes riskPulse { 0%,100%{opacity:1;} 50%{opacity:0.8;} }
+
+/* DEBUG TOGGLE */
+.debug-toggle {
+  position: fixed; bottom: 20px; right: 20px; z-index: 100;
+  background: var(--red-dim); border: 1px solid rgba(255,107,107,0.4);
+  color: var(--red); padding: 6px 12px; border-radius: var(--radius-sm);
+  font-size: 11px; cursor: pointer; font-family: var(--font-mono);
+  display: none;
+}
+.debug-toggle.show { display: block; }
+
+/* ACTION BAR */
 .action-bar {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--gap-lg) var(--gap-xl);
-  backdrop-filter: blur(20px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--gap-xl);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--gap-lg) var(--gap-xl);
+  backdrop-filter: blur(20px); margin-bottom: var(--gap-lg);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--gap-xl);
 }
-.action-left {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-lg);
-}
-.action-stage {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-md);
-}
+.action-left { display: flex; align-items: center; gap: var(--gap-lg); }
 .action-stage-badge {
-  font-size: 14px;
-  font-weight: 700;
-  padding: 6px 16px;
-  border-radius: var(--radius-md);
-  background: rgba(105,231,255,0.12);
-  color: var(--cyan);
-  border: 1px solid rgba(105,231,255,0.3);
+  font-size: 14px; font-weight: 700; padding: 6px 16px;
+  border-radius: var(--radius-md); background: rgba(105,231,255,0.12);
+  color: var(--cyan); border: 1px solid rgba(105,231,255,0.3);
 }
-.action-position {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-.action-position strong {
-  color: var(--text-primary);
-}
-.action-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border-strong);
-}
-.action-ref {
-  font-size: 12px;
-  color: var(--text-muted);
-  max-width: 320px;
-  line-height: 1.5;
-}
-.action-ref strong {
-  color: var(--text-secondary);
-}
-.action-warnings {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-sm);
-}
-.warning-item {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  background: var(--yellow-dim);
-  color: var(--yellow);
-  border: 1px solid rgba(255,215,110,0.2);
-}
-.warning-item .warn-icon {
-  font-size: 14px;
-  flex-shrink: 0;
-}
+.action-position { font-size: 13px; color: var(--text-secondary); }
+.action-position strong { color: var(--text-primary); }
+.action-right { font-size: 12px; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
+.action-right strong { color: var(--text-secondary); }
 
-/* ===== SWITCHING CONDITIONS TABLE ===== */
-.switch-table-section {
-  margin-top: var(--gap-lg);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--gap-xl);
-  backdrop-filter: blur(20px);
+/* CONFIRM SIGNALS */
+.confirm-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-md);
+  margin-bottom: var(--gap-lg);
 }
-.switch-table-title {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: var(--gap-md);
-  color: var(--text-primary);
-}
-.switch-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-.switch-table th {
-  text-align: left;
-  font-weight: 600;
-  color: var(--text-secondary);
-  padding: var(--gap-sm) var(--gap-md);
-  border-bottom: 1px solid var(--border-strong);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.switch-table td {
-  padding: var(--gap-sm) var(--gap-md);
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-  vertical-align: top;
-}
-.switch-table tr:last-child td {
-  border-bottom: none;
-}
-.switch-table .condition-cell {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-.switch-table .met {
-  color: var(--green);
-  font-weight: 600;
-}
-.switch-table .not-met {
-  color: var(--text-muted);
-}
-
-/* ===== DISCLAIMER ===== */
-.disclaimer {
-  margin-top: var(--gap-lg);
-  padding: var(--gap-md);
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: 11px;
-  color: var(--text-muted);
-  text-align: center;
-  line-height: 1.5;
-}
-
-
-/* ===== POSITION GUIDE ===== */
-.position-guide {
-  margin-top: var(--gap-lg);
-  padding: var(--gap-lg);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-.position-guide-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--gap-md);
-}
-.position-guide-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--gap-md);
-}
-.pg-card {
-  padding: var(--gap-md);
-  border-radius: var(--radius-md);
-  border: 2px solid transparent;
-  background: var(--surface);
+.confirm-card {
+  background: var(--surface); border: 1px solid rgba(105,231,255,0.2);
+  border-radius: var(--radius-md); padding: var(--gap-md);
   transition: all 0.2s ease;
 }
-.pg-card.pg-active {
-  border-color: var(--cyan);
-  background: var(--cyan-glow);
-  box-shadow: 0 0 12px rgba(105,231,255,0.15);
+.confirm-card:hover { background: var(--surface-hover); border-color: rgba(105,231,255,0.35); }
+.confirm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-sm); }
+.confirm-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.confirm-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: var(--radius-sm);
+  font-weight: 700;
 }
-.pg-stage {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
+.confirm-badge.bg { background: var(--green-dim); color: var(--green); }
+.confirm-badge.yw { background: var(--yellow-dim); color: var(--yellow); }
+.confirm-badge.rd { background: var(--red-dim); color: var(--red); }
+.confirm-value { font-size: 20px; font-weight: 800; font-family: var(--font-mono); line-height: 1.2; margin-bottom: 4px; }
+.confirm-interpret { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+.confirm-card .mini-sparkline { margin-top: 8px; height: 28px; width: 100%; opacity: 0.85; }
+.confirm-card .mini-sparkline svg { width: 100%; height: 28px; display: block; }
+
+/* REFERENCE SECTION */
+.ref-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-lg);
+  margin-bottom: var(--gap-lg);
 }
+.ref-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--gap-lg); opacity: 0.85;
+}
+.ref-card .ref-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: var(--gap-sm); }
+.ref-card .ref-value { font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 4px; }
+.ref-card .ref-desc { font-size: 11px; color: var(--text-muted); }
+
+/* POSITION GUIDE */
+.position-guide {
+  margin-bottom: var(--gap-lg); padding: var(--gap-lg);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.position-guide-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--gap-md); }
+.position-guide-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap-md); }
+.pg-card {
+  padding: var(--gap-md); border-radius: var(--radius-md);
+  border: 2px solid transparent; background: var(--surface); transition: all 0.2s ease;
+}
+.pg-card.pg-active { border-color: var(--cyan); background: var(--cyan-glow); box-shadow: 0 0 12px rgba(105,231,255,0.15); }
+.pg-stage { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .pg-a .pg-stage { color: var(--stage-a); }
 .pg-b .pg-stage { color: var(--stage-b); }
 .pg-c1 .pg-stage { color: var(--stage-c); }
 .pg-c2 .pg-stage { color: var(--orange); }
 .pg-d .pg-stage { color: var(--stage-d); }
-.pg-position {
-  font-size: 22px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  color: var(--text-primary);
-  margin-bottom: 6px;
-  letter-spacing: -0.02em;
+.pg-position { font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); margin-bottom: 6px; }
+.pg-direction { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+/* SWITCH TABLE */
+.switch-table-section {
+  margin-bottom: var(--gap-lg); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: var(--gap-xl); backdrop-filter: blur(20px);
 }
-.pg-direction {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.5;
+.switch-table-title { font-size: 15px; font-weight: 700; margin-bottom: var(--gap-md); color: var(--text-primary); }
+.switch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.switch-table th {
+  text-align: left; font-weight: 600; color: var(--text-secondary);
+  padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid var(--border-strong);
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.switch-table td {
+  padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid var(--border);
+  color: var(--text-primary); vertical-align: top;
+}
+.switch-table tr:last-child td { border-bottom: none; }
+.switch-table .met { color: var(--green); font-weight: 600; }
+.switch-table .not-met { color: var(--text-muted); }
+
+/* DISCLAIMER */
+.disclaimer {
+  padding: var(--gap-md); background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;
 }
 
-/* ===== RESPONSIVE ===== */
+/* TOOLTIP */
+.svg-tooltip {
+  position: fixed; z-index: 999; pointer-events: none;
+  background: rgba(7,10,20,0.92); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 6px 10px;
+  font-size: 11px; font-family: var(--font-mono); color: var(--text-primary);
+  backdrop-filter: blur(10px); display: none; white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.svg-tooltip .tt-date { color: var(--text-muted); font-size: 10px; }
+.svg-tooltip .tt-val { font-weight: 700; font-size: 13px; }
+
+/* RESPONSIVE */
 @media (max-width: 900px) {
-  .main-content {
-    grid-template-columns: 1fr;
-  }
-  .indicator-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .prob-row {
-    flex-wrap: wrap;
-  }
-  .prob-item {
-    flex: 1 1 45%;
-  }
-  .action-bar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .action-divider {
-    width: 100%;
-    height: 1px;
-  }
+  .anchor-row { grid-template-columns: 1fr; }
+  .model-grid { grid-template-columns: repeat(2, 1fr); }
+  .ind-card.card-wide { grid-column: span 2; }
+  .confirm-row { grid-template-columns: 1fr; }
+  .ref-row { grid-template-columns: 1fr; }
+  .prob-row { flex-wrap: wrap; }
+  .prob-item { flex: 1 1 45%; }
+  .position-guide-grid { grid-template-columns: repeat(2, 1fr); }
 }
-
 @media (max-width: 600px) {
   .page { padding: var(--gap-md); }
-  .indicator-grid { grid-template-columns: 1fr; }
-  .position-guide-grid { grid-template-columns: repeat(2, 1fr); }
+  .model-grid { grid-template-columns: 1fr; }
+  .ind-card.card-wide { grid-column: span 1; }
+  .position-guide-grid { grid-template-columns: 1fr 1fr; }
   .prob-row { flex-direction: column; }
   .stage-bar { height: 40px; }
   .stage-segment .stage-name { font-size: 12px; }
   .anchor-value { font-size: 28px; }
 }
-
-/* ===== PRINT ===== */
-/* Focus states */
-.ind-tab:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
-}
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@media print {
-  body { background: #fff; color: #111; }
-  body::before { display: none; }
-  .stage-gauge, .anchor-card, .ind-card, .action-bar, .switch-table-section {
-    background: #f8f8f8;
-    border-color: #ddd;
-    backdrop-filter: none;
-  }
-  .anchor-value, .ind-card-value { color: #111; }
-  .text-secondary, .ind-card-interpret { color: #555; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
 </head>
 <body>
+<main>
 <div class="page">
-  <main>
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-left">
-      <h1>股票看板</h1>
-      <div class="subtitle">基于 A/B/C/D 四段状态机 · 15指标实时跟踪 · 独立模块</div>
+<header class="header">
+  <div class="header-left">
+    <h1>股票看板 V3</h1>
+    <div class="subtitle">基于 A/B/C/D 四段状态机 · 9指标主模型 · 确认信号正交验证</div>
+  </div>
+  <div class="header-right">
+    <span class="update-badge">更新于 2026-09-01</span>
+    <span class="data-fresh"><span class="dot"></span>数据正常</span>
+  </div>
+</header>
+
+<!-- 1. STAGE GAUGE -->
+<section class="stage-gauge">
+  <div class="stage-gauge-title">市场周期阶段定位</div>
+  <div class="stage-bar-container">
+    <div class="stage-bar">
+      <div class="stage-segment seg-a"><div class="stage-label"><span class="stage-name">A · 春播</span><span class="stage-sub">深度低估</span></div></div>
+      <div class="stage-segment seg-b"><div class="stage-label"><span class="stage-name">B · 夏长</span><span class="stage-sub">结构性慢牛</span></div></div>
+      <div class="stage-segment seg-c1"><div class="stage-label"><span class="stage-name">C1 · 享受泡沫</span><span class="stage-sub">估值扩张</span></div></div>
+      <div class="stage-segment seg-c2"><div class="stage-label"><span class="stage-name">C2 · 准备跑路</span><span class="stage-sub">情绪过热</span></div></div>
+      <div class="stage-segment seg-d"><div class="stage-label"><span class="stage-name">D · 冬藏</span><span class="stage-sub">估值回归</span></div></div>
     </div>
-    <div class="header-right">
-      <span class="update-badge">更新于 2026-08-30</span>
-      <span class="data-fresh"><span class="dot"></span>数据正常</span>
+    <div class="stage-pointer"><div class="arrow"></div><div class="pointer-label">当前位置</div></div>
+  </div>
+  <div class="prob-row">
+    <div class="prob-item prob-a"><div class="prob-stage">A · 春播</div><div class="prob-value">5%</div><div class="prob-trend flat">— 持平</div></div>
+    <div class="prob-item prob-b active"><div class="prob-stage">B · 夏长</div><div class="prob-value">65%</div><div class="prob-trend down">↓ -5pp</div></div>
+    <div class="prob-item prob-c1"><div class="prob-stage">C1 · 泡沫</div><div class="prob-value">20%</div><div class="prob-trend up">↑ +3pp</div></div>
+    <div class="prob-item prob-c2"><div class="prob-stage">C2 · 跑路</div><div class="prob-value">8%</div><div class="prob-trend up">↑ +2pp</div></div>
+    <div class="prob-item prob-d"><div class="prob-stage">D · 冬藏</div><div class="prob-value">2%</div><div class="prob-trend flat">— 持平</div></div>
+  </div>
+  <div class="stage-desc">
+    <div class="stage-icon">☀️</div>
+    <div class="stage-text">
+      <h3>B段 · 结构性震荡慢牛中段</h3>
+      <p>整体估值中枢附近，没有系统性泡沫也没有极端低估。ERP 远离大底区域但未进入高估泡沫。机构仓位不低、增量空间有限，行情高度结构化，收益主要来自板块轮动。注意 C 段信号正在积累（恐贪指数上行、两融走高），需持续关注切换条件。</p>
     </div>
-  </header>
+  </div>
+</section>
 
-  <!-- STAGE GAUGE -->
-  <section class="stage-gauge">
-    <div class="stage-gauge-title">市场周期阶段定位</div>
-
-    <div class="stage-bar-container">
-      <div class="stage-bar">
-        <div class="stage-segment seg-a">
-          <div class="stage-label">
-            <span class="stage-name">A · 春播</span>
-            <span class="stage-sub">深度低估</span>
-          </div>
-        </div>
-        <div class="stage-segment seg-b">
-          <div class="stage-label">
-            <span class="stage-name">B · 夏长</span>
-            <span class="stage-sub">结构性慢牛</span>
-          </div>
-        </div>
-        <div class="stage-segment seg-c1">
-          <div class="stage-label">
-            <span class="stage-name">C1 · 享受泡沫</span>
-            <span class="stage-sub">估值扩张</span>
-          </div>
-        </div>
-        <div class="stage-segment seg-c2">
-          <div class="stage-label">
-            <span class="stage-name">C2 · 准备跑路</span>
-            <span class="stage-sub">情绪过热</span>
-          </div>
-        </div>
-        <div class="stage-segment seg-d">
-          <div class="stage-label">
-            <span class="stage-name">D · 冬藏</span>
-            <span class="stage-sub">估值回归</span>
-          </div>
-        </div>
-      </div>
-      <!-- Pointer at ~55% (B段偏右，接近C) -->
-      <div class="stage-pointer">
-        <div class="arrow"></div>
-        <div class="pointer-label">当前位置</div>
-      </div>
+<!-- 2. ANCHOR INDICATORS (ERP + Buffett) -->
+<div class="section-title">锚定指标 <span class="badge">决定大方向</span></div>
+<div class="anchor-row">
+  <!-- ERP Card with liquidity sub-block -->
+  <div class="anchor-card">
+    <div class="anchor-card-header">
+      <span class="indicator-name">万得全A 股权风险溢价 (ERP)</span>
+      <span class="timestamp">2026-08-28</span>
     </div>
-
-    <!-- Probability Distribution -->
-    <div class="prob-row">
-      <div class="prob-item prob-a">
-        <div class="prob-stage">A · 春播</div>
-        <div class="prob-value">5%</div>
-        <div class="prob-trend flat">— 持平</div>
-      </div>
-      <div class="prob-item prob-b active">
-        <div class="prob-stage">B · 夏长</div>
-        <div class="prob-value">65%</div>
-        <div class="prob-trend down">↓ 较上周 -5pp</div>
-      </div>
-      <div class="prob-item prob-c1">
-        <div class="prob-stage">C1 · 享受泡沫</div>
-        <div class="prob-value">20%</div>
-        <div class="prob-trend up">↑ 较上周 +3pp</div>
-      </div>
-      <div class="prob-item prob-c2">
-        <div class="prob-stage">C2 · 准备跑路</div>
-        <div class="prob-value">8%</div>
-        <div class="prob-trend up">↑ 较上周 +2pp</div>
-      </div>
-      <div class="prob-item prob-d">
-        <div class="prob-stage">D · 冬藏</div>
-        <div class="prob-value">2%</div>
-        <div class="prob-trend flat">— 持平</div>
-      </div>
+    <div class="anchor-value-row">
+      <span class="anchor-value" style="color: var(--yellow);">2.15</span>
+      <span class="anchor-unit">%</span>
     </div>
-
-    <!-- Stage Description -->
-    <div class="stage-desc">
-      <div class="stage-icon">☀️</div>
-      <div class="stage-text">
-        <h2 style="font-size:15px;font-weight:700;color:var(--cyan);margin-bottom:4px;">B段 · 结构性震荡慢牛中段</h2>
-        <p>整体估值中枢附近，没有系统性泡沫也没有极端低估。ERP 远离大底区域但未进入高估泡沫。机构仓位不低、增量空间有限，行情高度结构化，收益主要来自板块轮动。注意 C 段信号正在积累（恐贪指数上行、两融走高），需持续关注切换条件。</p>
-      </div>
+    <div class="anchor-percentile">10年分位 48% · 中性偏划算区间</div>
+    <div class="anchor-status status-yellow">📊 中性区间 (1.6%~3.2%)</div>
+    <div class="sparkline-container" id="spark-erp" data-labels='["2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"]' data-values='[3.2,3.1,3.0,2.9,2.8,2.7,2.6,2.5,2.4,2.3,2.2,2.15]' data-color="var(--yellow)" data-ref-high="3.2" data-ref-low="1.6" data-ref-high-label="3.2% 便宜" data-ref-low-label="1.6% 偏贵" style="height:120px;">
     </div>
-  </section>
-
-  <!-- MAIN CONTENT: Anchor + Grid -->
-  <div class="main-content">
-
-    <!-- ANCHOR INDICATORS (LEFT) -->
-    <aside class="anchor-section">
-      <div class="section-title">
-        锚定指标
-        <span class="badge">决定大方向</span>
+    <div class="hist-ref"><span class="ref-dot"></span>距 2024 大底 (ERP 3.5%) 还差 1.35pp</div>
+    <!-- Liquidity sub-block -->
+    <div class="liquidity-block">
+      <div class="liquidity-row">
+        <div class="liq-item"><div class="liq-label">🇨🇳 中国10Y</div><div class="liq-val">1.70%</div></div>
+        <div class="liq-spread"><div class="liq-label">中美利差</div><div class="liq-val">-2.10% <span class="liq-arrow">↓</span></div></div>
+        <div class="liq-item"><div class="liq-label">🇺🇸 美国10Y</div><div class="liq-val">3.80%</div></div>
       </div>
-
-      <!-- ERP Card -->
-      <div class="anchor-card">
-        <div class="anchor-card-header">
-          <span class="indicator-name">万得全A 股权风险溢价 (ERP)</span>
-          <span class="timestamp">2026-08-28</span>
-        </div>
-        <div class="anchor-value-row">
-          <span class="anchor-value" style="color: var(--yellow);">2.15</span>
-          <span class="anchor-unit">%</span>
-        </div>
-        <div class="anchor-percentile">10年分位 48% · 中性偏划算区间</div>
-        <div class="anchor-status status-yellow">📊 中性区间 (1.6%~3.2%)</div>
-        <div class="sparkline-container">
-          <svg viewBox="0 0 200 48" preserveAspectRatio="none" role="img" aria-labelledby="erp-chart-title">
-            <title id="erp-chart-title">ERP 近12个月趋势：从 2.8% 下行至当前 2.15%，处于中性区间</title>
-            <defs>
-              <linearGradient id="erp-grad" x1="0" y1="0.0" x2="0" y2="1.0">
-                <stop offset="0%" stop-color="rgba(255,215,110,0.3)"/>
-                <stop offset="100%" stop-color="rgba(255,215,110,0)"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,35 L16,32 L33,28 L50,30 L66,25 L83,20 L100,22 L116,18 L133,20 L150,25 L166,28 L183,30 L200,32 L200,48 L0,48Z" fill="url(#erp-grad)"/>
-            <path d="M0,35 L16,32 L33,28 L50,30 L66,25 L83,20 L100,22 L116,18 L133,20 L150,25 L166,28 L183,30 L200,32" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"/>
-            <line x1="0" y1="10.0" x2="200" y2="10.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
-            <text x="195" y="8" fill="var(--green)" font-size="7" text-anchor="end">3.2% 便宜</text>
-            <line x1="0" y1="26.0" x2="200" y2="26.0" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
-            <text x="195" y="46" fill="var(--red)" font-size="7" text-anchor="end">1.6% 偏贵</text>
-            <circle cx="200" cy="32" r="3" fill="var(--yellow)"/>
-          </svg>
-        </div>
-        <div class="hist-ref">
-          <span class="ref-dot"></span>
-          距 2024 大底 (ERP 3.5%) 还差 1.35pp
-        </div>
-      </div>
-
-      <!-- Buffett Indicator Card -->
-      <div class="anchor-card">
-        <div class="anchor-card-header">
-          <span class="indicator-name">巴菲特指标 (总市值/GDP)</span>
-          <span class="timestamp">2026-08-28</span>
-        </div>
-        <div class="anchor-value-row">
-          <span class="anchor-value" style="color: var(--cyan);">80</span>
-          <span class="anchor-unit">%</span>
-        </div>
-        <div class="anchor-percentile">10年分位 55% · B段合理区间</div>
-        <div class="anchor-status status-green">✅ 合理区间 (60%~95%)</div>
-        <div class="sparkline-container">
-          <svg viewBox="0 0 200 48" preserveAspectRatio="none" role="img" aria-labelledby="buff-chart-title">
-            <title id="buff-chart-title">巴菲特指标近12个月趋势：从 75% 上行至当前 80%，处于合理区间</title>
-            <defs>
-              <linearGradient id="buff-grad" x1="0" y1="0.0" x2="0" y2="1.0">
-                <stop offset="0%" stop-color="rgba(105,231,255,0.3)"/>
-                <stop offset="100%" stop-color="rgba(105,231,255,0)"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,30 L16,28 L33,25 L50,27 L66,24 L83,22 L100,20 L116,18 L133,19 L150,21 L166,22 L183,20 L200,21 L200,48 L0,48Z" fill="url(#buff-grad)"/>
-            <path d="M0,30 L16,28 L33,25 L50,27 L66,24 L83,22 L100,20 L116,18 L133,19 L150,21 L166,22 L183,20 L200,21" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"/>
-            <line x1="0" y1="8.0" x2="200" y2="8.0" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
-            <text x="195" y="6" fill="var(--red)" font-size="7" text-anchor="end">105% 泡沫</text>
-            <line x1="0" y1="26.0" x2="200" y2="26.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>
-            <text x="195" y="46" fill="var(--green)" font-size="7" text-anchor="end">60% 底部</text>
-            <circle cx="200" cy="21" r="3" fill="var(--cyan)"/>
-          </svg>
-        </div>
-        <div class="hist-ref">
-          <span class="ref-dot"></span>
-          距泡沫预警线 (105%) 还有 25pp
-        </div>
-      </div>
-    </aside>
-
-    <!-- CONFIRMATION + BACKGROUND INDICATORS (RIGHT) -->
-    <section class="indicators-section">
-      <div class="section-title">
-        确认 & 背景指标
-        <span class="badge">交叉验证</span>
-      </div>
-
-      <div class="indicator-tabs">
-        <button class="ind-tab active" onclick="switchTab(this, 'confirm')">确认指标 (4)</button>
-        <button class="ind-tab" onclick="switchTab(this, 'background')">背景指标 (9)</button>
-        <button class="ind-tab" onclick="switchTab(this, 'all')">全部 (13)</button>
-      </div>
-
-      <!-- Confirmation Indicators Grid -->
-      <div class="indicator-grid" id="confirm-grid">
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">主动偏股基金仓位</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">91.8%</div>
-          <div class="ind-card-interpret">2016年以来 90%+ 高分位，公募增量空间有限</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="主动偏股基金仓位近期趋势">
-<title>主动偏股基金仓位近期趋势</title>
-<defs><linearGradient id="sg-主动偏股" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,25.7 L18.2,22.2 L36.4,18.8 L54.5,15.4 L72.7,11.9 L90.9,13.7 L109.1,8.5 L127.3,6.8 L145.5,5.1 L163.6,4.4 L181.8,3.4 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-主动偏股)" />
-<path d="M0.0,25.7 L18.2,22.2 L36.4,18.8 L54.5,15.4 L72.7,11.9 L90.9,13.7 L109.1,8.5 L127.3,6.8 L145.5,5.1 L163.6,4.4 L181.8,3.4 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-25</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">两融余额</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">1.75万亿</div>
-          <div class="ind-card-interpret">历史中等偏高，未达过热线(2.3万亿)</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="两融余额近期趋势">
-<title>两融余额近期趋势</title>
-<defs><linearGradient id="sg-两融余额" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,22.2 L18.2,25.7 L36.4,19.6 L54.5,17.0 L72.7,15.3 L90.9,13.6 L109.1,11.0 L127.3,8.4 L145.5,6.7 L163.6,4.9 L181.8,4.1 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-两融余额)" />
-<path d="M0.0,22.2 L18.2,25.7 L36.4,19.6 L54.5,17.0 L72.7,15.3 L90.9,13.6 L109.1,11.0 L127.3,8.4 L145.5,6.7 L163.6,4.9 L181.8,4.1 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-29</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">恐贪指数</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">42</div>
-          <div class="ind-card-interpret">中性偏冷，连续3周上行但尚未到贪婪区(&gt;70)</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="恐贪指数近期趋势">
-<title>恐贪指数近期趋势</title>
-<defs><linearGradient id="sg-恐贪指数" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,21.5 L18.2,25.7 L36.4,18.8 L54.5,16.1 L72.7,11.9 L90.9,14.7 L109.1,10.6 L127.3,7.8 L145.5,9.2 L163.6,6.5 L181.8,5.1 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-恐贪指数)" />
-<path d="M0.0,21.5 L18.2,25.7 L36.4,18.8 L54.5,16.1 L72.7,11.9 L90.9,14.7 L109.1,10.6 L127.3,7.8 L145.5,9.2 L163.6,6.5 L181.8,5.1 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-29</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">新发偏股基金</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">186亿</div>
-          <div class="ind-card-interpret">3月均规模低位温和，未出现爆款频出</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="新发偏股基金近期趋势">
-<title>新发偏股基金近期趋势</title>
-<defs><linearGradient id="sg-新发偏股" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,2.3 L18.2,15.7 L36.4,25.7 L54.5,22.3 L72.7,9.0 L90.9,19.0 L109.1,12.3 L127.3,17.3 L145.5,20.7 L163.6,15.7 L181.8,15.0 L200.0,13.7 L200,28 L0,28Z" fill="url(#sg-新发偏股)" />
-<path d="M0.0,2.3 L18.2,15.7 L36.4,25.7 L54.5,22.3 L72.7,9.0 L90.9,19.0 L109.1,12.3 L127.3,17.3 L145.5,20.7 L163.6,15.7 L181.8,15.0 L200.0,13.7" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="13.7" r="2.5" fill="var(--green)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-28</div>
-        </div>
-      </div>
-
-      <!-- Background Indicators Grid (hidden by default) -->
-      <div class="indicator-grid" id="background-grid" style="display:none;">
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">全A非金融盈利增速</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">+3.2%</div>
-          <div class="ind-card-interpret">温和修复中，未过热(&gt;8%)也未下行(&lt;-3%)</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="全A非金融盈利增速近期趋势">
-<title>全A非金融盈利增速近期趋势</title>
-<defs><linearGradient id="sg-全A非金" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,25.7 L18.2,23.5 L36.4,16.7 L54.5,14.0 L72.7,11.3 L90.9,9.8 L109.1,7.6 L127.3,6.0 L145.5,4.5 L163.6,3.4 L181.8,2.9 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-全A非金)" />
-<path d="M0.0,25.7 L18.2,23.5 L36.4,16.7 L54.5,14.0 L72.7,11.3 L90.9,9.8 L109.1,7.6 L127.3,6.0 L145.5,4.5 L163.6,3.4 L181.8,2.9 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-28</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">10Y美债收益率</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">4.35%</div>
-          <div class="ind-card-interpret">高位震荡，未突破5.0%约束线</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="10Y美债收益率近期趋势">
-<title>10Y美债收益率近期趋势</title>
-<defs><linearGradient id="sg-10Y美" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,11.7 L18.2,2.3 L36.4,7.0 L54.5,16.3 L72.7,21.0 L90.9,22.9 L109.1,19.1 L127.3,21.0 L145.5,22.9 L163.6,24.7 L181.8,25.7 L200.0,25.7 L200,28 L0,28Z" fill="url(#sg-10Y美)" />
-<path d="M0.0,11.7 L18.2,2.3 L36.4,7.0 L54.5,16.3 L72.7,21.0 L90.9,22.9 L109.1,19.1 L127.3,21.0 L145.5,22.9 L163.6,24.7 L181.8,25.7 L200.0,25.7" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--yellow)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
-<circle cx="200.0" cy="25.7" r="2.5" fill="var(--yellow)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-30</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">北向资金(3月滚动)</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">+82亿</div>
-          <div class="ind-card-interpret">波动无单边趋势，非系统性流出</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="北向资金(3月滚动)近期趋势">
-<title>北向资金(3月滚动)近期趋势</title>
-<defs><linearGradient id="sg-北向资金" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,22.1 L18.2,25.7 L36.4,20.4 L54.5,15.1 L72.7,11.5 L90.9,8.9 L109.1,8.0 L127.3,6.2 L145.5,5.3 L163.6,4.5 L181.8,3.0 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-北向资金)" />
-<path d="M0.0,22.1 L18.2,25.7 L36.4,20.4 L54.5,15.1 L72.7,11.5 L90.9,8.9 L109.1,8.0 L127.3,6.2 L145.5,5.3 L163.6,4.5 L181.8,3.0 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-29</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">私募仓位</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">84%</div>
-          <div class="ind-card-interpret">年内高位，70%+私募仓位超80%</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="私募仓位近期趋势">
-<title>私募仓位近期趋势</title>
-<defs><linearGradient id="sg-私募仓位" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,22.3 L18.2,25.7 L36.4,19.0 L54.5,15.7 L72.7,12.3 L90.9,10.7 L109.1,9.0 L127.3,7.3 L145.5,5.7 L163.6,4.0 L181.8,3.2 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-私募仓位)" />
-<path d="M0.0,22.3 L18.2,25.7 L36.4,19.0 L54.5,15.7 L72.7,12.3 L90.9,10.7 L109.1,9.0 L127.3,7.3 L145.5,5.7 L163.6,4.0 L181.8,3.2 L200.0,2.3" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--yellow)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-25</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">新增开户数(周)</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">28.6万</div>
-          <div class="ind-card-interpret">温和水平，未出现居民加速入场信号</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="新增开户数(周)近期趋势">
-<title>新增开户数(周)近期趋势</title>
-<defs><linearGradient id="sg-新增开户" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,20.2 L18.2,25.7 L36.4,14.8 L54.5,12.1 L72.7,9.4 L90.9,14.8 L109.1,12.1 L127.3,9.4 L145.5,6.7 L163.6,5.3 L181.8,4.0 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-新增开户)" />
-<path d="M0.0,20.2 L18.2,25.7 L36.4,14.8 L54.5,12.1 L72.7,9.4 L90.9,14.8 L109.1,12.1 L127.3,9.4 L145.5,6.7 L163.6,5.3 L181.8,4.0 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-27</div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">全A换手率</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">1.8%</div>
-          <div class="ind-card-interpret">中性，未突破历史90%分位(3.2%)</div>
-<div class="mini-sparkline">
-<svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="全A换手率近期趋势">
-<title>全A换手率近期趋势</title>
-<defs><linearGradient id="sg-全A换手" x1="0" y1="0.0" x2="0" y2="1.0">
-<stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-<stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-<path d="M0.0,19.8 L18.2,25.7 L36.4,16.9 L54.5,14.0 L72.7,11.1 L90.9,14.0 L109.1,11.1 L127.3,8.2 L145.5,6.7 L163.6,5.3 L181.8,3.8 L200.0,2.3 L200,28 L0,28Z" fill="url(#sg-全A换手)" />
-<path d="M0.0,19.8 L18.2,25.7 L36.4,16.9 L54.5,14.0 L72.7,11.1 L90.9,14.0 L109.1,11.1 L127.3,8.2 L145.5,6.7 L163.6,5.3 L181.8,3.8 L200.0,2.3" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="0" y1="2.0" x2="200" y2="2.0" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
-<circle cx="200.0" cy="2.3" r="2.5" fill="var(--green)"/>
-</svg></div>
-          <div class="ind-card-time">更新于 2026-08-29</div>
-        </div>
-      </div>
-
-
-<div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">中位数PE (全A)</span>
-            <span class="ind-card-status green"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--green);">32.5x</div>
-          <div class="ind-card-interpret">历史中等偏低，10年分位38%</div>
-          <div class="ind-card-time">更新于 2026-08-29</div>
-          <div class="mini-sparkline">
-            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="中位数PE近期趋势">
-              <title>中位数PE近期趋势</title>
-              <defs><linearGradient id="sg-mpe" x1="0" y1="0.0" x2="0" y2="1.0">
-                <stop offset="0%" stop-color="var(--green)" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
-              <path d="M0,15 L16,16 L33,18 L50,17 L66,14 L83,13 L100,12 L116,14 L133,13 L150,12 L166,11 L183,12 L200,11 L200,28 L0,28Z" fill="url(#sg-mpe)" />
-              <path d="M0,15 L16,16 L33,18 L50,17 L66,14 L83,13 L100,12 L116,14 L133,13 L150,12 L166,11 L183,12 L200,11" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="200" cy="11" r="2.5" fill="var(--green)"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">财政支出增速</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">+3.8%</div>
-          <div class="ind-card-interpret">一般公共预算支出同比温和，未出现大幅发力</div>
-          <div class="ind-card-time">更新于 2026-08-20</div>
-          <div class="mini-sparkline">
-            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="财政支出增速近期趋势">
-              <title>财政支出增速近期趋势</title>
-              <defs><linearGradient id="sg-fis" x1="0" y1="0.0" x2="0" y2="1.0">
-                <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-              <path d="M0,10 L16,12 L33,14 L50,11 L66,15 L83,13 L100,16 L116,14 L133,15 L150,13 L166,14 L183,13 L200,14 L200,28 L0,28Z" fill="url(#sg-fis)" />
-              <path d="M0,10 L16,12 L33,14 L50,11 L66,15 L83,13 L100,16 L116,14 L133,15 L150,13 L166,14 L183,13 L200,14" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="200" cy="14" r="2.5" fill="var(--yellow)"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="ind-card">
-          <div class="ind-card-header">
-            <span class="ind-card-name">30大中城市商品房成交面积</span>
-            <span class="ind-card-status yellow"></span>
-          </div>
-          <div class="ind-card-value" style="color: var(--yellow);">312万㎡</div>
-          <div class="ind-card-interpret">周度数据，同比-5%降幅收窄但未转正</div>
-          <div class="ind-card-time">更新于 2026-08-28</div>
-          <div class="mini-sparkline">
-            <svg viewBox="0 0 200 28" preserveAspectRatio="none" role="img" aria-label="商品房成交近期趋势">
-              <title>商品房成交近期趋势</title>
-              <defs><linearGradient id="sg-re" x1="0" y1="0.0" x2="0" y2="1.0">
-                <stop offset="0%" stop-color="var(--yellow)" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="var(--yellow)" stop-opacity="0"/></linearGradient></defs>
-              <path d="M0,18 L16,20 L33,16 L50,19 L66,15 L83,17 L100,14 L116,16 L133,13 L150,15 L166,12 L183,14 L200,13 L200,28 L0,28Z" fill="url(#sg-re)" />
-              <path d="M0,18 L16,20 L33,16 L50,19 L66,15 L83,17 L100,14 L116,16 L133,13 L150,15 L166,12 L183,14 L200,13" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="200" cy="13" r="2.5" fill="var(--yellow)"/>
-            </svg>
-          </div>
-        </div>
-
-      <!-- All indicators (hidden) -->
-
-            <!-- All indicators (hidden) -->
-      <div class="indicator-grid" id="all-grid" style="display:none;">
-        <!-- Populated by JS when tab is clicked -->
-      </div>
-    </section>
+      <div class="liquidity-env">流动性环境 · <span class="env-badge">宽松</span><span style="font-size:10px;color:var(--text-muted);margin-left:4px;">M2 8.7%</span></div>
+    </div>
+    <div class="card-time">更新于 2026-08-28</div>
   </div>
 
-  <!-- ACTION BAR -->
-  <section class="action-bar">
-    <div class="action-left">
-      <div class="action-stage">
-        <span class="action-stage-badge">B段 · 夏长</span>
-        <div class="action-position">
-          <div>目标仓位：<strong>60~80%</strong></div>
-          <div>操作方向：<strong>轮动为主，持有优质标的</strong></div>
-        </div>
-      </div>
-      <div class="action-divider"></div>
-      <div class="action-ref">
-        <strong>阶段特征：</strong>收益来自板块轮动和产业趋势，非整体性估值扩张。震荡频繁，中级回撤是常态。不追指数快牛，也不用熊市思维。
-      </div>
+  <!-- Buffett Indicator -->
+  <div class="anchor-card">
+    <div class="anchor-card-header">
+      <span class="indicator-name">巴菲特指标 (总市值/GDP)</span>
+      <span class="timestamp">2026-08-28</span>
     </div>
-    <div class="action-warnings">
-      <div class="warning-item">
-        <span class="warn-icon">⚠️</span>
-        恐贪指数连续3周上行(35→42)，接近C段早期关注区
-      </div>
-      <div class="warning-item">
-        <span class="warn-icon">⚠️</span>
-        公募仓位91.8%接近历史极值，增量子弹有限
-      </div>
+    <div class="anchor-value-row">
+      <span class="anchor-value" style="color: var(--yellow);">82</span>
+      <span class="anchor-unit">%</span>
     </div>
-  </section>
-
-  <!-- POSITION GUIDE: All stages -->
-  <section class="position-guide">
-    <div class="position-guide-title">各阶段仓位参考</div>
-    <div class="position-guide-grid">
-      <div class="pg-card pg-a">
-        <div class="pg-stage">A · 春播</div>
-        <div class="pg-position">80~100%</div>
-        <div class="pg-direction">方向：成长股，左侧布局</div>
-      </div>
-      <div class="pg-card pg-b pg-active">
-        <div class="pg-stage">B · 夏长</div>
-        <div class="pg-position">60~80%</div>
-        <div class="pg-direction">方向：轮动，持有优质标的</div>
-      </div>
-      <div class="pg-card pg-c1">
-        <div class="pg-stage">C1 · 享受泡沫</div>
-        <div class="pg-position">40~60%</div>
-        <div class="pg-direction">方向：开始止盈，降低弹性仓位</div>
-      </div>
-      <div class="pg-card pg-c2">
-        <div class="pg-stage">C2 · 准备跑路</div>
-        <div class="pg-position">0~20%</div>
-        <div class="pg-direction">方向：防御为主，仅保留底仓</div>
-      </div>
-      <div class="pg-card pg-d">
-        <div class="pg-stage">D · 冬藏</div>
-        <div class="pg-position">0%</div>
-        <div class="pg-direction">方向：持有现金或短债，等待下一周期</div>
-      </div>
+    <div class="anchor-percentile">历史中等水平，距泡沫线(105%)尚有余量</div>
+    <div class="anchor-status status-yellow">📊 偏高但未过热</div>
+    <div class="sparkline-container" id="spark-buffett" data-labels='["2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"]' data-values='[75,76,77,78,79,80,80,81,81,82,82,82]' data-color="var(--yellow)" data-ref-high="105" data-ref-high-label="105% 泡沫线" style="height:120px;">
     </div>
-  </section>
-
-  <!-- SWITCHING CONDITIONS TABLE -->
-  <section class="switch-table-section">
-    <div class="switch-table-title">阶段切换条件跟踪</div>
-    <table class="switch-table">
-      <caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">阶段切换条件跟踪表</caption>
-      <thead>
-        <tr>
-          <th style="width:160px;">切换方向</th>
-          <th>触发条件</th>
-          <th style="width:100px;">当前状态</th>
-          <th style="width:120px;">满足数/需满足</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="color:var(--green); font-weight:600;">B → A (回到底部)</td>
-          <td class="condition-cell">ERP &gt; 3.2% · 政策加码 · 右侧信号形成</td>
-          <td class="condition-cell">0/3 项满足</td>
-          <td><span class="not-met">● 未触发</span></td>
-        </tr>
-        <tr>
-          <td style="color:var(--yellow); font-weight:600;">B → C (走向泡沫)</td>
-          <td class="condition-cell">
-            ERP &lt; 1.6% · 巴菲特 &gt; 105% · 恐贪 &gt; 70<br>
-            两融大幅走高 · 基金爆款频出 · 换手率 &gt; 90%分位
-          </td>
-          <td class="condition-cell">
-            <span class="not-met">ERP ✗</span> · <span class="not-met">巴菲特 ✗</span><br>
-            <span class="not-met">恐贪 ✗</span> · <span class="not-met">两融 ✗</span><br>
-            <span class="not-met">爆款 ✗</span> · <span class="not-met">换手 ✗</span>
-          </td>
-          <td><span class="not-met">0/6 项满足</span></td>
-        </tr>
-        <tr>
-          <td style="color:var(--red); font-weight:600;">→ D (系统性风险)</td>
-          <td class="condition-cell">地产-地方债务失控 · 全球流动性深度紧缩 · 盈利增速转负</td>
-          <td class="condition-cell">0/3 项满足</td>
-          <td><span class="not-met">● 未触发</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- DISCLAIMER -->
-  <div class="disclaimer">
-    ⚠️ 以上内容基于历史数据与统计规律，过去表现不代表未来。仓位为目标框架，请结合自身风险偏好独立决策。
+    <div class="hist-ref"><span class="ref-dot"></span>2021高点 112%，当前低30pp</div>
+    <div class="card-time">更新于 2026-08-28</div>
   </div>
-
-  </main>
 </div>
 
+<!-- 3. MAIN MODEL GRID (7 cards) -->
+<div class="section-title">主模型指标 <span class="badge">7个参与阶段判定</span></div>
+<div class="model-grid">
+  <!-- 基金仓位 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">公募基金仓位</span>
+      <span class="ind-card-status yellow"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--yellow);">91.8%</div>
+    <div class="ind-card-interpret">90%+高分位，公募增量空间有限</div>
+    <div class="mini-sparkline" id="mspark-fund" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[85,86,87,88,89,89,90,90,91,91,92,91.8]' data-color="var(--yellow)"></div>
+    <div class="card-time">更新于 2026-08-25</div>
+  </div>
+  <!-- 两融 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">融资融券余额</span>
+      <span class="ind-card-status yellow"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--yellow);">1.75万亿</div>
+    <div class="ind-card-interpret">历史中等偏高，未达过热线(2.3万亿)</div>
+    <div class="mini-sparkline" id="mspark-margin" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[1.50,1.52,1.55,1.58,1.60,1.63,1.65,1.68,1.70,1.72,1.74,1.75]' data-color="var(--yellow)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+  <!-- 恐贪 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">恐贪指数</span>
+      <span class="ind-card-status yellow"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--yellow);">42</div>
+    <div class="ind-card-interpret">中性偏冷，连续3周上行但未到贪婪区(>70)</div>
+    <div class="mini-sparkline" id="mspark-fg" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[25,28,30,32,35,37,38,39,40,41,42,42]' data-color="var(--yellow)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+  <!-- 新发基金 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">新发基金份额</span>
+      <span class="ind-card-status green"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--green);">186亿</div>
+    <div class="ind-card-interpret">低位温和，未出现爆款频出</div>
+    <div class="mini-sparkline" id="mspark-newfund" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[120,130,140,150,155,160,165,170,175,180,185,186]' data-color="var(--green)"></div>
+    <div class="card-time">更新于 2026-08-28</div>
+  </div>
+  <!-- 偏股基金3年年化 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">偏股基金滚动3年年化</span>
+      <span class="ind-card-status red"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--red);">-2.8% <span class="slope-arrow slope-down">↓减速</span></div>
+    <div class="ind-card-interpret">负收益区间，距大底(-10%)尚远</div>
+    <div class="mini-sparkline" id="mspark-fund3y" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[5.2,3.8,2.5,1.2,0.1,-0.8,-1.5,-2.0,-2.3,-2.5,-2.7,-2.8]' data-color="var(--red)"></div>
+    <div class="card-time">更新于 2026-08-28</div>
+  </div>
+  <!-- 拥挤度 -->
+  <div class="ind-card">
+    <div class="ind-card-header">
+      <span class="ind-card-name">交易拥挤度</span>
+      <span class="ind-card-status yellow"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--yellow);">0.72</div>
+    <div class="ind-card-interpret">中高位，未达过热预警(0.90分位)</div>
+    <div class="mini-sparkline" id="mspark-crowd" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[0.45,0.50,0.55,0.58,0.62,0.65,0.68,0.70,0.72,0.71,0.73,0.72]' data-color="var(--yellow)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+  <!-- 中证1000/HS300 - WIDE with 120px sparkline + MA overlay -->
+  <div class="ind-card card-wide">
+    <div class="ind-card-header">
+      <span class="ind-card-name">中证1000/沪深300 比值</span>
+      <span class="ind-card-status yellow"></span>
+    </div>
+    <div class="ind-card-value" style="color: var(--yellow);">1.85</div>
+    <div class="ind-card-interpret">小盘相对强势，关注风格切换信号</div>
+    <div class="sparkline-tall" id="mspark-ratio" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[1.60,1.62,1.65,1.68,1.72,1.75,1.78,1.80,1.82,1.84,1.85,1.85]' data-color="var(--yellow)" data-ma20="true" data-ma60="true"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+</div>
+
+<!-- 4. RISK WARNING BAR -->
+<div class="risk-warning" id="riskWarning">
+  ⚠️ 微观结构过热预警：主模型仍看多，但微观指标显示拥挤，注意C段风险
+</div>
+
+<!-- 5. ACTION BAR -->
+<div class="action-bar">
+  <div class="action-left">
+    <div class="action-stage-badge">B段 · 夏长</div>
+    <div class="action-position">建议仓位：<strong>60-70%</strong>，结构化配置为主</div>
+  </div>
+  <div class="action-right">
+    <strong>操作要点：</strong>维持中性偏多仓位，重点关注板块轮动机会。警惕C段信号积累（拥挤度上升、两融走高），设好止盈纪律。
+  </div>
+</div>
+
+<!-- 6. CONFIRM SIGNALS -->
+<div class="section-title">确认信号 <span class="badge" style="background:rgba(105,231,255,0.15);color:var(--cyan);">技术面 · 不参与判定</span></div>
+<div class="confirm-row">
+  <div class="confirm-card">
+    <div class="confirm-header">
+      <span class="confirm-name">均线多头排列 (20/60/120日)</span>
+      <span class="confirm-badge yw">黄色</span>
+    </div>
+    <div class="confirm-value" style="color:var(--yellow);">20日线上·60日线下</div>
+    <div class="confirm-interpret">短期趋势转暖但中期压力未突破，方向待确认</div>
+    <div class="mini-sparkline" id="mspark-ma" data-labels='["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"]' data-values='[3800,3850,3900,3870,3920,3950,3980,4000,4050,4020,4060,4080]' data-color="var(--yellow)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+  <div class="confirm-card">
+    <div class="confirm-header">
+      <span class="confirm-name">MACD 金叉/死叉</span>
+      <span class="confirm-badge bg">绿色</span>
+    </div>
+    <div class="confirm-value" style="color:var(--green);">金叉 DIF>DEA</div>
+    <div class="confirm-interpret">短期动量转正，多头信号</div>
+    <div class="mini-sparkline" id="mspark-macd" data-labels='["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"]' data-values='[-15,-12,-8,-3,2,8,12,15,18,20,22,25]' data-color="var(--green)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+  <div class="confirm-card">
+    <div class="confirm-header">
+      <span class="confirm-name">北向资金5日净流入</span>
+      <span class="confirm-badge bg">绿色</span>
+    </div>
+    <div class="confirm-value" style="color:var(--green);">+32亿</div>
+    <div class="confirm-interpret">外资短期回流，态度偏积极</div>
+    <div class="mini-sparkline" id="mspark-north" data-labels='["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12"]' data-values='[-20,-15,-8,5,12,18,25,10,-5,8,15,32]' data-color="var(--green)"></div>
+    <div class="card-time">更新于 2026-08-29</div>
+  </div>
+</div>
+
+<!-- 7. REFERENCE INDICATORS -->
+<div class="section-title">参考指标 <span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">不参与判定</span></div>
+<div class="ref-row">
+  <div class="ref-card">
+    <div class="ref-title">韭圈儿神奇指标及偏离率</div>
+    <div class="ref-value">1.85 <span style="font-size:12px;color:var(--text-muted);">偏离率 +12%</span></div>
+    <div class="ref-desc">基于沪深300布林带偏离率(20日)，数据源待切换至AKShare</div>
+  </div>
+  <div class="ref-card">
+    <div class="ref-title">偏股基金 vs 万得混合债券一级基金指数</div>
+    <div class="ref-value">比值 1.32</div>
+    <div class="ref-desc">股债相对强弱，比值上升表示股票基金跑赢债基</div>
+  </div>
+</div>
+
+<!-- 8. POSITION GUIDE -->
+<section class="position-guide">
+  <div class="position-guide-title">各阶段仓位参考</div>
+  <div class="position-guide-grid">
+    <div class="pg-card pg-a"><div class="pg-stage">A · 春播</div><div class="pg-position">80-100%</div><div class="pg-direction">左侧分批加仓<br>越跌越买</div></div>
+    <div class="pg-card pg-b pg-active"><div class="pg-stage">B · 夏长</div><div class="pg-position">60-70%</div><div class="pg-direction">持有为主<br>结构化轮动</div></div>
+    <div class="pg-card pg-c1"><div class="pg-stage">C1 · 泡沫</div><div class="pg-position">40-50%</div><div class="pg-direction">逐步止盈<br>保留核心仓</div></div>
+    <div class="pg-card pg-c2"><div class="pg-stage">C2 · 跑路</div><div class="pg-position">20-30%</div><div class="pg-direction">大幅减仓<br>锁定利润</div></div>
+    <div class="pg-card pg-d"><div class="pg-stage">D · 冬藏</div><div class="pg-position">0-10%</div><div class="pg-direction">空仓观望<br>等待大底信号</div></div>
+  </div>
+</section>
+
+<!-- 9. SWITCH TABLE -->
+<section class="switch-table-section">
+  <div class="switch-table-title">阶段切换条件跟踪</div>
+  <table class="switch-table">
+    <thead><tr><th>方向</th><th>条件</th><th>当前状态</th></tr></thead>
+    <tbody>
+      <tr><td>A→B</td><td class="condition-cell">ERP突破3.2%+成交缩量+基金仓位&lt;70%</td><td class="not-met">✗ 未满足</td></tr>
+      <tr><td>B→C1</td><td class="condition-cell">恐贪&gt;70+拥挤度&gt;0.85+新发基金放量&gt;500亿</td><td class="not-met">✗ 部分积累中</td></tr>
+      <tr><td>C1→C2</td><td class="condition-cell">偏股基金3年&gt;30%+巴菲特&gt;105%+融资&gt;2.3万亿</td><td class="not-met">✗ 未满足</td></tr>
+      <tr><td>C2→D</td><td class="condition-cell">ERP急速收窄&lt;1.2%+MACD顶背离+北向持续流出</td><td class="not-met">✗ 未满足</td></tr>
+      <tr><td>D→A</td><td class="condition-cell">ERP&gt;4%+基金仓位&lt;60%+极度恐惧+政策底确认</td><td class="not-met">✗ 未满足</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  本看板仅供研究参考，不构成任何投资建议。数据可能存在延迟或误差，请以官方数据为准。投资有风险，入市需谨慎。<br>
+  基于 A/B/C/D 四段状态机模型 · 9指标主模型 + 3确认信号 + 2参考指标 · V3
+</div>
+
+</main>
+</div>
+
+<!-- TOOLTIP -->
+<div class="svg-tooltip" id="svgTooltip"><div class="tt-date"></div><div class="tt-val"></div></div>
+
+<!-- DEBUG TOGGLE -->
+<button class="debug-toggle" id="debugToggle" onclick="toggleRisk()">🔧 Toggle Risk Warning</button>
+
 <script>
-function switchTab(btn, tabName) {
-  // Update active tab
-  document.querySelectorAll('.ind-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
+// ===== SPARKLINE GENERATION =====
+function buildSparkline(container, opts) {
+  const { labels, values, color, refHigh, refLow, refHighLabel, refLowLabel, isAnchor, maOverlay } = opts;
+  const W = 200, H = isAnchor ? 120 : 28;
+  const pad = 2;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const scaleY = (v) => H - pad - ((v - min) / range) * (H - 2 * pad);
+  const stepX = (i) => (i / (values.length - 1)) * W;
 
-  // Show/hide grids
-  document.getElementById('confirm-grid').style.display = tabName === 'confirm' || tabName === 'all' ? 'grid' : 'none';
-  document.getElementById('background-grid').style.display = tabName === 'background' || tabName === 'all' ? 'grid' : 'none';
-  document.getElementById('all-grid').style.display = 'none';
+  let points = values.map((v, i) => `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}`);
+  let linePath = 'M' + points.join(' L');
+  let areaPath = linePath + ` L${W},${H} L0,${H}Z`;
 
-  if (tabName === 'all') {
-    // Show all cards in a combined grid
-    document.getElementById('confirm-grid').style.display = 'grid';
-    document.getElementById('background-grid').style.display = 'grid';
+  let gradId = 'grad-' + Math.random().toString(36).substr(2, 6);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">`;
+  svg += `<defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">`;
+  svg += `<stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>`;
+  svg += `<stop offset="100%" stop-color="${color}" stop-opacity="0"/>`;
+  svg += `</linearGradient></defs>`;
+  svg += `<path d="${areaPath}" fill="url(#${gradId})"/>`;
+  svg += `<path d="${linePath}" fill="none" stroke="${color}" stroke-width="${isAnchor ? 2 : 1.5}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  // Reference lines
+  if (refHigh !== undefined) {
+    const yRef = scaleY(refHigh);
+    if (yRef > 0 && yRef < H) {
+      svg += `<line x1="0" y1="${yRef}" x2="${W}" y2="${yRef}" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>`;
+      if (refHighLabel) svg += `<text x="${W-5}" y="${yRef-3}" fill="var(--green)" font-size="7" text-anchor="end">${refHighLabel}</text>`;
+    }
+  }
+  if (refLow !== undefined) {
+    const yRef = scaleY(refLow);
+    if (yRef > 0 && yRef < H) {
+      svg += `<line x1="0" y1="${yRef}" x2="${W}" y2="${yRef}" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>`;
+      if (refLowLabel) svg += `<text x="${W-5}" y="${yRef+10}" fill="var(--red)" font-size="7" text-anchor="end">${refLowLabel}</text>`;
+    }
+  }
+
+  // MA overlay for ratio chart
+  if (maOverlay && isAnchor) {
+    // Compute 20-day and 60-day MA (simulated from available data)
+    // Since we only have 12 points, we'll simulate MA20 as a smoothed 3-period avg and MA60 as 6-period avg
+    const ma20Vals = computeMA(values, 3);
+    const ma60Vals = computeMA(values, 6);
+    let ma20Points = ma20Vals.map((v, i) => v !== null ? `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}` : null).filter(Boolean);
+    let ma60Points = ma60Vals.map((v, i) => v !== null ? `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}` : null).filter(Boolean);
+    if (ma20Points.length > 1) {
+      svg += `<path d="M${ma20Points.join(' L')}" fill="none" stroke="white" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
+    }
+    if (ma60Points.length > 1) {
+      svg += `<path d="M${ma60Points.join(' L')}" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="6,4" opacity="0.6"/>`;
+    }
+    // Crossover arrows
+    for (let i = 1; i < values.length; i++) {
+      if (ma20Vals[i] !== null && ma20Vals[i-1] !== null) {
+        if (values[i] > ma20Vals[i] && values[i-1] <= ma20Vals[i-1]) {
+          // Break above MA20 - up arrow
+          const ax = stepX(i), ay = scaleY(values[i]);
+          svg += `<text x="${ax}" y="${ay-6}" fill="var(--green)" font-size="10" text-anchor="middle" font-weight="bold">↑</text>`;
+        } else if (values[i] < ma20Vals[i] && values[i-1] >= ma20Vals[i-1]) {
+          // Break below MA20 - down arrow
+          const ax = stepX(i), ay = scaleY(values[i]);
+          svg += `<text x="${ax}" y="${ay+12}" fill="var(--red)" font-size="10" text-anchor="middle" font-weight="bold">↓</text>`;
+        }
+      }
+    }
+  }
+
+  // Hit circles for tooltip
+  values.forEach((v, i) => {
+    const cx = stepX(i).toFixed(1);
+    const cy = scaleY(v).toFixed(1);
+    svg += `<circle cx="${cx}" cy="${cy}" r="${isAnchor ? 8 : 6}" fill="transparent" stroke="none" data-label="${labels[i]}" data-value="${v}"/>`;
+  });
+
+  // End dot
+  const lastX = stepX(values.length - 1).toFixed(1);
+  const lastY = scaleY(values[values.length - 1]).toFixed(1);
+  svg += `<circle cx="${lastX}" cy="${lastY}" r="${isAnchor ? 3 : 2}" fill="${color}"/>`;
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+function computeMA(arr, period) {
+  return arr.map((v, i) => {
+    if (i < period - 1) return null;
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += arr[j];
+    return sum / period;
+  });
+}
+
+// ===== TOOLTIP SYSTEM =====
+const tooltip = document.getElementById('svgTooltip');
+document.addEventListener('mousemove', function(e) {
+  const target = e.target;
+  if (target.tagName === 'circle' && target.dataset.label) {
+    tooltip.style.display = 'block';
+    tooltip.querySelector('.tt-date').textContent = target.dataset.label;
+    tooltip.querySelector('.tt-val').textContent = target.dataset.value;
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top = (e.clientY - 30) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+
+// ===== INIT ALL SPARKLINES =====
+function initSparklines() {
+  // Anchor sparklines (120px)
+  document.querySelectorAll('.sparkline-container').forEach(el => {
+    const labels = JSON.parse(el.dataset.labels);
+    const values = JSON.parse(el.dataset.values);
+    const color = el.dataset.color;
+    buildSparkline(el, {
+      labels, values, color,
+      refHigh: el.dataset.refHigh ? parseFloat(el.dataset.refHigh) : undefined,
+      refLow: el.dataset.refLow ? parseFloat(el.dataset.refLow) : undefined,
+      refHighLabel: el.dataset.refHighLabel,
+      refLowLabel: el.dataset.refLowLabel,
+      isAnchor: true,
+      maOverlay: false
+    });
+  });
+
+  // Mini sparklines (28px)
+  document.querySelectorAll('.mini-sparkline').forEach(el => {
+    const labels = JSON.parse(el.dataset.labels);
+    const values = JSON.parse(el.dataset.values);
+    const color = el.dataset.color;
+    buildSparkline(el, { labels, values, color, isAnchor: false });
+  });
+
+  // Tall sparkline for 1000/300 ratio with MA overlay (120px)
+  const ratioEl = document.getElementById('mspark-ratio');
+  if (ratioEl) {
+    const labels = JSON.parse(ratioEl.dataset.labels);
+    const values = JSON.parse(ratioEl.dataset.values);
+    const color = ratioEl.dataset.color;
+    buildSparkline(ratioEl, {
+      labels, values, color,
+      isAnchor: true,
+      maOverlay: true
+    });
   }
 }
 
-// Add subtle hover effects
-// Hover effects handled by CSS
+// ===== RISK WARNING LOGIC =====
+function checkRiskWarning() {
+  const params = new URLSearchParams(window.location.search);
+  const debugOverheat = params.get('debug') === 'overheat';
+
+  // Mock data for risk conditions
+  const probB = 65, probC1 = 20;
+  const crowding = 0.72; // 90% percentile check
+  const ratioHigh = 1.85, ratioCurrent = 1.85; // from high drop check
+  const fund3y = -2.8; // >30% check
+
+  const isBC1 = (probB > 50) || (probB + probC1 > 70);
+  const isOverheated = debugOverheat || (crowding > 0.90) || ((ratioHigh - ratioCurrent) / ratioHigh > 0.05) || (fund3y > 30);
+
+  const warningEl = document.getElementById('riskWarning');
+  if (isBC1 && isOverheated) {
+    warningEl.classList.add('visible');
+  } else {
+    warningEl.classList.remove('visible');
+  }
+}
+
+function toggleRisk() {
+  const warningEl = document.getElementById('riskWarning');
+  warningEl.classList.toggle('visible');
+}
+
+// Debug toggle visibility
+if (new URLSearchParams(window.location.search).get('debug')) {
+  document.getElementById('debugToggle').classList.add('show');
+}
+
+// ===== CARD TIME STYLING =====
+function styleCardTimes() {
+  const now = new Date('2026-09-01');
+  document.querySelectorAll('.card-time').forEach(el => {
+    const text = el.textContent;
+    const match = text.match(/(\d{4}-\d{2}-\d{2})/);
+    if (match) {
+      const d = new Date(match[1]);
+      const diffDays = (now - d) / (1000 * 60 * 60 * 24);
+      if (diffDays > 90) {
+        el.classList.add('warn-gray');
+      } else if (diffDays > 30) {
+        el.classList.add('warn-yellow');
+      }
+    }
+  });
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  initSparklines();
+  checkRiskWarning();
+  styleCardTimes();
+});
 </script>
 </body>
 </html>
