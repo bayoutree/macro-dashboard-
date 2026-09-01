@@ -1503,9 +1503,11 @@ const app = {
         break;
       case 'stock':
         var iframe = document.getElementById('stock-iframe');
-        if (iframe && iframe.dataset.src) {
-          iframe.setAttribute('src', iframe.dataset.src);
-          delete iframe.dataset.src;
+        if (iframe && !iframe.srcdoc) {
+          fetch('stock_dashboard.html')
+            .then(function(r) { return r.text(); })
+            .then(function(html) { iframe.srcdoc = html; })
+            .catch(function(e) { console.error('Failed to load stock dashboard:', e); });
         }
         break;
     }
