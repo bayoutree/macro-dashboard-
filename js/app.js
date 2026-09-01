@@ -1503,8 +1503,9 @@ const app = {
         break;
       case 'stock':
         var iframe = document.getElementById('stock-iframe');
-        if (iframe && !iframe.src && iframe.dataset.src) {
-          iframe.src = iframe.dataset.src;
+        if (iframe && iframe.dataset.src) {
+          iframe.setAttribute('src', iframe.dataset.src);
+          delete iframe.dataset.src;
         }
         break;
     }
