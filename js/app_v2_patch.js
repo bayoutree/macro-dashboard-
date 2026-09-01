@@ -66,6 +66,15 @@
       case 'timing':
         if (typeof TimingTab !== 'undefined') TimingTab.init();
         break;
+      case 'stock':
+        var iframe = document.getElementById('stock-iframe');
+        if (iframe && !iframe.srcdoc) {
+          fetch('stock_dashboard.html')
+            .then(function(r) { return r.text(); })
+            .then(function(html) { iframe.srcdoc = html; })
+            .catch(function(e) { console.error('Failed to load stock dashboard:', e); });
+        }
+        break;
     }
   };
 
