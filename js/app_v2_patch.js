@@ -41,7 +41,7 @@
     }
   };
 
-  // 4. 覆盖 renderTab - cycle tab 使用 V2 模块
+  // 4. 覆盖 renderTab - cycle tab 使用 V2 模块，stock tab 加载 iframe
   app.renderTab = function(tab) {
     switch (tab) {
       case 'china':
@@ -68,17 +68,14 @@
         break;
       case 'stock':
         var iframe = document.getElementById('stock-iframe');
-        if (iframe && !iframe.srcdoc) {
-          fetch('stock_dashboard.html')
-            .then(function(r) { return r.text(); })
-            .then(function(html) { iframe.srcdoc = html; })
-            .catch(function(e) { console.error('Failed to load stock dashboard:', e); });
+        if (iframe && iframe.src !== 'stock_dashboard.html') {
+          iframe.src = 'stock_dashboard.html';
         }
         break;
     }
   };
 
-  // 5. 覆盖 switchTab - 切换时 dispose V2 模块
+  // 5. 覆盖 switchTab - 切换时 dispose V2 模块，处理 stock iframe
   app.switchTab = function(tab) {
     if (tab === this.currentTab) return;
 
@@ -94,6 +91,14 @@
     // 如果当前是 timing tab，dispose 图表
     if (this.currentTab === 'timing' && typeof TimingTab !== 'undefined') {
       try { TimingTab.dispose(); } catch (e) {}
+    }
+
+    // 如果当前是 stock tab，重置 iframe 以便下次可重新加载
+    if (this.currentTab === 'stock') {
+      var iframe = document.getElementById('stock-iframe');
+      if (iframe) {
+        iframe.src = 'about:blank';
+      }
     }
 
     this.currentTab = tab;
