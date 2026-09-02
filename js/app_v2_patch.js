@@ -1,47 +1,41 @@
 /**
- * app_v2_patch.js - V2 周期看板适配补丁
+ * app_v2_patch.js - V3 周期看板适配补丁
  * 
  * 覆盖原有 app.js 中的周期Tab渲染逻辑，
- * 改用 CycleV2Module 进行渲染。
+ * 改用 CycleV3Module 进行渲染。
  * 
- * 使用方式: 在 index_v2.html 中，在 app.js 之后引入本文件。
+ * 使用方式: 在 index.html 中，在 app.js + cycle_v3.js 之后引入本文件。
  */
 
 (function() {
   'use strict';
 
-  // 1. 在 app.data 中添加 cyclePositionV2 字段
+  // 1. 在 app.data 中添加 cyclePositionV3 字段
   if (typeof app !== 'undefined' && app.data) {
-    app.data.cyclePositionV2 = null;
+    app.data.cyclePositionV3 = null;
   }
 
-  // 2. 保存原始的 loadAllData 和 renderTab 方法
+  // 2. 保存原始方法
   const _originalLoadAllData = app.loadAllData.bind(app);
-  const _originalRenderTab = app.renderTab.bind(app);
-  const _originalSwitchTab = app.switchTab.bind(app);
-  const _originalRefresh = app.refresh.bind(app);
 
-  // 3. 覆盖 loadAllData - 额外加载 cycle_position_v2.json
+  // 3. 覆盖 loadAllData - 额外加载 cycle_position_v3.json
   app.loadAllData = async function() {
-    // 先执行原始加载
     await _originalLoadAllData();
 
-    // 额外加载 V2 周期数据
     try {
-      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v2.json?_v=${Date.now()}`, { cache: 'no-store' });
+      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v3.json?_v=${Date.now()}`, { cache: 'no-store' });
       if (resp.ok) {
-        const rawData = await resp.json();
-        this.data.cyclePositionV2 = normalizeCycleData(rawData);
-        console.log('[V2] cycle_position_v2.json loaded and normalized');
+        this.data.cyclePositionV3 = await resp.json();
+        console.log('[V3] cycle_position_v3.json loaded');
       } else {
-        console.warn('[V2] Failed to load cycle_position_v2.json:', resp.status);
+        console.warn('[V3] Failed to load cycle_position_v3.json:', resp.status);
       }
     } catch (err) {
-      console.warn('[V2] Error loading cycle_position_v2.json:', err);
+      console.warn('[V3] Error loading cycle_position_v3.json:', err);
     }
   };
 
-  // 4. 覆盖 renderTab - cycle tab 使用 V2 模块，stock tab 加载 iframe
+  // 4. 覆盖 renderTab
   app.renderTab = function(tab) {
     switch (tab) {
       case 'china':
@@ -51,12 +45,12 @@
         TabRenderers.renderUS(this.data.usMacro, this.data.dashboardSummary);
         break;
       case 'cycle':
-        // 使用 V2 渲染模块
-        if (this.data.cyclePositionV2) {
+        if (this.data.cyclePositionV3 && typeof CycleV3Module !== 'undefined') {
+          CycleV3Module.render(this.data.cyclePositionV3);
+        } else if (this.data.cyclePositionV2 && typeof CycleV2Module !== 'undefined') {
+          console.warn('[V3] V3 data not available, falling back to V2');
           CycleV2Module.render(this.data.cyclePositionV2);
         } else {
-          // 回退到 V1
-          console.warn('[V2] cyclePositionV2 not available, falling back to V1');
           TabRenderers.renderCycle(this.data.cyclePosition);
         }
         break;
@@ -75,86 +69,79 @@
     }
   };
 
-  // 5. 覆盖 switchTab - 切换时 dispose V2 模块，处理 stock iframe
+  // 5. 覆盖 switchTab
   app.switchTab = function(tab) {
     if (tab === this.currentTab) return;
 
-    // 如果当前是 cycle tab，先 dispose V2 模块
-    if (this.currentTab === 'cycle' && typeof CycleV2Module !== 'undefined') {
-      try {
-        CycleV2Module.dispose();
-      } catch (e) {
-        console.warn('[V2] Error disposing CycleV2Module:', e);
+    // Dispose cycle module when leaving cycle tab
+    if (this.currentTab === 'cycle') {
+      if (typeof CycleV3Module !== 'undefined') {
+        try { CycleV3Module.dispose(); } catch (e) {}
+      }
+      if (typeof CycleV2Module !== 'undefined') {
+        try { CycleV2Module.dispose(); } catch (e) {}
       }
     }
 
-    // 如果当前是 timing tab，dispose 图表
+    // Dispose timing charts
     if (this.currentTab === 'timing' && typeof TimingTab !== 'undefined') {
       try { TimingTab.dispose(); } catch (e) {}
     }
 
-    // 如果当前是 stock tab，重置 iframe 以便下次可重新加载
+    // Reset stock iframe when leaving
     if (this.currentTab === 'stock') {
       var iframe = document.getElementById('stock-iframe');
-      if (iframe) {
-        iframe.src = 'about:blank';
-      }
+      if (iframe) { iframe.src = 'about:blank'; }
     }
 
     this.currentTab = tab;
 
-    // 更新 tab 按钮状态
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
-    // 更新 tab 内容显示
     document.querySelectorAll('.tab-content').forEach(content => {
-      content.classList.toggle('active', content.id === `tab-${tab}`);
-      content.classList.toggle('hidden', content.id !== `tab-${tab}`);
+      content.classList.toggle('active', content.id === 'tab-' + tab);
+      content.classList.toggle('hidden', content.id !== 'tab-' + tab);
     });
 
-    // Dispose 原有图表并渲染新 tab
     ChartManager.disposeAll();
     this.renderTab(tab);
   };
 
-  // 6. 覆盖 refresh - 确保 V2 数据也刷新
+  // 6. 覆盖 refresh
   app.refresh = async function() {
     const btn = document.getElementById('refresh-btn');
     if (btn) btn.classList.add('refreshing');
 
-    // Dispose V2 charts if on cycle tab
-    if (this.currentTab === 'cycle' && typeof CycleV2Module !== 'undefined') {
-      try {
-        CycleV2Module.dispose();
-      } catch (e) {}
+    if (this.currentTab === 'cycle') {
+      if (typeof CycleV3Module !== 'undefined') { try { CycleV3Module.dispose(); } catch (e) {} }
+      if (typeof CycleV2Module !== 'undefined') { try { CycleV2Module.dispose(); } catch (e) {} }
     }
 
     ChartManager.disposeAll();
     await this.loadAllData();
     this.renderTab(this.currentTab);
 
-    // 更新时间显示
     const updateTimes = [
       this.data.cnMacro?.update_time,
       this.data.usMacro?.update_time,
+      this.data.cyclePositionV3?._meta?.update_time,
       this.data.cyclePositionV2?.update_time,
     ].filter(Boolean);
     if (updateTimes.length > 0) {
       const timeEl = document.getElementById('update-time');
-      if (timeEl) timeEl.textContent = `更新于 ${updateTimes[0]}`;
+      if (timeEl) timeEl.textContent = '更新于 ' + updateTimes[0];
     }
 
-    if (btn) setTimeout(() => btn.classList.remove('refreshing'), 1000);
+    if (btn) setTimeout(function() { btn.classList.remove('refreshing'); }, 1000);
   };
 
   // 7. 页面卸载时清理
-  window.addEventListener('beforeunload', () => {
-    if (typeof CycleV2Module !== 'undefined') {
-      try { CycleV2Module.dispose(); } catch(e) {}
-    }
+  window.addEventListener('beforeunload', function() {
+    if (typeof CycleV3Module !== 'undefined') { try { CycleV3Module.dispose(); } catch(e) {} }
+    if (typeof CycleV2Module !== 'undefined') { try { CycleV2Module.dispose(); } catch(e) {} }
   });
 
-  console.log('[V2] app_v2_patch.js loaded - Cycle tab upgraded to V2');
+  console.log('[V3] app_v2_patch.js loaded - Cycle tab upgraded to V3');
 })();
