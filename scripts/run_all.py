@@ -18,6 +18,11 @@ SCRIPTS = [
     ("fetch_asset_data.py", "全球资产价格 (yfinance)"),
     ("calc_valuations.py", "资产估值计算"),
     ("generate_summary.py", "看板综合结论"),
+    # ---- V3 全球周期看板数据管道 ----
+    ("fetch_fred_data.py", "V3周期-FRED数据拉取"),
+    ("update_json.py", "V3周期-更新v3 JSON"),
+    ("calculate_indicators.py", "V3周期-衍生指标计算"),
+    ("validate_json.py", "V3周期-JSON格式校验"),
 ]
 
 
@@ -91,7 +96,8 @@ def main():
     # 检查输出文件
     expected_files = [
         "us_macro.json", "cn_macro.json", "asset_prices.json",
-        "asset_valuation.json", "dashboard_summary.json"
+        "asset_valuation.json", "dashboard_summary.json",
+        "cycle_position_v3.json"
     ]
     logger.info(f"\n数据文件检查:")
     for f in expected_files:
