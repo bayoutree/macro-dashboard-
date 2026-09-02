@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A股周期定位看板 V3</title>
+<title>A股周期定位看板 V3.1</title>
 <style>
 :root {
   --canvas: #070A14;
@@ -29,7 +29,8 @@
   --orange-dim: rgba(255,169,77,0.15);
   --stage-a: #62FAD3;
   --stage-b: #69E7FF;
-  --stage-c: #FFD76E;
+  --stage-c1: #FFD76E;
+  --stage-c2: #FFA94D;
   --stage-d: #FF6B6B;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -66,7 +67,7 @@ body::before {
 }
 .page { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: var(--gap-lg); }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: var(--gap-xl); padding-bottom: var(--gap-md);
@@ -79,862 +80,901 @@ body::before {
 }
 .header-left .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 .header-right { display: flex; align-items: center; gap: var(--gap-md); }
-.update-badge { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
-.data-fresh {
+.update-badge { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+.data-status {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--green); background: var(--green-dim);
-  padding: 4px 10px; border-radius: var(--radius-sm);
+  font-size: 12px; padding: 4px 10px; border-radius: var(--radius-sm);
 }
-.data-fresh .dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green); animation: pulse 2s ease-in-out infinite;
-}
+.data-status.fresh { color: var(--green); background: var(--green-dim); }
+.data-status.stale { color: var(--yellow); background: var(--yellow-dim); }
+.data-status.expired { color: var(--red); background: var(--red-dim); }
+.data-status .dot { width: 6px; height: 6px; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+.data-status.fresh .dot { background: var(--green); }
+.data-status.stale .dot { background: var(--yellow); }
+.data-status.expired .dot { background: var(--red); }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
-/* STAGE GAUGE */
-.stage-gauge {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: var(--gap-xl) var(--gap-xl) var(--gap-lg);
-  margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
-}
-.stage-gauge-title {
-  font-size: 13px; font-weight: 600; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--gap-md);
-}
-.stage-bar-container { position: relative; margin-bottom: var(--gap-md); }
-.stage-bar {
-  display: flex; height: 48px; border-radius: var(--radius-md);
-  overflow: hidden; border: 1px solid var(--border);
-}
-.stage-segment {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 600; position: relative; transition: all 0.3s ease;
-}
-.stage-segment .stage-label { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.stage-segment .stage-name { font-size: 15px; font-weight: 700; }
-.stage-segment .stage-sub { font-size: 10px; font-weight: 400; opacity: 0.7; }
-.seg-a { background: linear-gradient(135deg, rgba(98,250,211,0.20), rgba(98,250,211,0.10)); color: var(--stage-a); }
-.seg-b { background: linear-gradient(135deg, rgba(105,231,255,0.20), rgba(105,231,255,0.10)); color: var(--stage-b); }
-.seg-c1 { background: linear-gradient(135deg, rgba(255,215,110,0.20), rgba(255,215,110,0.10)); color: var(--stage-c); }
-.seg-c2 { background: linear-gradient(135deg, rgba(255,169,77,0.25), rgba(255,169,77,0.12)); color: var(--orange); }
-.seg-d { background: linear-gradient(135deg, rgba(255,107,107,0.20), rgba(255,107,107,0.10)); color: var(--stage-d); }
-
-.stage-pointer {
-  position: absolute; bottom: -14px; left: 55%;
-  transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; z-index: 2;
-}
-.stage-pointer .arrow {
-  width: 0; height: 0;
-  border-left: 8px solid transparent; border-right: 8px solid transparent;
-  border-bottom: 10px solid var(--cyan);
-  filter: drop-shadow(0 0 6px var(--cyan-glow));
-}
-.stage-pointer .pointer-label {
-  margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--cyan);
-  white-space: nowrap; background: rgba(7,10,20,0.8);
-  padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid rgba(105,231,255,0.3);
-}
-.prob-row { display: flex; gap: var(--gap-md); margin-top: var(--gap-xl); align-items: stretch; }
-.prob-item {
-  flex: 1; background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-md); padding: var(--gap-md); text-align: center;
-  transition: all 0.2s ease;
-}
-.prob-item.active { border-color: rgba(105,231,255,0.4); background: rgba(105,231,255,0.06); }
-.prob-item .prob-stage { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-.prob-item .prob-value { font-size: 28px; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
-.prob-item .prob-trend { font-size: 11px; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-.prob-item .prob-trend.up { color: var(--green); }
-.prob-item .prob-trend.down { color: var(--red); }
-.prob-item .prob-trend.flat { color: var(--text-muted); }
-.prob-a .prob-stage { color: var(--stage-a); } .prob-a .prob-value { color: var(--stage-a); }
-.prob-b .prob-stage { color: var(--stage-b); } .prob-b .prob-value { color: var(--stage-b); }
-.prob-c1 .prob-stage { color: var(--stage-c); } .prob-c1 .prob-value { color: var(--stage-c); }
-.prob-c2 .prob-stage { color: var(--orange); } .prob-c2 .prob-value { color: var(--orange); }
-.prob-d .prob-stage { color: var(--stage-d); } .prob-d .prob-value { color: var(--stage-d); }
-
-.stage-desc {
-  margin-top: var(--gap-lg); padding: var(--gap-md);
-  background: rgba(105,231,255,0.04); border: 1px solid rgba(105,231,255,0.15);
-  border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: var(--gap-md);
-}
-.stage-desc .stage-icon { font-size: 24px; flex-shrink: 0; }
-.stage-desc .stage-text h3 { font-size: 15px; font-weight: 700; color: var(--cyan); margin-bottom: 4px; }
-.stage-desc .stage-text p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-
-/* SECTION */
+/* ===== SECTION TITLES ===== */
 .section-title {
-  font-size: 13px; font-weight: 600; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--gap-md);
+  font-size: 15px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: var(--gap-md); padding-left: 12px;
+  border-left: 3px solid var(--accent);
   display: flex; align-items: center; gap: var(--gap-sm);
 }
-.section-title .badge {
-  font-size: 10px; padding: 2px 6px; border-radius: var(--radius-sm);
-  background: var(--accent-glow); color: var(--accent); font-weight: 700;
-}
+.section-title .emoji { font-size: 18px; }
 
-/* ANCHOR CARDS */
-.anchor-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-lg);
-  margin-bottom: var(--gap-lg);
+/* ===== STAGE GAUGE ===== */
+.stage-gauge {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--gap-xl);
+  margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
 }
+.stage-bar-container { margin-bottom: var(--gap-lg); }
+.stage-bar {
+  display: flex; height: 32px; border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--border);
+}
+.stage-segment {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: rgba(0,0,0,0.7);
+  transition: all 0.3s ease; position: relative; cursor: pointer;
+}
+.stage-segment:hover { filter: brightness(1.15); }
+.stage-segment.a { background: var(--stage-a); }
+.stage-segment.b { background: var(--stage-b); }
+.stage-segment.c1 { background: var(--stage-c1); }
+.stage-segment.c2 { background: var(--stage-c2); }
+.stage-segment.d { background: var(--stage-d); }
+.stage-segment .pct { font-size: 10px; opacity: 0.8; margin-left: 2px; }
+.stage-marker {
+  position: absolute; top: -8px; bottom: -8px; width: 3px;
+  background: var(--text-primary); border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  z-index: 2;
+}
+.stage-labels {
+  display: flex; justify-content: space-between; margin-top: var(--gap-sm);
+  font-size: 12px; color: var(--text-muted);
+}
+.stage-cards {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap-sm);
+  margin-top: var(--gap-md);
+}
+.stage-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--gap-md);
+  text-align: center; transition: all 0.2s ease; cursor: default;
+}
+.stage-card:hover { background: var(--surface-hover); }
+.stage-card.active { border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-glow); }
+.stage-card .season-emoji { font-size: 20px; display: block; margin-bottom: 4px; }
+.stage-card .stage-name { font-size: 13px; font-weight: 600; }
+.stage-card .stage-prob { font-size: 22px; font-weight: 700; margin: 4px 0; }
+.stage-card .stage-range { font-size: 11px; color: var(--text-muted); }
+.stage-card.a .stage-prob { color: var(--stage-a); }
+.stage-card.b .stage-prob { color: var(--stage-b); }
+.stage-card.c1 .stage-prob { color: var(--stage-c1); }
+.stage-card.c2 .stage-prob { color: var(--stage-c2); }
+.stage-card.d .stage-prob { color: var(--stage-d); }
+
+/* ===== ANCHOR INDICATORS ===== */
+.anchor-section { margin-bottom: var(--gap-lg); }
+.anchor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-md); }
 .anchor-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--gap-lg);
-  backdrop-filter: blur(16px); transition: all 0.2s ease; position: relative;
+  backdrop-filter: blur(20px); position: relative; overflow: hidden;
 }
-.anchor-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
-.anchor-card-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-md);
+.anchor-card .card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: var(--gap-sm);
 }
-.anchor-card-header .indicator-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.anchor-card-header .timestamp { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
-.anchor-value-row { display: flex; align-items: baseline; gap: var(--gap-sm); margin-bottom: var(--gap-sm); }
-.anchor-value { font-size: 36px; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
-.anchor-unit { font-size: 14px; color: var(--text-secondary); }
-.anchor-percentile { font-size: 12px; color: var(--text-muted); margin-bottom: var(--gap-md); }
-.anchor-status {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
-  margin-bottom: var(--gap-md);
-}
-.status-green { background: var(--green-dim); color: var(--green); }
-.status-yellow { background: var(--yellow-dim); color: var(--yellow); }
-.status-red { background: var(--red-dim); color: var(--red); }
-
-.sparkline-container { height: 120px; margin-top: var(--gap-sm); position: relative; }
-.sparkline-container svg { width: 100%; height: 100%; }
-.hist-ref {
-  font-size: 11px; color: var(--text-muted); margin-top: var(--gap-sm);
-  display: flex; align-items: center; gap: 6px;
-}
-.hist-ref .ref-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted); }
-
-/* ERP liquidity sub-block */
-.liquidity-block {
-  margin-top: var(--gap-md); padding: var(--gap-sm) var(--gap-md);
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-.liquidity-row { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-sm); margin-bottom: 4px; }
-.liq-item { text-align: center; flex: 1; }
-.liq-label { font-size: 10px; color: var(--text-muted); }
-.liq-val { font-size: 16px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
-.liq-spread { text-align: center; padding: 0 var(--gap-md); }
-.liq-spread .liq-val { color: var(--cyan); }
-.liq-arrow { font-size: 11px; color: var(--red); }
-.liquidity-env {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 4px; font-size: 11px; color: var(--text-secondary);
-}
-.env-badge {
-  display: inline-block; padding: 1px 8px; border-radius: var(--radius-sm);
-  background: var(--green-dim); color: var(--green); font-weight: 600; font-size: 11px;
-}
-
-/* CARD UPDATE TIME */
-.card-time {
+.anchor-card .indicator-name { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+.anchor-card .indicator-value { font-size: 28px; font-weight: 700; font-family: var(--font-mono); }
+.anchor-card .indicator-change { font-size: 12px; margin-top: 2px; }
+.anchor-card .indicator-change.up { color: var(--green); }
+.anchor-card .indicator-change.down { color: var(--red); }
+.anchor-card .indicator-change.flat { color: var(--text-muted); }
+.anchor-card .update-time {
+  position: absolute; bottom: 8px; right: 12px;
   font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);
-  opacity: 0.7; text-align: right; margin-top: var(--gap-xs);
 }
-.card-time.warn-yellow { color: var(--yellow); opacity: 1; }
-.card-time.warn-gray { color: var(--text-muted); opacity: 0.5; }
+.anchor-card .update-time.warning { color: var(--yellow); }
+.anchor-card .update-time.expired { color: var(--red); opacity: 0.6; }
 
-/* MAIN MODEL GRID */
-.model-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap-md);
-  margin-bottom: var(--gap-lg);
+/* ===== SPARKLINE WITH PERCENTILE BANDS ===== */
+.sparkline-container {
+  position: relative; height: 120px; margin-top: var(--gap-sm);
+  border-radius: var(--radius-sm); overflow: hidden;
 }
-.ind-card {
+.sparkline-container svg { width: 100%; height: 100%; }
+.percentile-band { opacity: 0.08; }
+.percentile-band.bottom { fill: var(--green); }
+.percentile-band.middle { fill: transparent; }
+.percentile-band.top { fill: var(--red); }
+.percentile-divider { stroke: rgba(255,255,255,0.1); stroke-width: 1; stroke-dasharray: 4 4; }
+.sparkline-line { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sparkline-area { fill: url(#sparkGradient); opacity: 0.3; }
+.sparkline-dot { fill: var(--cyan); stroke: var(--canvas); stroke-width: 2; }
+.moving-avg-line { fill: none; stroke-width: 1.5; stroke-dasharray: 6 3; }
+.moving-avg-line.ma20 { stroke: rgba(255,255,255,0.5); }
+.moving-avg-line.ma60 { stroke: rgba(255,255,255,0.25); }
+.sparkline-tooltip {
+  position: absolute; background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 6px 10px; font-size: 11px;
+  font-family: var(--font-mono); color: var(--text-primary);
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  z-index: 10; white-space: nowrap;
+}
+.sparkline-tooltip.visible { opacity: 1; }
+.percentile-label {
+  position: absolute; right: 4px; font-size: 9px; color: var(--text-muted);
+  font-family: var(--font-mono); opacity: 0.6;
+}
+
+/* ===== LIQUIDITY OVERLAY ===== */
+.liquidity-overlay {
+  display: flex; gap: var(--gap-md); align-items: center;
+  margin-top: var(--gap-sm); padding: var(--gap-sm) var(--gap-md);
+  background: var(--surface); border-radius: var(--radius-sm);
+  font-size: 12px; border: 1px solid var(--border);
+}
+.liquidity-overlay .liq-item { display: flex; align-items: center; gap: 4px; }
+.liquidity-overlay .liq-label { color: var(--text-muted); }
+.liquidity-overlay .liq-value { font-family: var(--font-mono); font-weight: 600; }
+.liquidity-overlay .liq-arrow.up { color: var(--green); }
+.liquidity-overlay .liq-arrow.down { color: var(--red); }
+.liquidity-overlay .liq-arrow.flat { color: var(--text-muted); }
+.liquidity-env {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600;
+}
+.liquidity-env.loose { color: var(--green); background: var(--green-dim); }
+.liquidity-env.neutral { color: var(--yellow); background: var(--yellow-dim); }
+.liquidity-env.tight { color: var(--red); background: var(--red-dim); }
+.expand-btn {
+  font-size: 11px; color: var(--accent); cursor: pointer;
+  border: none; background: none; padding: 2px 6px;
+  border-radius: var(--radius-sm); transition: background 0.2s;
+}
+.expand-btn:hover { background: var(--surface-hover); }
+
+/* ===== EXPANDABLE LIQUIDITY DETAIL ===== */
+.liquidity-detail {
+  display: none; margin-top: var(--gap-md); padding: var(--gap-md);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-size: 12px;
+}
+.liquidity-detail.expanded { display: block; }
+.liquidity-detail h4 { font-size: 13px; color: var(--text-secondary); margin-bottom: var(--gap-sm); }
+.liquidity-detail .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-sm); }
+.liquidity-detail .detail-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.liquidity-detail .detail-label { color: var(--text-muted); }
+.liquidity-detail .detail-value { font-family: var(--font-mono); font-weight: 600; }
+.liquidity-detail .detail-section { margin-bottom: var(--gap-md); }
+.liquidity-detail .verdict {
+  margin-top: var(--gap-sm); padding: var(--gap-sm) var(--gap-md);
+  border-radius: var(--radius-sm); font-weight: 600;
+}
+.liquidity-detail .verdict.bullish { color: var(--green); background: var(--green-dim); }
+.liquidity-detail .verdict.neutral { color: var(--yellow); background: var(--yellow-dim); }
+
+/* ===== MAIN MODEL INDICATORS ===== */
+.indicators-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap-md); margin-bottom: var(--gap-lg);
+}
+.indicator-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: var(--gap-md);
-  transition: all 0.2s ease; position: relative; overflow: hidden;
+  backdrop-filter: blur(12px); position: relative; transition: all 0.2s;
 }
-.ind-card:hover { background: var(--surface-hover); border-color: var(--border-strong); transform: translateY(-1px); }
-.ind-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-sm); }
-.ind-card-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
-.ind-card-status { width: 8px; height: 8px; border-radius: 50%; }
-.ind-card-status.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.ind-card-status.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-.ind-card-status.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
-.ind-card-value { font-size: 22px; font-weight: 800; font-family: var(--font-mono); line-height: 1; margin-bottom: 4px; }
-.ind-card-interpret { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: var(--gap-sm); }
-.ind-card .mini-sparkline { margin-top: 8px; height: 28px; width: 100%; opacity: 0.85; }
-.ind-card .mini-sparkline svg { width: 100%; height: 28px; display: block; }
-
-/* 1000/300 special card - taller sparkline */
-.ind-card.card-wide { grid-column: span 2; }
-.ind-card .sparkline-tall { margin-top: 8px; height: 120px; width: 100%; position: relative; }
-.ind-card .sparkline-tall svg { width: 100%; height: 120px; display: block; }
-
-/* SLOPE ARROW */
-.slope-arrow {
-  display: inline-flex; align-items: center; gap: 2px;
-  font-size: 11px; font-weight: 600; padding: 1px 6px;
-  border-radius: var(--radius-sm); margin-left: 4px;
+.indicator-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.indicator-card .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.indicator-card .ind-name { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.indicator-card .ind-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
+.indicator-card .ind-signal {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 600;
 }
-.slope-down { background: var(--red-dim); color: var(--red); }
-.slope-up { background: var(--green-dim); color: var(--green); }
-.slope-flat { background: var(--yellow-dim); color: var(--yellow); }
-
-/* RISK WARNING BAR */
-.risk-warning {
-  display: none;
-  background: linear-gradient(135deg, rgba(255,107,107,0.25), rgba(255,107,107,0.15));
-  border: 1px solid rgba(255,107,107,0.4);
-  border-radius: var(--radius-md); padding: var(--gap-md) var(--gap-lg);
-  margin-bottom: var(--gap-lg);
-  color: var(--red); font-size: 14px; font-weight: 600;
-  text-align: center; backdrop-filter: blur(10px);
-  animation: riskPulse 2s ease-in-out infinite;
+.ind-signal.green { color: var(--green); background: var(--green-dim); }
+.ind-signal.yellow { color: var(--yellow); background: var(--yellow-dim); }
+.ind-signal.red { color: var(--red); background: var(--red-dim); }
+.indicator-card .mini-sparkline { height: 28px; margin-top: var(--gap-sm); }
+.indicator-card .mini-sparkline svg { width: 100%; height: 100%; }
+.indicator-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.indicator-card .update-time {
+  position: absolute; bottom: 6px; right: 10px;
+  font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
 }
-.risk-warning.visible { display: block; }
-@keyframes riskPulse { 0%,100%{opacity:1;} 50%{opacity:0.8;} }
+.indicator-card .update-time.warning { color: var(--yellow); }
+.indicator-card .update-time.expired { color: var(--red); opacity: 0.5; }
+/* Trend slope indicator */
+.trend-slope { display: inline-flex; align-items: center; font-size: 14px; margin-left: 6px; }
+.trend-slope.accel { color: var(--green); }
+.trend-slope.flat { color: var(--text-muted); }
+.trend-slope.decel { color: var(--red); }
 
-/* DEBUG TOGGLE */
-.debug-toggle {
-  position: fixed; bottom: 20px; right: 20px; z-index: 100;
-  background: var(--red-dim); border: 1px solid rgba(255,107,107,0.4);
-  color: var(--red); padding: 6px 12px; border-radius: var(--radius-sm);
-  font-size: 11px; cursor: pointer; font-family: var(--font-mono);
-  display: none;
+/* ===== RISK WARNING BAR ===== */
+.risk-warning-bar {
+  display: none; margin: var(--gap-md) 0;
+  padding: var(--gap-md) var(--gap-lg);
+  background: var(--yellow-dim); border: 1px solid rgba(255,215,110,0.3);
+  border-radius: var(--radius-md); font-size: 13px;
+  color: var(--yellow); font-weight: 500;
+  animation: warningPulse 3s ease-in-out infinite;
 }
-.debug-toggle.show { display: block; }
+.risk-warning-bar.active { display: flex; align-items: center; gap: var(--gap-sm); }
+@keyframes warningPulse {
+  0%,100% { box-shadow: 0 0 0 rgba(255,215,110,0); }
+  50% { box-shadow: 0 0 20px rgba(255,215,110,0.15); }
+}
 
-/* ACTION BAR */
+/* ===== ACTION BAR ===== */
 .action-bar {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: var(--gap-lg) var(--gap-xl);
-  backdrop-filter: blur(20px); margin-bottom: var(--gap-lg);
-  display: flex; align-items: center; justify-content: space-between; gap: var(--gap-xl);
+  border-radius: var(--radius-lg); padding: var(--gap-xl);
+  margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
+  text-align: center;
 }
-.action-left { display: flex; align-items: center; gap: var(--gap-lg); }
-.action-stage-badge {
-  font-size: 14px; font-weight: 700; padding: 6px 16px;
-  border-radius: var(--radius-md); background: rgba(105,231,255,0.12);
-  color: var(--cyan); border: 1px solid rgba(105,231,255,0.3);
-}
-.action-position { font-size: 13px; color: var(--text-secondary); }
-.action-position strong { color: var(--text-primary); }
-.action-right { font-size: 12px; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
-.action-right strong { color: var(--text-secondary); }
+.action-bar .stage-label { font-size: 24px; font-weight: 700; margin-bottom: var(--gap-sm); }
+.action-bar .position-range { font-size: 32px; font-weight: 800; font-family: var(--font-mono); margin: var(--gap-sm) 0; }
+.action-bar .action-desc { font-size: 14px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+.action-bar.stage-b { border-color: rgba(105,231,255,0.3); }
+.action-bar.stage-b .stage-label { color: var(--stage-b); }
+.action-bar.stage-b .position-range { color: var(--stage-b); }
 
-/* CONFIRM SIGNALS */
-.confirm-row {
+/* ===== CONFIRMATION SIGNALS ===== */
+.confirm-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-md);
   margin-bottom: var(--gap-lg);
 }
 .confirm-card {
-  background: var(--surface); border: 1px solid rgba(105,231,255,0.2);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: var(--gap-md);
-  transition: all 0.2s ease;
+  text-align: center; backdrop-filter: blur(12px);
 }
-.confirm-card:hover { background: var(--surface-hover); border-color: rgba(105,231,255,0.35); }
-.confirm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gap-sm); }
-.confirm-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
-.confirm-badge {
-  font-size: 10px; padding: 2px 8px; border-radius: var(--radius-sm);
-  font-weight: 700;
-}
-.confirm-badge.bg { background: var(--green-dim); color: var(--green); }
-.confirm-badge.yw { background: var(--yellow-dim); color: var(--yellow); }
-.confirm-badge.rd { background: var(--red-dim); color: var(--red); }
-.confirm-value { font-size: 20px; font-weight: 800; font-family: var(--font-mono); line-height: 1.2; margin-bottom: 4px; }
-.confirm-interpret { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-.confirm-card .mini-sparkline { margin-top: 8px; height: 28px; width: 100%; opacity: 0.85; }
-.confirm-card .mini-sparkline svg { width: 100%; height: 28px; display: block; }
+.confirm-card .cf-name { font-size: 12px; color: var(--text-muted); margin-bottom: var(--gap-sm); }
+.confirm-card .cf-value { font-size: 16px; font-weight: 700; margin-bottom: var(--gap-xs); }
+.confirm-card .cf-signal { font-size: 12px; font-weight: 600; }
+.confirm-card .cf-signal.bullish { color: var(--green); }
+.confirm-card .cf-signal.bearish { color: var(--red); }
+.confirm-card .cf-signal.neutral { color: var(--yellow); }
 
-/* REFERENCE SECTION */
-.ref-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-lg);
-  margin-bottom: var(--gap-lg);
+/* ===== REFERENCE INDICATORS ===== */
+.reference-section { margin-bottom: var(--gap-lg); }
+.reference-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--gap-sm);
 }
 .ref-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-md); padding: var(--gap-lg); opacity: 0.85;
+  border-radius: var(--radius-sm); padding: var(--gap-sm) var(--gap-md);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; backdrop-filter: blur(8px);
 }
-.ref-card .ref-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: var(--gap-sm); }
-.ref-card .ref-value { font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 4px; }
-.ref-card .ref-desc { font-size: 11px; color: var(--text-muted); }
+.ref-card .ref-name { color: var(--text-muted); }
+.ref-card .ref-value { font-family: var(--font-mono); font-weight: 600; color: var(--text-secondary); }
 
-/* POSITION GUIDE */
-.position-guide {
-  margin-bottom: var(--gap-lg); padding: var(--gap-lg);
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-.position-guide-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--gap-md); }
-.position-guide-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap-md); }
-.pg-card {
-  padding: var(--gap-md); border-radius: var(--radius-md);
-  border: 2px solid transparent; background: var(--surface); transition: all 0.2s ease;
-}
-.pg-card.pg-active { border-color: var(--cyan); background: var(--cyan-glow); box-shadow: 0 0 12px rgba(105,231,255,0.15); }
-.pg-stage { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.pg-a .pg-stage { color: var(--stage-a); }
-.pg-b .pg-stage { color: var(--stage-b); }
-.pg-c1 .pg-stage { color: var(--stage-c); }
-.pg-c2 .pg-stage { color: var(--orange); }
-.pg-d .pg-stage { color: var(--stage-d); }
-.pg-position { font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); margin-bottom: 6px; }
-.pg-direction { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-
-/* SWITCH TABLE */
-.switch-table-section {
-  margin-bottom: var(--gap-lg); background: var(--surface);
-  border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: var(--gap-xl); backdrop-filter: blur(20px);
-}
-.switch-table-title { font-size: 15px; font-weight: 700; margin-bottom: var(--gap-md); color: var(--text-primary); }
-.switch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.switch-table th {
-  text-align: left; font-weight: 600; color: var(--text-secondary);
-  padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid var(--border-strong);
-  font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
-}
-.switch-table td {
-  padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid var(--border);
-  color: var(--text-primary); vertical-align: top;
-}
-.switch-table tr:last-child td { border-bottom: none; }
-.switch-table .met { color: var(--green); font-weight: 600; }
-.switch-table .not-met { color: var(--text-muted); }
-
-/* DISCLAIMER */
-.disclaimer {
-  padding: var(--gap-md); background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border); border-radius: var(--radius-md);
-  font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;
-}
-
-/* TOOLTIP */
-.svg-tooltip {
-  position: fixed; z-index: 999; pointer-events: none;
-  background: rgba(7,10,20,0.92); border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm); padding: 6px 10px;
-  font-size: 11px; font-family: var(--font-mono); color: var(--text-primary);
-  backdrop-filter: blur(10px); display: none; white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-.svg-tooltip .tt-date { color: var(--text-muted); font-size: 10px; }
-.svg-tooltip .tt-val { font-weight: 700; font-size: 13px; }
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .anchor-row { grid-template-columns: 1fr; }
-  .model-grid { grid-template-columns: repeat(2, 1fr); }
-  .ind-card.card-wide { grid-column: span 2; }
-  .confirm-row { grid-template-columns: 1fr; }
-  .ref-row { grid-template-columns: 1fr; }
-  .prob-row { flex-wrap: wrap; }
-  .prob-item { flex: 1 1 45%; }
-  .position-guide-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .page { padding: var(--gap-md); }
-  .model-grid { grid-template-columns: 1fr; }
-  .ind-card.card-wide { grid-column: span 1; }
-  .position-guide-grid { grid-template-columns: 1fr 1fr; }
-  .prob-row { flex-direction: column; }
-  .stage-bar { height: 40px; }
-  .stage-segment .stage-name { font-size: 12px; }
-  .anchor-value { font-size: 28px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .anchor-grid { grid-template-columns: 1fr; }
+  .stage-cards { grid-template-columns: repeat(3, 1fr); }
+  .confirm-grid { grid-template-columns: 1fr; }
+  .indicators-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<main>
 <div class="page">
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-left">
+      <h1>A股周期定位看板</h1>
+      <div class="subtitle">V3.1 · 5段状态机 · 9主模型 + 3确认信号 + 8参考指标</div>
+    </div>
+    <div class="header-right">
+      <span class="data-status fresh"><span class="dot"></span>数据正常</span>
+      <span class="update-badge">更新: 2026-09-01 18:00</span>
+    </div>
+  </header>
 
-<header class="header">
-  <div class="header-left">
-    <h1>股票看板 V3</h1>
-    <div class="subtitle">基于 A/B/C/D 四段状态机 · 9指标主模型 · 确认信号正交验证</div>
-  </div>
-  <div class="header-right">
-    <span class="update-badge">更新于 2026-09-01</span>
-    <span class="data-fresh"><span class="dot"></span>数据正常</span>
-  </div>
-</header>
-
-<!-- 1. STAGE GAUGE -->
-<section class="stage-gauge">
-  <div class="stage-gauge-title">市场周期阶段定位</div>
-  <div class="stage-bar-container">
-    <div class="stage-bar">
-      <div class="stage-segment seg-a"><div class="stage-label"><span class="stage-name">A · 春播</span><span class="stage-sub">深度低估</span></div></div>
-      <div class="stage-segment seg-b"><div class="stage-label"><span class="stage-name">B · 夏长</span><span class="stage-sub">结构性慢牛</span></div></div>
-      <div class="stage-segment seg-c1"><div class="stage-label"><span class="stage-name">C1 · 享受泡沫</span><span class="stage-sub">估值扩张</span></div></div>
-      <div class="stage-segment seg-c2"><div class="stage-label"><span class="stage-name">C2 · 准备跑路</span><span class="stage-sub">情绪过热</span></div></div>
-      <div class="stage-segment seg-d"><div class="stage-label"><span class="stage-name">D · 冬藏</span><span class="stage-sub">估值回归</span></div></div>
-    </div>
-    <div class="stage-pointer"><div class="arrow"></div><div class="pointer-label">当前位置</div></div>
-  </div>
-  <div class="prob-row">
-    <div class="prob-item prob-a"><div class="prob-stage">A · 春播</div><div class="prob-value">5%</div><div class="prob-trend flat">— 持平</div></div>
-    <div class="prob-item prob-b active"><div class="prob-stage">B · 夏长</div><div class="prob-value">65%</div><div class="prob-trend down">↓ -5pp</div></div>
-    <div class="prob-item prob-c1"><div class="prob-stage">C1 · 泡沫</div><div class="prob-value">20%</div><div class="prob-trend up">↑ +3pp</div></div>
-    <div class="prob-item prob-c2"><div class="prob-stage">C2 · 跑路</div><div class="prob-value">8%</div><div class="prob-trend up">↑ +2pp</div></div>
-    <div class="prob-item prob-d"><div class="prob-stage">D · 冬藏</div><div class="prob-value">2%</div><div class="prob-trend flat">— 持平</div></div>
-  </div>
-  <div class="stage-desc">
-    <div class="stage-icon">☀️</div>
-    <div class="stage-text">
-      <h3>B段 · 结构性震荡慢牛中段</h3>
-      <p>整体估值中枢附近，没有系统性泡沫也没有极端低估。ERP 远离大底区域但未进入高估泡沫。机构仓位不低、增量空间有限，行情高度结构化，收益主要来自板块轮动。注意 C 段信号正在积累（恐贪指数上行、两融走高），需持续关注切换条件。</p>
-    </div>
-  </div>
-</section>
-
-<!-- 2. ANCHOR INDICATORS (ERP + Buffett) -->
-<div class="section-title">锚定指标 <span class="badge">决定大方向</span></div>
-<div class="anchor-row">
-  <!-- ERP Card with liquidity sub-block -->
-  <div class="anchor-card">
-    <div class="anchor-card-header">
-      <span class="indicator-name">万得全A 股权风险溢价 (ERP)</span>
-      <span class="timestamp">2026-08-28</span>
-    </div>
-    <div class="anchor-value-row">
-      <span class="anchor-value" style="color: var(--yellow);">2.15</span>
-      <span class="anchor-unit">%</span>
-    </div>
-    <div class="anchor-percentile">10年分位 48% · 中性偏划算区间</div>
-    <div class="anchor-status status-yellow">📊 中性区间 (1.6%~3.2%)</div>
-    <div class="sparkline-container" id="spark-erp" data-labels='["2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"]' data-values='[3.2,3.1,3.0,2.9,2.8,2.7,2.6,2.5,2.4,2.3,2.2,2.15]' data-color="var(--yellow)" data-ref-high="3.2" data-ref-low="1.6" data-ref-high-label="3.2% 便宜" data-ref-low-label="1.6% 偏贵" style="height:120px;">
-    </div>
-    <div class="hist-ref"><span class="ref-dot"></span>距 2024 大底 (ERP 3.5%) 还差 1.35pp</div>
-    <!-- Liquidity sub-block -->
-    <div class="liquidity-block">
-      <div class="liquidity-row">
-        <div class="liq-item"><div class="liq-label">🇨🇳 中国10Y</div><div class="liq-val">1.70%</div></div>
-        <div class="liq-spread"><div class="liq-label">中美利差</div><div class="liq-val">-2.10% <span class="liq-arrow">↓</span></div></div>
-        <div class="liq-item"><div class="liq-label">🇺🇸 美国10Y</div><div class="liq-val">3.80%</div></div>
+  <!-- ===== 1. STAGE PROBABILITY DISTRIBUTION ===== -->
+  <section class="stage-gauge" id="stage-section">
+    <div class="section-title"><span class="emoji">🎯</span> 阶段概率分布</div>
+    <div class="stage-bar-container">
+      <div class="stage-bar" id="stage-bar">
+        <!-- JS renders segments -->
       </div>
-      <div class="liquidity-env">流动性环境 · <span class="env-badge">宽松</span><span style="font-size:10px;color:var(--text-muted);margin-left:4px;">M2 8.7%</span></div>
+      <div class="stage-labels">
+        <span>← 看多</span>
+        <span>当前定位 →</span>
+        <span>看空 →</span>
+      </div>
     </div>
-    <div class="card-time">更新于 2026-08-28</div>
+    <div class="stage-cards" id="stage-cards">
+      <!-- JS renders cards -->
+    </div>
+  </section>
+
+  <!-- ===== 2. ANCHOR INDICATORS (ERP + Buffett) ===== -->
+  <section class="anchor-section">
+    <div class="section-title"><span class="emoji">⚓</span> 锚定指标</div>
+    <div class="anchor-grid">
+      <!-- ERP Card -->
+      <div class="anchor-card" id="erp-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">万得全A ERP</div>
+            <div class="indicator-value" id="erp-value">2.30%</div>
+            <div class="indicator-change down">↓ 0.05% (7日)</div>
+          </div>
+          <div class="ind-signal yellow">中性偏便宜</div>
+        </div>
+        <!-- Liquidity overlay -->
+        <div class="liquidity-overlay">
+          <div class="liq-item">
+            <span class="liq-label">中国10Y</span>
+            <span class="liq-value">1.70%</span>
+          </div>
+          <div class="liq-item">
+            <span class="liq-label">利差</span>
+            <span class="liq-value">0.60%</span>
+            <span class="liq-arrow up">↑</span>
+          </div>
+          <div class="liq-item">
+            <span class="liq-label">美10Y</span>
+            <span class="liq-value">2.30%</span>
+          </div>
+          <div class="liquidity-env neutral">流动性: 中性</div>
+          <button class="expand-btn" onclick="toggleLiquidityDetail()">展开详情 ▾</button>
+        </div>
+        <!-- Sparkline with percentile bands -->
+        <div class="sparkline-container" id="erp-sparkline">
+          <div class="sparkline-tooltip" id="erp-tooltip"></div>
+          <span class="percentile-label" style="top:2px">75%</span>
+          <span class="percentile-label" style="top:35%">50%</span>
+          <span class="percentile-label" style="top:68%">25%</span>
+        </div>
+        <div class="update-time">更新: 2026-09-01</div>
+      </div>
+
+      <!-- Buffett Card -->
+      <div class="anchor-card" id="buffett-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">巴菲特指标</div>
+            <div class="indicator-value" id="buffett-value">78%</div>
+            <div class="indicator-change up">↑ 2% (QoQ)</div>
+          </div>
+          <div class="ind-signal yellow">中性</div>
+        </div>
+        <div class="sparkline-container" id="buffett-sparkline">
+          <div class="sparkline-tooltip" id="buffett-tooltip"></div>
+          <span class="percentile-label" style="top:2px">75%</span>
+          <span class="percentile-label" style="top:35%">50%</span>
+          <span class="percentile-label" style="top:68%">25%</span>
+        </div>
+        <div class="update-time">更新: 2026-06-30 (季频)</div>
+      </div>
+    </div>
+
+    <!-- Expandable liquidity detail -->
+    <div class="liquidity-detail" id="liquidity-detail">
+      <div class="detail-section">
+        <h4>📊 政策利率</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">7天逆回购</span><span class="detail-value">1.80%</span></div>
+          <div class="detail-item"><span class="detail-label">1Y LPR</span><span class="detail-value">3.10%</span></div>
+          <div class="detail-item"><span class="detail-label">5Y LPR</span><span class="detail-value">3.60%</span></div>
+          <div class="detail-item"><span class="detail-label">准备金率</span><span class="detail-value">7.0%</span></div>
+          <div class="detail-item"><span class="detail-label">联邦基金利率</span><span class="detail-value">4.50-4.75%</span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h4>💳 信用周期</h4>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">社融存量同比</span><span class="detail-value">8.5% ↑</span></div>
+          <div class="detail-item"><span class="detail-label">M2同比增速</span><span class="detail-value">7.2%</span></div>
+          <div class="detail-item"><span class="detail-label">M2-PPI剪刀差</span><span class="detail-value">2.3%</span></div>
+        </div>
+      </div>
+      <div class="verdict neutral">📋 综合判断：宽货币 + 宽信用 → 中性偏利好</div>
+    </div>
+  </section>
+
+  <!-- ===== 3. MAIN MODEL INDICATORS (7 cards) ===== -->
+  <section>
+    <div class="section-title"><span class="emoji">📊</span> 主模型指标（7/9）</div>
+    <div class="indicators-grid" id="main-indicators">
+      <!-- JS renders cards -->
+    </div>
+  </section>
+
+  <!-- ===== 4. RISK WARNING BAR ===== -->
+  <div class="risk-warning-bar" id="risk-warning">
+    ⚠️ <strong>微观结构过热预警：</strong>主模型仍看多，但微观指标显示拥挤，注意C段风险
   </div>
 
-  <!-- Buffett Indicator -->
-  <div class="anchor-card">
-    <div class="anchor-card-header">
-      <span class="indicator-name">巴菲特指标 (总市值/GDP)</span>
-      <span class="timestamp">2026-08-28</span>
+  <!-- ===== 5. ACTION BAR ===== -->
+  <section class="action-bar stage-b" id="action-bar">
+    <div class="stage-label">🌞 B · 夏长</div>
+    <div class="position-range">70% – 90%</div>
+    <div class="action-desc">高仓位持有，享受复利。当前处于牛市初中段，ERP中性偏便宜，流动性环境中性，建议维持较高仓位。</div>
+  </section>
+
+  <!-- ===== 6. CONFIRMATION SIGNALS (3) ===== -->
+  <section>
+    <div class="section-title"><span class="emoji">✅</span> 确认信号（技术面）</div>
+    <div class="confirm-grid" id="confirm-signals">
+      <!-- JS renders -->
     </div>
-    <div class="anchor-value-row">
-      <span class="anchor-value" style="color: var(--yellow);">82</span>
-      <span class="anchor-unit">%</span>
+  </section>
+
+  <!-- ===== 7. REFERENCE INDICATORS (8) ===== -->
+  <section class="reference-section">
+    <div class="section-title"><span class="emoji">📎</span> 参考指标</div>
+    <div class="reference-grid" id="reference-indicators">
+      <!-- JS renders -->
     </div>
-    <div class="anchor-percentile">历史中等水平，距泡沫线(105%)尚有余量</div>
-    <div class="anchor-status status-yellow">📊 偏高但未过热</div>
-    <div class="sparkline-container" id="spark-buffett" data-labels='["2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"]' data-values='[75,76,77,78,79,80,80,81,81,82,82,82]' data-color="var(--yellow)" data-ref-high="105" data-ref-high-label="105% 泡沫线" style="height:120px;">
+  </section>
+
+  <!-- ===== ERP THRESHOLD LEGEND ===== -->
+  <section style="margin-top:var(--gap-lg);padding:var(--gap-md);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);backdrop-filter:blur(12px);">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:var(--gap-sm);font-weight:600;">ERP阈值参考（万得全A口径）</div>
+    <div style="display:flex;gap:4px;height:20px;border-radius:4px;overflow:hidden;margin-bottom:var(--gap-sm);">
+      <div style="flex:1;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(0,0,0,0.7);font-weight:600;">&gt;4% 极度便宜</div>
+      <div style="flex:1;background:#84cc16;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(0,0,0,0.7);font-weight:600;">3-4% 便宜</div>
+      <div style="flex:1;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(0,0,0,0.7);font-weight:600;">2.5-3% 中性偏便宜</div>
+      <div style="flex:1;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(0,0,0,0.7);font-weight:600;">2-2.5% 中性偏贵</div>
+      <div style="flex:1.5;background:#ef4444;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,0.9);font-weight:600;">1.6-2% 贵(C段风险区)</div>
+      <div style="flex:1;background:#991b1b;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,0.9);font-weight:600;">&lt;1.6% 极贵</div>
     </div>
-    <div class="hist-ref"><span class="ref-dot"></span>2021高点 112%，当前低30pp</div>
-    <div class="card-time">更新于 2026-08-28</div>
-  </div>
+    <div style="font-size:10px;color:var(--text-muted);">关键门槛: 1.6%（动态"2X"线）| 2.0%（进入观察区起点）</div>
+  </section>
 </div>
-
-<!-- 3. MAIN MODEL GRID (7 cards) -->
-<div class="section-title">主模型指标 <span class="badge">7个参与阶段判定</span></div>
-<div class="model-grid">
-  <!-- 基金仓位 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">公募基金仓位</span>
-      <span class="ind-card-status yellow"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--yellow);">91.8%</div>
-    <div class="ind-card-interpret">90%+高分位，公募增量空间有限</div>
-    <div class="mini-sparkline" id="mspark-fund" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[85,86,87,88,89,89,90,90,91,91,92,91.8]' data-color="var(--yellow)"></div>
-    <div class="card-time">更新于 2026-08-25</div>
-  </div>
-  <!-- 两融 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">融资融券余额</span>
-      <span class="ind-card-status yellow"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--yellow);">1.75万亿</div>
-    <div class="ind-card-interpret">历史中等偏高，未达过热线(2.3万亿)</div>
-    <div class="mini-sparkline" id="mspark-margin" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[1.50,1.52,1.55,1.58,1.60,1.63,1.65,1.68,1.70,1.72,1.74,1.75]' data-color="var(--yellow)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-  <!-- 恐贪 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">恐贪指数</span>
-      <span class="ind-card-status yellow"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--yellow);">42</div>
-    <div class="ind-card-interpret">中性偏冷，连续3周上行但未到贪婪区(>70)</div>
-    <div class="mini-sparkline" id="mspark-fg" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[25,28,30,32,35,37,38,39,40,41,42,42]' data-color="var(--yellow)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-  <!-- 新发基金 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">新发基金份额</span>
-      <span class="ind-card-status green"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--green);">186亿</div>
-    <div class="ind-card-interpret">低位温和，未出现爆款频出</div>
-    <div class="mini-sparkline" id="mspark-newfund" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[120,130,140,150,155,160,165,170,175,180,185,186]' data-color="var(--green)"></div>
-    <div class="card-time">更新于 2026-08-28</div>
-  </div>
-  <!-- 偏股基金3年年化 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">偏股基金滚动3年年化</span>
-      <span class="ind-card-status red"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--red);">-2.8% <span class="slope-arrow slope-down">↓减速</span></div>
-    <div class="ind-card-interpret">负收益区间，距大底(-10%)尚远</div>
-    <div class="mini-sparkline" id="mspark-fund3y" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[5.2,3.8,2.5,1.2,0.1,-0.8,-1.5,-2.0,-2.3,-2.5,-2.7,-2.8]' data-color="var(--red)"></div>
-    <div class="card-time">更新于 2026-08-28</div>
-  </div>
-  <!-- 拥挤度 -->
-  <div class="ind-card">
-    <div class="ind-card-header">
-      <span class="ind-card-name">交易拥挤度</span>
-      <span class="ind-card-status yellow"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--yellow);">0.72</div>
-    <div class="ind-card-interpret">中高位，未达过热预警(0.90分位)</div>
-    <div class="mini-sparkline" id="mspark-crowd" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[0.45,0.50,0.55,0.58,0.62,0.65,0.68,0.70,0.72,0.71,0.73,0.72]' data-color="var(--yellow)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-  <!-- 中证1000/HS300 - WIDE with 120px sparkline + MA overlay -->
-  <div class="ind-card card-wide">
-    <div class="ind-card-header">
-      <span class="ind-card-name">中证1000/沪深300 比值</span>
-      <span class="ind-card-status yellow"></span>
-    </div>
-    <div class="ind-card-value" style="color: var(--yellow);">1.85</div>
-    <div class="ind-card-interpret">小盘相对强势，关注风格切换信号</div>
-    <div class="sparkline-tall" id="mspark-ratio" data-labels='["09","10","11","12","01","02","03","04","05","06","07","08"]' data-values='[1.60,1.62,1.65,1.68,1.72,1.75,1.78,1.80,1.82,1.84,1.85,1.85]' data-color="var(--yellow)" data-ma20="true" data-ma60="true"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-</div>
-
-<!-- 4. RISK WARNING BAR -->
-<div class="risk-warning" id="riskWarning">
-  ⚠️ 微观结构过热预警：主模型仍看多，但微观指标显示拥挤，注意C段风险
-</div>
-
-<!-- 5. ACTION BAR -->
-<div class="action-bar">
-  <div class="action-left">
-    <div class="action-stage-badge">B段 · 夏长</div>
-    <div class="action-position">建议仓位：<strong>60-70%</strong>，结构化配置为主</div>
-  </div>
-  <div class="action-right">
-    <strong>操作要点：</strong>维持中性偏多仓位，重点关注板块轮动机会。警惕C段信号积累（拥挤度上升、两融走高），设好止盈纪律。
-  </div>
-</div>
-
-<!-- 6. CONFIRM SIGNALS -->
-<div class="section-title">确认信号 <span class="badge" style="background:rgba(105,231,255,0.15);color:var(--cyan);">技术面 · 不参与判定</span></div>
-<div class="confirm-row">
-  <div class="confirm-card">
-    <div class="confirm-header">
-      <span class="confirm-name">均线多头排列 (20/60/120日)</span>
-      <span class="confirm-badge yw">黄色</span>
-    </div>
-    <div class="confirm-value" style="color:var(--yellow);">20日线上·60日线下</div>
-    <div class="confirm-interpret">短期趋势转暖但中期压力未突破，方向待确认</div>
-    <div class="mini-sparkline" id="mspark-ma" data-labels='["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"]' data-values='[3800,3850,3900,3870,3920,3950,3980,4000,4050,4020,4060,4080]' data-color="var(--yellow)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-  <div class="confirm-card">
-    <div class="confirm-header">
-      <span class="confirm-name">MACD 金叉/死叉</span>
-      <span class="confirm-badge bg">绿色</span>
-    </div>
-    <div class="confirm-value" style="color:var(--green);">金叉 DIF>DEA</div>
-    <div class="confirm-interpret">短期动量转正，多头信号</div>
-    <div class="mini-sparkline" id="mspark-macd" data-labels='["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"]' data-values='[-15,-12,-8,-3,2,8,12,15,18,20,22,25]' data-color="var(--green)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-  <div class="confirm-card">
-    <div class="confirm-header">
-      <span class="confirm-name">北向资金5日净流入</span>
-      <span class="confirm-badge bg">绿色</span>
-    </div>
-    <div class="confirm-value" style="color:var(--green);">+32亿</div>
-    <div class="confirm-interpret">外资短期回流，态度偏积极</div>
-    <div class="mini-sparkline" id="mspark-north" data-labels='["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12"]' data-values='[-20,-15,-8,5,12,18,25,10,-5,8,15,32]' data-color="var(--green)"></div>
-    <div class="card-time">更新于 2026-08-29</div>
-  </div>
-</div>
-
-<!-- 7. REFERENCE INDICATORS -->
-<div class="section-title">参考指标 <span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">不参与判定</span></div>
-<div class="ref-row">
-  <div class="ref-card">
-    <div class="ref-title">韭圈儿神奇指标及偏离率</div>
-    <div class="ref-value">1.85 <span style="font-size:12px;color:var(--text-muted);">偏离率 +12%</span></div>
-    <div class="ref-desc">基于沪深300布林带偏离率(20日)，数据源待切换至AKShare</div>
-  </div>
-  <div class="ref-card">
-    <div class="ref-title">偏股基金 vs 万得混合债券一级基金指数</div>
-    <div class="ref-value">比值 1.32</div>
-    <div class="ref-desc">股债相对强弱，比值上升表示股票基金跑赢债基</div>
-  </div>
-</div>
-
-<!-- 8. POSITION GUIDE -->
-<section class="position-guide">
-  <div class="position-guide-title">各阶段仓位参考</div>
-  <div class="position-guide-grid">
-    <div class="pg-card pg-a"><div class="pg-stage">A · 春播</div><div class="pg-position">80-100%</div><div class="pg-direction">左侧分批加仓<br>越跌越买</div></div>
-    <div class="pg-card pg-b pg-active"><div class="pg-stage">B · 夏长</div><div class="pg-position">60-70%</div><div class="pg-direction">持有为主<br>结构化轮动</div></div>
-    <div class="pg-card pg-c1"><div class="pg-stage">C1 · 泡沫</div><div class="pg-position">40-50%</div><div class="pg-direction">逐步止盈<br>保留核心仓</div></div>
-    <div class="pg-card pg-c2"><div class="pg-stage">C2 · 跑路</div><div class="pg-position">20-30%</div><div class="pg-direction">大幅减仓<br>锁定利润</div></div>
-    <div class="pg-card pg-d"><div class="pg-stage">D · 冬藏</div><div class="pg-position">0-10%</div><div class="pg-direction">空仓观望<br>等待大底信号</div></div>
-  </div>
-</section>
-
-<!-- 9. SWITCH TABLE -->
-<section class="switch-table-section">
-  <div class="switch-table-title">阶段切换条件跟踪</div>
-  <table class="switch-table">
-    <thead><tr><th>方向</th><th>条件</th><th>当前状态</th></tr></thead>
-    <tbody>
-      <tr><td>A→B</td><td class="condition-cell">ERP突破3.2%+成交缩量+基金仓位&lt;70%</td><td class="not-met">✗ 未满足</td></tr>
-      <tr><td>B→C1</td><td class="condition-cell">恐贪&gt;70+拥挤度&gt;0.85+新发基金放量&gt;500亿</td><td class="not-met">✗ 部分积累中</td></tr>
-      <tr><td>C1→C2</td><td class="condition-cell">偏股基金3年&gt;30%+巴菲特&gt;105%+融资&gt;2.3万亿</td><td class="not-met">✗ 未满足</td></tr>
-      <tr><td>C2→D</td><td class="condition-cell">ERP急速收窄&lt;1.2%+MACD顶背离+北向持续流出</td><td class="not-met">✗ 未满足</td></tr>
-      <tr><td>D→A</td><td class="condition-cell">ERP&gt;4%+基金仓位&lt;60%+极度恐惧+政策底确认</td><td class="not-met">✗ 未满足</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- DISCLAIMER -->
-<div class="disclaimer">
-  本看板仅供研究参考，不构成任何投资建议。数据可能存在延迟或误差，请以官方数据为准。投资有风险，入市需谨慎。<br>
-  基于 A/B/C/D 四段状态机模型 · 9指标主模型 + 3确认信号 + 2参考指标 · V3
-</div>
-
-</main>
-</div>
-
-<!-- TOOLTIP -->
-<div class="svg-tooltip" id="svgTooltip"><div class="tt-date"></div><div class="tt-val"></div></div>
-
-<!-- DEBUG TOGGLE -->
-<button class="debug-toggle" id="debugToggle" onclick="toggleRisk()">🔧 Toggle Risk Warning</button>
 
 <script>
-// ===== SPARKLINE GENERATION =====
-function buildSparkline(container, opts) {
-  const { labels, values, color, refHigh, refLow, refHighLabel, refLowLabel, isAnchor, maOverlay } = opts;
-  const W = 200, H = isAnchor ? 120 : 28;
-  const pad = 2;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  const scaleY = (v) => H - pad - ((v - min) / range) * (H - 2 * pad);
-  const stepX = (i) => (i / (values.length - 1)) * W;
+// ============================================================
+// DATA & CONFIGURATION
+// ============================================================
 
-  let points = values.map((v, i) => `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}`);
-  let linePath = 'M' + points.join(' L');
-  let areaPath = linePath + ` L${W},${H} L0,${H}Z`;
+// --- Stage state machine ---
+const STAGES = {
+  A: { name: 'A · 春播', emoji: '🌱', season: '春播', position: '30-70%', color: 'var(--stage-a)', desc: '分批建仓，越跌越买' },
+  B: { name: 'B · 夏长', emoji: '🌞', season: '夏长', position: '70-90%', color: 'var(--stage-b)', desc: '高仓位持有，享受复利' },
+  C1: { name: 'C1 · 享受泡沫', emoji: '🫧', season: '夏长尾', position: '60-75%', color: 'var(--stage-c1)', desc: '持有核心，观察预警' },
+  C2: { name: 'C2 · 秋收 ⚠️', emoji: '🍂', season: '秋收', position: '20-40%', color: 'var(--stage-c2)', desc: '主动大幅降仓，颗粒归仓' },
+  D: { name: 'D · 冬藏', emoji: '❄️', season: '冬藏', position: '0-10%', color: 'var(--stage-d)', desc: '清仓离场，现金为王' }
+};
 
-  let gradId = 'grad-' + Math.random().toString(36).substr(2, 6);
-  let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">`;
-  svg += `<defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">`;
-  svg += `<stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>`;
-  svg += `<stop offset="100%" stop-color="${color}" stop-opacity="0"/>`;
-  svg += `</linearGradient></defs>`;
-  svg += `<path d="${areaPath}" fill="url(#${gradId})"/>`;
-  svg += `<path d="${linePath}" fill="none" stroke="${color}" stroke-width="${isAnchor ? 2 : 1.5}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const stageData = {
+  current: 'B',
+  probabilities: { A: 8, B: 55, C1: 30, C2: 5, D: 2 }
+};
 
-  // Reference lines
-  if (refHigh !== undefined) {
-    const yRef = scaleY(refHigh);
-    if (yRef > 0 && yRef < H) {
-      svg += `<line x1="0" y1="${yRef}" x2="${W}" y2="${yRef}" stroke="var(--green)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>`;
-      if (refHighLabel) svg += `<text x="${W-5}" y="${yRef-3}" fill="var(--green)" font-size="7" text-anchor="end">${refHighLabel}</text>`;
+// --- ERP config ---
+const ERP_THRESHOLDS = [
+  { range: '>4%', min: 4, max: Infinity, label: '极度便宜', signal: 'green', stage: 'A' },
+  { range: '3-4%', min: 3, max: 4, label: '便宜', signal: 'green', stage: 'A-B' },
+  { range: '2.5-3%', min: 2.5, max: 3, label: '中性偏便宜', signal: 'yellow', stage: 'B' },
+  { range: '2-2.5%', min: 2, max: 2.5, label: '中性偏贵', signal: 'yellow', stage: 'B-C1' },
+  { range: '1.6-2%', min: 1.6, max: 2, label: '贵(C段风险区)', signal: 'red', stage: 'C' },
+  { range: '<1.6%', min: -Infinity, max: 1.6, label: '极贵', signal: 'red', stage: 'C2-D' }
+];
+
+// --- Mock data ---
+const mockData = {
+  erp: {
+    value: 2.30, unit: '%', change: -0.05, period: '7日',
+    signal: 'yellow', signalText: '中性偏便宜',
+    history: [3.2,3.1,2.9,2.8,2.7,2.6,2.5,2.5,2.6,2.5,2.4,2.4,2.3,2.3,2.3,2.4,2.5,2.4,2.3,2.3],
+    percentile: 45,
+    p25: 2.0, p50: 2.5, p75: 3.2
+  },
+  buffett: {
+    value: 78, unit: '%', change: 2, period: 'QoQ',
+    signal: 'yellow', signalText: '中性',
+    history: [65,67,68,70,72,74,73,72,74,75,76,75,76,77,78,77,78,78,77,78],
+    percentile: 55,
+    p25: 60, p50: 75, p75: 90
+  },
+  mainIndicators: [
+    {
+      name: '公募基金仓位', value: '82%', signal: 'yellow', signalText: '中性',
+      history: [75,76,77,78,79,80,79,80,81,80,81,82,81,82,82,81,82,82,82,82],
+      updateTime: '2026-08-29', freq: '周频'
+    },
+    {
+      name: '融资融券余额', value: '1.82万亿', signal: 'yellow', signalText: '中性',
+      history: [1.5,1.55,1.6,1.62,1.65,1.68,1.7,1.72,1.75,1.76,1.78,1.79,1.8,1.81,1.82,1.81,1.82,1.82,1.82,1.82],
+      updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: '恐贪指数', value: '45', signal: 'yellow', signalText: '中性',
+      history: [20,25,28,30,32,35,38,40,42,40,38,40,42,44,45,43,42,44,45,45],
+      updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: '新发基金份额', value: '320亿/月', signal: 'yellow', signalText: '中性偏低',
+      history: [150,180,200,220,250,280,300,310,290,280,300,310,320,310,320,315,320,320,320,320],
+      updateTime: '2026-08-31', freq: '月频'
+    },
+    {
+      name: '偏股基金3年年化', value: '8.5%', slope: 'accel', signal: 'yellow', signalText: '中性',
+      history: [2,3,4,5,5.5,6,6.5,7,7.2,7.5,7.8,8,8.1,8.2,8.3,8.2,8.3,8.4,8.5,8.5],
+      updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: '交易拥挤度', value: '65%', signal: 'yellow', signalText: '中性',
+      history: [40,42,45,48,50,52,55,58,55,52,55,58,60,62,63,61,62,64,65,65],
+      updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: '中证1000/沪深300', value: '0.72', signal: 'green', signalText: '小盘占优',
+      hasMovingAvg: true,
+      history: [0.65,0.66,0.67,0.68,0.69,0.70,0.68,0.67,0.68,0.69,0.70,0.71,0.70,0.71,0.72,0.71,0.72,0.72,0.72,0.72],
+      ma20: [0.66,0.67,0.67,0.68,0.68,0.69,0.69,0.68,0.68,0.69,0.69,0.70,0.70,0.71,0.71,0.71,0.72,0.72,0.72,0.72],
+      ma60: [0.67,0.67,0.68,0.68,0.68,0.68,0.69,0.69,0.69,0.69,0.69,0.70,0.70,0.70,0.70,0.71,0.71,0.71,0.71,0.72],
+      updateTime: '2026-09-01', freq: '日频'
+    }
+  ],
+  confirmSignals: [
+    { name: '万得全A均线多头排列', value: '20/60/120日', signal: 'bullish', signalText: '✅ 多头排列' },
+    { name: 'MACD', value: 'DIF>DEA', signal: 'bullish', signalText: '✅ 金叉' },
+    { name: '北向资金5日净流入', value: '+82亿', signal: 'neutral', signalText: '⚖️ 小幅流入' }
+  ],
+  referenceIndicators: [
+    { name: '全A非金融盈利增速', value: '+12.5%' },
+    { name: '私募仓位', value: '68%' },
+    { name: '新增开户数(周)', value: '38万户' },
+    { name: '全A换手率', value: '1.8%' },
+    { name: '中位数PE(全A)', value: '32x' },
+    { name: '财政支出增速', value: '+5.2%' },
+    { name: '韭圈儿神奇指标', value: '0.62' },
+    { name: '偏股基金vs债基走势', value: '+3.2%' }
+  ]
+};
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+
+function renderStageBar() {
+  const bar = document.getElementById('stage-bar');
+  const stages = ['A','B','C1','C2','D'];
+  const total = Object.values(stageData.probabilities).reduce((a,b) => a+b, 0);
+  let html = '';
+  let cumulative = 0;
+  
+  stages.forEach(key => {
+    const pct = stageData.probabilities[key];
+    const width = (pct / total * 100).toFixed(1);
+    const cls = key.toLowerCase();
+    html += `<div class="stage-segment ${cls}" style="width:${width}%" title="${STAGES[key].name}: ${pct}%">
+      ${STAGES[key].emoji}<span class="pct">${pct}%</span>
+    </div>`;
+    cumulative += pct;
+  });
+  bar.innerHTML = html;
+}
+
+function renderStageCards() {
+  const container = document.getElementById('stage-cards');
+  const stages = ['A','B','C1','C2','D'];
+  let html = '';
+  
+  stages.forEach(key => {
+    const s = STAGES[key];
+    const pct = stageData.probabilities[key];
+    const isActive = key === stageData.current;
+    const cls = key.toLowerCase();
+    html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
+      <span class="season-emoji">${s.emoji}</span>
+      <div class="stage-name">${s.name}</div>
+      <div class="stage-prob">${pct}%</div>
+      <div class="stage-range">仓位 ${s.position}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderSparkline(containerId, data, options = {}) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 200 120');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  
+  const w = 200, h = 120;
+  const padding = { top: 10, bottom: 10, left: 0, right: 0 };
+  const plotW = w - padding.left - padding.right;
+  const plotH = h - padding.top - padding.bottom;
+  
+  const values = data.history;
+  const minVal = Math.min(...values) * 0.9;
+  const maxVal = Math.max(...values) * 1.1;
+  const range = maxVal - minVal || 1;
+  
+  // Percentile bands
+  if (data.p25 !== undefined) {
+    const y75 = padding.top + plotH * (1 - (data.p75 - minVal) / range);
+    const y50 = padding.top + plotH * (1 - (data.p50 - minVal) / range);
+    const y25 = padding.top + plotH * (1 - (data.p25 - minVal) / range);
+    
+    // Bottom band (0-25%)
+    const band1 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    band1.setAttribute('x', 0); band1.setAttribute('y', y25);
+    band1.setAttribute('width', w); band1.setAttribute('height', h - y25);
+    band1.setAttribute('class', 'percentile-band bottom');
+    svg.appendChild(band1);
+    
+    // Top band (75-100%)
+    const band3 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    band3.setAttribute('x', 0); band3.setAttribute('y', 0);
+    band3.setAttribute('width', w); band3.setAttribute('height', y75);
+    band3.setAttribute('class', 'percentile-band top');
+    svg.appendChild(band3);
+    
+    // Dividers
+    [y75, y25].forEach(y => {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', 0); line.setAttribute('x2', w);
+      line.setAttribute('y1', y); line.setAttribute('y2', y);
+      line.setAttribute('class', 'percentile-divider');
+      svg.appendChild(line);
+    });
+  }
+  
+  // Build path
+  const points = values.map((v, i) => {
+    const x = padding.left + (i / (values.length - 1)) * plotW;
+    const y = padding.top + plotH * (1 - (v - minVal) / range);
+    return { x, y };
+  });
+  
+  // Area fill
+  const areaPath = `M${points[0].x},${h} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length-1].x},${h} Z`;
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', areaPath);
+  area.setAttribute('class', 'sparkline-area');
+  
+  // Gradient
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  gradient.setAttribute('id', containerId + '_gradient');
+  gradient.setAttribute('x1', '0'); gradient.setAttribute('y1', '0');
+  gradient.setAttribute('x2', '0'); gradient.setAttribute('y2', '1');
+  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', 'var(--cyan)'); stop1.setAttribute('stop-opacity', '0.3');
+  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', 'var(--cyan)'); stop2.setAttribute('stop-opacity', '0');
+  gradient.appendChild(stop1); gradient.appendChild(stop2);
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+  area.setAttribute('fill', `url(#${containerId}_gradient)`);
+  svg.appendChild(area);
+  
+  // Line
+  const linePath = `M` + points.map(p => `${p.x},${p.y}`).join(' L');
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', linePath);
+  line.setAttribute('class', 'sparkline-line');
+  svg.appendChild(line);
+  
+  // Current value dot
+  const lastPoint = points[points.length - 1];
+  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('cx', lastPoint.x); dot.setAttribute('cy', lastPoint.y);
+  dot.setAttribute('r', '4'); dot.setAttribute('class', 'sparkline-dot');
+  svg.appendChild(dot);
+  
+  // Moving averages
+  if (options.hasMovingAvg && data.ma20) {
+    const ma20Points = data.ma20.map((v, i) => {
+      const x = padding.left + (i / (data.ma20.length - 1)) * plotW;
+      const y = padding.top + plotH * (1 - (v - minVal) / range);
+      return `${x},${y}`;
+    });
+    const ma20Line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    ma20Line.setAttribute('d', `M${ma20Points.join(' L')}`);
+    ma20Line.setAttribute('class', 'moving-avg-line ma20');
+    svg.appendChild(ma20Line);
+    
+    if (data.ma60) {
+      const ma60Points = data.ma60.map((v, i) => {
+        const x = padding.left + (i / (data.ma60.length - 1)) * plotW;
+        const y = padding.top + plotH * (1 - (v - minVal) / range);
+        return `${x},${y}`;
+      });
+      const ma60Line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      ma60Line.setAttribute('d', `M${ma60Points.join(' L')}`);
+      ma60Line.setAttribute('class', 'moving-avg-line ma60');
+      svg.appendChild(ma60Line);
     }
   }
-  if (refLow !== undefined) {
-    const yRef = scaleY(refLow);
-    if (yRef > 0 && yRef < H) {
-      svg += `<line x1="0" y1="${yRef}" x2="${W}" y2="${yRef}" stroke="var(--red)" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/>`;
-      if (refLowLabel) svg += `<text x="${W-5}" y="${yRef+10}" fill="var(--red)" font-size="7" text-anchor="end">${refLowLabel}</text>`;
-    }
-  }
-
-  // MA overlay for ratio chart
-  if (maOverlay && isAnchor) {
-    // Compute 20-day and 60-day MA (simulated from available data)
-    // Since we only have 12 points, we'll simulate MA20 as a smoothed 3-period avg and MA60 as 6-period avg
-    const ma20Vals = computeMA(values, 3);
-    const ma60Vals = computeMA(values, 6);
-    let ma20Points = ma20Vals.map((v, i) => v !== null ? `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}` : null).filter(Boolean);
-    let ma60Points = ma60Vals.map((v, i) => v !== null ? `${stepX(i).toFixed(1)},${scaleY(v).toFixed(1)}` : null).filter(Boolean);
-    if (ma20Points.length > 1) {
-      svg += `<path d="M${ma20Points.join(' L')}" fill="none" stroke="white" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
-    }
-    if (ma60Points.length > 1) {
-      svg += `<path d="M${ma60Points.join(' L')}" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="6,4" opacity="0.6"/>`;
-    }
-    // Crossover arrows
-    for (let i = 1; i < values.length; i++) {
-      if (ma20Vals[i] !== null && ma20Vals[i-1] !== null) {
-        if (values[i] > ma20Vals[i] && values[i-1] <= ma20Vals[i-1]) {
-          // Break above MA20 - up arrow
-          const ax = stepX(i), ay = scaleY(values[i]);
-          svg += `<text x="${ax}" y="${ay-6}" fill="var(--green)" font-size="10" text-anchor="middle" font-weight="bold">↑</text>`;
-        } else if (values[i] < ma20Vals[i] && values[i-1] >= ma20Vals[i-1]) {
-          // Break below MA20 - down arrow
-          const ax = stepX(i), ay = scaleY(values[i]);
-          svg += `<text x="${ax}" y="${ay+12}" fill="var(--red)" font-size="10" text-anchor="middle" font-weight="bold">↓</text>`;
-        }
+  
+  // Tooltip interaction
+  const tooltip = container.querySelector('.sparkline-tooltip');
+  if (tooltip) {
+    const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    overlay.setAttribute('x', 0); overlay.setAttribute('y', 0);
+    overlay.setAttribute('width', w); overlay.setAttribute('height', h);
+    overlay.setAttribute('fill', 'transparent');
+    overlay.style.cursor = 'crosshair';
+    
+    overlay.addEventListener('mousemove', (e) => {
+      const rect = svg.getBoundingClientRect();
+      const mouseX = (e.clientX - rect.left) / rect.width * w;
+      const idx = Math.round((mouseX / plotW) * (values.length - 1));
+      if (idx >= 0 && idx < values.length) {
+        const daysAgo = values.length - 1 - idx;
+        const date = new Date();
+        date.setDate(date.getDate() - daysAgo);
+        tooltip.textContent = `${date.toLocaleDateString('zh-CN')} | ${data.unit === '%' ? values[idx].toFixed(2) + '%' : values[idx]}`;
+        tooltip.style.left = (e.clientX - container.getBoundingClientRect().left + 10) + 'px';
+        tooltip.style.top = (e.clientY - container.getBoundingClientRect().top - 30) + 'px';
+        tooltip.classList.add('visible');
       }
-    }
+    });
+    overlay.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+    svg.appendChild(overlay);
   }
-
-  // Hit circles for tooltip
-  values.forEach((v, i) => {
-    const cx = stepX(i).toFixed(1);
-    const cy = scaleY(v).toFixed(1);
-    svg += `<circle cx="${cx}" cy="${cy}" r="${isAnchor ? 8 : 6}" fill="transparent" stroke="none" data-label="${labels[i]}" data-value="${v}"/>`;
-  });
-
-  // End dot
-  const lastX = stepX(values.length - 1).toFixed(1);
-  const lastY = scaleY(values[values.length - 1]).toFixed(1);
-  svg += `<circle cx="${lastX}" cy="${lastY}" r="${isAnchor ? 3 : 2}" fill="${color}"/>`;
-  svg += `</svg>`;
-  container.innerHTML = svg;
+  
+  container.insertBefore(svg, container.firstChild);
 }
 
-function computeMA(arr, period) {
-  return arr.map((v, i) => {
-    if (i < period - 1) return null;
-    let sum = 0;
-    for (let j = i - period + 1; j <= i; j++) sum += arr[j];
-    return sum / period;
+function renderMiniSparkline(container, data) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 200 28');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  
+  const values = data;
+  const minVal = Math.min(...values) * 0.95;
+  const maxVal = Math.max(...values) * 1.05;
+  const range = maxVal - minVal || 1;
+  const w = 200, h = 28;
+  
+  const points = values.map((v, i) => ({
+    x: (i / (values.length - 1)) * w,
+    y: h * (1 - (v - minVal) / range)
+  }));
+  
+  const linePath = `M` + points.map(p => `${p.x},${p.y}`).join(' L');
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', linePath);
+  line.setAttribute('class', 'sparkline-line');
+  line.style.stroke = 'var(--cyan)';
+  svg.appendChild(line);
+  
+  const lastP = points[points.length - 1];
+  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('cx', lastP.x); dot.setAttribute('cy', lastP.y);
+  dot.setAttribute('r', '3'); dot.setAttribute('class', 'sparkline-dot');
+  svg.appendChild(dot);
+  
+  container.appendChild(svg);
+}
+
+function renderMainIndicators() {
+  const container = document.getElementById('main-indicators');
+  let html = '';
+  
+  mockData.mainIndicators.forEach((ind, idx) => {
+    const slopeHtml = ind.slope ? `<span class="trend-slope ${ind.slope}">${ind.slope === 'accel' ? '↑加速' : ind.slope === 'decel' ? '↓减速' : '→走平'}</span>` : '';
+    html += `<div class="indicator-card">
+      <div class="card-top">
+        <div>
+          <div class="ind-name">${ind.name} <span style="font-size:10px;color:var(--text-muted);">(${ind.freq})</span></div>
+          <div class="ind-value">${ind.value}${slopeHtml}</div>
+        </div>
+        <div class="ind-signal ${ind.signal}">${ind.signalText}</div>
+      </div>
+      <div class="mini-sparkline" id="mini-spark-${idx}"></div>
+      <div class="update-time ${getUpdateStatus(ind.updateTime)}">${ind.updateTime}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  
+  // Render mini sparklines
+  mockData.mainIndicators.forEach((ind, idx) => {
+    const el = document.getElementById(`mini-spark-${idx}`);
+    if (el && ind.history) renderMiniSparkline(el, ind.history);
   });
 }
 
-// ===== TOOLTIP SYSTEM =====
-const tooltip = document.getElementById('svgTooltip');
-document.addEventListener('mousemove', function(e) {
-  const target = e.target;
-  if (target.tagName === 'circle' && target.dataset.label) {
-    tooltip.style.display = 'block';
-    tooltip.querySelector('.tt-date').textContent = target.dataset.label;
-    tooltip.querySelector('.tt-val').textContent = target.dataset.value;
-    tooltip.style.left = (e.clientX + 12) + 'px';
-    tooltip.style.top = (e.clientY - 30) + 'px';
+function renderConfirmSignals() {
+  const container = document.getElementById('confirm-signals');
+  let html = '';
+  
+  mockData.confirmSignals.forEach(cf => {
+    html += `<div class="confirm-card">
+      <div class="cf-name">${cf.name}</div>
+      <div class="cf-value">${cf.value}</div>
+      <div class="cf-signal ${cf.signal}">${cf.signalText}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderReferenceIndicators() {
+  const container = document.getElementById('reference-indicators');
+  let html = '';
+  
+  mockData.referenceIndicators.forEach(ref => {
+    html += `<div class="ref-card">
+      <span class="ref-name">${ref.name}</span>
+      <span class="ref-value">${ref.value}</span>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function getUpdateStatus(dateStr) {
+  if (!dateStr) return 'expired';
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (days > 90) return 'expired';
+  if (days > 30) return 'warning';
+  return '';
+}
+
+function toggleLiquidityDetail() {
+  const el = document.getElementById('liquidity-detail');
+  const btn = el.previousElementSibling?.querySelector('.expand-btn');
+  if (el.classList.contains('expanded')) {
+    el.classList.remove('expanded');
+    if (btn) btn.textContent = '展开详情 ▾';
   } else {
-    tooltip.style.display = 'none';
-  }
-});
-
-// ===== INIT ALL SPARKLINES =====
-function initSparklines() {
-  // Anchor sparklines (120px)
-  document.querySelectorAll('.sparkline-container').forEach(el => {
-    const labels = JSON.parse(el.dataset.labels);
-    const values = JSON.parse(el.dataset.values);
-    const color = el.dataset.color;
-    buildSparkline(el, {
-      labels, values, color,
-      refHigh: el.dataset.refHigh ? parseFloat(el.dataset.refHigh) : undefined,
-      refLow: el.dataset.refLow ? parseFloat(el.dataset.refLow) : undefined,
-      refHighLabel: el.dataset.refHighLabel,
-      refLowLabel: el.dataset.refLowLabel,
-      isAnchor: true,
-      maOverlay: false
-    });
-  });
-
-  // Mini sparklines (28px)
-  document.querySelectorAll('.mini-sparkline').forEach(el => {
-    const labels = JSON.parse(el.dataset.labels);
-    const values = JSON.parse(el.dataset.values);
-    const color = el.dataset.color;
-    buildSparkline(el, { labels, values, color, isAnchor: false });
-  });
-
-  // Tall sparkline for 1000/300 ratio with MA overlay (120px)
-  const ratioEl = document.getElementById('mspark-ratio');
-  if (ratioEl) {
-    const labels = JSON.parse(ratioEl.dataset.labels);
-    const values = JSON.parse(ratioEl.dataset.values);
-    const color = ratioEl.dataset.color;
-    buildSparkline(ratioEl, {
-      labels, values, color,
-      isAnchor: true,
-      maOverlay: true
-    });
+    el.classList.add('expanded');
+    if (btn) btn.textContent = '收起 ▴';
   }
 }
 
-// ===== RISK WARNING LOGIC =====
+// ============================================================
+// C1→C2 TRIGGER CHECK (for reference)
+// ============================================================
+const C2_TRIGGERS = [
+  { name: '恐贪指数>80', condition: '持续10个交易日', current: '45 (未触发)', met: false },
+  { name: '新发基金>800亿', condition: '单月即可', current: '320亿 (未触发)', met: false },
+  { name: '偏股基金3年>25%', condition: '单日即可', current: '8.5% (未触发)', met: false },
+  { name: '两融>2.0万亿', condition: '单日即可', current: '1.82万亿 (未触发)', met: false },
+  { name: '拥挤度>90%分位', condition: '持续20个交易日', current: '65% (未触发)', met: false }
+];
+
+// Risk warning check
 function checkRiskWarning() {
-  const params = new URLSearchParams(window.location.search);
-  const debugOverheat = params.get('debug') === 'overheat';
-
-  // Mock data for risk conditions
-  const probB = 65, probC1 = 20;
-  const crowding = 0.72; // 90% percentile check
-  const ratioHigh = 1.85, ratioCurrent = 1.85; // from high drop check
-  const fund3y = -2.8; // >30% check
-
-  const isBC1 = (probB > 50) || (probB + probC1 > 70);
-  const isOverheated = debugOverheat || (crowding > 0.90) || ((ratioHigh - ratioCurrent) / ratioHigh > 0.05) || (fund3y > 30);
-
-  const warningEl = document.getElementById('riskWarning');
-  if (isBC1 && isOverheated) {
-    warningEl.classList.add('visible');
-  } else {
-    warningEl.classList.remove('visible');
-  }
+  // Warning triggers when: stage B or early C1 + any micro overheating
+  const inBorC1 = stageData.current === 'B' || stageData.current === 'C1';
+  const crowdedness = mockData.mainIndicators.find(i => i.name === '交易拥挤度');
+  const fund3y = mockData.mainIndicators.find(i => i.name === '偏股基金3年年化');
+  
+  // For mock data, warning is not triggered
+  // In production, check actual values against thresholds
+  const warningEl = document.getElementById('risk-warning');
+  // Don't show warning with current mock data
 }
 
-function toggleRisk() {
-  const warningEl = document.getElementById('riskWarning');
-  warningEl.classList.toggle('visible');
-}
-
-// Debug toggle visibility
-if (new URLSearchParams(window.location.search).get('debug')) {
-  document.getElementById('debugToggle').classList.add('show');
-}
-
-// ===== CARD TIME STYLING =====
-function styleCardTimes() {
-  const now = new Date('2026-09-01');
-  document.querySelectorAll('.card-time').forEach(el => {
-    const text = el.textContent;
-    const match = text.match(/(\d{4}-\d{2}-\d{2})/);
-    if (match) {
-      const d = new Date(match[1]);
-      const diffDays = (now - d) / (1000 * 60 * 60 * 24);
-      if (diffDays > 90) {
-        el.classList.add('warn-gray');
-      } else if (diffDays > 30) {
-        el.classList.add('warn-yellow');
-      }
-    }
-  });
-}
-
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
-  initSparklines();
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderStageBar();
+  renderStageCards();
+  renderSparkline('erp-sparkline', mockData.erp);
+  renderSparkline('buffett-sparkline', mockData.buffett);
+  renderMainIndicators();
+  renderConfirmSignals();
+  renderReferenceIndicators();
   checkRiskWarning();
-  styleCardTimes();
-});
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
