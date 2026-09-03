@@ -144,6 +144,7 @@ const CycleV3Module = (() => {
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           ${threshHtml}
           <div class="ind-source" title="${escapeHtml(ind.source||'')}">来源: ${escapeHtml((ind.source||'').split('(')[0])}</div>
+          ${ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : ''}
           ${historyMini}
         </div>`;
       }).join('');
@@ -370,7 +371,8 @@ const CycleV3Module = (() => {
         const f = freshnessBadge(ind.last_updated, ind.frequency);
         const val = ind.current_value ?? ind.current ?? '--';
         const descHtml = ind.description ? `<div class="ri-desc">${escapeHtml(ind.description)}</div>` : '';
-        const chartId = 'chart-rate-'+group+'-'+(ind.ind_key||'');
+        const chartId = 'chart-rate-'+g+'-'+(ind.ind_key||'');
+        const sourceUrlHtml = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
         return `
         <div class="rate-indicator-card" style="border-left:3px solid ${color}">
           <div class="ri-header">
@@ -381,6 +383,7 @@ const CycleV3Module = (() => {
           <div class="ri-threshold">${escapeHtml(ind.threshold||'')}</div>
           ${descHtml}
           <div id="${chartId}" class="chart-container" style="width:100%;height:100px;margin-top:4px;"></div>
+          ${sourceUrlHtml}
           ${f}
         </div>`;
       }).join('');
@@ -429,11 +432,13 @@ const CycleV3Module = (() => {
           pctBadge = `<span class="percentile-badge" title="p25=${pct.p25} p50=${pct.p50} p75=${pct.p75}">${escapeHtml(pct.current_rank)}</span>`;
         }
         const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const juglarSourceUrl = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
         return `
         <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f} ${pctBadge}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-juglar-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
+          ${juglarSourceUrl}
         </div>`;
       }).join('');
       return `
@@ -470,11 +475,13 @@ const CycleV3Module = (() => {
       const indicators = r.indicators || {};
       const indHtml = Object.entries(indicators).map(([k, ind]) => {
         const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const merrillSourceUrl = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
         return `
         <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-merrill-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
+          ${merrillSourceUrl}
         </div>`;
       }).join('');
       return `
@@ -726,11 +733,13 @@ const CycleV3Module = (() => {
     </section>`;
   }
 
-  /** 改进点#6/#7: 周期金字塔 + SVG同心圆 */
+  /** 改进点#6/#7: 周期金字塔 + SVG同心圆 + SVG金字塔 */
   function renderPortfolioGuide(guide) {
     if (!guide) return '';
     const pyramid = guide.pyramid;
     let pyramidHtml = '';
+    let svgCircleHtml = '';
+    let svgPyramidHtml = '';
     if (pyramid?.layers) {
       const layers = pyramid.layers;
       // Text pyramid: widest at bottom (layer 6), narrowest at top (layer 0)
@@ -747,12 +756,71 @@ const CycleV3Module = (() => {
         </div>`;
       }).join('');
       pyramidHtml = `<div class="pyramid-container"><h3>📐 周期嵌套金字塔（文字版）</h3>${pyramidRows}</div>`;
+
+      // G-06: SVG Concentric Circles
+      const cx = 150, cy = 150;
+      const maxR = 140, minR = 20;
+      const step = (maxR - minR) / (layers.length - 1);
+      let circles = '';
+      layers.forEach((l, i) => {
+        const r = maxR - i * step;
+        const isActive = l.signal && l.signal !== '约束' && l.signal !== '偏空' && l.signal !== '谨慎';
+        const strokeW = isActive ? 3 : 1.5;
+        const opacity = isActive ? 1 : 0.5;
+        circles += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${l.color||'#6b7280'}" stroke-width="${strokeW}" opacity="${opacity}"/>`;
+        // Labels on the right side of each ring
+        const labelY = cy - r + 4;
+        const labelX = cx + r + 4;
+        if (labelX < 295) {
+          circles += `<text x="${Math.min(labelX, 290)}" y="${Math.max(labelY, 12)}" fill="${l.color||'#94a3b8'}" font-size="8" font-weight="${isActive?'bold':'normal'}">L${l.layer} ${escapeHtml(l.name)}</text>`;
+        }
+      });
+      // Center dot
+      circles += `<circle cx="${cx}" cy="${cy}" r="4" fill="#10b981" opacity="0.8"/>`;
+      circles += `<text x="${cx}" y="${cy + 16}" text-anchor="middle" fill="#94a3b8" font-size="7">当前</text>`;
+      svgCircleHtml = `<div class="svg-viz-container"><h3>🎯 周期同心圆（SVG）</h3>
+        <svg viewBox="0 0 300 300" width="300" height="300" class="svg-concentric">${circles}</svg>
+        <div class="svg-legend">${layers.map(l => `<span class="legend-item" style="color:${l.color||'#94a3b8'}">● L${l.layer} ${escapeHtml(l.name)}</span>`).join('')}</div>
+      </div>`;
+
+      // G-15: SVG Pyramid
+      const triW = 280, triH = 260;
+      const triCx = triW / 2;
+      const layerCount = layers.length;
+      const layerH = triH / layerCount;
+      let triParts = '';
+      // Build triangle layers from top (L0) to bottom (L{max})
+      layers.forEach((l, i) => {
+        const topY = i * layerH;
+        const botY = (i + 1) * layerH;
+        // Triangle width at each Y level
+        const topW = (i / layerCount) * (triW * 0.85);
+        const botW = ((i + 1) / layerCount) * (triW * 0.85);
+        const x1 = triCx - topW / 2, x2 = triCx + topW / 2;
+        const x3 = triCx + botW / 2, x4 = triCx - botW / 2;
+        const isActive = l.signal && l.signal !== '约束' && l.signal !== '偏空' && l.signal !== '谨慎';
+        const fillOpacity = isActive ? 0.35 : 0.15;
+        const strokeColor = l.color || '#6b7280';
+        triParts += `<polygon points="${x1},${topY} ${x2},${topY} ${x3},${botY} ${x4},${botY}" fill="${strokeColor}" fill-opacity="${fillOpacity}" stroke="${strokeColor}" stroke-width="1.5"/>`;
+        // Label
+        const midY = (topY + botY) / 2 + 4;
+        triParts += `<text x="${triCx}" y="${midY}" text-anchor="middle" fill="${strokeColor}" font-size="9" font-weight="${isActive?'bold':'normal'}">L${l.layer} ${escapeHtml(l.name)}</text>`;
+        if (l.position) {
+          triParts += `<text x="${triCx}" y="${midY + 12}" text-anchor="middle" fill="#94a3b8" font-size="7">${escapeHtml(l.position)}</text>`;
+        }
+      });
+      svgPyramidHtml = `<div class="svg-viz-container"><h3>📐 周期金字塔（SVG）</h3>
+        <svg viewBox="0 0 ${triW} ${triH}" width="${triW}" height="${triH}" class="svg-pyramid">${triParts}</svg>
+      </div>`;
     }
     return `
     <section class="v3-section" id="section-portfolio-guide">
       <h2 class="section-title">️ 周期嵌套结构</h2>
       ${pyramidHtml}
-      <div class="svg-note">📌 SVG同心圆版本将在文字版验证后升级</div>
+      <div class="svg-viz-row">
+        ${svgCircleHtml}
+        ${svgPyramidHtml}
+      </div>
     </section>`;
   }
 
@@ -891,6 +959,62 @@ const CycleV3Module = (() => {
         });
       }
     });
+
+    // G-07: Layer 3 Rate Regime sparkline charts
+    const layer3 = data.cycle_layers?.layer_3_rate_regime;
+    if (layer3) {
+      ['structural', 'forward_looking', 'market_based'].forEach(groupName => {
+        const groupData = layer3[groupName];
+        if (!groupData) return;
+        const indicators = groupData.indicators || {};
+        Object.entries(indicators).forEach(([indKey, ind]) => {
+          if (ind.us || ind.cn) {
+            ['us', 'cn'].forEach(rk => {
+              const rData = ind[rk];
+              const hist = rData?.history || ind.history;
+              if (!hist?.length) return;
+              const chartId = 'chart-rate-' + groupName + '-' + indKey + '_' + rk;
+              const el = document.getElementById(chartId);
+              if (!el) return;
+              const rColor = rk === 'us' ? '#3b82f6' : '#ef4444';
+              const rName = rk === 'us' ? '美国' : '中国';
+              createChart(chartId, {
+                tooltip: {...tooltipConfig(), trigger: 'axis'},
+                grid: gridConfig({top: 8, bottom: 12, left: 30, right: 8}),
+                xAxis: {type: 'category', data: hist.map(h => h.date), show: false},
+                yAxis: {type: 'value', axisLabel: {color: COLORS.textMuted, fontSize: 8},
+                  splitLine: {lineStyle: {color: COLORS.borderSubtle, type: 'dashed'}},
+                  axisLine: {show: false}},
+                series: [{name: rName, type: 'line', data: hist.map(h => [h.date, h.value]),
+                  smooth: true, symbol: 'none', lineStyle: {width: 2, color: rColor},
+                  itemStyle: {color: rColor},
+                  areaStyle: {color: {type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                    colorStops: [{offset: 0, color: rColor.replace(')', ',0.25)').replace('rgb', 'rgba')},
+                      {offset: 1, color: 'transparent'}]}}}]
+              });
+            });
+          } else if (ind.history?.length) {
+            const chartId = 'chart-rate-' + groupName + '-' + indKey;
+            const el = document.getElementById(chartId);
+            if (!el) return;
+            createChart(chartId, {
+              tooltip: {...tooltipConfig(), trigger: 'axis'},
+              grid: gridConfig({top: 8, bottom: 12, left: 30, right: 8}),
+              xAxis: {type: 'category', data: ind.history.map(h => h.date), show: false},
+              yAxis: {type: 'value', axisLabel: {color: COLORS.textMuted, fontSize: 8},
+                splitLine: {lineStyle: {color: COLORS.borderSubtle, type: 'dashed'}},
+                axisLine: {show: false}},
+              series: [{type: 'line', data: ind.history.map(h => [h.date, h.value]),
+                smooth: true, symbol: 'none', lineStyle: {width: 2, color: '#8b5cf6'},
+                itemStyle: {color: '#8b5cf6'},
+                areaStyle: {color: {type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                  colorStops: [{offset: 0, color: 'rgba(139,92,246,0.25)'},
+                    {offset: 1, color: 'transparent'}]}}}]
+            });
+          }
+        });
+      });
+    }
 
     // Juglar/Kitchin/Merrill indicator charts
     ['layer_4_juglar','layer_5_kitchner','layer_6_merrill'].forEach(layerKey => {
