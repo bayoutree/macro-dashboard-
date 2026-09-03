@@ -84,7 +84,8 @@
                 "value": 132
               }
             ],
-            "frequency": "quarterly"
+            "frequency": "quarterly",
+            "source_url": "https://fred.stlouisfed.org/series/GFDEGDQ188S"
           },
           "interest_to_revenue": {
             "name": "利息支出/财政收入",
@@ -122,7 +123,8 @@
                 "value": 22
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "source_url": "https://fred.stlouisfed.org/"
           },
           "fiscal_deficit_gdp": {
             "name": "财政赤字/GDP",
@@ -131,7 +133,8 @@
             "unit": "%",
             "last_updated": "2026-08-15",
             "history": [],
-            "frequency": "quarterly"
+            "frequency": "quarterly",
+            "source_url": "https://fred.stlouisfed.org/"
           }
         }
       },
@@ -155,7 +158,8 @@
             },
             "last_updated": "2026-06-01",
             "history": [],
-            "frequency": "quarterly"
+            "frequency": "quarterly",
+            "source_url": "https://www.imf.org/en/Data"
           },
           "structural_reform_progress": {
             "name": "结构性改革进度",
@@ -167,6 +171,67 @@
             "history": [],
             "frequency": "monthly"
           }
+        },
+        "structural_reform": {
+          "note": "方案D：代理指标量化 + 定性标注并存",
+          "qualitative_assessment": "结构性去杠杆中后期，政策空间相对充裕，但地产和地方政府债务风险尚未完全出清",
+          "assessment_date": "2026-09-01",
+          "proxy_indicators": [
+            {
+              "name": "国企利润占比",
+              "current": 28,
+              "unit": "%",
+              "description": "规模以上工业企业利润中国企占比，下降=市场化程度提高",
+              "trend": "缓降",
+              "quantifiable": true,
+              "frequency": "quarterly",
+              "last_updated": "2026-08-27"
+            },
+            {
+              "name": "民营经济固定投资增速",
+              "current": 5.2,
+              "unit": "%",
+              "description": "民间固定资产投资累计同比，反映民企信心",
+              "trend": "温和回升",
+              "quantifiable": true,
+              "frequency": "monthly",
+              "last_updated": "2026-08-15"
+            },
+            {
+              "name": "土地财政依赖度",
+              "current": 22,
+              "unit": "%",
+              "description": "土地出让收入/地方一般公共预算收入，下降=转型加速",
+              "trend": "持续下降",
+              "quantifiable": true,
+              "frequency": "quarterly",
+              "last_updated": "2026-09-01"
+            },
+            {
+              "name": "注册制覆盖率",
+              "current": 95,
+              "unit": "%",
+              "description": "A股IPO中注册制项目占比，已基本全面实施",
+              "trend": "高位稳定",
+              "quantifiable": true,
+              "frequency": "annual",
+              "last_updated": "2026-06-01"
+            },
+            {
+              "name": "资本市场开放程度",
+              "note": "定性评估：陆股通/债券通/互换通均已开通，QFII额度取消",
+              "assessment": "较高",
+              "quantifiable": false,
+              "last_updated": "2026-06-01"
+            },
+            {
+              "name": "房地产去金融化进度",
+              "note": "定性评估：三条红线政策持续，保交楼进入尾声，但民企房企债务重组仍在推进",
+              "assessment": "中后期",
+              "quantifiable": false,
+              "last_updated": "2026-09-01"
+            }
+          ]
         }
       }
     },
@@ -312,7 +377,8 @@
               }
             ]
           },
-          "frequency": "quarterly"
+          "frequency": "quarterly",
+          "source_url": "https://www.rug.nl/ggdc/productivity/pwt/"
         },
         "gdp_10y_avg": {
           "name": "GDP 10年移动平均增速",
@@ -327,7 +393,8 @@
             "unit": "%",
             "last_updated": "2026-06-15"
           },
-          "frequency": "quarterly"
+          "frequency": "quarterly",
+          "source_url": "https://data.worldbank.org/"
         },
         "capital_deepening": {
           "name": "资本深化速度",
@@ -602,7 +669,8 @@
                 "date": "2026",
                 "value": -0.3
               }
-            ]
+            ],
+            "source_url": "https://population.un.org/wpp/"
           },
           "productivity_growth": {
             "name": "劳动生产率增速",
@@ -635,7 +703,8 @@
                 "date": "2026",
                 "value": 1.2
               }
-            ]
+            ],
+            "source_url": "https://data.stats.gov.cn/"
           },
           "income_inequality": {
             "name": "基尼系数",
@@ -696,7 +765,8 @@
                 "date": "2026",
                 "value": 2.3
               }
-            ]
+            ],
+            "source_url": "https://fred.stlouisfed.org/"
           },
           "real_rate_forward": {
             "name": "远期实际利率(1Y5Y)",
@@ -733,7 +803,8 @@
                 "date": "2026",
                 "value": 1.8
               }
-            ]
+            ],
+            "source_url": "https://fred.stlouisfed.org/"
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
@@ -770,7 +841,8 @@
                 "date": "2026",
                 "value": 0.6
               }
-            ]
+            ],
+            "source_url": "https://fred.stlouisfed.org/series/TSYOREA01"
           }
         }
       },
@@ -812,7 +884,8 @@
                 "date": "2026",
                 "value": 0.3
               }
-            ]
+            ],
+            "source_url": "https://fred.stlouisfed.org/"
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -849,7 +922,8 @@
                 "date": "2026",
                 "value": 0.85
               }
-            ]
+            ],
+            "source_url": "https://fred.stlouisfed.org/"
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -886,7 +960,8 @@
                 "date": "2026",
                 "value": 18
               }
-            ]
+            ],
+            "source_url": "https://www.cboe.com/"
           }
         }
       }
@@ -1129,7 +1204,8 @@
                 "value": 12.5
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "source_url": "https://data.stats.gov.cn/"
           },
           "fixed_asset_investment": {
             "name": "固定资产投资增速",
@@ -1164,7 +1240,8 @@
                 "date": "2026",
                 "value": 3.6
               }
-            ]
+            ],
+            "source_url": "https://data.stats.gov.cn/"
           },
           "industrial_capacity_utilization": {
             "name": "工业产能利用率",
@@ -1177,7 +1254,8 @@
             "threshold": {
               "warning": 76,
               "critical": 78
-            }
+            },
+            "source_url": "https://data.stats.gov.cn/"
           }
         },
         "key_driver": "高技术制造业+新能源+AI",
@@ -1332,7 +1410,8 @@
                 "date": "2026",
                 "value": 1.35
               }
-            ]
+            ],
+            "source_url": "https://www.census.gov/economic-indicators/"
           },
           "new_orders": {
             "name": "耐用品新订单",
@@ -1367,7 +1446,8 @@
                 "date": "2026",
                 "value": 285
               }
-            ]
+            ],
+            "source_url": "https://www.census.gov/economic-indicators/"
           }
         }
       },
@@ -1430,7 +1510,8 @@
                 "value": 50.4
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "source_url": "https://data.stats.gov.cn/"
           },
           "cn_inventory_cycle": {
             "name": "工业企业产成品库存同比",
@@ -1465,7 +1546,8 @@
                 "date": "2026",
                 "value": 3.2
               }
-            ]
+            ],
+            "source_url": "https://data.stats.gov.cn/"
           }
         }
       }

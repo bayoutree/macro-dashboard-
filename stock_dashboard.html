@@ -426,7 +426,7 @@ body::before {
   <header class="header">
     <div class="header-left">
       <h1>A股周期定位看板</h1>
-      <div class="subtitle">V3.1 · 5段状态机 · 9主模型 + 3确认信号 + 8参考指标</div>
+      <div class="subtitle">V3.1 · 5段状态机 · 9主模型 + 3确认信号 + 9参考指标</div>
     </div>
     <div class="header-right">
       <span class="data-status fresh"><span class="dot"></span>数据正常</span>
@@ -452,7 +452,57 @@ body::before {
     </div>
   </section>
 
-  <!-- ===== 2. ANCHOR INDICATORS (ERP + Buffett) ===== -->
+  <!-- ===== 2. MACRO LIQUIDITY MODULE (S-04) ===== -->
+  <section class="anchor-section">
+    <div class="section-title"><span class="emoji">💧</span> 宏观流动性</div>
+    <div class="anchor-grid">
+      <!-- China M2 -->
+      <div class="anchor-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">中国M2同比增速 <span style="font-size:10px;color:var(--text-muted);">(广义货币)</span></div>
+            <div class="indicator-value">7.2%</div>
+            <div class="indicator-change up">↑ 0.3% (MoM)</div>
+          </div>
+          <div class="ind-signal green">流动性宽松</div>
+        </div>
+        <div class="sparkline-container" id="m2-sparkline">
+          <div class="sparkline-tooltip" id="m2-tooltip"></div>
+          <span class="percentile-label" style="top:2px">75%</span>
+          <span class="percentile-label" style="top:35%">50%</span>
+          <span class="percentile-label" style="top:68%">25%</span>
+        </div>
+        <div class="ind-description">
+          <span class="desc-range">合理范围:</span> 6%-10%。趋势：M2增速温和回升，货币环境保持宽松，利好权益资产估值扩张
+        </div>
+        <div class="update-time">更新: 2026-09-01 (月频)</div>
+      </div>
+
+      <!-- Fed Balance Sheet -->
+      <div class="anchor-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">美联储资产负债表规模 <span style="font-size:10px;color:var(--text-muted);">(万亿美元)</span></div>
+            <div class="indicator-value">7.85</div>
+            <div class="indicator-change down">↓ 0.08 (WoW)</div>
+          </div>
+          <div class="ind-signal yellow">缩表进行中</div>
+        </div>
+        <div class="sparkline-container" id="fed-sparkline">
+          <div class="sparkline-tooltip" id="fed-tooltip"></div>
+          <span class="percentile-label" style="top:2px">75%</span>
+          <span class="percentile-label" style="top:35%">50%</span>
+          <span class="percentile-label" style="top:68%">25%</span>
+        </div>
+        <div class="ind-description">
+          <span class="desc-range">合理范围:</span> 7-9万亿。趋势：美联储持续缩表但节奏放缓，流动性边际收紧但力度减弱
+        </div>
+        <div class="update-time">更新: 2026-09-01 (周频)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. ANCHOR INDICATORS (ERP + Buffett) ===== -->
   <section class="anchor-section">
     <div class="section-title"><span class="emoji">⚓</span> 锚定指标</div>
     <div class="anchor-grid">
@@ -678,6 +728,18 @@ const mockData = {
       ma20: [0.66,0.67,0.67,0.68,0.68,0.69,0.69,0.68,0.68,0.69,0.69,0.70,0.70,0.71,0.71,0.71,0.72,0.72,0.72,0.72],
       ma60: [0.67,0.67,0.68,0.68,0.68,0.68,0.69,0.69,0.69,0.69,0.69,0.70,0.70,0.70,0.70,0.71,0.71,0.71,0.71,0.72],
       updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: '北向资金累计净流入', value: '+1280亿', signal: 'green', signalText: '外资持续流入',
+      description: '<span class="desc-range">合理范围:</span> ±3000亿/年。趋势：外资持续增配A股，情绪偏积极',
+      history: [-500,-200,100,300,500,650,780,900,1000,1050,1100,1150,1180,1200,1220,1240,1260,1270,1280,1280],
+      updateTime: '2026-09-01', freq: '日频'
+    },
+    {
+      name: 'ETF份额变化', value: '+15%', signal: 'green', signalText: '被动资金持续流入',
+      description: '<span class="desc-range">合理范围:</span> -10%~+30%。趋势：ETF份额稳步增长，被动配置力量增强',
+      history: [-5,-3,0,3,5,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15],
+      updateTime: '2026-09-01', freq: '周频'
     }
   ],
   confirmSignals: [
@@ -715,7 +777,10 @@ const mockData = {
       history: [0.35,0.38,0.40,0.42,0.45,0.48,0.50,0.52,0.53,0.55,0.56,0.57,0.58,0.59,0.60,0.60,0.61,0.61,0.62,0.62], updateTime: '2026-09-01', freq: '日频' },
     { name: '偏股基金vs债基走势', value: '+3.2%', signal: 'green', signalText: '股优于债',
       description: '<span class="desc-range">合理范围:</span> -5%~+10%。趋势：股强于债，风险偏好回升，利好权益资产',
-      history: [-2,-1,0,0.5,1,1.5,1.8,2.0,2.2,2.3,2.5,2.6,2.7,2.8,2.9,3.0,3.0,3.1,3.1,3.2], updateTime: '2026-09-01', freq: '日频' }
+      history: [-2,-1,0,0.5,1,1.5,1.8,2.0,2.2,2.3,2.5,2.6,2.7,2.8,2.9,3.0,3.0,3.1,3.1,3.2], updateTime: '2026-09-01', freq: '日频' },
+    { name: '融资买入额占比', value: '11.2%', signal: 'yellow', signalText: '正常偏高',
+      description: '<span class="desc-range">合理范围:</span> 7%-13%。>15%为过热。趋势：融资买入占比温和回升，杠杆资金活跃度适中',
+      history: [7,8,8,9,9,10,10,10,10,10,10,11,11,11,11,11,11,11,11,11.2], updateTime: '2026-09-01', freq: '日频' }
   ]
 };
 
@@ -1114,6 +1179,13 @@ function init() {
   renderStageCards();
   renderSparkline('erp-sparkline', mockData.erp);
   renderSparkline('buffett-sparkline', mockData.buffett);
+  
+  // S-04: 宏观流动性走势图
+  const m2Data = {history: [6.5,6.8,7.0,7.1,7.2,7.3,7.4,7.5,7.6,7.7,7.8,7.9,8.0,8.1,8.0,7.9,7.8,7.7,7.5,7.2], p25: 6.0, p50: 7.5, p75: 8.5};
+  const fedData = {history: [8.9,8.8,8.7,8.6,8.5,8.4,8.3,8.2,8.1,8.0,7.95,7.92,7.90,7.88,7.87,7.86,7.85,7.85,7.85,7.85], p25: 7.5, p50: 8.2, p75: 8.8};
+  renderSparkline('m2-sparkline', m2Data);
+  renderSparkline('fed-sparkline', fedData);
+  
   renderMainIndicators();
   renderConfirmSignals();
   renderReferenceIndicators();

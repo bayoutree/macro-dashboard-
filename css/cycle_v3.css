@@ -339,3 +339,24 @@
   .case-row { flex-direction: column; gap: 2px; }
   .case-year, .case-wave { min-width: unset; }
 }
+
+/* ===== G-11: Structural Reform Section ===== */
+.reform-section { margin-top: 16px; padding: 16px; background: rgba(30,41,59,0.4); border-radius: 8px; }
+.reform-section h3 { font-size: 14px; color: #e2e8f0; margin-bottom: 8px; }
+.reform-note { font-size: 13px; color: #94a3b8; margin-bottom: 12px; line-height: 1.6; }
+.reform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.reform-card {
+  padding: 10px 12px; background: rgba(17,24,39,0.8); border-radius: 8px;
+  border-left: 3px solid #10b981; transition: all 0.2s;
+}
+.reform-card:hover { border-left-color: #06b6d4; transform: translateX(2px); }
+.reform-card.reform-qualitative { border-left-color: #f59e0b; }
+.reform-name { font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px; }
+.reform-value { font-size: 20px; font-weight: 700; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
+.reform-assessment { font-size: 16px; font-weight: 600; color: #f59e0b; }
+.reform-trend { font-size: 11px; color: #64748b; margin-top: 2px; }
+.reform-desc { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.4; }
+
+@media (max-width: 768px) {
+  .reform-grid { grid-template-columns: 1fr; }
+}

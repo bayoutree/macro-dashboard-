@@ -168,7 +168,38 @@ const CycleV3Module = (() => {
         ${renderRegion(layer.us, 'us')}
         ${renderRegion(layer.cn, 'cn')}
       </div>
+      ${renderStructuralReform(layer.cn?.structural_reform)}
     </section>`;
+  }
+
+  // G-11: Structural reform rendering (方案D)
+  function renderStructuralReform(sr) {
+    if (!sr) return '';
+    
+    const proxies = (sr.proxy_indicators || []).map(p => {
+      if (p.quantifiable) {
+        const f = freshnessBadge(p.last_updated, p.frequency);
+        return \`<div class="reform-card">
+          <div class="reform-name">\${escapeHtml(p.name)} \${f}</div>
+          <div class="reform-value">\${p.current}\${escapeHtml(p.unit||'')}</div>
+          <div class="reform-trend">\${escapeHtml(p.trend||'')}</div>
+          <div class="reform-desc">\${escapeHtml(p.description||'')}</div>
+        </div>\`;
+      } else {
+        return \`<div class="reform-card reform-qualitative">
+          <div class="reform-name">\${escapeHtml(p.name)}</div>
+          <div class="reform-assessment">\${escapeHtml(p.assessment||'')}</div>
+          <div class="reform-desc">\${escapeHtml(p.note||'')}</div>
+        </div>\`;
+      }
+    }).join('');
+    
+    return \`
+    <div class="reform-section">
+      <h3>🏗️ 结构性改革进度（方案D：代理指标+定性标注）</h3>
+      <p class="reform-note">\${escapeHtml(sr.qualitative_assessment||'')}</p>
+      <div class="reform-grid">\${proxies}</div>
+    </div>\`;
   }
 
 
