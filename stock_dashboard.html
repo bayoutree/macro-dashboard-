@@ -356,6 +356,61 @@ body::before {
 .ref-card .ref-name { color: var(--text-muted); }
 .ref-card .ref-value { font-family: var(--font-mono); font-weight: 600; color: var(--text-secondary); }
 
+
+/* ===== B1: DESCRIPTION TEXT ===== */
+.ind-description {
+  font-size: 10px; color: var(--text-muted); margin-top: 6px;
+  line-height: 1.4; padding-top: 4px; border-top: 1px solid var(--border);
+}
+.ind-description .desc-range { color: var(--cyan); font-weight: 500; }
+.ind-description .desc-signal { color: var(--text-secondary); font-weight: 500; }
+
+/* ===== B1: ENHANCED CONFIRM CARDS ===== */
+.confirm-card { position: relative; transition: all 0.2s; }
+.confirm-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.confirm-card .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.confirm-card .mini-sparkline { height: 28px; margin-top: var(--gap-sm); }
+.confirm-card .mini-sparkline svg { width: 100%; height: 100%; }
+.confirm-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.confirm-card .update-time {
+  position: absolute; bottom: 6px; right: 10px;
+  font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
+}
+.confirm-card .update-time.warning { color: var(--yellow); }
+.confirm-card .update-time.expired { color: var(--red); opacity: 0.5; }
+
+/* ===== B1: ENHANCED REFERENCE CARDS ===== */
+.ref-card { position: relative; transition: all 0.2s; border-radius: var(--radius-md); padding: var(--gap-md); }
+.ref-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.ref-card .ref-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.ref-card .ref-value { font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
+.ref-card .ref-signal {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 600;
+}
+.ref-card .ref-signal.green { color: var(--green); background: var(--green-dim); }
+.ref-card .ref-signal.yellow { color: var(--yellow); background: var(--yellow-dim); }
+.ref-card .ref-signal.red { color: var(--red); background: var(--red-dim); }
+.ref-card .mini-sparkline { height: 28px; margin-top: var(--gap-sm); }
+.ref-card .mini-sparkline svg { width: 100%; height: 100%; }
+.ref-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.ref-card .update-time {
+  position: absolute; bottom: 6px; right: 10px;
+  font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
+}
+.ref-card .update-time.warning { color: var(--yellow); }
+.ref-card .update-time.expired { color: var(--red); opacity: 0.5; }
+
+/* ===== B1: MINI SPARKLINE TOOLTIP ===== */
+.mini-tooltip {
+  position: absolute; background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 4px 8px; font-size: 10px;
+  font-family: var(--font-mono); color: var(--text-primary);
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  z-index: 10; white-space: nowrap;
+}
+.mini-tooltip.visible { opacity: 1; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .anchor-grid { grid-template-columns: 1fr; }
@@ -405,7 +460,7 @@ body::before {
       <div class="anchor-card" id="erp-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">万得全A ERP</div>
+            <div class="indicator-name">万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价)</span></div>
             <div class="indicator-value" id="erp-value">2.30%</div>
             <div class="indicator-change down">↓ 0.05% (7日)</div>
           </div>
@@ -443,7 +498,7 @@ body::before {
       <div class="anchor-card" id="buffett-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">巴菲特指标</div>
+            <div class="indicator-name">巴菲特指标 <span style="font-size:10px;color:var(--text-muted);">(总市值/GDP)</span></div>
             <div class="indicator-value" id="buffett-value">78%</div>
             <div class="indicator-change up">↑ 2% (QoQ)</div>
           </div>
@@ -587,31 +642,37 @@ const mockData = {
     },
     {
       name: '融资融券余额', value: '1.82万亿', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 1.2-2.0万亿。趋势：杠杆温和回升，市场活跃度提升',
       history: [1.5,1.55,1.6,1.62,1.65,1.68,1.7,1.72,1.75,1.76,1.78,1.79,1.8,1.81,1.82,1.81,1.82,1.82,1.82,1.82],
       updateTime: '2026-09-01', freq: '日频'
     },
     {
       name: '恐贪指数', value: '45', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 20-70。>80过热，<20极度恐惧。趋势：中性区间，无极端情绪',
       history: [20,25,28,30,32,35,38,40,42,40,38,40,42,44,45,43,42,44,45,45],
       updateTime: '2026-09-01', freq: '日频'
     },
     {
       name: '新发基金份额', value: '320亿/月', signal: 'yellow', signalText: '中性偏低',
+      description: '<span class="desc-range">合理范围:</span> 200-600亿/月。趋势：回暖但远未过热，增量资金入场节奏温和',
       history: [150,180,200,220,250,280,300,310,290,280,300,310,320,310,320,315,320,320,320,320],
       updateTime: '2026-08-31', freq: '月频'
     },
     {
       name: '偏股基金3年年化', value: '8.5%', slope: 'accel', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 5%-15%。>25%过热。趋势：收益稳步回升，赚钱效应恢复',
       history: [2,3,4,5,5.5,6,6.5,7,7.2,7.5,7.8,8,8.1,8.2,8.3,8.2,8.3,8.4,8.5,8.5],
       updateTime: '2026-09-01', freq: '日频'
     },
     {
       name: '交易拥挤度', value: '65%', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 30%-80%。>90%过热。趋势：温和提升中，离过热还有较大距离',
       history: [40,42,45,48,50,52,55,58,55,52,55,58,60,62,63,61,62,64,65,65],
       updateTime: '2026-09-01', freq: '日频'
     },
     {
       name: '中证1000/沪深300', value: '0.72', signal: 'green', signalText: '小盘占优',
+      description: '<span class="desc-signal">信号指示:</span> >0.7小盘占优，<0.7大盘占优。趋势：比值持续上行，风格偏向小盘',
       hasMovingAvg: true,
       history: [0.65,0.66,0.67,0.68,0.69,0.70,0.68,0.67,0.68,0.69,0.70,0.71,0.70,0.71,0.72,0.71,0.72,0.72,0.72,0.72],
       ma20: [0.66,0.67,0.67,0.68,0.68,0.69,0.69,0.68,0.68,0.69,0.69,0.70,0.70,0.71,0.71,0.71,0.72,0.72,0.72,0.72],
@@ -620,19 +681,41 @@ const mockData = {
     }
   ],
   confirmSignals: [
-    { name: '万得全A均线多头排列', value: '20/60/120日', signal: 'bullish', signalText: '✅ 多头排列' },
-    { name: 'MACD', value: 'DIF>DEA', signal: 'bullish', signalText: '✅ 金叉' },
-    { name: '北向资金5日净流入', value: '+82亿', signal: 'neutral', signalText: '⚖️ 小幅流入' }
+    { name: '万得全A均线多头排列', value: '20/60/120日', signal: 'bullish', signalText: '✅ 多头排列',
+      description: '<span class="desc-signal">信号指示:</span> 短中长期均线依次排列，趋势确立。合理范围：多头排列=看多，空头排列=看空',
+      history: [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], updateTime: '2026-09-01', freq: '日频' },
+    { name: 'MACD', value: 'DIF>DEA', signal: 'bullish', signalText: '✅ 金叉',
+      description: '<span class="desc-signal">信号指示:</span> DIF上穿DEA形成金叉，动能增强。当前趋势：DIF持续高于DEA，多头动能持续',
+      history: [-2,-1,0,1,2,3,4,3,2,1,0,1,2,3,2,3,4,5,4,5], updateTime: '2026-09-01', freq: '日频' },
+    { name: '北向资金5日净流入', value: '+82亿', signal: 'neutral', signalText: '⚖️ 小幅流入',
+      description: '<span class="desc-range">合理范围:</span> ±200亿/5日。<span class="desc-trend">当前趋势:</span> 小幅净流入，外资情绪中性偏积极',
+      history: [-50,-30,10,20,30,50,60,40,30,20,10,0,20,30,40,50,60,70,80,82], updateTime: '2026-09-01', freq: '日频' }
   ],
   referenceIndicators: [
-    { name: '全A非金融盈利增速', value: '+12.5%' },
-    { name: '私募仓位', value: '68%' },
-    { name: '新增开户数(周)', value: '38万户' },
-    { name: '全A换手率', value: '1.8%' },
-    { name: '中位数PE(全A)', value: '32x' },
-    { name: '财政支出增速', value: '+5.2%' },
-    { name: '韭圈儿神奇指标', value: '0.62' },
-    { name: '偏股基金vs债基走势', value: '+3.2%' }
+    { name: '全A非金融盈利增速', value: '+12.5%', signal: 'green', signalText: '盈利改善',
+      description: '<span class="desc-range">合理范围:</span> -10%~+20%。趋势：盈利持续修复，利好估值扩张',
+      history: [-5,-3,0,2,4,5,6,7,8,9,10,10,11,11,12,12,12,12,12,12.5], updateTime: '2026-06-30', freq: '季频' },
+    { name: '私募仓位', value: '68%', signal: 'yellow', signalText: '中等偏低',
+      description: '<span class="desc-range">合理范围:</span> 50%-80%。趋势：仓位温和提升，仍有加仓空间',
+      history: [55,58,60,62,63,64,65,64,63,64,65,66,66,67,67,67,68,68,68,68], updateTime: '2026-08-29', freq: '周频' },
+    { name: '新增开户数(周)', value: '38万户', signal: 'yellow', signalText: '正常水平',
+      description: '<span class="desc-range">合理范围:</span> 20-60万/周。趋势：稳步回升，未出现过热信号',
+      history: [15,18,20,22,24,25,27,28,30,32,33,34,35,35,36,36,37,37,38,38], updateTime: '2026-08-31', freq: '周频' },
+    { name: '全A换手率', value: '1.8%', signal: 'yellow', signalText: '正常',
+      description: '<span class="desc-range">合理范围:</span> 0.8%-2.5%。>3%为过热。趋势：温和回升，市场活跃度正常',
+      history: [0.8,0.9,1.0,1.1,1.2,1.3,1.3,1.4,1.4,1.5,1.5,1.5,1.6,1.6,1.7,1.7,1.7,1.8,1.8,1.8], updateTime: '2026-09-01', freq: '日频' },
+    { name: '中位数PE(全A)', value: '32x', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 20-40x。趋势：估值修复中，处于历史中位数附近',
+      history: [22,24,25,26,27,28,28,29,29,30,30,30,31,31,31,31,32,32,32,32], updateTime: '2026-09-01', freq: '日频' },
+    { name: '财政支出增速', value: '+5.2%', signal: 'yellow', signalText: '温和扩张',
+      description: '<span class="desc-range">合理范围:</span> 0-10%。>15%为强刺激。趋势：财政温和发力，支撑经济',
+      history: [2,2,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5.2], updateTime: '2026-08-15', freq: '月频' },
+    { name: '韭圈儿神奇指标', value: '0.62', signal: 'yellow', signalText: '中性',
+      description: '<span class="desc-range">合理范围:</span> 0.3-0.7。>0.8为过热。趋势：处于中性区间，未发出极端信号',
+      history: [0.35,0.38,0.40,0.42,0.45,0.48,0.50,0.52,0.53,0.55,0.56,0.57,0.58,0.59,0.60,0.60,0.61,0.61,0.62,0.62], updateTime: '2026-09-01', freq: '日频' },
+    { name: '偏股基金vs债基走势', value: '+3.2%', signal: 'green', signalText: '股优于债',
+      description: '<span class="desc-range">合理范围:</span> -5%~+10%。趋势：股强于债，风险偏好回升，利好权益资产',
+      history: [-2,-1,0,0.5,1,1.5,1.8,2.0,2.2,2.3,2.5,2.6,2.7,2.8,2.9,3.0,3.0,3.1,3.1,3.2], updateTime: '2026-09-01', freq: '日频' }
   ]
 };
 
@@ -826,7 +909,7 @@ function renderSparkline(containerId, data, options = {}) {
   container.insertBefore(svg, container.firstChild);
 }
 
-function renderMiniSparkline(container, data) {
+function renderMiniSparkline(container, data, options = {}) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 200 28');
   svg.setAttribute('preserveAspectRatio', 'none');
@@ -854,6 +937,36 @@ function renderMiniSparkline(container, data) {
   dot.setAttribute('cx', lastP.x); dot.setAttribute('cy', lastP.y);
   dot.setAttribute('r', '3'); dot.setAttribute('class', 'sparkline-dot');
   svg.appendChild(dot);
+
+  // B1: Add tooltip interaction to mini sparklines
+  let tooltip = container.querySelector('.mini-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.className = 'mini-tooltip';
+    container.appendChild(tooltip);
+  }
+  const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  overlay.setAttribute('x', 0); overlay.setAttribute('y', 0);
+  overlay.setAttribute('width', w); overlay.setAttribute('height', h);
+  overlay.setAttribute('fill', 'transparent');
+  overlay.style.cursor = 'crosshair';
+  const unitStr = options.unit || '';
+  overlay.addEventListener('mousemove', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) / rect.width * w;
+    const idx = Math.max(0, Math.min(values.length - 1, Math.round((mouseX / w) * (values.length - 1))));
+    const daysAgo = values.length - 1 - idx;
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    const val = values[idx];
+    tooltip.textContent = date.toLocaleDateString('zh-CN') + ' | ' + val + unitStr;
+    const cRect = container.getBoundingClientRect();
+    tooltip.style.left = (e.clientX - cRect.left + 8) + 'px';
+    tooltip.style.top = (e.clientY - cRect.top - 24) + 'px';
+    tooltip.classList.add('visible');
+  });
+  overlay.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+  svg.appendChild(overlay);
   
   container.appendChild(svg);
 }
@@ -864,6 +977,7 @@ function renderMainIndicators() {
   
   mockData.mainIndicators.forEach((ind, idx) => {
     const slopeHtml = ind.slope ? `<span class="trend-slope ${ind.slope}">${ind.slope === 'accel' ? '↑加速' : ind.slope === 'decel' ? '↓减速' : '→走平'}</span>` : '';
+    const descHtml = ind.description ? `<div class="ind-description">${ind.description}</div>` : '';
     html += `<div class="indicator-card">
       <div class="card-top">
         <div>
@@ -873,15 +987,16 @@ function renderMainIndicators() {
         <div class="ind-signal ${ind.signal}">${ind.signalText}</div>
       </div>
       <div class="mini-sparkline" id="mini-spark-${idx}"></div>
+      ${descHtml}
       <div class="update-time ${getUpdateStatus(ind.updateTime)}">${ind.updateTime}</div>
     </div>`;
   });
   container.innerHTML = html;
   
-  // Render mini sparklines
+  // Render mini sparklines with tooltip
   mockData.mainIndicators.forEach((ind, idx) => {
     const el = document.getElementById(`mini-spark-${idx}`);
-    if (el && ind.history) renderMiniSparkline(el, ind.history);
+    if (el && ind.history) renderMiniSparkline(el, ind.history, {unit: ind.value.includes('%') ? '%' : ''});
   });
 }
 
@@ -889,27 +1004,58 @@ function renderConfirmSignals() {
   const container = document.getElementById('confirm-signals');
   let html = '';
   
-  mockData.confirmSignals.forEach(cf => {
+  mockData.confirmSignals.forEach((cf, idx) => {
+    const descHtml = cf.description ? `<div class="ind-description">${cf.description}</div>` : '';
+    const updateCls = getUpdateStatus(cf.updateTime);
     html += `<div class="confirm-card">
-      <div class="cf-name">${cf.name}</div>
-      <div class="cf-value">${cf.value}</div>
-      <div class="cf-signal ${cf.signal}">${cf.signalText}</div>
+      <div class="card-top">
+        <div>
+          <div class="ind-name">${cf.name} <span style="font-size:10px;color:var(--text-muted);">(${cf.freq || ''})</span></div>
+          <div class="ind-value">${cf.value}</div>
+        </div>
+        <div class="ind-signal ${cf.signal === 'bullish' ? 'green' : cf.signal === 'bearish' ? 'red' : 'yellow'}">${cf.signalText}</div>
+      </div>
+      <div class="mini-sparkline" id="confirm-spark-${idx}"></div>
+      ${descHtml}
+      <div class="update-time ${updateCls}">${cf.updateTime || ''}</div>
     </div>`;
   });
   container.innerHTML = html;
+  
+  mockData.confirmSignals.forEach((cf, idx) => {
+    const el = document.getElementById(`confirm-spark-${idx}`);
+    if (el && cf.history) renderMiniSparkline(el, cf.history, {unit: ''});
+  });
 }
 
 function renderReferenceIndicators() {
   const container = document.getElementById('reference-indicators');
   let html = '';
   
-  mockData.referenceIndicators.forEach(ref => {
+  mockData.referenceIndicators.forEach((ref, idx) => {
+    const sigCls = ref.signal === 'green' ? 'green' : ref.signal === 'red' ? 'red' : 'yellow';
+    const descHtml = ref.description ? `<div class="ind-description">${ref.description}</div>` : '';
+    const updateCls = getUpdateStatus(ref.updateTime);
+    const freqStr = ref.freq ? `<span style="font-size:10px;color:var(--text-muted);">(${ref.freq})</span>` : '';
     html += `<div class="ref-card">
-      <span class="ref-name">${ref.name}</span>
-      <span class="ref-value">${ref.value}</span>
+      <div class="ref-top">
+        <div>
+          <div class="ref-name">${ref.name} ${freqStr}</div>
+          <div class="ref-value">${ref.value}</div>
+        </div>
+        <div class="ref-signal ${sigCls}">${ref.signalText || ''}</div>
+      </div>
+      <div class="mini-sparkline" id="ref-spark-${idx}"></div>
+      ${descHtml}
+      <div class="update-time ${updateCls}">${ref.updateTime || ''}</div>
     </div>`;
   });
   container.innerHTML = html;
+  
+  mockData.referenceIndicators.forEach((ref, idx) => {
+    const el = document.getElementById(`ref-spark-${idx}`);
+    if (el && ref.history) renderMiniSparkline(el, ref.history, {unit: ''});
+  });
 }
 
 // ============================================================
