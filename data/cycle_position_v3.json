@@ -6,11 +6,31 @@
     "version": "3.0",
     "next_assessment_date": "2026-10-01",
     "data_sources": [
-      {"name": "FRED", "last_fetch": "2026-09-01", "status": "ok"},
-      {"name": "Penn World Table", "last_fetch": "2026-06-15", "status": "stale"},
-      {"name": "IMF WEO", "last_fetch": "2026-04-01", "status": "stale"},
-      {"name": "AKShare", "last_fetch": "2026-08-15", "status": "ok"},
-      {"name": "Crunchbase", "last_fetch": "2026-08-06", "status": "ok"}
+      {
+        "name": "FRED",
+        "last_fetch": "2026-09-01",
+        "status": "ok"
+      },
+      {
+        "name": "Penn World Table",
+        "last_fetch": "2026-06-15",
+        "status": "stale"
+      },
+      {
+        "name": "IMF WEO",
+        "last_fetch": "2026-04-01",
+        "status": "stale"
+      },
+      {
+        "name": "AKShare",
+        "last_fetch": "2026-08-15",
+        "status": "ok"
+      },
+      {
+        "name": "Crunchbase",
+        "last_fetch": "2026-08-06",
+        "status": "ok"
+      }
     ]
   },
   "cycle_layers": {
@@ -29,23 +49,89 @@
         "implication": "利率敏感资产持续承压；硬资产和现金流资产修复",
         "indicators": {
           "debt_to_gdp": {
-            "name": "联邦债务/GDP", "source": "FRED (GFDEGDQ188S)",
-            "current": 132, "unit": "%",
-            "threshold": {"warning": 100, "critical": 130},
+            "name": "联邦债务/GDP",
+            "source": "FRED (GFDEGDQ188S)",
+            "current": 132,
+            "unit": "%",
+            "threshold": {
+              "warning": 100,
+              "critical": 130
+            },
             "last_updated": "2026-08-15",
-            "history": [{"date":"2000","value":55},{"date":"2005","value":62},{"date":"2010","value":90},{"date":"2015","value":100},{"date":"2020","value":126},{"date":"2026","value":132}]
+            "history": [
+              {
+                "date": "2000",
+                "value": 55
+              },
+              {
+                "date": "2005",
+                "value": 62
+              },
+              {
+                "date": "2010",
+                "value": 90
+              },
+              {
+                "date": "2015",
+                "value": 100
+              },
+              {
+                "date": "2020",
+                "value": 126
+              },
+              {
+                "date": "2026",
+                "value": 132
+              }
+            ],
+            "frequency": "quarterly"
           },
           "interest_to_revenue": {
-            "name": "利息支出/财政收入", "source": "FRED + CBO",
-            "current": 22, "unit": "%",
-            "threshold": {"warning": 15, "critical": 20},
+            "name": "利息支出/财政收入",
+            "source": "FRED + CBO",
+            "current": 22,
+            "unit": "%",
+            "threshold": {
+              "warning": 15,
+              "critical": 20
+            },
             "last_updated": "2026-07-01",
-            "history": [{"date":"2010","value":9},{"date":"2015","value":12},{"date":"2020","value":10},{"date":"2023","value":16},{"date":"2025","value":20},{"date":"2026","value":22}]
+            "history": [
+              {
+                "date": "2010",
+                "value": 9
+              },
+              {
+                "date": "2015",
+                "value": 12
+              },
+              {
+                "date": "2020",
+                "value": 10
+              },
+              {
+                "date": "2023",
+                "value": 16
+              },
+              {
+                "date": "2025",
+                "value": 20
+              },
+              {
+                "date": "2026",
+                "value": 22
+              }
+            ],
+            "frequency": "monthly"
           },
           "fiscal_deficit_gdp": {
-            "name": "财政赤字/GDP", "source": "FRED",
-            "current": 6.5, "unit": "%",
-            "last_updated": "2026-08-15", "history": []
+            "name": "财政赤字/GDP",
+            "source": "FRED",
+            "current": 6.5,
+            "unit": "%",
+            "last_updated": "2026-08-15",
+            "history": [],
+            "frequency": "quarterly"
           }
         }
       },
@@ -59,16 +145,27 @@
         "implication": "硬资产和现金流资产有修复空间",
         "indicators": {
           "debt_to_gdp": {
-            "name": "政府债务/GDP", "source": "IMF",
-            "current": 77, "unit": "%",
-            "threshold": {"warning": 60, "critical": 80},
-            "last_updated": "2026-06-01", "history": []
+            "name": "政府债务/GDP",
+            "source": "IMF",
+            "current": 77,
+            "unit": "%",
+            "threshold": {
+              "warning": 60,
+              "critical": 80
+            },
+            "last_updated": "2026-06-01",
+            "history": [],
+            "frequency": "quarterly"
           },
           "structural_reform_progress": {
-            "name": "结构性改革进度", "source": "综合评估",
-            "current": 0.6, "unit": "0-1评分",
+            "name": "结构性改革进度",
+            "source": "综合评估",
+            "current": 0.6,
+            "unit": "0-1评分",
             "description": "0=未启动，1=基本完成",
-            "last_updated": "2026-06-01", "history": []
+            "last_updated": "2026-06-01",
+            "history": [],
+            "frequency": "monthly"
           }
         }
       }
@@ -81,37 +178,265 @@
       "confidence": "medium",
       "last_updated": "2026-08-06",
       "investment_usage": "康波决定大类资产的长期战略方向。回升初期利好新科技和新基建。",
-      "investment_advice": ["战略性增配AI/新能源相关资产","旧经济长期配置比例下降","关注新技术对TFP的提升效果"],
-      "key_evidence": ["AI技术突破标志第六轮康波起点","旧动能(地产)出清已到位","中美周期位置收敛","全球科技巨头AI基建投入空前"],
+      "investment_advice": [
+        "战略性增配AI/新能源相关资产",
+        "旧经济长期配置比例下降",
+        "关注新技术对TFP的提升效果"
+      ],
+      "key_evidence": [
+        "AI技术突破标志第六轮康波起点",
+        "旧动能(地产)出清已到位",
+        "中美周期位置收敛",
+        "全球科技巨头AI基建投入空前"
+      ],
       "indicators": {
         "tfp_growth": {
           "name": "全要素生产率(TFP)增速",
           "source": "Penn World Table / OECD",
           "description": "康波上升期TFP年均+1.5~2%，下降期<0.5%",
-          "us": {"current":0.8,"unit":"%","last_updated":"2026-06-15","percentile":{"p25":0.5,"p50":1.0,"p75":1.5,"current_rank":"p25-p50"},
-            "history":[{"date":"1995","value":1.2},{"date":"2000","value":1.5},{"date":"2005","value":1.3},{"date":"2010","value":0.8},{"date":"2015","value":0.5},{"date":"2020","value":0.3},{"date":"2022","value":0.6},{"date":"2024","value":0.7},{"date":"2026","value":0.8}]},
-          "cn": {"current":1.2,"unit":"%","last_updated":"2026-06-15","percentile":{"p25":0.9,"p50":1.8,"p75":3.0,"current_rank":"p25-p50"},
-            "history":[{"date":"1995","value":3.5},{"date":"1998","value":3.4},{"date":"2000","value":3.2},{"date":"2003","value":3.5},{"date":"2005","value":3.8},{"date":"2008","value":3.0},{"date":"2010","value":2.8},{"date":"2013","value":2.2},{"date":"2015","value":1.8},{"date":"2018","value":1.2},{"date":"2020","value":1.0},{"date":"2022","value":0.9},{"date":"2024","value":1.1},{"date":"2026","value":1.2}]}
+          "us": {
+            "current": 0.8,
+            "unit": "%",
+            "last_updated": "2026-06-15",
+            "percentile": {
+              "p25": 0.5,
+              "p50": 1.0,
+              "p75": 1.5,
+              "current_rank": "p25-p50"
+            },
+            "history": [
+              {
+                "date": "1995",
+                "value": 1.2
+              },
+              {
+                "date": "2000",
+                "value": 1.5
+              },
+              {
+                "date": "2005",
+                "value": 1.3
+              },
+              {
+                "date": "2010",
+                "value": 0.8
+              },
+              {
+                "date": "2015",
+                "value": 0.5
+              },
+              {
+                "date": "2020",
+                "value": 0.3
+              },
+              {
+                "date": "2022",
+                "value": 0.6
+              },
+              {
+                "date": "2024",
+                "value": 0.7
+              },
+              {
+                "date": "2026",
+                "value": 0.8
+              }
+            ]
+          },
+          "cn": {
+            "current": 1.2,
+            "unit": "%",
+            "last_updated": "2026-06-15",
+            "percentile": {
+              "p25": 0.9,
+              "p50": 1.8,
+              "p75": 3.0,
+              "current_rank": "p25-p50"
+            },
+            "history": [
+              {
+                "date": "1995",
+                "value": 3.5
+              },
+              {
+                "date": "1998",
+                "value": 3.4
+              },
+              {
+                "date": "2000",
+                "value": 3.2
+              },
+              {
+                "date": "2003",
+                "value": 3.5
+              },
+              {
+                "date": "2005",
+                "value": 3.8
+              },
+              {
+                "date": "2008",
+                "value": 3.0
+              },
+              {
+                "date": "2010",
+                "value": 2.8
+              },
+              {
+                "date": "2013",
+                "value": 2.2
+              },
+              {
+                "date": "2015",
+                "value": 1.8
+              },
+              {
+                "date": "2018",
+                "value": 1.2
+              },
+              {
+                "date": "2020",
+                "value": 1.0
+              },
+              {
+                "date": "2022",
+                "value": 0.9
+              },
+              {
+                "date": "2024",
+                "value": 1.1
+              },
+              {
+                "date": "2026",
+                "value": 1.2
+              }
+            ]
+          },
+          "frequency": "quarterly"
         },
         "gdp_10y_avg": {
-          "name": "GDP 10年移动平均增速", "source": "世界银行",
-          "us": {"current":2.2,"unit":"%","last_updated":"2026-06-15"},
-          "cn": {"current":4.5,"unit":"%","last_updated":"2026-06-15"}
+          "name": "GDP 10年移动平均增速",
+          "source": "世界银行",
+          "us": {
+            "current": 2.2,
+            "unit": "%",
+            "last_updated": "2026-06-15"
+          },
+          "cn": {
+            "current": 4.5,
+            "unit": "%",
+            "last_updated": "2026-06-15"
+          },
+          "frequency": "quarterly"
         },
         "capital_deepening": {
-          "name": "资本深化速度", "source": "各国央行",
-          "us": {"current":2.1,"unit":"%","last_updated":"2026-06-15"},
-          "cn": {"current":3.5,"unit":"%","last_updated":"2026-06-15"}
+          "name": "资本深化速度",
+          "source": "各国央行",
+          "us": {
+            "current": 2.1,
+            "unit": "%",
+            "last_updated": "2026-06-15"
+          },
+          "cn": {
+            "current": 3.5,
+            "unit": "%",
+            "last_updated": "2026-06-15"
+          },
+          "frequency": "monthly"
         }
       },
       "history": [
-        {"start":"1780","end":"1840","name":"第一轮：纺织/蒸汽机"},
-        {"start":"1840","end":"1890","name":"第二轮：铁路/钢铁"},
-        {"start":"1890","end":"1940","name":"第三轮：电气/化工"},
-        {"start":"1940","end":"1980","name":"第四轮：汽车/石化"},
-        {"start":"1980","end":"2020","name":"第五轮：IT/互联网"},
-        {"start":"2020","end":"2080","name":"第六轮：AI/新能源（预估）"}
-      ]
+        {
+          "start": "1780",
+          "end": "1840",
+          "name": "第一轮：纺织/蒸汽机"
+        },
+        {
+          "start": "1840",
+          "end": "1890",
+          "name": "第二轮：铁路/钢铁"
+        },
+        {
+          "start": "1890",
+          "end": "1940",
+          "name": "第三轮：电气/化工"
+        },
+        {
+          "start": "1940",
+          "end": "1980",
+          "name": "第四轮：汽车/石化"
+        },
+        {
+          "start": "1980",
+          "end": "2020",
+          "name": "第五轮：IT/互联网"
+        },
+        {
+          "start": "2020",
+          "end": "2080",
+          "name": "第六轮：AI/新能源（预估）"
+        }
+      ],
+      "commodity_framework": {
+        "title": "康波周期与大宗商品——周金涛经典预判框架",
+        "description": "周金涛（中信建投前首席经济学家）在2007年和2015年两次成功用康波框架预判大宗商品牛熊转换：\n• 2007年：康波繁荣末期→大宗商品最后一涨（油价冲至147美元）\n• 2015年：康波萧条末期→大宗商品见底（南华商品指数触底反弹）",
+        "current_phase_implication": "当前第六轮康波回升初期→大宗商品进入战略配置窗口：\n• 新技术周期（AI）驱动新基建需求\n• 旧产能出清充分，供给约束增强\n• 美元见顶回落利好以美元计价的大宗商品",
+        "asset_mapping": [
+          {
+            "asset": "工业金属(铜/铝)",
+            "signal": "bullish",
+            "reasoning": "AI数据中心+新能源基建驱动铜需求，供给端矿山品位下降"
+          },
+          {
+            "asset": "黄金",
+            "signal": "bullish",
+            "reasoning": "康波回升初期+大债务周期晚期=避险+去美元化双重驱动"
+          },
+          {
+            "asset": "原油",
+            "signal": "neutral",
+            "reasoning": "新能源替代压制长期需求，但OPEC+供给管理+地缘风险支撑价格"
+          }
+        ],
+        "historical_cases": [
+          {
+            "year": "1850s-1870s",
+            "wave": "第三轮康波上升",
+            "commodity": "铁路钢铁牛市",
+            "outcome": "准确"
+          },
+          {
+            "year": "1920s-1929",
+            "wave": "第四轮康波繁荣",
+            "commodity": "有色金属牛市",
+            "outcome": "准确"
+          },
+          {
+            "year": "1970s-1980",
+            "wave": "第五轮康波繁荣→滞涨",
+            "commodity": "石油/黄金超级牛市",
+            "outcome": "准确"
+          },
+          {
+            "year": "2001-2008",
+            "wave": "第五轮康波繁荣尾声",
+            "commodity": "商品全面牛市(油147$)",
+            "outcome": "准确(2007预警)"
+          },
+          {
+            "year": "2008-2015",
+            "wave": "第五轮康波萧条",
+            "commodity": "商品全面熊市",
+            "outcome": "准确(2015预警见底)"
+          },
+          {
+            "year": "2020-now",
+            "wave": "第六轮康波回升初期",
+            "commodity": "战略性配置窗口开启",
+            "outcome": "待验证"
+          }
+        ]
+      }
     },
     "layer_2_perez": {
       "name": "佩雷斯（技术革命周期）",
@@ -121,11 +446,39 @@
       "confidence": "medium",
       "last_updated": "2026-08-06",
       "investment_usage": "Frenzy后期投机泡沫风险上升，Turning Point标志向Deployment过渡。",
-      "investment_advice": ["警惕估值过高的AI概念股","关注有真实盈利的技术落地公司","配置一定比例的黄金对冲泡沫破裂风险"],
+      "investment_advice": [
+        "警惕估值过高的AI概念股",
+        "关注有真实盈利的技术落地公司",
+        "配置一定比例的黄金对冲泡沫破裂风险"
+      ],
       "turning_point_signals": [
-        {"indicator":"高收益债利差走阔","metric":"HY spread","current_value":2.6,"threshold":4.0,"status":"green","description":"利差<4%正常；>4%预警；>6%确认TP","last_updated":"2026-08-06"},
-        {"indicator":"10Y-2Y利差倒挂","metric":"US 10Y-2Y spread","current_value":0.5,"threshold":0,"status":"green","description":"利差>0正常；<0倒挂为TP信号","last_updated":"2026-08-06"},
-        {"indicator":"VC/PE融资额骤降","metric":"Global VC/PE funding","current_value":720,"threshold_trigger":"YoY decline > 30%","status":"green","description":"同比降幅>30%为TP信号","last_updated":"2026-08-06"}
+        {
+          "indicator": "高收益债利差走阔",
+          "metric": "HY spread",
+          "current_value": 2.6,
+          "threshold": 4.0,
+          "status": "green",
+          "description": "利差<4%正常；>4%预警；>6%确认TP",
+          "last_updated": "2026-08-06"
+        },
+        {
+          "indicator": "10Y-2Y利差倒挂",
+          "metric": "US 10Y-2Y spread",
+          "current_value": 0.5,
+          "threshold": 0,
+          "status": "green",
+          "description": "利差>0正常；<0倒挂为TP信号",
+          "last_updated": "2026-08-06"
+        },
+        {
+          "indicator": "VC/PE融资额骤降",
+          "metric": "Global VC/PE funding",
+          "current_value": 720,
+          "threshold_trigger": "YoY decline > 30%",
+          "status": "green",
+          "description": "同比降幅>30%为TP信号",
+          "last_updated": "2026-08-06"
+        }
       ],
       "stage_description": {
         "current": "Frenzy后期",
@@ -137,13 +490,76 @@
         "description": "全球VC/PE年度融资额 ÷ 全球制造业/基建年度资本形成额",
         "current_value": 2.8,
         "threshold": "超过历史均值2个标准差 = Frenzy",
-        "threshold_params": {"mean":1.3,"std_dev":0.7,"frenzy_threshold":2.7,"note":"mean + 2*std_dev = 2.7"},
-        "history": [{"date":"1995","value":0.8},{"date":"2000","value":2.5},{"date":"2005","value":1.2},{"date":"2010","value":1.5},{"date":"2015","value":2.2},{"date":"2020","value":3.5},{"date":"2022","value":2.8},{"date":"2024","value":2.6},{"date":"2026","value":2.8}]
+        "threshold_params": {
+          "mean": 1.3,
+          "std_dev": 0.7,
+          "frenzy_threshold": 2.7,
+          "note": "mean + 2*std_dev = 2.7"
+        },
+        "history": [
+          {
+            "date": "1995",
+            "value": 0.8
+          },
+          {
+            "date": "2000",
+            "value": 2.5
+          },
+          {
+            "date": "2005",
+            "value": 1.2
+          },
+          {
+            "date": "2010",
+            "value": 1.5
+          },
+          {
+            "date": "2015",
+            "value": 2.2
+          },
+          {
+            "date": "2020",
+            "value": 3.5
+          },
+          {
+            "date": "2022",
+            "value": 2.8
+          },
+          {
+            "date": "2024",
+            "value": 2.6
+          },
+          {
+            "date": "2026",
+            "value": 2.8
+          }
+        ]
       },
       "indicators": {
-        "vc_pe_funding": {"name":"全球VC/PE年度融资额","source":"Crunchbase/PitchBook","current":720,"unit":"Billion USD","last_updated":"2026-08-06"},
-        "ipo_count": {"name":"全球IPO数量","source":"Renaissance Capital","current":312,"unit":"count","last_updated":"2026-08-06"},
-        "passive_fund_share": {"name":"被动基金占美股市值比例","source":"ICI/EPFR","current":52,"unit":"%","last_updated":"2026-08-06"}
+        "vc_pe_funding": {
+          "name": "全球VC/PE年度融资额",
+          "source": "Crunchbase/PitchBook",
+          "current": 720,
+          "unit": "Billion USD",
+          "last_updated": "2026-08-06",
+          "frequency": "monthly"
+        },
+        "ipo_count": {
+          "name": "全球IPO数量",
+          "source": "Renaissance Capital",
+          "current": 312,
+          "unit": "count",
+          "last_updated": "2026-08-06",
+          "frequency": "monthly"
+        },
+        "passive_fund_share": {
+          "name": "被动基金占美股市值比例",
+          "source": "ICI/EPFR",
+          "current": 52,
+          "unit": "%",
+          "last_updated": "2026-08-06",
+          "frequency": "monthly"
+        }
       }
     },
     "layer_3_rate_regime": {
@@ -151,20 +567,328 @@
       "description": "判断全球是否进入结构性高利率时代",
       "last_updated": "2026-08-06",
       "structural": {
-        "savings_investment_gap": {"name":"全球储蓄-投资缺口","source":"IMF WEO","current":-0.5,"unit":"% of GDP","threshold":"< 0 表示储蓄不足","status":"yellow","update_frequency":"annual","last_updated":"2026-04-01"},
-        "interest_to_revenue": {"name":"美国利息支出/财政收入","source":"FRED + CBO","current":22,"unit":"%","threshold":"> 20% 为临界","status":"red","update_frequency":"quarterly","last_updated":"2026-07-01"},
-        "tfp_5y_avg": {"name":"TFP 5年移动平均增速","source":"OECD/BLS","current":0.6,"unit":"%","threshold":"< 0.5% 支撑高利率","status":"yellow","update_frequency":"annual","last_updated":"2026-06-15"},
-        "eci_5y_avg": {"name":"ECI 雇佣成本 5年移动平均","source":"BLS/FRED (ECICOMP)","current":3.8,"unit":"%","threshold":"> 3.5% 支撑高利率","status":"yellow","update_frequency":"quarterly","last_updated":"2026-06-01"}
+        "name": "结构性因素",
+        "indicators": {
+          "demographic_dividend": {
+            "name": "人口红利指数",
+            "source": "UN Population Division",
+            "current": -0.3,
+            "unit": "标准化",
+            "description": "劳动年龄人口占比变化率，负值=老龄化拖累自然利率下行",
+            "last_updated": "2026-06-01",
+            "frequency": "annual",
+            "history": [
+              {
+                "date": "2000",
+                "value": 0.8
+              },
+              {
+                "date": "2005",
+                "value": 0.5
+              },
+              {
+                "date": "2010",
+                "value": 0.2
+              },
+              {
+                "date": "2015",
+                "value": -0.1
+              },
+              {
+                "date": "2020",
+                "value": -0.2
+              },
+              {
+                "date": "2026",
+                "value": -0.3
+              }
+            ]
+          },
+          "productivity_growth": {
+            "name": "劳动生产率增速",
+            "source": "BLS / 国家统计局",
+            "us": {
+              "current": 1.2,
+              "unit": "%"
+            },
+            "cn": {
+              "current": 5.5,
+              "unit": "%"
+            },
+            "description": "TFP+资本深化的综合效率指标",
+            "last_updated": "2026-06-15",
+            "frequency": "quarterly",
+            "history": [
+              {
+                "date": "2010",
+                "value": 3.0
+              },
+              {
+                "date": "2015",
+                "value": 1.8
+              },
+              {
+                "date": "2020",
+                "value": 1.0
+              },
+              {
+                "date": "2026",
+                "value": 1.2
+              }
+            ]
+          },
+          "income_inequality": {
+            "name": "基尼系数",
+            "source": "World Bank / 国家统计局",
+            "us": {
+              "current": 0.39,
+              "unit": ""
+            },
+            "cn": {
+              "current": 0.47,
+              "unit": ""
+            },
+            "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
+            "last_updated": "2026-06-01",
+            "frequency": "annual"
+          }
+        }
       },
       "forward_looking": {
-        "breakeven_5y5y": {"name":"5Y-5Y远期实际利率","source":"FRED (DFII10)","current":1.8,"unit":"%","threshold":"> 1.5% 表示长期高利率预期","status":"red","update_frequency":"monthly","last_updated":"2026-08-01"},
-        "acm_term_premium": {"name":"ACM期限溢价","source":"FRED (TERMPREM10)","current":0.7,"unit":"%","threshold":"> 0.5% 期限溢价转正","status":"yellow","update_frequency":"monthly","last_updated":"2026-08-01"},
-        "breakeven_30y": {"name":"30Y盈亏平衡通胀率","source":"FRED (T30YIEM)","current":2.4,"unit":"%","threshold":"> 2.5% 通胀预期脱锚","status":"green","update_frequency":"monthly","last_updated":"2026-08-01"}
+        "name": "前瞻指标",
+        "indicators": {
+          "breakeven_inflation": {
+            "name": "盈亏平衡通胀率(10Y)",
+            "source": "FRED",
+            "us": {
+              "current": 2.3,
+              "unit": "%"
+            },
+            "cn": {
+              "current": 2.1,
+              "unit": "%"
+            },
+            "description": "市场隐含的长期通胀预期，锚定央行利率路径",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": 1.5
+              },
+              {
+                "date": "2021",
+                "value": 2.4
+              },
+              {
+                "date": "2022",
+                "value": 2.8
+              },
+              {
+                "date": "2023",
+                "value": 2.3
+              },
+              {
+                "date": "2024",
+                "value": 2.2
+              },
+              {
+                "date": "2026",
+                "value": 2.3
+              }
+            ]
+          },
+          "real_rate_forward": {
+            "name": "远期实际利率(1Y5Y)",
+            "source": "FRED",
+            "us": {
+              "current": 1.8,
+              "unit": "%"
+            },
+            "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": 0.2
+              },
+              {
+                "date": "2021",
+                "value": 0.5
+              },
+              {
+                "date": "2022",
+                "value": 1.2
+              },
+              {
+                "date": "2023",
+                "value": 1.5
+              },
+              {
+                "date": "2024",
+                "value": 1.6
+              },
+              {
+                "date": "2026",
+                "value": 1.8
+              }
+            ]
+          },
+          "term_premium": {
+            "name": "期限溢价(10Y)",
+            "source": "ACM模型/FRED",
+            "us": {
+              "current": 0.6,
+              "unit": "%"
+            },
+            "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": -0.5
+              },
+              {
+                "date": "2021",
+                "value": -0.3
+              },
+              {
+                "date": "2022",
+                "value": 0.8
+              },
+              {
+                "date": "2023",
+                "value": 0.5
+              },
+              {
+                "date": "2024",
+                "value": 0.4
+              },
+              {
+                "date": "2026",
+                "value": 0.6
+              }
+            ]
+          }
+        }
       },
       "market_based": {
-        "hy_spread": {"name":"高收益债利差","source":"FRED (BAMLH0A0HYM2)","current":2.6,"unit":"%","threshold":"> 4% 信用压力","status":"green","update_frequency":"monthly","last_updated":"2026-08-06"},
-        "yield_spread_10y_2y": {"name":"10Y-2Y利差","source":"FRED (T10Y2Y)","current":0.5,"unit":"%","threshold":"< 0 收益率曲线倒挂","status":"green","update_frequency":"monthly","last_updated":"2026-08-06"},
-        "core_pce": {"name":"核心PCE同比","source":"FRED (CPILFESL)","current":2.6,"unit":"%","threshold":"> 3% 通胀过热","status":"yellow","update_frequency":"monthly","last_updated":"2026-08-06"}
+        "name": "市场信号",
+        "indicators": {
+          "yield_curve_2s10s": {
+            "name": "收益率曲线(2s10s)",
+            "source": "FRED",
+            "us": {
+              "current": 0.3,
+              "unit": "%"
+            },
+            "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": 0.9
+              },
+              {
+                "date": "2021",
+                "value": 1.6
+              },
+              {
+                "date": "2022",
+                "value": -0.4
+              },
+              {
+                "date": "2023",
+                "value": -1.0
+              },
+              {
+                "date": "2024",
+                "value": -0.2
+              },
+              {
+                "date": "2026",
+                "value": 0.3
+              }
+            ]
+          },
+          "credit_spread_ig": {
+            "name": "投资级信用利差",
+            "source": "FRED/Bloomberg",
+            "us": {
+              "current": 0.85,
+              "unit": "%"
+            },
+            "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": 2.5
+              },
+              {
+                "date": "2021",
+                "value": 0.9
+              },
+              {
+                "date": "2022",
+                "value": 1.5
+              },
+              {
+                "date": "2023",
+                "value": 1.2
+              },
+              {
+                "date": "2024",
+                "value": 0.9
+              },
+              {
+                "date": "2026",
+                "value": 0.85
+              }
+            ]
+          },
+          "realized_volatility": {
+            "name": " realized波动率(VIX 3M)",
+            "source": "CBOE",
+            "us": {
+              "current": 18,
+              "unit": ""
+            },
+            "description": "市场波动率，低波环境=风险偏好稳定",
+            "last_updated": "2026-09-01",
+            "frequency": "daily",
+            "history": [
+              {
+                "date": "2020",
+                "value": 35
+              },
+              {
+                "date": "2021",
+                "value": 18
+              },
+              {
+                "date": "2022",
+                "value": 25
+              },
+              {
+                "date": "2023",
+                "value": 20
+              },
+              {
+                "date": "2024",
+                "value": 16
+              },
+              {
+                "date": "2026",
+                "value": 18
+              }
+            ]
+          }
+        }
       }
     },
     "layer_4_juglar": {
@@ -178,15 +902,180 @@
         "phase_position": 0.6,
         "last_updated": "2026-08-06",
         "investment_usage": "朱格拉周期指导制造业/设备/工业材料的布局时机。",
-        "investment_advice": ["超配半导体设备和AI基础设施","关注工业材料（铜、铝）的结构性需求","Capex见顶前减仓"],
+        "investment_advice": [
+          "超配半导体设备和AI基础设施",
+          "关注工业材料（铜、铝）的结构性需求",
+          "Capex见顶前减仓"
+        ],
         "indicators": {
-          "capacity_utilization": {"name":"制造业产能利用率","source":"美联储","unit":"%","current":79.5,"last_updated":"2026-08-06","percentile":{"p25":75,"p50":78,"p75":82,"current_rank":"p50-p75"},
-            "history":[{"date":"2015-01","value":78.5},{"date":"2016-01","value":76.2},{"date":"2017-01","value":77.5},{"date":"2018-01","value":78.8},{"date":"2019-01","value":77.3},{"date":"2020-01","value":72.0},{"date":"2021-01","value":75.5},{"date":"2022-01","value":79.8},{"date":"2023-01","value":78.2},{"date":"2024-01","value":78.0},{"date":"2025-01","value":79.0},{"date":"2026-01","value":79.5}]},
-          "equipment_investment": {"name":"设备投资增速","source":"BEA","unit":"%","current":6.2,"last_updated":"2026-08-06",
-            "history":[{"date":"2015","value":3.5},{"date":"2016","value":-1.2},{"date":"2017","value":4.8},{"date":"2018","value":5.5},{"date":"2019","value":1.2},{"date":"2020","value":-6.8},{"date":"2021","value":9.2},{"date":"2022","value":7.5},{"date":"2023","value":4.2},{"date":"2024","value":5.8},{"date":"2025","value":7.0},{"date":"2026","value":6.2}]}
+          "capacity_utilization": {
+            "name": "制造业产能利用率",
+            "source": "美联储",
+            "unit": "%",
+            "current": 79.5,
+            "last_updated": "2026-08-06",
+            "percentile": {
+              "p25": 75,
+              "p50": 78,
+              "p75": 82,
+              "current_rank": "p50-p75"
+            },
+            "history": [
+              {
+                "date": "2015-01",
+                "value": 78.5
+              },
+              {
+                "date": "2016-01",
+                "value": 76.2
+              },
+              {
+                "date": "2017-01",
+                "value": 77.5
+              },
+              {
+                "date": "2018-01",
+                "value": 78.8
+              },
+              {
+                "date": "2019-01",
+                "value": 77.3
+              },
+              {
+                "date": "2020-01",
+                "value": 72.0
+              },
+              {
+                "date": "2021-01",
+                "value": 75.5
+              },
+              {
+                "date": "2022-01",
+                "value": 79.8
+              },
+              {
+                "date": "2023-01",
+                "value": 78.2
+              },
+              {
+                "date": "2024-01",
+                "value": 78.0
+              },
+              {
+                "date": "2025-01",
+                "value": 79.0
+              },
+              {
+                "date": "2026-01",
+                "value": 79.5
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "equipment_investment": {
+            "name": "设备投资增速",
+            "source": "BEA",
+            "unit": "%",
+            "current": 6.2,
+            "last_updated": "2026-08-06",
+            "history": [
+              {
+                "date": "2015",
+                "value": 3.5
+              },
+              {
+                "date": "2016",
+                "value": -1.2
+              },
+              {
+                "date": "2017",
+                "value": 4.8
+              },
+              {
+                "date": "2018",
+                "value": 5.5
+              },
+              {
+                "date": "2019",
+                "value": 1.2
+              },
+              {
+                "date": "2020",
+                "value": -6.8
+              },
+              {
+                "date": "2021",
+                "value": 9.2
+              },
+              {
+                "date": "2022",
+                "value": 7.5
+              },
+              {
+                "date": "2023",
+                "value": 4.2
+              },
+              {
+                "date": "2024",
+                "value": 5.8
+              },
+              {
+                "date": "2025",
+                "value": 7.0
+              },
+              {
+                "date": "2026",
+                "value": 6.2
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "capex_growth": {
+            "name": "资本开支增速",
+            "source": "FRED (nonresidential fixed investment)",
+            "current": 5.8,
+            "unit": "%",
+            "description": "企业资本支出同比增速，朱格拉周期核心驱动指标",
+            "last_updated": "2026-08-15",
+            "frequency": "quarterly",
+            "history": [
+              {
+                "date": "2020",
+                "value": -8
+              },
+              {
+                "date": "2021",
+                "value": 12
+              },
+              {
+                "date": "2022",
+                "value": 8
+              },
+              {
+                "date": "2023",
+                "value": 4
+              },
+              {
+                "date": "2024",
+                "value": 5
+              },
+              {
+                "date": "2026",
+                "value": 5.8
+              }
+            ],
+            "threshold": {
+              "warning": 0,
+              "critical": -5
+            }
+          }
         },
         "key_driver": "半导体制造业投资+AI资本开支",
-        "evidence": ["非金融企业杠杆率下降","固定投资增长强劲","信息处理设备投资占比33.2%"]
+        "evidence": [
+          "非金融企业杠杆率下降",
+          "固定投资增长强劲",
+          "信息处理设备投资占比33.2%"
+        ]
       },
       "cn": {
         "current_phase": "上升初期（新周期启动）",
@@ -198,13 +1087,105 @@
         "phase_position": 0.15,
         "last_updated": "2026-08-06",
         "investment_usage": "中国朱格拉新周期由高技术制造业+AI+新能源驱动。",
-        "investment_advice": ["关注高技术制造业（半导体、AI服务器、新能源车）","传统基建和地产设备投资谨慎","周期早期适合左侧布局高端制造龙头"],
+        "investment_advice": [
+          "关注高技术制造业（半导体、AI服务器、新能源车）",
+          "传统基建和地产设备投资谨慎",
+          "周期早期适合左侧布局高端制造龙头"
+        ],
         "indicators": {
-          "high_tech_manufacturing_investment": {"name":"高技术制造业投资增速","source":"国家统计局","unit":"%","current":12.5,"last_updated":"2026-08-06",
-            "history":[{"date":"2020","value":5.0},{"date":"2021","value":8.5},{"date":"2022","value":10.2},{"date":"2023","value":11.0},{"date":"2024","value":11.8},{"date":"2025","value":12.0},{"date":"2026","value":12.5}]}
+          "high_tech_manufacturing_investment": {
+            "name": "高技术制造业投资增速",
+            "source": "国家统计局",
+            "unit": "%",
+            "current": 12.5,
+            "last_updated": "2026-08-06",
+            "history": [
+              {
+                "date": "2020",
+                "value": 5.0
+              },
+              {
+                "date": "2021",
+                "value": 8.5
+              },
+              {
+                "date": "2022",
+                "value": 10.2
+              },
+              {
+                "date": "2023",
+                "value": 11.0
+              },
+              {
+                "date": "2024",
+                "value": 11.8
+              },
+              {
+                "date": "2025",
+                "value": 12.0
+              },
+              {
+                "date": "2026",
+                "value": 12.5
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "fixed_asset_investment": {
+            "name": "固定资产投资增速",
+            "source": "国家统计局",
+            "current": 3.6,
+            "unit": "%",
+            "description": "中国固定资产投资累计同比，反映企业扩产意愿",
+            "last_updated": "2026-08-15",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020",
+                "value": 2.9
+              },
+              {
+                "date": "2021",
+                "value": 4.9
+              },
+              {
+                "date": "2022",
+                "value": 5.1
+              },
+              {
+                "date": "2023",
+                "value": 3.0
+              },
+              {
+                "date": "2024",
+                "value": 3.2
+              },
+              {
+                "date": "2026",
+                "value": 3.6
+              }
+            ]
+          },
+          "industrial_capacity_utilization": {
+            "name": "工业产能利用率",
+            "source": "国家统计局",
+            "current": 74.8,
+            "unit": "%",
+            "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
+            "last_updated": "2026-08-15",
+            "frequency": "quarterly",
+            "threshold": {
+              "warning": 76,
+              "critical": 78
+            }
+          }
         },
         "key_driver": "高技术制造业+新能源+AI",
-        "evidence": ["高技术制造业投资增速持续>10%","半导体设备国产替代加速","新能源车出口创新高"]
+        "evidence": [
+          "高技术制造业投资增速持续>10%",
+          "半导体设备国产替代加速",
+          "新能源车出口创新高"
+        ]
       }
     },
     "layer_5_kitchner": {
@@ -216,10 +1197,178 @@
         "last_updated": "2026-08-06",
         "description": "美国处于基钦补库周期中期，PMI>50持续扩张。",
         "indicators": {
-          "inventory_sales_ratio": {"name":"库存/销售比","source":"美国人口普查局","unit":"倍","current":1.32,"last_updated":"2026-08-06",
-            "history":[{"date":"2022-01","value":1.28},{"date":"2022-07","value":1.35},{"date":"2023-01","value":1.42},{"date":"2023-07","value":1.38},{"date":"2024-01","value":1.34},{"date":"2024-07","value":1.31},{"date":"2025-01","value":1.30},{"date":"2025-07","value":1.31},{"date":"2026-01","value":1.32}]},
-          "ism_manufacturing": {"name":"ISM制造业PMI","source":"ISM/FRED","unit":"","current":52.3,"last_updated":"2026-08-06","percentile":{"p25":48,"p50":50,"p75":53,"current_rank":"p50-p75"},
-            "history":[{"date":"2022-01","value":57.6},{"date":"2022-07","value":52.8},{"date":"2023-01","value":47.4},{"date":"2023-07","value":46.4},{"date":"2024-01","value":49.1},{"date":"2024-07","value":46.8},{"date":"2025-01","value":50.9},{"date":"2025-07","value":50.6},{"date":"2026-01","value":52.3}]}
+          "inventory_sales_ratio": {
+            "name": "库存/销售比",
+            "source": "美国人口普查局",
+            "unit": "倍",
+            "current": 1.32,
+            "last_updated": "2026-08-06",
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 1.28
+              },
+              {
+                "date": "2022-07",
+                "value": 1.35
+              },
+              {
+                "date": "2023-01",
+                "value": 1.42
+              },
+              {
+                "date": "2023-07",
+                "value": 1.38
+              },
+              {
+                "date": "2024-01",
+                "value": 1.34
+              },
+              {
+                "date": "2024-07",
+                "value": 1.31
+              },
+              {
+                "date": "2025-01",
+                "value": 1.3
+              },
+              {
+                "date": "2025-07",
+                "value": 1.31
+              },
+              {
+                "date": "2026-01",
+                "value": 1.32
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "ism_manufacturing": {
+            "name": "ISM制造业PMI",
+            "source": "ISM/FRED",
+            "unit": "",
+            "current": 52.3,
+            "last_updated": "2026-08-06",
+            "percentile": {
+              "p25": 48,
+              "p50": 50,
+              "p75": 53,
+              "current_rank": "p50-p75"
+            },
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 57.6
+              },
+              {
+                "date": "2022-07",
+                "value": 52.8
+              },
+              {
+                "date": "2023-01",
+                "value": 47.4
+              },
+              {
+                "date": "2023-07",
+                "value": 46.4
+              },
+              {
+                "date": "2024-01",
+                "value": 49.1
+              },
+              {
+                "date": "2024-07",
+                "value": 46.8
+              },
+              {
+                "date": "2025-01",
+                "value": 50.9
+              },
+              {
+                "date": "2025-07",
+                "value": 50.6
+              },
+              {
+                "date": "2026-01",
+                "value": 52.3
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "inventory_to_sales": {
+            "name": "库销比",
+            "source": "Census Bureau",
+            "current": 1.35,
+            "unit": "月",
+            "description": "制造业库存/销售比，<1.3=库存偏紧，>1.5=库存积压",
+            "last_updated": "2026-08-15",
+            "frequency": "monthly",
+            "threshold": {
+              "warning": 1.5,
+              "critical": 1.6
+            },
+            "history": [
+              {
+                "date": "2020",
+                "value": 1.45
+              },
+              {
+                "date": "2021",
+                "value": 1.28
+              },
+              {
+                "date": "2022",
+                "value": 1.38
+              },
+              {
+                "date": "2023",
+                "value": 1.42
+              },
+              {
+                "date": "2024",
+                "value": 1.38
+              },
+              {
+                "date": "2026",
+                "value": 1.35
+              }
+            ]
+          },
+          "new_orders": {
+            "name": "耐用品新订单",
+            "source": "Census Bureau",
+            "current": 285,
+            "unit": "十亿美元",
+            "description": "领先于生产的先行指标，订单回升→补库存启动",
+            "last_updated": "2026-08-15",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020",
+                "value": 220
+              },
+              {
+                "date": "2021",
+                "value": 260
+              },
+              {
+                "date": "2022",
+                "value": 280
+              },
+              {
+                "date": "2023",
+                "value": 270
+              },
+              {
+                "date": "2024",
+                "value": 275
+              },
+              {
+                "date": "2026",
+                "value": 285
+              }
+            ]
+          }
         }
       },
       "cn": {
@@ -231,8 +1380,93 @@
         "description": "中国呈现K型补库格局：高技术制造业补库积极，传统行业仍在去库或观望。",
         "sync_note": "中美基钦周期方向一致（均偏多），但结构差异显著。美国是全面补库，中国是结构性补库。",
         "indicators": {
-          "cn_pmi_manufacturing": {"name":"中国制造业PMI","source":"国家统计局","unit":"","current":50.4,"last_updated":"2026-08-15","percentile":{"p25":49.5,"p50":50.2,"p75":51.0,"current_rank":"p50-p75"},
-            "history":[{"date":"2022-01","value":50.1},{"date":"2022-07","value":50.4},{"date":"2023-01","value":50.1},{"date":"2023-07","value":49.0},{"date":"2024-01","value":49.2},{"date":"2024-07","value":49.4},{"date":"2025-01","value":50.1},{"date":"2025-07","value":50.2},{"date":"2026-01","value":50.4}]}
+          "cn_pmi_manufacturing": {
+            "name": "中国制造业PMI",
+            "source": "国家统计局",
+            "unit": "",
+            "current": 50.4,
+            "last_updated": "2026-08-15",
+            "percentile": {
+              "p25": 49.5,
+              "p50": 50.2,
+              "p75": 51.0,
+              "current_rank": "p50-p75"
+            },
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 50.1
+              },
+              {
+                "date": "2022-07",
+                "value": 50.4
+              },
+              {
+                "date": "2023-01",
+                "value": 50.1
+              },
+              {
+                "date": "2023-07",
+                "value": 49.0
+              },
+              {
+                "date": "2024-01",
+                "value": 49.2
+              },
+              {
+                "date": "2024-07",
+                "value": 49.4
+              },
+              {
+                "date": "2025-01",
+                "value": 50.1
+              },
+              {
+                "date": "2025-07",
+                "value": 50.2
+              },
+              {
+                "date": "2026-01",
+                "value": 50.4
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "cn_inventory_cycle": {
+            "name": "工业企业产成品库存同比",
+            "source": "国家统计局",
+            "current": 3.2,
+            "unit": "%",
+            "description": "中国工业企业产成品库存增速，负值=主动去库，回升=被动去库/主动补库",
+            "last_updated": "2026-08-15",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020",
+                "value": 7.5
+              },
+              {
+                "date": "2021",
+                "value": 17.2
+              },
+              {
+                "date": "2022",
+                "value": 19.4
+              },
+              {
+                "date": "2023",
+                "value": 1.3
+              },
+              {
+                "date": "2024",
+                "value": -0.5
+              },
+              {
+                "date": "2026",
+                "value": 3.2
+              }
+            ]
+          }
         }
       }
     },
@@ -244,15 +1478,118 @@
         "confidence": "medium",
         "last_updated": "2026-08-06",
         "indicators": {
-          "core_cpi": {"name":"核心CPI同比","source":"BLS/FRED","unit":"%","current":2.9,"last_updated":"2026-08-06",
-            "history":[{"date":"2022-01","value":6.4},{"date":"2022-07","value":5.9},{"date":"2023-01","value":5.5},{"date":"2023-07","value":4.7},{"date":"2024-01","value":3.9},{"date":"2024-07","value":3.2},{"date":"2025-01","value":3.1},{"date":"2025-07","value":2.8},{"date":"2026-01","value":2.9}]},
-          "unemployment_rate": {"name":"失业率","source":"BLS/FRED","unit":"%","current":4.1,"last_updated":"2026-08-06",
-            "history":[{"date":"2022-01","value":4.0},{"date":"2022-07","value":3.5},{"date":"2023-01","value":3.4},{"date":"2023-07","value":3.5},{"date":"2024-01","value":3.7},{"date":"2024-07","value":4.3},{"date":"2025-01","value":4.0},{"date":"2025-07","value":4.2},{"date":"2026-01","value":4.1}]}
+          "core_cpi": {
+            "name": "核心CPI同比",
+            "source": "BLS/FRED",
+            "unit": "%",
+            "current": 2.9,
+            "last_updated": "2026-08-06",
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 6.4
+              },
+              {
+                "date": "2022-07",
+                "value": 5.9
+              },
+              {
+                "date": "2023-01",
+                "value": 5.5
+              },
+              {
+                "date": "2023-07",
+                "value": 4.7
+              },
+              {
+                "date": "2024-01",
+                "value": 3.9
+              },
+              {
+                "date": "2024-07",
+                "value": 3.2
+              },
+              {
+                "date": "2025-01",
+                "value": 3.1
+              },
+              {
+                "date": "2025-07",
+                "value": 2.8
+              },
+              {
+                "date": "2026-01",
+                "value": 2.9
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "unemployment_rate": {
+            "name": "失业率",
+            "source": "BLS/FRED",
+            "unit": "%",
+            "current": 4.1,
+            "last_updated": "2026-08-06",
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 4.0
+              },
+              {
+                "date": "2022-07",
+                "value": 3.5
+              },
+              {
+                "date": "2023-01",
+                "value": 3.4
+              },
+              {
+                "date": "2023-07",
+                "value": 3.5
+              },
+              {
+                "date": "2024-01",
+                "value": 3.7
+              },
+              {
+                "date": "2024-07",
+                "value": 4.3
+              },
+              {
+                "date": "2025-01",
+                "value": 4.0
+              },
+              {
+                "date": "2025-07",
+                "value": 4.2
+              },
+              {
+                "date": "2026-01",
+                "value": 4.1
+              }
+            ],
+            "frequency": "monthly"
+          }
         },
         "quadrant_trajectory": [
-          {"quadrant":"衰退","start":"2022Q3","end":"2023Q1","label":"①"},
-          {"quadrant":"复苏","start":"2023Q2","end":"2024Q4","label":"②"},
-          {"quadrant":"过热","start":"2025Q1","end":null,"label":"③"}
+          {
+            "quadrant": "衰退",
+            "start": "2022Q3",
+            "end": "2023Q1",
+            "label": "①"
+          },
+          {
+            "quadrant": "复苏",
+            "start": "2023Q2",
+            "end": "2024Q4",
+            "label": "②"
+          },
+          {
+            "quadrant": "过热",
+            "start": "2025Q1",
+            "end": null,
+            "label": "③"
+          }
         ]
       },
       "cn": {
@@ -262,15 +1599,118 @@
         "confidence": "medium",
         "last_updated": "2026-08-06",
         "indicators": {
-          "cn_cpi": {"name":"CPI同比","source":"国家统计局/AKShare","unit":"%","current":0.6,"last_updated":"2026-08-15",
-            "history":[{"date":"2022-01","value":0.9},{"date":"2022-07","value":2.7},{"date":"2023-01","value":2.1},{"date":"2023-07","value":0.0},{"date":"2024-01","value":0.3},{"date":"2024-07","value":0.5},{"date":"2025-01","value":0.4},{"date":"2025-07","value":0.5},{"date":"2026-01","value":0.6}]},
-          "cn_ppi": {"name":"PPI同比","source":"国家统计局/AKShare","unit":"%","current":-0.8,"last_updated":"2026-08-15",
-            "history":[{"date":"2022-01","value":9.1},{"date":"2022-07","value":4.2},{"date":"2023-01","value":-0.8},{"date":"2023-07","value":-4.4},{"date":"2024-01","value":-2.5},{"date":"2024-07","value":-0.8},{"date":"2025-01","value":-2.3},{"date":"2025-07","value":-0.6},{"date":"2026-01","value":-0.8}]}
+          "cn_cpi": {
+            "name": "CPI同比",
+            "source": "国家统计局/AKShare",
+            "unit": "%",
+            "current": 0.6,
+            "last_updated": "2026-08-15",
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 0.9
+              },
+              {
+                "date": "2022-07",
+                "value": 2.7
+              },
+              {
+                "date": "2023-01",
+                "value": 2.1
+              },
+              {
+                "date": "2023-07",
+                "value": 0.0
+              },
+              {
+                "date": "2024-01",
+                "value": 0.3
+              },
+              {
+                "date": "2024-07",
+                "value": 0.5
+              },
+              {
+                "date": "2025-01",
+                "value": 0.4
+              },
+              {
+                "date": "2025-07",
+                "value": 0.5
+              },
+              {
+                "date": "2026-01",
+                "value": 0.6
+              }
+            ],
+            "frequency": "monthly"
+          },
+          "cn_ppi": {
+            "name": "PPI同比",
+            "source": "国家统计局/AKShare",
+            "unit": "%",
+            "current": -0.8,
+            "last_updated": "2026-08-15",
+            "history": [
+              {
+                "date": "2022-01",
+                "value": 9.1
+              },
+              {
+                "date": "2022-07",
+                "value": 4.2
+              },
+              {
+                "date": "2023-01",
+                "value": -0.8
+              },
+              {
+                "date": "2023-07",
+                "value": -4.4
+              },
+              {
+                "date": "2024-01",
+                "value": -2.5
+              },
+              {
+                "date": "2024-07",
+                "value": -0.8
+              },
+              {
+                "date": "2025-01",
+                "value": -2.3
+              },
+              {
+                "date": "2025-07",
+                "value": -0.6
+              },
+              {
+                "date": "2026-01",
+                "value": -0.8
+              }
+            ],
+            "frequency": "monthly"
+          }
         },
         "quadrant_trajectory": [
-          {"quadrant":"滞胀","start":"2022Q1","end":"2023Q2","label":""},
-          {"quadrant":"衰退","start":"2023Q3","end":"2024Q2","label":"②"},
-          {"quadrant":"复苏","start":"2024Q3","end":null,"label":"③"}
+          {
+            "quadrant": "滞胀",
+            "start": "2022Q1",
+            "end": "2023Q2",
+            "label": ""
+          },
+          {
+            "quadrant": "衰退",
+            "start": "2023Q3",
+            "end": "2024Q2",
+            "label": "②"
+          },
+          {
+            "quadrant": "复苏",
+            "start": "2024Q3",
+            "end": null,
+            "label": "③"
+          }
         ]
       }
     }
@@ -282,16 +1722,77 @@
       "scenario_description": "长波脆弱 + 短周期上行：上行空间受限",
       "last_updated": "2026-09-01",
       "dimension_scores": [
-        {"dimension":"大债务周期","layer":0,"us_score":-2,"cn_score":0,"weight":1.5,"weighted_score":-3.0},
-        {"dimension":"康波","layer":1,"score":2,"weight":2.0,"weighted_score":4.0},
-        {"dimension":"佩雷斯","layer":2,"score":-1,"weight":1.5,"weighted_score":-1.5},
-        {"dimension":"利率范式","layer":3,"score":-1,"weight":1.5,"weighted_score":-1.5},
-        {"dimension":"朱格拉·美","layer":4,"score":2,"weight":1.0,"weighted_score":2.0},
-        {"dimension":"朱格拉·中","layer":4,"score":2,"weight":1.0,"weighted_score":2.0},
-        {"dimension":"基钦·美","layer":5,"score":2,"weight":1.0,"weighted_score":2.0},
-        {"dimension":"基钦·中","layer":5,"score":1,"weight":1.0,"weighted_score":1.0},
-        {"dimension":"美林·美","layer":6,"score":1,"weight":0.5,"weighted_score":0.5},
-        {"dimension":"美林·中","layer":6,"score":2,"weight":0.5,"weighted_score":1.0}
+        {
+          "dimension": "大债务周期",
+          "layer": 0,
+          "us_score": -2,
+          "cn_score": 0,
+          "weight": 1.5,
+          "weighted_score": -3.0
+        },
+        {
+          "dimension": "康波",
+          "layer": 1,
+          "score": 2,
+          "weight": 2.0,
+          "weighted_score": 4.0
+        },
+        {
+          "dimension": "佩雷斯",
+          "layer": 2,
+          "score": -1,
+          "weight": 1.5,
+          "weighted_score": -1.5
+        },
+        {
+          "dimension": "利率范式",
+          "layer": 3,
+          "score": -1,
+          "weight": 1.5,
+          "weighted_score": -1.5
+        },
+        {
+          "dimension": "朱格拉·美",
+          "layer": 4,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "朱格拉·中",
+          "layer": 4,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "基钦·美",
+          "layer": 5,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "基钦·中",
+          "layer": 5,
+          "score": 1,
+          "weight": 1.0,
+          "weighted_score": 1.0
+        },
+        {
+          "dimension": "美林·美",
+          "layer": 6,
+          "score": 1,
+          "weight": 0.5,
+          "weighted_score": 0.5
+        },
+        {
+          "dimension": "美林·中",
+          "layer": 6,
+          "score": 2,
+          "weight": 0.5,
+          "weighted_score": 1.0
+        }
       ],
       "scoring_rules": {
         "description": "各周期维度按phase_code打分：看多=+2，中性=0，看空=-2，加权汇总后归一化到0-100",
@@ -315,15 +1816,78 @@
     "us_china_matrix": {
       "last_updated": "2026-09-01",
       "dimensions": [
-        {"name":"康波","us_direction":"回升初期","us_signal":"bullish","cn_direction":"回升初期","cn_signal":"bullish","relationship":"共振"},
-        {"name":"佩雷斯","us_direction":"Frenzy后期","us_signal":"cautious","cn_direction":"Frenzy后期","cn_signal":"cautious","relationship":"共振"},
-        {"name":"朱格拉","us_direction":"上升段（AI驱动）","us_signal":"bullish","cn_direction":"上升初期（政策驱动）","cn_signal":"bullish","relationship":"共振"},
-        {"name":"基钦","us_direction":"主动补库中期","us_signal":"bullish","cn_direction":"K型补库","cn_signal":"cautious_bullish","relationship":"错位"},
-        {"name":"美林时钟","us_direction":"复苏→过热","us_signal":"cautious","cn_direction":"复苏中期","cn_signal":"bullish","relationship":"错位"},
-        {"name":"信贷脉冲","us_direction":"中性偏紧","us_signal":"neutral","cn_direction":"温和回升","cn_signal":"bullish","relationship":"反向"},
-        {"name":"大债务周期","us_direction":"晚期去杠杆","us_signal":"bearish","cn_direction":"结构性去杠杆中后期","cn_signal":"neutral","relationship":"反向"},
-        {"name":"利率范式","us_direction":"高利率维持","us_signal":"bearish","cn_direction":"低利率宽松","cn_signal":"bullish","relationship":"反向"},
-        {"name":"财政周期","us_direction":"财政扩张受限","us_signal":"neutral","cn_direction":"积极财政发力","cn_signal":"bullish","relationship":"反向"}
+        {
+          "name": "康波",
+          "us_direction": "回升初期",
+          "us_signal": "bullish",
+          "cn_direction": "回升初期",
+          "cn_signal": "bullish",
+          "relationship": "共振"
+        },
+        {
+          "name": "佩雷斯",
+          "us_direction": "Frenzy后期",
+          "us_signal": "cautious",
+          "cn_direction": "Frenzy后期",
+          "cn_signal": "cautious",
+          "relationship": "共振"
+        },
+        {
+          "name": "朱格拉",
+          "us_direction": "上升段（AI驱动）",
+          "us_signal": "bullish",
+          "cn_direction": "上升初期（政策驱动）",
+          "cn_signal": "bullish",
+          "relationship": "共振"
+        },
+        {
+          "name": "基钦",
+          "us_direction": "主动补库中期",
+          "us_signal": "bullish",
+          "cn_direction": "K型补库",
+          "cn_signal": "cautious_bullish",
+          "relationship": "错位"
+        },
+        {
+          "name": "美林时钟",
+          "us_direction": "复苏→过热",
+          "us_signal": "cautious",
+          "cn_direction": "复苏中期",
+          "cn_signal": "bullish",
+          "relationship": "错位"
+        },
+        {
+          "name": "信贷脉冲",
+          "us_direction": "中性偏紧",
+          "us_signal": "neutral",
+          "cn_direction": "温和回升",
+          "cn_signal": "bullish",
+          "relationship": "反向"
+        },
+        {
+          "name": "大债务周期",
+          "us_direction": "晚期去杠杆",
+          "us_signal": "bearish",
+          "cn_direction": "结构性去杠杆中后期",
+          "cn_signal": "neutral",
+          "relationship": "反向"
+        },
+        {
+          "name": "利率范式",
+          "us_direction": "高利率维持",
+          "us_signal": "bearish",
+          "cn_direction": "低利率宽松",
+          "cn_signal": "bullish",
+          "relationship": "反向"
+        },
+        {
+          "name": "财政周期",
+          "us_direction": "财政扩张受限",
+          "us_signal": "neutral",
+          "cn_direction": "积极财政发力",
+          "cn_signal": "bullish",
+          "relationship": "反向"
+        }
       ],
       "sync_count": 3,
       "divergence_count": 2,
@@ -333,15 +1897,114 @@
     "high_rate_tracker": {
       "last_updated": "2026-09-01",
       "indicators": [
-        {"name":"全球储蓄-投资缺口","layer":"structural","current_value":-0.5,"unit":"% of GDP","threshold":"< 0","threshold_type":"less_than","threshold_value":0,"status":"yellow","status_label":"观察","is_breached":true},
-        {"name":"美国利息/财政收入","layer":"structural","current_value":22,"unit":"%","threshold":"> 20%","threshold_type":"greater_than","threshold_value":20,"status":"red","status_label":"逼近","is_breached":true},
-        {"name":"TFP 5年均值","layer":"structural","current_value":0.6,"unit":"%","threshold":"< 0.5%","threshold_type":"less_than","threshold_value":0.5,"status":"yellow","status_label":"观察","is_breached":false},
-        {"name":"ECI 5年均值","layer":"structural","current_value":3.8,"unit":"%","threshold":"> 3.5%","threshold_type":"greater_than","threshold_value":3.5,"status":"yellow","status_label":"观察","is_breached":true},
-        {"name":"5Y-5Y远期实际利率","layer":"forward_looking","current_value":1.8,"unit":"%","threshold":"> 1.5%","threshold_type":"greater_than","threshold_value":1.5,"status":"red","status_label":"逼近","is_breached":true},
-        {"name":"ACM期限溢价","layer":"forward_looking","current_value":0.7,"unit":"%","threshold":"> 0.5%","threshold_type":"greater_than","threshold_value":0.5,"status":"yellow","status_label":"观察","is_breached":true},
-        {"name":"30Y盈亏平衡通胀","layer":"forward_looking","current_value":2.4,"unit":"%","threshold":"> 2.5%","threshold_type":"greater_than","threshold_value":2.5,"status":"green","status_label":"安全","is_breached":false},
-        {"name":"高收益债利差","layer":"market_based","current_value":2.6,"unit":"%","threshold":"> 4%","threshold_type":"greater_than","threshold_value":4.0,"status":"green","status_label":"安全","is_breached":false},
-        {"name":"核心PCE","layer":"market_based","current_value":2.6,"unit":"%","threshold":"> 3%","threshold_type":"greater_than","threshold_value":3.0,"status":"yellow","status_label":"观察","is_breached":false}
+        {
+          "name": "全球储蓄-投资缺口",
+          "layer": "structural",
+          "current_value": -0.5,
+          "unit": "% of GDP",
+          "threshold": "< 0",
+          "threshold_type": "less_than",
+          "threshold_value": 0,
+          "status": "yellow",
+          "status_label": "观察",
+          "is_breached": true
+        },
+        {
+          "name": "美国利息/财政收入",
+          "layer": "structural",
+          "current_value": 22,
+          "unit": "%",
+          "threshold": "> 20%",
+          "threshold_type": "greater_than",
+          "threshold_value": 20,
+          "status": "red",
+          "status_label": "逼近",
+          "is_breached": true
+        },
+        {
+          "name": "TFP 5年均值",
+          "layer": "structural",
+          "current_value": 0.6,
+          "unit": "%",
+          "threshold": "< 0.5%",
+          "threshold_type": "less_than",
+          "threshold_value": 0.5,
+          "status": "yellow",
+          "status_label": "观察",
+          "is_breached": false
+        },
+        {
+          "name": "ECI 5年均值",
+          "layer": "structural",
+          "current_value": 3.8,
+          "unit": "%",
+          "threshold": "> 3.5%",
+          "threshold_type": "greater_than",
+          "threshold_value": 3.5,
+          "status": "yellow",
+          "status_label": "观察",
+          "is_breached": true
+        },
+        {
+          "name": "5Y-5Y远期实际利率",
+          "layer": "forward_looking",
+          "current_value": 1.8,
+          "unit": "%",
+          "threshold": "> 1.5%",
+          "threshold_type": "greater_than",
+          "threshold_value": 1.5,
+          "status": "red",
+          "status_label": "逼近",
+          "is_breached": true
+        },
+        {
+          "name": "ACM期限溢价",
+          "layer": "forward_looking",
+          "current_value": 0.7,
+          "unit": "%",
+          "threshold": "> 0.5%",
+          "threshold_type": "greater_than",
+          "threshold_value": 0.5,
+          "status": "yellow",
+          "status_label": "观察",
+          "is_breached": true
+        },
+        {
+          "name": "30Y盈亏平衡通胀",
+          "layer": "forward_looking",
+          "current_value": 2.4,
+          "unit": "%",
+          "threshold": "> 2.5%",
+          "threshold_type": "greater_than",
+          "threshold_value": 2.5,
+          "status": "green",
+          "status_label": "安全",
+          "is_breached": false
+        },
+        {
+          "name": "高收益债利差",
+          "layer": "market_based",
+          "current_value": 2.6,
+          "unit": "%",
+          "threshold": "> 4%",
+          "threshold_type": "greater_than",
+          "threshold_value": 4.0,
+          "status": "green",
+          "status_label": "安全",
+          "is_breached": false
+        },
+        {
+          "name": "核心PCE",
+          "layer": "market_based",
+          "current_value": 2.6,
+          "unit": "%",
+          "threshold": "> 3%",
+          "threshold_type": "greater_than",
+          "threshold_value": 3.0,
+          "status": "yellow",
+          "status_label": "观察",
+          "is_breached": false
+        }
       ],
       "structural_breached": 3,
       "forward_looking_breached": 2,
@@ -350,9 +2013,24 @@
       "assessment_detail": "9个指标中5个已突破阈值（3个结构性+2个前瞻），2个处于观察区间。结构性因素支撑高利率中枢上移，但通胀预期和信用利差尚在可控区间。",
       "implication_for_portfolio": "长久期资产持续承压，浮动利率和短久期策略更优；硬资产受益于通胀中枢上移；高股息优于成长股。",
       "scenario_table": [
-        {"scenario":"情景1: 结构性高利率持续","probability":"60%","trigger":"TFP无显著提升+财政赤字>5%+储蓄缺口持续","implication":"10Y收益率维持4-5%，长久期债券回避"},
-        {"scenario":"情景2: 渐进降息周期开启","probability":"30%","trigger":"核心PCE持续<2.5%+失业率>4.5%","implication":"10Y降至3.5-4%，中长债配置窗口打开"},
-        {"scenario":"情景3: 二次通胀","probability":"10%","trigger":"关税升级+供给侧冲击+通胀预期脱锚","implication":"10Y突破5%，全面防御配置"}
+        {
+          "scenario": "情景1: 结构性高利率持续",
+          "probability": "60%",
+          "trigger": "TFP无显著提升+财政赤字>5%+储蓄缺口持续",
+          "implication": "10Y收益率维持4-5%，长久期债券回避"
+        },
+        {
+          "scenario": "情景2: 渐进降息周期开启",
+          "probability": "30%",
+          "trigger": "核心PCE持续<2.5%+失业率>4.5%",
+          "implication": "10Y降至3.5-4%，中长债配置窗口打开"
+        },
+        {
+          "scenario": "情景3: 二次通胀",
+          "probability": "10%",
+          "trigger": "关税升级+供给侧冲击+通胀预期脱锚",
+          "implication": "10Y突破5%，全面防御配置"
+        }
       ]
     },
     "portfolio_guide": {
@@ -360,13 +2038,62 @@
       "pyramid": {
         "description": "周期嵌套金字塔，从上到下为约束层到执行层",
         "layers": [
-          {"layer":0,"name":"大债务周期","position":"美:晚期去杠杆","signal":"约束","color":"#f59e0b","detail":"债务/GDP 132%, 利息/财政收入 22%"},
-          {"layer":1,"name":"康波","position":"萧条尾声→回升","signal":"看多新科技","color":"#10b981","detail":"AI技术突破标志第六轮起点"},
-          {"layer":2,"name":"佩雷斯","position":"Frenzy后期","signal":"谨慎","color":"#f59e0b","detail":"金融资本/生产资本比值2.8>2.7阈值"},
-          {"layer":3,"name":"利率范式","position":"高利率过渡","signal":"偏空","color":"#ef4444","detail":"5Y-5Y实际利率1.8%>1.5%"},
-          {"layer":4,"name":"朱格拉","position":"美:上升段/中:初期","signal":"看多","color":"#10b981","detail":"AI Capex+高技术制造业双驱动"},
-          {"layer":5,"name":"基钦","position":"美:补库/中:K型","signal":"温和看多","color":"#84cc16","detail":"ISM PMI 52.3, 中国PMI 50.4"},
-          {"layer":6,"name":"美林时钟","position":"美:复苏→过热/中:复苏","signal":"看多","color":"#10b981","detail":"核心CPI下行中，经济温和扩张"}
+          {
+            "layer": 0,
+            "name": "大债务周期",
+            "position": "美:晚期去杠杆",
+            "signal": "约束",
+            "color": "#f59e0b",
+            "detail": "债务/GDP 132%, 利息/财政收入 22%"
+          },
+          {
+            "layer": 1,
+            "name": "康波",
+            "position": "萧条尾声→回升",
+            "signal": "看多新科技",
+            "color": "#10b981",
+            "detail": "AI技术突破标志第六轮起点"
+          },
+          {
+            "layer": 2,
+            "name": "佩雷斯",
+            "position": "Frenzy后期",
+            "signal": "谨慎",
+            "color": "#f59e0b",
+            "detail": "金融资本/生产资本比值2.8>2.7阈值"
+          },
+          {
+            "layer": 3,
+            "name": "利率范式",
+            "position": "高利率过渡",
+            "signal": "偏空",
+            "color": "#ef4444",
+            "detail": "5Y-5Y实际利率1.8%>1.5%"
+          },
+          {
+            "layer": 4,
+            "name": "朱格拉",
+            "position": "美:上升段/中:初期",
+            "signal": "看多",
+            "color": "#10b981",
+            "detail": "AI Capex+高技术制造业双驱动"
+          },
+          {
+            "layer": 5,
+            "name": "基钦",
+            "position": "美:补库/中:K型",
+            "signal": "温和看多",
+            "color": "#84cc16",
+            "detail": "ISM PMI 52.3, 中国PMI 50.4"
+          },
+          {
+            "layer": 6,
+            "name": "美林时钟",
+            "position": "美:复苏→过热/中:复苏",
+            "signal": "看多",
+            "color": "#10b981",
+            "detail": "核心CPI下行中，经济温和扩张"
+          }
         ]
       },
       "svg_concentric": {
@@ -378,120 +2105,399 @@
   "asset_allocation": {
     "current": [
       {
-        "asset": "A股", "view": "超配", "signal": "bullish", "color": "#10b981",
-        "confidence_level": "high", "last_updated": "2026-09-01",
-        "key_drivers": ["朱格拉上升+基钦补库", "信贷脉冲温和回升"],
-        "supporting_signals": 3, "opposing_signals": 2,
-        "signal_detail": {"supporting":["朱格拉上升(设备投资)","基钦补库","信贷脉冲回升"],"opposing":["康波交替期波动加大","佩雷斯Frenzy后期估值风险"]},
-        "trigger_conditions": ["若全球PMI连续3月<50→降为标配","若社融增速>12%→确认上行加速"],
+        "asset": "A股",
+        "view": "超配",
+        "signal": "bullish",
+        "color": "#10b981",
+        "confidence_level": "high",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "朱格拉上升+基钦补库",
+          "信贷脉冲温和回升"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "朱格拉上升(设备投资)",
+            "基钦补库",
+            "信贷脉冲回升"
+          ],
+          "opposing": [
+            "康波交替期波动加大",
+            "佩雷斯Frenzy后期估值风险"
+          ]
+        },
+        "trigger_conditions": [
+          "若全球PMI连续3月<50→降为标配",
+          "若社融增速>12%→确认上行加速"
+        ],
         "risk_reward_score": 7.5,
         "reasoning": "短周期(朱格拉+基钦+美林)三重支撑，长周期(康波+佩雷斯)构成约束。上行空间受限但方向向上。"
       },
       {
-        "asset": "美股", "view": "标配偏多", "signal": "neutral_bullish", "color": "#fef3c7",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["AI Capex支撑盈利", "Frenzy后期估值承压"],
-        "supporting_signals": 2, "opposing_signals": 2,
-        "signal_detail": {"supporting":["朱格拉上升","基钦补库"],"opposing":["佩雷斯Frenzy后期","大债务约束"]},
-        "trigger_conditions": ["若10Y收益率>5%→降为标配","若AI盈利超预期→升为超配"],
+        "asset": "美股",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "color": "#fef3c7",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "AI Capex支撑盈利",
+          "Frenzy后期估值承压"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "朱格拉上升",
+            "基钦补库"
+          ],
+          "opposing": [
+            "佩雷斯Frenzy后期",
+            "大债务约束"
+          ]
+        },
+        "trigger_conditions": [
+          "若10Y收益率>5%→降为标配",
+          "若AI盈利超预期→升为超配"
+        ],
         "risk_reward_score": 6.0,
         "reasoning": "短周期支撑但长周期约束，AI主题有真实盈利支撑但估值需消化"
       },
       {
-        "asset": "中国利率债", "view": "低配", "signal": "bearish", "color": "#ef4444",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["信贷脉冲回升", "美林复苏期利率上行"],
-        "supporting_signals": 0, "opposing_signals": 3,
-        "signal_detail": {"supporting":[],"opposing":["信贷脉冲回升","美林复苏期利率上行","PPI有转正预期"]},
-        "trigger_conditions": ["若经济复苏证伪→转为标配","若10Y国债收益率>3.0%→关注配置价值"],
+        "asset": "中国利率债",
+        "view": "低配",
+        "signal": "bearish",
+        "color": "#ef4444",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "信贷脉冲回升",
+          "美林复苏期利率上行"
+        ],
+        "supporting_signals": 0,
+        "opposing_signals": 3,
+        "signal_detail": {
+          "supporting": [],
+          "opposing": [
+            "信贷脉冲回升",
+            "美林复苏期利率上行",
+            "PPI有转正预期"
+          ]
+        },
+        "trigger_conditions": [
+          "若经济复苏证伪→转为标配",
+          "若10Y国债收益率>3.0%→关注配置价值"
+        ],
         "risk_reward_score": 3.0,
         "reasoning": "信贷脉冲回升+美林复苏=利率上行风险大"
       },
       {
-        "asset": "美国国债", "view": "低配长端/标配短端", "signal": "neutral_bearish", "color": "#f59e0b",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["复苏→过热过渡", "高利率维持"],
-        "supporting_signals": 1, "opposing_signals": 2,
-        "signal_detail": {"supporting":["短端受益于联储政策"],"opposing":["长端利率上行压力","期限溢价偏高"]},
-        "trigger_conditions": ["若联储明确开启降息周期→长端转为标配偏多","若二次通胀→全面低配"],
+        "asset": "美国国债",
+        "view": "低配长端/标配短端",
+        "signal": "neutral_bearish",
+        "color": "#f59e0b",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "复苏→过热过渡",
+          "高利率维持"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "短端受益于联储政策"
+          ],
+          "opposing": [
+            "长端利率上行压力",
+            "期限溢价偏高"
+          ]
+        },
+        "trigger_conditions": [
+          "若联储明确开启降息周期→长端转为标配偏多",
+          "若二次通胀→全面低配"
+        ],
         "risk_reward_score": 3.5,
         "reasoning": "复苏→过热过渡期，长端利率有上行压力"
       },
       {
-        "asset": "工业金属(铜)", "view": "超配", "signal": "bullish", "color": "#10b981",
-        "confidence_level": "high", "last_updated": "2026-09-01",
-        "key_drivers": ["朱格拉上升+基钦补库", "新能源转型结构性增量"],
-        "supporting_signals": 3, "opposing_signals": 0,
-        "signal_detail": {"supporting":["朱格拉上升(设备投资)","基钦补库","信贷脉冲回升"],"opposing":[]},
-        "trigger_conditions": ["若全球PMI连续3月<50→降为标配","若中国基建投资增速>10%→加仓"],
+        "asset": "工业金属(铜)",
+        "view": "超配",
+        "signal": "bullish",
+        "color": "#10b981",
+        "confidence_level": "high",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "朱格拉上升+基钦补库",
+          "新能源转型结构性增量"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 0,
+        "signal_detail": {
+          "supporting": [
+            "朱格拉上升(设备投资)",
+            "基钦补库",
+            "信贷脉冲回升"
+          ],
+          "opposing": []
+        },
+        "trigger_conditions": [
+          "若全球PMI连续3月<50→降为标配",
+          "若中国基建投资增速>10%→加仓"
+        ],
         "risk_reward_score": 8.0,
         "reasoning": "朱格拉上升+基钦补库+信贷脉冲回升=铜的三重需求支撑"
       },
       {
-        "asset": "黄金", "view": "超配", "signal": "bullish", "color": "#10b981",
-        "confidence_level": "high", "last_updated": "2026-09-01",
-        "key_drivers": ["康波交替期货币秩序重构", "央行持续增持"],
-        "supporting_signals": 3, "opposing_signals": 0,
-        "signal_detail": {"supporting":["康波交替期","央行增持","地缘风险溢价"],"opposing":[]},
-        "trigger_conditions": ["若全球央行转净卖出→降为标配","若实际利率快速上行>2.5%→短期减仓"],
+        "asset": "黄金",
+        "view": "超配",
+        "signal": "bullish",
+        "color": "#10b981",
+        "confidence_level": "high",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "康波交替期货币秩序重构",
+          "央行持续增持"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 0,
+        "signal_detail": {
+          "supporting": [
+            "康波交替期",
+            "央行增持",
+            "地缘风险溢价"
+          ],
+          "opposing": []
+        },
+        "trigger_conditions": [
+          "若全球央行转净卖出→降为标配",
+          "若实际利率快速上行>2.5%→短期减仓"
+        ],
         "risk_reward_score": 7.0,
         "reasoning": "康波交替期货币秩序重构+央行持续增持+地缘风险溢价"
       },
       {
-        "asset": "原油", "view": "标配", "signal": "neutral", "color": "#fef9c3",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["补库周期支撑需求", "OPEC+供给管理"],
-        "supporting_signals": 1, "opposing_signals": 1,
-        "signal_detail": {"supporting":["补库周期需求"],"opposing":["OPEC+供给管理+全球经济不确定性"]},
-        "trigger_conditions": ["若OPEC+大幅增产→降为标配偏空","若中东冲突升级→升为超配"],
+        "asset": "原油",
+        "view": "标配",
+        "signal": "neutral",
+        "color": "#fef9c3",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "补库周期支撑需求",
+          "OPEC+供给管理"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 1,
+        "signal_detail": {
+          "supporting": [
+            "补库周期需求"
+          ],
+          "opposing": [
+            "OPEC+供给管理+全球经济不确定性"
+          ]
+        },
+        "trigger_conditions": [
+          "若OPEC+大幅增产→降为标配偏空",
+          "若中东冲突升级→升为超配"
+        ],
         "risk_reward_score": 5.0,
         "reasoning": "需求端受益于补库周期，但供给管理和不确定性制约上行空间"
       },
       {
-        "asset": "比特币", "view": "标配偏空", "signal": "neutral_bearish", "color": "#f3f4f6",
-        "confidence_level": "low", "last_updated": "2026-09-01",
-        "key_drivers": ["佩雷斯Frenzy利好风险资产", "QT+监管逆风"],
-        "supporting_signals": 1, "opposing_signals": 2,
-        "signal_detail": {"supporting":["佩雷斯Frenzy风险偏好"],"opposing":["QT收缩流动性","监管趋严"]},
-        "trigger_conditions": ["若联储转鸽+监管放松→升为标配","若跌破关键支撑位→降为低配"],
+        "asset": "比特币",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "color": "#f3f4f6",
+        "confidence_level": "low",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "佩雷斯Frenzy利好风险资产",
+          "QT+监管逆风"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "佩雷斯Frenzy风险偏好"
+          ],
+          "opposing": [
+            "QT收缩流动性",
+            "监管趋严"
+          ]
+        },
+        "trigger_conditions": [
+          "若联储转鸽+监管放松→升为标配",
+          "若跌破关键支撑位→降为低配"
+        ],
         "risk_reward_score": 4.0,
         "reasoning": "Frenzy后期利好风险资产，但QT+监管趋严构成逆风"
       },
       {
-        "asset": "美元", "view": "标配偏空", "signal": "neutral_bearish", "color": "#f3f4f6",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["康波交替期美元信用重构", "短期受益于利差"],
-        "supporting_signals": 1, "opposing_signals": 2,
-        "signal_detail": {"supporting":["短期美债收益率上行支撑"],"opposing":["去美元化趋势","财政赤字扩大"]},
-        "trigger_conditions": ["若DXY跌破100→加速走弱信号","若联储再加息→短期走强"],
+        "asset": "美元",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "color": "#f3f4f6",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "康波交替期美元信用重构",
+          "短期受益于利差"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "短期美债收益率上行支撑"
+          ],
+          "opposing": [
+            "去美元化趋势",
+            "财政赤字扩大"
+          ]
+        },
+        "trigger_conditions": [
+          "若DXY跌破100→加速走弱信号",
+          "若联储再加息→短期走强"
+        ],
         "risk_reward_score": 4.5,
         "reasoning": "康波交替期美元信用体系面临重构压力"
       },
       {
-        "asset": "人民币", "view": "标配偏多", "signal": "neutral_bullish", "color": "#fef3c7",
-        "confidence_level": "medium", "last_updated": "2026-09-01",
-        "key_drivers": ["信贷脉冲回升支撑经济", "中美利差仍承压"],
-        "supporting_signals": 2, "opposing_signals": 1,
-        "signal_detail": {"supporting":["信贷脉冲回升","经济温和复苏"],"opposing":["中美利差仍为负"]},
-        "trigger_conditions": ["若中美利差转正→加速升值","若中美利差扩大→降为标配"],
+        "asset": "人民币",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "color": "#fef3c7",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "信贷脉冲回升支撑经济",
+          "中美利差仍承压"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 1,
+        "signal_detail": {
+          "supporting": [
+            "信贷脉冲回升",
+            "经济温和复苏"
+          ],
+          "opposing": [
+            "中美利差仍为负"
+          ]
+        },
+        "trigger_conditions": [
+          "若中美利差转正→加速升值",
+          "若中美利差扩大→降为标配"
+        ],
         "risk_reward_score": 5.5,
         "reasoning": "信贷脉冲回升+经济复苏支撑汇率"
       }
     ],
     "scenario_table": [
-      {"scenario":"A: 长波好+短周期好","label":"黄金时代","probability":null,"trigger":"康波回升确认+朱格拉/基钦同步上行+信贷脉冲强势","allocation":{"a_stock":"超配（上限）","us_stock":"超配","long_bond":"标配","gold":"标配","industrial_metals":"超配"}},
-      {"scenario":"B: 长波好+短周期下行","label":"正常回调","probability":null,"trigger":"康波回升但朱格拉/基钦转下行","allocation":{"a_stock":"标配偏多（逢跌加仓）","us_stock":"标配","long_bond":"标配偏多","gold":"超配","industrial_metals":"标配"}},
-      {"scenario":"C: 长波脆弱+短周期上行","label":"上行空间受限（当前）","probability":null,"trigger":"当前最匹配：长波约束+短周期支撑","allocation":{"a_stock":"超配（结构性机会为主）","us_stock":"标配偏多","long_bond":"低配","gold":"超配","industrial_metals":"超配"}},
-      {"scenario":"D: 朱格拉与基钦方向相反","label":"弱复苏","probability":null,"trigger":"朱格拉上行但基钦下行（或反之）","allocation":{"a_stock":"标配","us_stock":"标配","long_bond":"标配","gold":"标配偏多","industrial_metals":"标配"}}
+      {
+        "scenario": "A: 长波好+短周期好",
+        "label": "黄金时代",
+        "probability": null,
+        "trigger": "康波回升确认+朱格拉/基钦同步上行+信贷脉冲强势",
+        "allocation": {
+          "a_stock": "超配（上限）",
+          "us_stock": "超配",
+          "long_bond": "标配",
+          "gold": "标配",
+          "industrial_metals": "超配"
+        }
+      },
+      {
+        "scenario": "B: 长波好+短周期下行",
+        "label": "正常回调",
+        "probability": null,
+        "trigger": "康波回升但朱格拉/基钦转下行",
+        "allocation": {
+          "a_stock": "标配偏多（逢跌加仓）",
+          "us_stock": "标配",
+          "long_bond": "标配偏多",
+          "gold": "超配",
+          "industrial_metals": "标配"
+        }
+      },
+      {
+        "scenario": "C: 长波脆弱+短周期上行",
+        "label": "上行空间受限（当前）",
+        "probability": null,
+        "trigger": "当前最匹配：长波约束+短周期支撑",
+        "allocation": {
+          "a_stock": "超配（结构性机会为主）",
+          "us_stock": "标配偏多",
+          "long_bond": "低配",
+          "gold": "超配",
+          "industrial_metals": "超配"
+        }
+      },
+      {
+        "scenario": "D: 朱格拉与基钦方向相反",
+        "label": "弱复苏",
+        "probability": null,
+        "trigger": "朱格拉上行但基钦下行（或反之）",
+        "allocation": {
+          "a_stock": "标配",
+          "us_stock": "标配",
+          "long_bond": "标配",
+          "gold": "标配偏多",
+          "industrial_metals": "标配"
+        }
+      }
     ],
     "cycle_calendar": [
-      {"date":"2026-09-15","event":"中国8月经济数据发布","impact_asset":"A股/人民币/工业金属","expected_direction":"关注社融、PMI、PPI","importance":"high"},
-      {"date":"2026-09-17","event":"美联储FOMC议息会议","impact_asset":"美股/美债/美元/工业金属","expected_direction":"维持利率不变，关注点阵图指引","importance":"high"},
-      {"date":"2026-09-20","event":"中国社融数据发布","impact_asset":"A股/利率债","expected_direction":"信贷脉冲是否继续回升","importance":"high"},
-      {"date":"2026-10-01","event":"中国9月PMI发布","impact_asset":"A股/工业金属","expected_direction":"关注制造业PMI是否站稳荣枯线","importance":"medium"},
-      {"date":"2026-10-10","event":"美国9月CPI发布","impact_asset":"美股/美债/美元","expected_direction":"核心CPI是否持续回落","importance":"high"},
-      {"date":"2026-10-15","event":"SEMI半导体设备订单数据","impact_asset":"美股科技/A股半导体","expected_direction":"朱格拉周期领先信号","importance":"medium"},
-      {"date":"2026-11-07","event":"美联储FOMC议息会议","impact_asset":"全资产","expected_direction":"市场关注是否开启降息","importance":"high"}
+      {
+        "date": "2026-09-15",
+        "event": "中国8月经济数据发布",
+        "impact_asset": "A股/人民币/工业金属",
+        "expected_direction": "关注社融、PMI、PPI",
+        "importance": "high"
+      },
+      {
+        "date": "2026-09-17",
+        "event": "美联储FOMC议息会议",
+        "impact_asset": "美股/美债/美元/工业金属",
+        "expected_direction": "维持利率不变，关注点阵图指引",
+        "importance": "high"
+      },
+      {
+        "date": "2026-09-20",
+        "event": "中国社融数据发布",
+        "impact_asset": "A股/利率债",
+        "expected_direction": "信贷脉冲是否继续回升",
+        "importance": "high"
+      },
+      {
+        "date": "2026-10-01",
+        "event": "中国9月PMI发布",
+        "impact_asset": "A股/工业金属",
+        "expected_direction": "关注制造业PMI是否站稳荣枯线",
+        "importance": "medium"
+      },
+      {
+        "date": "2026-10-10",
+        "event": "美国9月CPI发布",
+        "impact_asset": "美股/美债/美元",
+        "expected_direction": "核心CPI是否持续回落",
+        "importance": "high"
+      },
+      {
+        "date": "2026-10-15",
+        "event": "SEMI半导体设备订单数据",
+        "impact_asset": "美股科技/A股半导体",
+        "expected_direction": "朱格拉周期领先信号",
+        "importance": "medium"
+      },
+      {
+        "date": "2026-11-07",
+        "event": "美联储FOMC议息会议",
+        "impact_asset": "全资产",
+        "expected_direction": "市场关注是否开启降息",
+        "importance": "high"
+      }
     ]
   },
   "synthesis": {
@@ -499,75 +2505,619 @@
     "overall_assessment": "2026年9月，全球处于第六轮康波回升初期+佩雷斯Frenzy中后期+朱格拉上升段+基钦补库中期+信贷脉冲温和回升的叠加格局。共识度评分62/100，匹配情景C（长波脆弱+短周期上行）。多周期共振指向'温和复苏+结构分化'，但上层约束限制上行空间。",
     "last_updated": "2026-09-01",
     "cycle_positions_summary": [
-      {"cycle":"大债务","layer":0,"position":"美:晚期去杠杆 / 中:结构性去杠杆","signal":"约束层","signal_weight":-2,"color":"#f59e0b"},
-      {"cycle":"康波","layer":1,"position":"萧条尾声→回升初期","signal":"看多新科技","signal_weight":2,"color":"#10b981"},
-      {"cycle":"佩雷斯","layer":2,"position":"Frenzy中后期","signal":"谨慎","signal_weight":-1,"color":"#f59e0b"},
-      {"cycle":"利率范式","layer":3,"position":"高利率过渡","signal":"偏空","signal_weight":-1,"color":"#ef4444"},
-      {"cycle":"朱格拉·美","layer":4,"position":"上升段（AI驱动）","signal":"看多","signal_weight":2,"color":"#10b981"},
-      {"cycle":"朱格拉·中","layer":4,"position":"上升初期","signal":"看多","signal_weight":2,"color":"#10b981"},
-      {"cycle":"基钦·美","layer":5,"position":"主动补库中期","signal":"温和看多","signal_weight":2,"color":"#84cc16"},
-      {"cycle":"基钦·中","layer":5,"position":"K型补库","signal":"温和看多","signal_weight":1,"color":"#84cc16"},
-      {"cycle":"美林·美","layer":6,"position":"复苏→过热","signal":"谨慎","signal_weight":1,"color":"#fef3c7"},
-      {"cycle":"美林·中","layer":6,"position":"复苏中期","signal":"看多","signal_weight":2,"color":"#10b981"}
+      {
+        "cycle": "大债务",
+        "layer": 0,
+        "position": "美:晚期去杠杆 / 中:结构性去杠杆",
+        "signal": "约束层",
+        "signal_weight": -2,
+        "color": "#f59e0b"
+      },
+      {
+        "cycle": "康波",
+        "layer": 1,
+        "position": "萧条尾声→回升初期",
+        "signal": "看多新科技",
+        "signal_weight": 2,
+        "color": "#10b981"
+      },
+      {
+        "cycle": "佩雷斯",
+        "layer": 2,
+        "position": "Frenzy中后期",
+        "signal": "谨慎",
+        "signal_weight": -1,
+        "color": "#f59e0b"
+      },
+      {
+        "cycle": "利率范式",
+        "layer": 3,
+        "position": "高利率过渡",
+        "signal": "偏空",
+        "signal_weight": -1,
+        "color": "#ef4444"
+      },
+      {
+        "cycle": "朱格拉·美",
+        "layer": 4,
+        "position": "上升段（AI驱动）",
+        "signal": "看多",
+        "signal_weight": 2,
+        "color": "#10b981"
+      },
+      {
+        "cycle": "朱格拉·中",
+        "layer": 4,
+        "position": "上升初期",
+        "signal": "看多",
+        "signal_weight": 2,
+        "color": "#10b981"
+      },
+      {
+        "cycle": "基钦·美",
+        "layer": 5,
+        "position": "主动补库中期",
+        "signal": "温和看多",
+        "signal_weight": 2,
+        "color": "#84cc16"
+      },
+      {
+        "cycle": "基钦·中",
+        "layer": 5,
+        "position": "K型补库",
+        "signal": "温和看多",
+        "signal_weight": 1,
+        "color": "#84cc16"
+      },
+      {
+        "cycle": "美林·美",
+        "layer": 6,
+        "position": "复苏→过热",
+        "signal": "谨慎",
+        "signal_weight": 1,
+        "color": "#fef3c7"
+      },
+      {
+        "cycle": "美林·中",
+        "layer": 6,
+        "position": "复苏中期",
+        "signal": "看多",
+        "signal_weight": 2,
+        "color": "#10b981"
+      }
     ],
     "asset_views": [
-      {"asset":"A股","view":"超配","signal":"bullish","key_drivers":["朱格拉+基钦双升","信贷脉冲回升"],"supporting_signals":3,"opposing_signals":2,"risk_reward_score":7.5},
-      {"asset":"美股","view":"标配偏多","signal":"neutral_bullish","key_drivers":["AI Capex","Frenzy估值风险"],"supporting_signals":2,"opposing_signals":2,"risk_reward_score":6.0},
-      {"asset":"中国利率债","view":"低配","signal":"bearish","key_drivers":["利率上行风险","信贷脉冲回升"],"supporting_signals":0,"opposing_signals":3,"risk_reward_score":3.0},
-      {"asset":"美国国债","view":"低配长端/标配短端","signal":"neutral_bearish","key_drivers":["高利率维持","复苏过热"],"supporting_signals":1,"opposing_signals":2,"risk_reward_score":3.5},
-      {"asset":"工业金属(铜)","view":"超配","signal":"bullish","key_drivers":["朱格拉+基钦+信贷脉冲三重支撑"],"supporting_signals":3,"opposing_signals":0,"risk_reward_score":8.0},
-      {"asset":"黄金","view":"超配","signal":"bullish","key_drivers":["康波交替+央行增持"],"supporting_signals":3,"opposing_signals":0,"risk_reward_score":7.0},
-      {"asset":"原油","view":"标配","signal":"neutral","key_drivers":["补库需求 vs OPEC管理"],"supporting_signals":1,"opposing_signals":1,"risk_reward_score":5.0},
-      {"asset":"比特币","view":"标配偏空","signal":"neutral_bearish","key_drivers":["Frenzy利好 vs QT逆风"],"supporting_signals":1,"opposing_signals":2,"risk_reward_score":4.0},
-      {"asset":"美元","view":"标配偏空","signal":"neutral_bearish","key_drivers":["信用重构 vs 利差支撑"],"supporting_signals":1,"opposing_signals":2,"risk_reward_score":4.5},
-      {"asset":"人民币","view":"标配偏多","signal":"neutral_bullish","key_drivers":["经济复苏 vs 中美利差"],"supporting_signals":2,"opposing_signals":1,"risk_reward_score":5.5}
+      {
+        "asset": "A股",
+        "view": "超配",
+        "signal": "bullish",
+        "key_drivers": [
+          "朱格拉+基钦双升",
+          "信贷脉冲回升"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 2,
+        "risk_reward_score": 7.5
+      },
+      {
+        "asset": "美股",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "key_drivers": [
+          "AI Capex",
+          "Frenzy估值风险"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 2,
+        "risk_reward_score": 6.0
+      },
+      {
+        "asset": "中国利率债",
+        "view": "低配",
+        "signal": "bearish",
+        "key_drivers": [
+          "利率上行风险",
+          "信贷脉冲回升"
+        ],
+        "supporting_signals": 0,
+        "opposing_signals": 3,
+        "risk_reward_score": 3.0
+      },
+      {
+        "asset": "美国国债",
+        "view": "低配长端/标配短端",
+        "signal": "neutral_bearish",
+        "key_drivers": [
+          "高利率维持",
+          "复苏过热"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "risk_reward_score": 3.5
+      },
+      {
+        "asset": "工业金属(铜)",
+        "view": "超配",
+        "signal": "bullish",
+        "key_drivers": [
+          "朱格拉+基钦+信贷脉冲三重支撑"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 0,
+        "risk_reward_score": 8.0
+      },
+      {
+        "asset": "黄金",
+        "view": "超配",
+        "signal": "bullish",
+        "key_drivers": [
+          "康波交替+央行增持"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 0,
+        "risk_reward_score": 7.0
+      },
+      {
+        "asset": "原油",
+        "view": "标配",
+        "signal": "neutral",
+        "key_drivers": [
+          "补库需求 vs OPEC管理"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 1,
+        "risk_reward_score": 5.0
+      },
+      {
+        "asset": "比特币",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "key_drivers": [
+          "Frenzy利好 vs QT逆风"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "risk_reward_score": 4.0
+      },
+      {
+        "asset": "美元",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "key_drivers": [
+          "信用重构 vs 利差支撑"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "risk_reward_score": 4.5
+      },
+      {
+        "asset": "人民币",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "key_drivers": [
+          "经济复苏 vs 中美利差"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 1,
+        "risk_reward_score": 5.5
+      }
     ],
-    "key_risks": ["佩雷斯Turning Point提前到来（AI泡沫破裂）","美国大债务周期恶化导致利率意外飙升","中国经济复苏不及预期（地产二次探底）","地缘冲突升级推高能源价格"],
-    "key_watchpoints": ["美联储9月FOMC点阵图指引","中国社融和信贷脉冲走势","AI巨头Capex增速是否放缓","高收益债利差是否突破4%阈值"]
+    "key_risks": [
+      "佩雷斯Turning Point提前到来（AI泡沫破裂）",
+      "美国大债务周期恶化导致利率意外飙升",
+      "中国经济复苏不及预期（地产二次探底）",
+      "地缘冲突升级推高能源价格"
+    ],
+    "key_watchpoints": [
+      "美联储9月FOMC点阵图指引",
+      "中国社融和信贷脉冲走势",
+      "AI巨头Capex增速是否放缓",
+      "高收益债利差是否突破4%阈值"
+    ]
   },
   "credit_impulse": {
     "importance_note": "信贷脉冲是判断经济拐点的领先指标，变化速度比绝对水平更重要",
     "global": {
-      "phase": "温和回升", "phase_code": "mild_recovery",
-      "current_value": 1.2, "unit": "% of GDP (YoY change)",
+      "phase": "温和回升",
+      "phase_code": "mild_recovery",
+      "current_value": 1.2,
+      "unit": "% of GDP (YoY change)",
       "last_updated": "2026-08-15",
-      "history": [{"date":"2020-01","value":-2.0},{"date":"2020-07","value":3.5},{"date":"2021-01","value":2.8},{"date":"2021-07","value":1.0},{"date":"2022-01","value":-1.5},{"date":"2022-07","value":-3.0},{"date":"2023-01","value":-2.5},{"date":"2023-07","value":-1.8},{"date":"2024-01","value":-0.5},{"date":"2024-07","value":0.3},{"date":"2025-01","value":0.8},{"date":"2025-07","value":1.0},{"date":"2026-01","value":1.2}]
+      "history": [
+        {
+          "date": "2020-01",
+          "value": -2.0
+        },
+        {
+          "date": "2020-07",
+          "value": 3.5
+        },
+        {
+          "date": "2021-01",
+          "value": 2.8
+        },
+        {
+          "date": "2021-07",
+          "value": 1.0
+        },
+        {
+          "date": "2022-01",
+          "value": -1.5
+        },
+        {
+          "date": "2022-07",
+          "value": -3.0
+        },
+        {
+          "date": "2023-01",
+          "value": -2.5
+        },
+        {
+          "date": "2023-07",
+          "value": -1.8
+        },
+        {
+          "date": "2024-01",
+          "value": -0.5
+        },
+        {
+          "date": "2024-07",
+          "value": 0.3
+        },
+        {
+          "date": "2025-01",
+          "value": 0.8
+        },
+        {
+          "date": "2025-07",
+          "value": 1.0
+        },
+        {
+          "date": "2026-01",
+          "value": 1.2
+        }
+      ]
     },
     "cn": {
-      "phase": "温和回升", "phase_code": "mild_recovery",
-      "current_value": 1.8, "unit": "% of GDP (YoY change)",
+      "phase": "温和回升",
+      "phase_code": "mild_recovery",
+      "current_value": 1.8,
+      "unit": "% of GDP (YoY change)",
       "last_updated": "2026-08-15",
-      "second_derivative": {"value":0.3,"description":"信贷脉冲的二阶导数为正，表示回升速度在加快","signal":"positive_acceleration"},
-      "history": [{"date":"2020-01","value":-1.0},{"date":"2020-07","value":5.0},{"date":"2021-01","value":3.0},{"date":"2021-07","value":0.5},{"date":"2022-01","value":-2.0},{"date":"2022-07","value":-3.5},{"date":"2023-01","value":-3.0},{"date":"2023-07","value":-1.5},{"date":"2024-01","value":0.0},{"date":"2024-07","value":0.8},{"date":"2025-01","value":1.2},{"date":"2025-07","value":1.5},{"date":"2026-01","value":1.8}]
+      "second_derivative": {
+        "value": 0.3,
+        "description": "信贷脉冲的二阶导数为正，表示回升速度在加快",
+        "signal": "positive_acceleration"
+      },
+      "history": [
+        {
+          "date": "2020-01",
+          "value": -1.0
+        },
+        {
+          "date": "2020-07",
+          "value": 5.0
+        },
+        {
+          "date": "2021-01",
+          "value": 3.0
+        },
+        {
+          "date": "2021-07",
+          "value": 0.5
+        },
+        {
+          "date": "2022-01",
+          "value": -2.0
+        },
+        {
+          "date": "2022-07",
+          "value": -3.5
+        },
+        {
+          "date": "2023-01",
+          "value": -3.0
+        },
+        {
+          "date": "2023-07",
+          "value": -1.5
+        },
+        {
+          "date": "2024-01",
+          "value": 0.0
+        },
+        {
+          "date": "2024-07",
+          "value": 0.8
+        },
+        {
+          "date": "2025-01",
+          "value": 1.2
+        },
+        {
+          "date": "2025-07",
+          "value": 1.5
+        },
+        {
+          "date": "2026-01",
+          "value": 1.8
+        }
+      ]
     },
     "us": {
-      "phase": "中性偏紧", "phase_code": "neutral_tight",
-      "current_value": 0.5, "unit": "% of GDP (YoY change)",
+      "phase": "中性偏紧",
+      "phase_code": "neutral_tight",
+      "current_value": 0.5,
+      "unit": "% of GDP (YoY change)",
       "last_updated": "2026-08-15",
-      "second_derivative": {"value":-0.1,"description":"信贷脉冲二阶导数略负，回升势头放缓","signal":"deceleration"},
-      "history": [{"date":"2020-01","value":-3.0},{"date":"2020-07","value":4.0},{"date":"2021-01","value":3.5},{"date":"2021-07","value":2.0},{"date":"2022-01","value":0.5},{"date":"2022-07","value":-1.0},{"date":"2023-01","value":-1.5},{"date":"2023-07","value":-1.0},{"date":"2024-01","value":-0.5},{"date":"2024-07","value":0.0},{"date":"2025-01","value":0.3},{"date":"2025-07","value":0.5},{"date":"2026-01","value":0.5}]
+      "second_derivative": {
+        "value": -0.1,
+        "description": "信贷脉冲二阶导数略负，回升势头放缓",
+        "signal": "deceleration"
+      },
+      "history": [
+        {
+          "date": "2020-01",
+          "value": -3.0
+        },
+        {
+          "date": "2020-07",
+          "value": 4.0
+        },
+        {
+          "date": "2021-01",
+          "value": 3.5
+        },
+        {
+          "date": "2021-07",
+          "value": 2.0
+        },
+        {
+          "date": "2022-01",
+          "value": 0.5
+        },
+        {
+          "date": "2022-07",
+          "value": -1.0
+        },
+        {
+          "date": "2023-01",
+          "value": -1.5
+        },
+        {
+          "date": "2023-07",
+          "value": -1.0
+        },
+        {
+          "date": "2024-01",
+          "value": -0.5
+        },
+        {
+          "date": "2024-07",
+          "value": 0.0
+        },
+        {
+          "date": "2025-01",
+          "value": 0.3
+        },
+        {
+          "date": "2025-07",
+          "value": 0.5
+        },
+        {
+          "date": "2026-01",
+          "value": 0.5
+        }
+      ]
     }
   },
   "unified_timeline": {
     "start_year": 1780,
     "cycles": [
-      {"name":"康波","color":"#8b5cf6","waves":[
-        {"start":1780,"end":1840,"phases":[{"name":"回升","start":1780,"end":1810},{"name":"繁荣","start":1810,"end":1825},{"name":"衰退","start":1825,"end":1840}]},
-        {"start":1840,"end":1890,"phases":[{"name":"回升","start":1840,"end":1870},{"name":"繁荣","start":1870,"end":1880},{"name":"衰退","start":1880,"end":1890}]},
-        {"start":1890,"end":1940,"phases":[{"name":"回升","start":1890,"end":1920},{"name":"繁荣","start":1920,"end":1929},{"name":"萧条","start":1929,"end":1940}]},
-        {"start":1940,"end":1980,"phases":[{"name":"回升","start":1940,"end":1965},{"name":"繁荣","start":1965,"end":1973},{"name":"滞胀","start":1973,"end":1980}]},
-        {"start":1980,"end":2020,"phases":[{"name":"回升","start":1980,"end":2000},{"name":"繁荣","start":2000,"end":2008},{"name":"萧条","start":2008,"end":2020}]},
-        {"start":2020,"end":2080,"phases":[{"name":"回升(预估)","start":2020,"end":2045}]}
-      ]},
-      {"name":"朱格拉","color":"#06b6d4","waves":[
-        {"start":2002,"end":2012,"phases":[{"name":"上升","start":2002,"end":2007},{"name":"下降","start":2007,"end":2012}]},
-        {"start":2012,"end":2020,"phases":[{"name":"上升","start":2012,"end":2018},{"name":"下降","start":2018,"end":2020}]},
-        {"start":2020,"end":2028,"phases":[{"name":"上升(AI)","start":2020,"end":2027}]}
-      ]},
-      {"name":"基钦","color":"#10b981","waves":[
-        {"start":2019,"end":2023,"phases":[{"name":"补库","start":2019,"end":2021},{"name":"去库","start":2021,"end":2023}]},
-        {"start":2023,"end":2027,"phases":[{"name":"补库","start":2023,"end":2026}]}
-      ]}
+      {
+        "name": "康波",
+        "color": "#8b5cf6",
+        "waves": [
+          {
+            "start": 1780,
+            "end": 1840,
+            "phases": [
+              {
+                "name": "回升",
+                "start": 1780,
+                "end": 1810
+              },
+              {
+                "name": "繁荣",
+                "start": 1810,
+                "end": 1825
+              },
+              {
+                "name": "衰退",
+                "start": 1825,
+                "end": 1840
+              }
+            ]
+          },
+          {
+            "start": 1840,
+            "end": 1890,
+            "phases": [
+              {
+                "name": "回升",
+                "start": 1840,
+                "end": 1870
+              },
+              {
+                "name": "繁荣",
+                "start": 1870,
+                "end": 1880
+              },
+              {
+                "name": "衰退",
+                "start": 1880,
+                "end": 1890
+              }
+            ]
+          },
+          {
+            "start": 1890,
+            "end": 1940,
+            "phases": [
+              {
+                "name": "回升",
+                "start": 1890,
+                "end": 1920
+              },
+              {
+                "name": "繁荣",
+                "start": 1920,
+                "end": 1929
+              },
+              {
+                "name": "萧条",
+                "start": 1929,
+                "end": 1940
+              }
+            ]
+          },
+          {
+            "start": 1940,
+            "end": 1980,
+            "phases": [
+              {
+                "name": "回升",
+                "start": 1940,
+                "end": 1965
+              },
+              {
+                "name": "繁荣",
+                "start": 1965,
+                "end": 1973
+              },
+              {
+                "name": "滞胀",
+                "start": 1973,
+                "end": 1980
+              }
+            ]
+          },
+          {
+            "start": 1980,
+            "end": 2020,
+            "phases": [
+              {
+                "name": "回升",
+                "start": 1980,
+                "end": 2000
+              },
+              {
+                "name": "繁荣",
+                "start": 2000,
+                "end": 2008
+              },
+              {
+                "name": "萧条",
+                "start": 2008,
+                "end": 2020
+              }
+            ]
+          },
+          {
+            "start": 2020,
+            "end": 2080,
+            "phases": [
+              {
+                "name": "回升(预估)",
+                "start": 2020,
+                "end": 2045
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "朱格拉",
+        "color": "#06b6d4",
+        "waves": [
+          {
+            "start": 2002,
+            "end": 2012,
+            "phases": [
+              {
+                "name": "上升",
+                "start": 2002,
+                "end": 2007
+              },
+              {
+                "name": "下降",
+                "start": 2007,
+                "end": 2012
+              }
+            ]
+          },
+          {
+            "start": 2012,
+            "end": 2020,
+            "phases": [
+              {
+                "name": "上升",
+                "start": 2012,
+                "end": 2018
+              },
+              {
+                "name": "下降",
+                "start": 2018,
+                "end": 2020
+              }
+            ]
+          },
+          {
+            "start": 2020,
+            "end": 2028,
+            "phases": [
+              {
+                "name": "上升(AI)",
+                "start": 2020,
+                "end": 2027
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "基钦",
+        "color": "#10b981",
+        "waves": [
+          {
+            "start": 2019,
+            "end": 2023,
+            "phases": [
+              {
+                "name": "补库",
+                "start": 2019,
+                "end": 2021
+              },
+              {
+                "name": "去库",
+                "start": 2021,
+                "end": 2023
+              }
+            ]
+          },
+          {
+            "start": 2023,
+            "end": 2027,
+            "phases": [
+              {
+                "name": "补库",
+                "start": 2023,
+                "end": 2026
+              }
+            ]
+          }
+        ]
+      }
     ],
     "current_year_mark": 2026
   },
@@ -577,5 +3127,88 @@
     "juglar": "cycle_layers.layer_4_juglar",
     "kitchner": "cycle_layers.layer_5_kitchner",
     "merrill": "cycle_layers.layer_6_merrill"
+  },
+  "cycle_consensus": {
+    "last_updated": "2026-09-01",
+    "overall_score": 68,
+    "overall_assessment": "复苏早期，多周期共振向上",
+    "overall_signal": "bullish",
+    "dimension_scores": [
+      {
+        "dimension": "大债务周期",
+        "us_score": -2,
+        "cn_score": 0,
+        "assessment": "美国晚期去杠杆约束利率敏感资产，中国结构性去杠杆中后期空间较充裕",
+        "signal": "constraint"
+      },
+      {
+        "dimension": "康波长波",
+        "score": 2,
+        "assessment": "第五轮萧条尾声→第六轮回升初期，AI技术突破标志新周期起点",
+        "signal": "bullish"
+      },
+      {
+        "dimension": "佩雷斯技术周期",
+        "score": 1,
+        "assessment": "新技术部署期，TFP开始回升，但旧动能仍在出清",
+        "signal": "cautious_bullish"
+      },
+      {
+        "dimension": "利率体制",
+        "assessment": "高利率时代延续但见顶概率上升",
+        "signal": "neutral"
+      },
+      {
+        "dimension": "朱格拉设备周期",
+        "us_score": 1,
+        "cn_score": 1,
+        "assessment": "中美均处于扩张早期，产能利用率回升",
+        "signal": "bullish"
+      },
+      {
+        "dimension": "基钦库存周期",
+        "us_score": 2,
+        "cn_score": 1,
+        "assessment": "美国主动补库存，中国被动去库存→主动补库存过渡",
+        "signal": "bullish"
+      },
+      {
+        "dimension": "美林时钟",
+        "us_assessment": "复苏期→过热前期",
+        "cn_assessment": "复苏早期",
+        "signal": "bullish"
+      }
+    ],
+    "asset_allocation_summary": {
+      "equity": {
+        "recommendation": "超配",
+        "weight": "60-70%",
+        "rationale": "多周期共振向上，股票风险收益比最优"
+      },
+      "bonds": {
+        "recommendation": "低配",
+        "weight": "15-20%",
+        "rationale": "利率见顶但仍在高位，长久期债券承压"
+      },
+      "commodities": {
+        "recommendation": "超配",
+        "weight": "15-20%",
+        "rationale": "康波回升初期+库存周期补库，商品迎来战略配置窗口"
+      },
+      "cash": {
+        "recommendation": "标配",
+        "weight": "5-10%",
+        "rationale": "保留流动性应对潜在波动"
+      }
+    },
+    "key_risks": [
+      "美国债务上限博弈可能引发短期流动性冲击",
+      "中国地产风险尚未完全出清",
+      "地缘政治不确定性"
+    ],
+    "cycle_nesting": {
+      "description": "当前处于康波回升初期+佩雷斯部署期+朱格拉扩张早期+基钦补库阶段的四重共振",
+      "interpretation": "大周期向好，中小周期同步向上，是较为难得的多周期共振配置窗口"
+    }
   }
 }
