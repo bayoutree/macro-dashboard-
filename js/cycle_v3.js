@@ -58,17 +58,31 @@ const CycleV3Module = (() => {
   function fmtPct(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals) + '%'; }
   function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  function getFreshness(lastUpdated) {
+  // Frequency-aware thresholds
+  const FREQ_THRESHOLDS = {
+    daily:    { fresh: 7, stale: 30, label: '日频' },
+    weekly:   { fresh: 14, stale: 60, label: '周频' },
+    monthly:  { fresh: 45, stale: 120, label: '月频' },
+    quarterly:{ fresh: 120, stale: 270, label: '季频' },
+    annual:   { fresh: 400, stale: 730, label: '年频' },
+    event_driven: { fresh: 365, stale: 730, label: '事件驱动' }
+  };
+
+  function getFreshness(lastUpdated, frequency) {
     if (!lastUpdated) return { cls:'expired', label:'数据待更新', days:999 };
     const days = Math.floor((Date.now() - new Date(lastUpdated)) / 86400000);
-    if (days <= 30) return { cls:'fresh', label:`${days}天前`, days };
-    if (days <= 90) return { cls:'stale', label:`⚠️ ${days}天未更新`, days };
-    return { cls:'expired', label:`${days}天未更新`, days };
+    const thresh = FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly;
+    const freqLabel = thresh.label;
+    if (days <= thresh.fresh) return { cls:'fresh', label:\`${days}天前\`, days };
+    if (days <= thresh.stale) return { cls:'stale', label:\`⚠️ \${days}天未更新\`, days };
+    return { cls:'expired', label:\`\${days}天未更新\`, days };
   }
 
-  function freshnessBadge(lastUpdated) {
-    const f = getFreshness(lastUpdated);
-    return `<span class="freshness-badge ${f.cls}" title="${f.label}">${f.cls==='fresh'?'':f.label}</span>`;
+  function freshnessBadge(lastUpdated, frequency) {
+    const f = getFreshness(lastUpdated, frequency);
+    const freqTag = frequency && frequency !== 'daily' && frequency !== 'weekly'
+      ? \` <span style="font-size:9px;opacity:0.7">\${FREQ_THRESHOLDS[frequency]?.label||''}</span>\` : '';
+    return \`<span class="freshness-badge \${f.cls}" title="\${f.label}">\${f.cls==='fresh'?freqTag:f.label}\${freqTag}</span>\`;
   }
 
   function signalColor(signal) {
@@ -112,7 +126,7 @@ const CycleV3Module = (() => {
       const swColor = sw > 0 ? COLORS.bullish : sw < 0 ? COLORS.bearish : COLORS.neutral;
       const indicators = r.indicators || {};
       const indCards = Object.entries(indicators).map(([k, ind]) => {
-        const f = freshnessBadge(ind.last_updated);
+        const f = freshnessBadge(ind.last_updated, ind.frequency);
         let threshHtml = '';
         if (ind.threshold) {
           const w = ind.threshold.warning || ind.threshold.critical || '';
@@ -125,7 +139,7 @@ const CycleV3Module = (() => {
           historyMini = `<div class="ind-history" data-points="${escapeHtml(pts)}"></div>`;
         }
         return `
-        <div class="indicator-card ${getFreshness(ind.last_updated).cls}">
+        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           ${threshHtml}
@@ -155,6 +169,37 @@ const CycleV3Module = (() => {
         ${renderRegion(layer.cn, 'cn')}
       </div>
     </section>`;
+  }
+
+
+  /** 康波 × 大宗商品判断框架（周金涛经典预判） */
+  function renderCommodityFramework(layer) {
+    const cf = layer?.commodity_framework;
+    if (!cf) return '';
+    const assetCards = (cf.asset_mapping||[]).map(a => {
+      const color = a.signal==='bullish' ? '#10b981' : a.signal==='bearish' ? '#ef4444' : '#f59e0b';
+      return `<div class="commodity-card" style="border-left:3px solid ${color}">
+        <div class="comm-asset" style="color:${color}">${escapeHtml(a.asset)}</div>
+        <div class="comm-reasoning">${escapeHtml(a.reasoning)}</div>
+      </div>`;
+    }).join('');
+    const cases = (cf.historical_cases||[]).map(c =>
+      `<div class="case-row"><span class="case-year">${escapeHtml(c.year)}</span><span class="case-wave">${escapeHtml(c.wave)}</span><span class="case-comm">${escapeHtml(c.commodity)}</span></div>`
+    ).join('');
+    return `
+    <div class="commodity-framework">
+      <h3>🛢️ ${escapeHtml(cf.title||'')}</h3>
+      <p class="comm-desc">${escapeHtml((cf.description||'').replace(/\n/g,'<br>'))}</p>
+      <div class="comm-current">
+        <h4>当前含义</h4>
+        <p>${escapeHtml((cf.current_phase_implication||'').replace(/\n/g,'<br>'))}</p>
+      </div>
+      <div class="comm-assets">${assetCards}</div>
+      <div class="comm-cases">
+        <h4>历史验证记录</h4>
+        <div class="cases-table">${cases}</div>
+      </div>
+    </div>`;
   }
 
   /** 改进点#10 + #18: 康波 with TFP chart + percentile bands */
@@ -192,6 +237,7 @@ const CycleV3Module = (() => {
         <ul>${adviceHtml}</ul>
       </div>
       <div class="waves-timeline">${historyWaves}</div>
+      ${renderCommodityFramework(layer)}
     </section>`;
   }
 
@@ -247,8 +293,31 @@ const CycleV3Module = (() => {
     if (!layer && !highRateTracker) return '';
     const allIndicators = [];
     ['structural','forward_looking','market_based'].forEach(group => {
-      const items = layer?.[group] ? Object.values(layer[group]) : [];
-      items.forEach(ind => { allIndicators.push({...ind, layer_group: group}); });
+      const sub = layer?.[group];
+      if (!sub) return;
+      // Handle both old format (direct indicators) and new format ({name, indicators})
+      const inds = sub.indicators || {};
+      Object.entries(inds).forEach(([k, ind]) => {
+        const item = {...ind, layer_group: group, ind_key: k};
+        // Handle dual-region indicators (us/cn sub-fields)
+        if (ind.us || ind.cn) {
+          ['us','cn'].forEach(rk => {
+            const rData = ind[rk];
+            if (rData && typeof rData === 'object') {
+              allIndicators.push({
+                ...rData, name: ind.name + (${JSON.stringify(rk==='us'?' 🇺🇸':' 🇨🇳')}${rk==='us'?'':' '}),
+                source: ind.source, layer_group: group, ind_key: k+'_'+rk,
+                last_updated: rData.last_updated || ind.last_updated,
+                frequency: rData.frequency || ind.frequency,
+                description: ind.description,
+                history: rData.history || ind.history
+              });
+            }
+          });
+        } else {
+          allIndicators.push(item);
+        }
+      });
     });
     // Also add from high_rate_tracker if present
     if (highRateTracker?.indicators) {
@@ -267,15 +336,20 @@ const CycleV3Module = (() => {
     Object.entries(groups).forEach(([g, items]) => {
       const cards = items.map(ind => {
         const color = ind.status==='green'?'#10b981':ind.status==='yellow'?'#f59e0b':ind.status==='red'?'#ef4444':'#6b7280';
-        const f = freshnessBadge(ind.last_updated);
+        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const val = ind.current_value ?? ind.current ?? '--';
+        const descHtml = ind.description ? `<div class="ri-desc">${escapeHtml(ind.description)}</div>` : '';
+        const chartId = 'chart-rate-'+group+'-'+(ind.ind_key||'');
         return `
         <div class="rate-indicator-card" style="border-left:3px solid ${color}">
           <div class="ri-header">
             <span class="ri-name">${escapeHtml(ind.name)}</span>
-            <span class="ri-status" style="color:${color}">${escapeHtml(ind.status_label||ind.status)}</span>
+            <span class="ri-status" style="color:${color}">${escapeHtml(ind.status_label||ind.status||'')}</span>
           </div>
-          <div class="ri-value">${fmtNum(ind.current_value)} <span class="ri-unit">${escapeHtml(ind.unit||'')}</span></div>
+          <div class="ri-value">${fmtNum(val)} <span class="ri-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div class="ri-threshold">${escapeHtml(ind.threshold||'')}</div>
+          ${descHtml}
+          <div id="${chartId}" class="chart-container" style="width:100%;height:100px;margin-top:4px;"></div>
           ${f}
         </div>`;
       }).join('');
@@ -323,9 +397,9 @@ const CycleV3Module = (() => {
         if (pct?.current_rank) {
           pctBadge = `<span class="percentile-badge" title="p25=${pct.p25} p50=${pct.p50} p75=${pct.p75}">${escapeHtml(pct.current_rank)}</span>`;
         }
-        const f = freshnessBadge(ind.last_updated);
+        const f = freshnessBadge(ind.last_updated, ind.frequency);
         return `
-        <div class="indicator-card ${getFreshness(ind.last_updated).cls}">
+        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f} ${pctBadge}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-juglar-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
@@ -364,9 +438,9 @@ const CycleV3Module = (() => {
       }
       const indicators = r.indicators || {};
       const indHtml = Object.entries(indicators).map(([k, ind]) => {
-        const f = freshnessBadge(ind.last_updated);
+        const f = freshnessBadge(ind.last_updated, ind.frequency);
         return `
-        <div class="indicator-card ${getFreshness(ind.last_updated).cls}">
+        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-merrill-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
@@ -387,7 +461,70 @@ const CycleV3Module = (() => {
     return renderRegion(layer.us, 'us') + renderRegion(layer.cn, 'cn');
   }
 
-  /** 改进点#3: 共识度评分卡 */
+
+  /** 改进点#3: 周期共识度评分卡 - 置顶版本（结论先行） */
+  function renderConsensusSummary(consensus) {
+    if (!consensus) return '';
+    const score = consensus.overall_score || 0;
+    const scoreColor = score >= 70 ? '#10b981' : score >= 50 ? '#f59e0b' : score >= 30 ? '#f97316' : '#ef4444';
+    const signal = consensus.overall_signal || 'neutral';
+    const signalColor = signal === 'bullish' ? '#10b981' : signal === 'bearish' ? '#ef4444' : '#f59e0b';
+    
+    const allocation = consensus.asset_allocation_summary || {};
+    const allocCards = Object.entries(allocation).map(([key, item]) => {
+      const emoji = key === 'equity' ? '📈' : key === 'bonds' ? '📊' : key === 'commodities' ? '🛢️' : '💵';
+      return `
+        <div class="consensus-alloc-card">
+          <div class="alloc-emoji">${emoji}</div>
+          <div class="alloc-name">${key === 'equity' ? '股票' : key === 'bonds' ? '债券' : key === 'commodities' ? '商品' : '现金'}</div>
+          <div class="alloc-weight" style="color:${signalColor}">${item.weight || '--'}</div>
+          <div class="alloc-rec">${item.recommendation || ''}</div>
+          <div class="alloc-reason">${item.rationale || ''}</div>
+        </div>`;
+    }).join('');
+    
+    const nesting = consensus.cycle_nesting || {};
+    
+    return `
+    <section class="v3-section consensus-summary-section" id="section-consensus-summary">
+      <div class="consensus-summary-header">
+        <div class="consensus-score-block">
+          <div class="consensus-score" style="color:${scoreColor}">${score}</div>
+          <div class="consensus-label">综合周期评分</div>
+        </div>
+        <div class="consensus-assessment">
+          <div class="assessment-text">${escapeHtml(consensus.overall_assessment || '')}</div>
+          <div class="assessment-signal" style="color:${signalColor}">信号: ${signal === 'bullish' ? '偏多' : signal === 'bearish' ? '偏空' : '中性'}</div>
+        </div>
+        <div class="consensus-date">📅 ${consensus.last_updated || '--'}</div>
+      </div>
+      
+      <!-- 资产配置建议卡片 -->
+      <div class="consensus-alloc-grid">
+        ${allocCards}
+      </div>
+      
+      <!-- 周期嵌套解读 -->
+      <div class="consensus-nesting-box">
+        <h4>🔄 周期嵌套结构</h4>
+        <p>${escapeHtml(nesting.description || '')}</p>
+        <p class="nesting-interpretation">💡 ${escapeHtml(nesting.interpretation || '')}</p>
+      </div>
+      
+      <!-- 风险提示 -->
+      ${consensus.key_risks?.length ? `
+      <div class="consensus-risks">
+        <h4>⚠️ 关键风险</h4>
+        <ul>${consensus.key_risks.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>` : ''}
+      
+      <button class="expand-detail-btn" onclick="document.getElementById('section-consensus-detail')?.scrollIntoView({behavior:'smooth'})">
+        📊 查看各周期详细分析 ▾
+      </button>
+    </section>`;
+  }
+
+  /** 改进点#3: 共识度评分卡 - 详细版本 */
   function renderConsensus(consensus) {
     if (!consensus) return '';
     const score = consensus.score || 0;
@@ -470,7 +607,7 @@ const CycleV3Module = (() => {
     const cards = current.map(a => {
       const bg = signalBg(a.signal);
       const fg = signalFg(a.signal);
-      const f = freshnessBadge(a.last_updated);
+      const f = freshnessBadge(a.last_updated, a.frequency);
       const rrScore = a.risk_reward_score || 0;
       const rrColor = rrScore >= 7 ? '#10b981' : rrScore >= 5 ? '#f59e0b' : '#ef4444';
       const confBorder = a.confidence_level==='high'?'#10b981':a.confidence_level==='medium'?'#f59e0b':'#9ca3af';
@@ -502,14 +639,32 @@ const CycleV3Module = (() => {
       </div>`;
     }).join('');
 
-    // Scenario table
+    // Scenario table - 折叠卡片式
     let scenarioHtml = '';
     if (allocation.scenario_table) {
-      const scRows = allocation.scenario_table.map(s =>
-        `<tr><td><strong>${escapeHtml(s.scenario)}</strong><br><span class="scenario-label">${escapeHtml(s.label||'')}</span></td><td>${escapeHtml(s.probability||'--')}</td><td>${escapeHtml(s.trigger||'')}</td><td>${Object.entries(s.allocation||{}).map(([k,v])=>`${k}: ${escapeHtml(v)}`).join('<br>')}</td></tr>`
-      ).join('');
-      scenarioHtml = `<div class="scenario-section"><h3>📋 情景配置表</h3>
-        <table><thead><tr><th>情景</th><th>概率</th><th>触发条件</th><th>配置建议</th></tr></thead><tbody>${scRows}</tbody></table>
+      const scenarios = allocation.scenario_table;
+      const currentScenario = scenarios.find(s => s.is_current) || scenarios[0];
+      const scenarioCards = scenarios.map((s, idx) => {
+        const isCurrent = s === currentScenario;
+        const allocEntries = Object.entries(s.allocation||{}).map(([k,v]) =>
+          `<span class="scenario-alloc"><span class="alloc-key">${escapeHtml(k)}</span><span class="alloc-val">${escapeHtml(v)}</span></span>`
+        ).join('');
+        return `
+        <div class="scenario-card ${isCurrent ? 'scenario-current' : ''}" onclick="this.classList.toggle('expanded')">
+          <div class="scenario-header">
+            <span class="scenario-name">${escapeHtml(s.scenario)}</span>
+            <span class="scenario-prob">${escapeHtml(s.probability||'--')}</span>
+            ${isCurrent ? '<span class="scenario-badge">当前</span>' : ''}
+          </div>
+          <div class="scenario-label-text">${escapeHtml(s.label||'')}</div>
+          <div class="scenario-detail">
+            <div class="scenario-trigger">触发: ${escapeHtml(s.trigger||'暂无')}</div>
+            <div class="scenario-alloc-grid">${allocEntries}</div>
+          </div>
+        </div>`;
+      }).join('');
+      scenarioHtml = `<div class="scenario-section"><h3>📋 情景配置</h3>
+        <div class="scenario-cards-grid">${scenarioCards}</div>
       </div>`;
     }
 
@@ -751,22 +906,25 @@ const CycleV3Module = (() => {
     const allocation = data.asset_allocation || null;
     const synthesis = data.synthesis || null;
     const creditImpulse = data.credit_impulse || null;
+    const consensus = data.cycle_consensus || null;
 
     let html = '';
     // Meta header
     html += renderMeta(data._meta);
+    // ★ 评分卡+配置建议置顶（结论先行）
+    if (consensus) {
+      html += renderConsensusSummary(consensus);
+    }
     // Layer 0: Debt Cycle
     html += renderDebtCycle(layers.layer_0_debt_cycle);
-    // Consensus Score Card (#3)
-    html += renderConsensus(cross.consensus);
     // Layer 1: Kondratieff
     html += renderKondratieff(layers.layer_1_kondratieff);
     // Layer 2: Perez
     html += renderPerez(layers.layer_2_perez);
+    // ★ 中美周期错位表（移到评分卡下方）
+    html += renderUsChinaMatrix(cross.us_china_matrix);
     // Layer 3: Rate Regime + High Rate Tracker
     html += renderRateRegime(layers.layer_3_rate_regime, cross.high_rate_tracker);
-    // US-China Matrix (#4)
-    html += renderUsChinaMatrix(cross.us_china_matrix);
     // Layer 4: Juglar
     html += `
     <section class="v3-section" id="section-juglar">
