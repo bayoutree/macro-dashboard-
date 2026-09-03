@@ -720,6 +720,56 @@
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
             "frequency": "annual"
+          },
+          "cn_savings_rate": {
+            "name": "储蓄投资缺口",
+            "source": "Wind/CEIC",
+            "cn": {
+              "current": -3.2,
+              "unit": "%GDP",
+              "description": "储蓄-投资差额/GDP，负值=资金缺口"
+            },
+            "description": "储蓄-投资差额占GDP比重，反映国内资金供需缺口",
+            "last_updated": "2026-08-15",
+            "frequency": "annual",
+            "history": [
+              {
+                "date": "2015",
+                "value": -1.8
+              },
+              {
+                "date": "2017",
+                "value": -2.1
+              },
+              {
+                "date": "2019",
+                "value": -2.5
+              },
+              {
+                "date": "2020",
+                "value": -3.8
+              },
+              {
+                "date": "2021",
+                "value": -3.5
+              },
+              {
+                "date": "2022",
+                "value": -3.0
+              },
+              {
+                "date": "2023",
+                "value": -2.8
+              },
+              {
+                "date": "2024",
+                "value": -3.1
+              },
+              {
+                "date": "2026",
+                "value": -3.2
+              }
+            ]
           }
         }
       },
@@ -843,6 +893,55 @@
               }
             ],
             "source_url": "https://fred.stlouisfed.org/series/TSYOREA01"
+          },
+          "cn_tfp_trend": {
+            "name": "TFP增速",
+            "source": "Penn World Table",
+            "cn": {
+              "current": 3.8,
+              "unit": "%"
+            },
+            "description": "全要素生产率增速，反映长期增长潜力",
+            "last_updated": "2026-06-15",
+            "frequency": "annual",
+            "history": [
+              {
+                "date": "2010",
+                "value": 5.2
+              },
+              {
+                "date": "2012",
+                "value": 4.8
+              },
+              {
+                "date": "2014",
+                "value": 4.2
+              },
+              {
+                "date": "2016",
+                "value": 3.9
+              },
+              {
+                "date": "2018",
+                "value": 4.0
+              },
+              {
+                "date": "2020",
+                "value": 3.2
+              },
+              {
+                "date": "2022",
+                "value": 3.5
+              },
+              {
+                "date": "2024",
+                "value": 3.6
+              },
+              {
+                "date": "2026",
+                "value": 3.8
+              }
+            ]
           }
         }
       },
@@ -962,6 +1061,67 @@
               }
             ],
             "source_url": "https://www.cboe.com/"
+          },
+          "cn_real_rate": {
+            "name": "实际利率(1Y存款-CPI)",
+            "source": "NBS/FRED",
+            "cn": {
+              "current": 0.5,
+              "unit": "%"
+            },
+            "description": "1年期存款利率减CPI，反映真实资金成本",
+            "last_updated": "2026-09-01",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020-01",
+                "value": 3.5
+              },
+              {
+                "date": "2020-07",
+                "value": 2.8
+              },
+              {
+                "date": "2021-01",
+                "value": 1.5
+              },
+              {
+                "date": "2021-07",
+                "value": 0.8
+              },
+              {
+                "date": "2022-01",
+                "value": 1.2
+              },
+              {
+                "date": "2022-07",
+                "value": -0.4
+              },
+              {
+                "date": "2023-01",
+                "value": -0.1
+              },
+              {
+                "date": "2023-07",
+                "value": 0.3
+              },
+              {
+                "date": "2024-01",
+                "value": 0.2
+              },
+              {
+                "date": "2024-07",
+                "value": 0.6
+              },
+              {
+                "date": "2025-01",
+                "value": 0.4
+              },
+              {
+                "date": "2026-01",
+                "value": 0.5
+              }
+            ]
           }
         }
       }
@@ -1548,6 +1708,71 @@
               }
             ],
             "source_url": "https://data.stats.gov.cn/"
+          },
+          "cn_pmi_finished_goods": {
+            "name": "PMI产成品库存",
+            "source": "NBS",
+            "cn": {
+              "current": 46.8,
+              "unit": ""
+            },
+            "description": "PMI产成品库存分项，<50=库存收缩",
+            "last_updated": "2026-08-31",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020-01",
+                "value": 46.2
+              },
+              {
+                "date": "2020-07",
+                "value": 48.5
+              },
+              {
+                "date": "2021-01",
+                "value": 47.8
+              },
+              {
+                "date": "2021-07",
+                "value": 47.2
+              },
+              {
+                "date": "2022-01",
+                "value": 49.1
+              },
+              {
+                "date": "2022-07",
+                "value": 48.3
+              },
+              {
+                "date": "2023-01",
+                "value": 45.6
+              },
+              {
+                "date": "2023-07",
+                "value": 44.8
+              },
+              {
+                "date": "2024-01",
+                "value": 45.2
+              },
+              {
+                "date": "2024-07",
+                "value": 46.0
+              },
+              {
+                "date": "2025-01",
+                "value": 46.5
+              },
+              {
+                "date": "2025-07",
+                "value": 47.2
+              },
+              {
+                "date": "2026-01",
+                "value": 46.8
+              }
+            ]
           }
         }
       }
@@ -1651,6 +1876,83 @@
               }
             ],
             "frequency": "monthly"
+          },
+          "us_gdp_growth": {
+            "name": "GDP增速(QoQ年化)",
+            "source": "BEA/FRED",
+            "us": {
+              "current": 2.8,
+              "unit": "%"
+            },
+            "description": "实际GDP季度环比年化增速",
+            "last_updated": "2026-08-30",
+            "frequency": "quarterly",
+            "history": [
+              {
+                "date": "2022Q1",
+                "value": 2.0
+              },
+              {
+                "date": "2022Q2",
+                "value": -0.6
+              },
+              {
+                "date": "2022Q3",
+                "value": 3.2
+              },
+              {
+                "date": "2022Q4",
+                "value": 2.6
+              },
+              {
+                "date": "2023Q1",
+                "value": 2.2
+              },
+              {
+                "date": "2023Q2",
+                "value": 2.1
+              },
+              {
+                "date": "2023Q3",
+                "value": 4.9
+              },
+              {
+                "date": "2023Q4",
+                "value": 3.4
+              },
+              {
+                "date": "2024Q1",
+                "value": 1.6
+              },
+              {
+                "date": "2024Q2",
+                "value": 3.0
+              },
+              {
+                "date": "2024Q3",
+                "value": 2.8
+              },
+              {
+                "date": "2024Q4",
+                "value": 2.4
+              },
+              {
+                "date": "2025Q1",
+                "value": 2.1
+              },
+              {
+                "date": "2025Q2",
+                "value": 2.8
+              },
+              {
+                "date": "2026Q1",
+                "value": 2.5
+              },
+              {
+                "date": "2026Q2",
+                "value": 2.8
+              }
+            ]
           }
         },
         "quadrant_trajectory": [
@@ -1772,6 +2074,71 @@
               }
             ],
             "frequency": "monthly"
+          },
+          "cn_industrial_va": {
+            "name": "工业增加值同比",
+            "source": "NBS",
+            "cn": {
+              "current": 5.6,
+              "unit": "%"
+            },
+            "description": "规模以上工业增加值同比增速",
+            "last_updated": "2026-08-15",
+            "frequency": "monthly",
+            "history": [
+              {
+                "date": "2020-01",
+                "value": -13.5
+              },
+              {
+                "date": "2020-07",
+                "value": 4.8
+              },
+              {
+                "date": "2021-01",
+                "value": 35.1
+              },
+              {
+                "date": "2021-07",
+                "value": 6.4
+              },
+              {
+                "date": "2022-01",
+                "value": 7.5
+              },
+              {
+                "date": "2022-07",
+                "value": 3.8
+              },
+              {
+                "date": "2023-01",
+                "value": 2.4
+              },
+              {
+                "date": "2023-07",
+                "value": 3.7
+              },
+              {
+                "date": "2024-01",
+                "value": 7.0
+              },
+              {
+                "date": "2024-07",
+                "value": 5.1
+              },
+              {
+                "date": "2025-01",
+                "value": 5.9
+              },
+              {
+                "date": "2025-07",
+                "value": 5.3
+              },
+              {
+                "date": "2026-01",
+                "value": 5.6
+              }
+            ]
           }
         },
         "quadrant_trajectory": [
@@ -2474,6 +2841,28 @@
         ],
         "risk_reward_score": 5.5,
         "reasoning": "信贷脉冲回升+经济复苏支撑汇率"
+      },
+      {
+        "asset": "商品综合",
+        "view": "超配",
+        "signal": "bullish",
+        "color": "#f59e0b",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "frequency": "monthly",
+        "key_drivers": [
+          "康波萧条尾声实物资产重估",
+          "新能源转型结构性需求",
+          "补库周期支撑"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 1,
+        "reasoning": "康波交替期实物资产具有抗通胀和货币秩序重构双重逻辑，铜受新能源转型支撑长期看好，原油短期受补库周期和OPEC+管理支撑",
+        "risk_reward_score": 6.5,
+        "trigger_conditions": [
+          "全球PMI共振下行跌破50",
+          "美元大幅反弹超3%"
+        ]
       }
     ],
     "scenario_table": [
@@ -3292,5 +3681,70 @@
       "description": "当前处于康波回升初期+佩雷斯部署期+朱格拉扩张早期+基钦补库阶段的四重共振",
       "interpretation": "大周期向好，中小周期同步向上，是较为难得的多周期共振配置窗口"
     }
+  },
+  "commodity_framework": {
+    "name": "康波商品框架",
+    "author": "周金涛",
+    "core_thesis": "康波萧条后期→回升初期，大宗商品触底回升，实物资产重估",
+    "historical_cases": [
+      {
+        "period": "1840s-1850s",
+        "event": "第五轮康波萧条→回升",
+        "commodity_perf": "铜价翻倍，黄金大涨"
+      },
+      {
+        "period": "1890s-1900s",
+        "event": "第四轮康波萧条→回升",
+        "commodity_perf": "工业金属和农产品全面上涨"
+      },
+      {
+        "period": "1930s-1940s",
+        "event": "第三轮康波萧条→回升",
+        "commodity_perf": "战争需求推动所有商品暴涨"
+      },
+      {
+        "period": "1970s-1980s",
+        "event": "第三轮康波回升→繁荣",
+        "commodity_perf": "石油危机，原油涨10倍"
+      },
+      {
+        "period": "2000s-2010s",
+        "event": "第五轮康波繁荣",
+        "commodity_perf": "超级商品周期，CRB指数涨3倍"
+      }
+    ],
+    "current_assessment": "当前处于第六轮康波萧条尾声，实物资产重估逻辑正在兑现",
+    "key_commodities": [
+      {
+        "name": "铜",
+        "view": "超配",
+        "logic": "新能源转型+补库+康波回升，最确定商品"
+      },
+      {
+        "name": "黄金",
+        "view": "超配",
+        "logic": "货币秩序重构+央行增持+地缘风险"
+      },
+      {
+        "name": "原油",
+        "view": "标配",
+        "logic": "OPEC+管理+补库支撑，但新能源替代压制长期"
+      },
+      {
+        "name": "白银",
+        "view": "超配",
+        "logic": "工业+货币双属性，光伏需求增量"
+      },
+      {
+        "name": "锂",
+        "view": "标配偏多",
+        "logic": "新能源核心材料，短期供给过剩压制"
+      },
+      {
+        "name": "农产品",
+        "view": "标配偏多",
+        "logic": "气候异常+库存低位+生物燃料需求"
+      }
+    ]
   }
 }
