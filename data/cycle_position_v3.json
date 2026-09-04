@@ -1556,11 +1556,13 @@
                   "date": "2026Q1",
                   "value": 1.2
                 }
-              ]
+              ],
+              "frequency": "quarterly"
             },
             "cn": {
               "current": 5.5,
-              "unit": "%"
+              "unit": "%",
+              "frequency": "quarterly"
             },
             "description": "TFP+资本深化的综合效率指标",
             "last_updated": "2026-06-15",
@@ -1590,11 +1592,13 @@
             "source": "World Bank / 国家统计局",
             "us": {
               "current": 0.39,
-              "unit": ""
+              "unit": "",
+              "frequency": "annual"
             },
             "cn": {
               "current": 0.47,
-              "unit": ""
+              "unit": "",
+              "frequency": "annual"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -1644,7 +1648,8 @@
                   "date": "2026",
                   "value": -3.2
                 }
-              ]
+              ],
+              "frequency": "annual"
             },
             "description": "储蓄-投资差额占GDP比重，反映国内资金供需缺口",
             "last_updated": "2026-08-15",
@@ -2488,11 +2493,13 @@
                   "date": "2026-09-02",
                   "value": 2.34
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "cn": {
               "current": 2.1,
-              "unit": "%"
+              "unit": "%",
+              "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
             "last_updated": "2026-09-01",
@@ -4084,7 +4091,8 @@
                   "date": "2026-09-01",
                   "value": 2.44
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
             "last_updated": "2026-09-01",
@@ -5676,7 +5684,8 @@
                   "date": "2026-08-28",
                   "value": 0.8751
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
             "last_updated": "2026-09-01",
@@ -6516,7 +6525,8 @@
                   "date": "2026",
                   "value": 3.8
                 }
-              ]
+              ],
+              "frequency": "annual"
             },
             "description": "全要素生产率增速，反映长期增长潜力",
             "last_updated": "2026-06-15",
@@ -7360,7 +7370,8 @@
                   "date": "2026-09-02",
                   "value": 0.4
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
             "last_updated": "2026-09-01",
@@ -8976,7 +8987,8 @@
                   "date": "2026-09-02",
                   "value": 3572.23
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
             "last_updated": "2026-09-01",
@@ -10612,7 +10624,8 @@
                   "date": "2026-09-02",
                   "value": 15.2
                 }
-              ]
+              ],
+              "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
             "last_updated": "2026-09-01",
@@ -11484,7 +11497,8 @@
                   "date": "2026-01",
                   "value": 0.5
                 }
-              ]
+              ],
+              "frequency": "monthly"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
             "last_updated": "2026-09-01",
@@ -14203,7 +14217,8 @@
           "threshold_value": 0,
           "status": "yellow",
           "status_label": "观察",
-          "is_breached": true
+          "is_breached": true,
+          "frequency": "annual"
         },
         {
           "name": "美国利息/财政收入",
@@ -14215,7 +14230,8 @@
           "threshold_value": 20,
           "status": "red",
           "status_label": "逼近",
-          "is_breached": true
+          "is_breached": true,
+          "frequency": "quarterly"
         },
         {
           "name": "TFP 5年均值",
@@ -14227,7 +14243,8 @@
           "threshold_value": 0.5,
           "status": "yellow",
           "status_label": "观察",
-          "is_breached": false
+          "is_breached": false,
+          "frequency": "annual"
         },
         {
           "name": "ECI 5年均值",
@@ -14239,7 +14256,8 @@
           "threshold_value": 3.5,
           "status": "yellow",
           "status_label": "观察",
-          "is_breached": true
+          "is_breached": true,
+          "frequency": "annual"
         },
         {
           "name": "5Y-5Y远期实际利率",
@@ -14251,7 +14269,8 @@
           "threshold_value": 1.5,
           "status": "red",
           "status_label": "逼近",
-          "is_breached": true
+          "is_breached": true,
+          "frequency": "daily"
         },
         {
           "name": "ACM期限溢价",
@@ -14263,7 +14282,8 @@
           "threshold_value": 0.5,
           "status": "yellow",
           "status_label": "观察",
-          "is_breached": true
+          "is_breached": true,
+          "frequency": "daily"
         },
         {
           "name": "30Y盈亏平衡通胀",
@@ -14275,7 +14295,8 @@
           "threshold_value": 2.5,
           "status": "green",
           "status_label": "安全",
-          "is_breached": false
+          "is_breached": false,
+          "frequency": "daily"
         },
         {
           "name": "高收益债利差",
@@ -14287,7 +14308,8 @@
           "threshold_value": 4.0,
           "status": "green",
           "status_label": "安全",
-          "is_breached": false
+          "is_breached": false,
+          "frequency": "daily"
         },
         {
           "name": "核心PCE",
@@ -14299,7 +14321,8 @@
           "threshold_value": 3.0,
           "status": "yellow",
           "status_label": "观察",
-          "is_breached": false
+          "is_breached": false,
+          "frequency": "monthly"
         }
       ],
       "structural_breached": 3,

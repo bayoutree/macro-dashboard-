@@ -281,7 +281,7 @@ const CycleV3Module = (() => {
       return `
       <div class="tp-signal-card" style="border-left:3px solid ${color}">
         <div class="tp-name">${escapeHtml(s.indicator)}</div>
-        <div class="tp-value">当前: <strong>${s.current_value}</strong>${s.metric?' ('+escapeHtml(s.metric)+')':''}</div>
+        <div class="tp-value">当前: <strong>${s.current_value ?? s.current}</strong>${s.metric?' ('+escapeHtml(s.metric)+')':''}</div>
         <div class="tp-threshold">阈值: ${s.threshold||s.threshold_trigger||'--'}</div>
         <div class="tp-desc">${escapeHtml(s.description||'')}</div>
         <div class="tp-status" style="color:${color}">${s.status==='green'?'✅ 安全':s.status==='yellow'?'⚠️ 观察':' 预警'}</div>
@@ -292,11 +292,11 @@ const CycleV3Module = (() => {
     let krHtml = '';
     if (kr) {
       const tp = kr.threshold_params || {};
-      const isFrenzy = kr.current_value >= (tp.frenzy_threshold || 2.7);
+      const isFrenzy = (kr.current_value ?? kr.current) >= (tp.frenzy_threshold || 2.7);
       krHtml = `
       <div class="key-ratio-card">
         <h4>📊 ${escapeHtml(kr.name)}</h4>
-        <div class="kr-value">当前: <strong>${fmtNum(kr.current_value, 2)}</strong></div>
+        <div class="kr-value">当前: <strong>${fmtNum(kr.current_value ?? kr.current, 2)}</strong></div>
         <div class="kr-threshold">阈值: ${escapeHtml(kr.threshold||'')}</div>
         ${tp.mean!=null?`<div class="kr-params">均值=${tp.mean} | σ=${tp.std_dev} | Frenzy阈值=${tp.frenzy_threshold} <span class="kr-note">${escapeHtml(tp.note||'')}</span></div>`:''}
         ${isFrenzy?'<div class="kr-warning" style="color:#ef4444">️ 当前值已超过Frenzy阈值!</div>':''}
@@ -342,7 +342,7 @@ const CycleV3Module = (() => {
                 last_updated: rData.last_updated || ind.last_updated,
                 frequency: rData.frequency || ind.frequency,
                 description: ind.description,
-                history: rData.history || ind.history
+                history: rData.history
               });
             }
           });
@@ -844,7 +844,7 @@ const CycleV3Module = (() => {
           <span class="region-name">${key==='global'?'全球':key==='us'?'美国':'中国'}</span>
           <span class="region-phase">${escapeHtml(r.phase||'')}</span>
         </div>
-        <div class="ind-value">${fmtNum(r.current_value,1)} <span class="ind-unit">${escapeHtml(r.unit||'')}</span></div>
+        <div class="ind-value">${fmtNum(r.current_value ?? r.current,1)} <span class="ind-unit">${escapeHtml(r.unit||'')}</span></div>
         ${sdHtml}
         <div id="chart-credit-${key}" class="chart-container" style="width:100%;height:160px;margin-top:8px;"></div>
       </div>`;
