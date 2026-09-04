@@ -73,16 +73,16 @@ const CycleV3Module = (() => {
     const days = Math.floor((Date.now() - new Date(lastUpdated)) / 86400000);
     const thresh = FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly;
     const freqLabel = thresh.label;
-    if (days <= thresh.fresh) return { cls:'fresh', label:\`${days}天前\`, days };
-    if (days <= thresh.stale) return { cls:'stale', label:\`⚠️ \${days}天未更新\`, days };
-    return { cls:'expired', label:\`\${days}天未更新\`, days };
+    if (days <= thresh.fresh) return { cls:'fresh', label:`${days}天前`, days };
+    if (days <= thresh.stale) return { cls:'stale', label:`⚠️ ${days}天未更新`, days };
+    return { cls:'expired', label:`${days}天未更新`, days };
   }
 
   function freshnessBadge(lastUpdated, frequency) {
     const f = getFreshness(lastUpdated, frequency);
     const freqTag = frequency && frequency !== 'daily' && frequency !== 'weekly'
-      ? \` <span style="font-size:9px;opacity:0.7">\${FREQ_THRESHOLDS[frequency]?.label||''}</span>\` : '';
-    return \`<span class="freshness-badge \${f.cls}" title="\${f.label}">\${f.cls==='fresh'?freqTag:f.label}\${freqTag}</span>\`;
+      ? ` <span style="font-size:9px;opacity:0.7">${FREQ_THRESHOLDS[frequency]?.label||''}</span>` : '';
+    return `<span class="freshness-badge ${f.cls}" title="${f.label}">${f.cls==='fresh'?freqTag:f.label}${freqTag}</span>`;
   }
 
   function signalColor(signal) {
@@ -180,27 +180,27 @@ const CycleV3Module = (() => {
     const proxies = (sr.proxy_indicators || []).map(p => {
       if (p.quantifiable) {
         const f = freshnessBadge(p.last_updated, p.frequency);
-        return \`<div class="reform-card">
-          <div class="reform-name">\${escapeHtml(p.name)} \${f}</div>
-          <div class="reform-value">\${p.current}\${escapeHtml(p.unit||'')}</div>
-          <div class="reform-trend">\${escapeHtml(p.trend||'')}</div>
-          <div class="reform-desc">\${escapeHtml(p.description||'')}</div>
-        </div>\`;
+        return `<div class="reform-card">
+          <div class="reform-name">${escapeHtml(p.name)} ${f}</div>
+          <div class="reform-value">${p.current}${escapeHtml(p.unit||'')}</div>
+          <div class="reform-trend">${escapeHtml(p.trend||'')}</div>
+          <div class="reform-desc">${escapeHtml(p.description||'')}</div>
+        </div>`;
       } else {
-        return \`<div class="reform-card reform-qualitative">
-          <div class="reform-name">\${escapeHtml(p.name)}</div>
-          <div class="reform-assessment">\${escapeHtml(p.assessment||'')}</div>
-          <div class="reform-desc">\${escapeHtml(p.note||'')}</div>
-        </div>\`;
+        return `<div class="reform-card reform-qualitative">
+          <div class="reform-name">${escapeHtml(p.name)}</div>
+          <div class="reform-assessment">${escapeHtml(p.assessment||'')}</div>
+          <div class="reform-desc">${escapeHtml(p.note||'')}</div>
+        </div>`;
       }
     }).join('');
     
-    return \`
+    return `
     <div class="reform-section">
       <h3>🏗️ 结构性改革进度（方案D：代理指标+定性标注）</h3>
-      <p class="reform-note">\${escapeHtml(sr.qualitative_assessment||'')}</p>
-      <div class="reform-grid">\${proxies}</div>
-    </div>\`;
+      <p class="reform-note">${escapeHtml(sr.qualitative_assessment||'')}</p>
+      <div class="reform-grid">${proxies}</div>
+    </div>`;
   }
 
 
@@ -337,7 +337,7 @@ const CycleV3Module = (() => {
             const rData = ind[rk];
             if (rData && typeof rData === 'object') {
               allIndicators.push({
-                ...rData, name: ind.name + (${JSON.stringify(rk==='us'?' 🇺🇸':' 🇨🇳')}${rk==='us'?'':' '}),
+                ...rData, name: ind.name + (rk==='us' ? ' 🇺🇸' : ' 🇨🇳'),
                 source: ind.source, layer_group: group, ind_key: k+'_'+rk,
                 last_updated: rData.last_updated || ind.last_updated,
                 frequency: rData.frequency || ind.frequency,
