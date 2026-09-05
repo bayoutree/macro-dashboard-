@@ -807,6 +807,7 @@ const StageEngine = {
   _prevProbabilities: null, // 上一期概率（用于迁移箭头）
 
   // 加载 timing_scores.json（若可用）或降级为模拟
+  _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
       const resp = await fetch('data/timing_scores.json');
@@ -815,6 +816,15 @@ const StageEngine = {
       }
     } catch(e) {
       console.log('[StageEngine] timing_scores.json 未加载，使用内嵌评分');
+    }
+    // v3.3: 加载右侧趋势确认数据
+    try {
+      const resp2 = await fetch('data/timing_right_scores.json');
+      if (resp2.ok) {
+        this._rightScoresData = await resp2.json();
+      }
+    } catch(e) {
+      console.log('[StageEngine] timing_right_scores.json 未加载');
     }
   },
 
@@ -865,6 +875,35 @@ const StageEngine = {
     else if (composite < 70) anchorStage = 'C1';
     else if (composite < 85) anchorStage = 'C2';
     else anchorStage = 'D';
+
+    // v3.3: 融合右侧趋势确认层（不对称修正）
+    const rd = this._rightScoresData;
+    if (rd) {
+      const bearScore = rd.bear_score || 0;
+      const bullScore = rd.bull_score || 0;
+      const confirmBearCount = (rd.signals?.confirm_bear || []).filter(s => s.triggered).length;
+      const confirmBullCount = (rd.signals?.confirm_bull || []).filter(s => s.triggered).length;
+      
+      // 规则1: 位置偏热(C1/C2/D) + 右侧空方确认(bear>=40 或 confirm_bear>=2) → 向降温快调一档
+      const stageOrder = ['A','B','C1','C2','D'];
+      const anchorIdx = stageOrder.indexOf(anchorStage);
+      const hotStages = ['C1','C2','D'];
+      if (hotStages.includes(anchorStage) && (bearScore >= 40 || confirmBearCount >= 2)) {
+        const newIdx = Math.max(0, anchorIdx - 1);
+        anchorStage = stageOrder[newIdx];
+      }
+      
+      // 规则1b: 位置中性偏冷(B) + 右侧空方确认(bear>=40 或 confirm_bear>=2) → 标记为A-B过渡带
+      // 实现：强制触发过渡期flag，并在概率分布中注入额外A概率
+      if (anchorStage === 'B' && (bearScore >= 40 || confirmBearCount >= 2)) {
+        this._v33BearCorrection = true;
+      } else {
+        this._v33BearCorrection = false;
+      }
+      
+      // 规则2: 位置偏冷(A/B) + 右侧多方确认(bull>=40 或 confirm_bull>=2) → 需连续2期才调（本次不调）
+      // 回补要慢，此处不修改 anchorStage
+    }
 
     // 扩散宽度：分歧越大分布越扁平
     // 基准 sigma=0.6（CIO验收修正：原1.0导致分布过扁平、过渡带恒亮），分歧度/20 范围 0.0 ~ 2.0
@@ -969,10 +1008,26 @@ const StageEngine = {
   run() {
     const scores = this.getDimensionScores();
     let probs = this.calcProbabilities(scores);
+    
+    // v3.3: B+空方确认 → A-B过渡带修正（注入额外A概率，压制B概率）
+    if (this._v33BearCorrection) {
+      const shift = Math.min(probs.B - 5, 30); // 从B移出最多30%，至少保留B=5%
+      probs.B = Math.max(5, probs.B - shift);
+      probs.A = (probs.A || 0) + shift;
+      // 重新归一化到100
+      let total = Object.values(probs).reduce((a,b) => a+b, 0);
+      if (total !== 100) {
+        const maxKey = Object.keys(probs).reduce((a,b) => probs[a]>probs[b]?a:b);
+        probs[maxKey] += (100 - total);
+      }
+    }
+    
     const weightedPos = this.calcWeightedPosition(probs);
     const posBand = this.calcPositionBand(probs);
     const currentStage = this.determineCurrentStage(probs);
-    const transition = this.isTransition(probs);
+    let transition = this.isTransition(probs);
+    // v3.3: B+空方确认时强制标记过渡期
+    if (this._v33BearCorrection) transition = true;
     const migration = this.calcMigration(probs);
     const freezeTriggers = this.checkFreeze(scores, probs);
     const divergence = this.calcDivergence(scores);
@@ -1024,6 +1079,168 @@ function runEngine() {
 }
 // 初始运行（使用内嵌评分模拟）
 const stageData = runEngine();
+
+// ============================================================
+// v3.3: 用真实JSON数据覆盖mockData的确认信号和参考指标
+// ============================================================
+function applyRealDataToMockData() {
+  const rightData = StageEngine._rightScoresData;
+  const leftData = StageEngine._timingData;
+  if (!rightData && !leftData) return;
+
+  // --- 确认信号3项：从 timing_right_scores.json 读取 ---
+  if (rightData && rightData.signals) {
+    const signals = rightData.signals;
+
+    // 确认信号[0]: 均线排列(月线) → 看 confirm_bear/confirm_bull 中 "跌破年线且反抽失败" / "突破年线并站稳"
+    const maBear = (signals.confirm_bear || []).find(s => s.name.includes('年线'));
+    const maBull = (signals.confirm_bull || []).find(s => s.name.includes('年线'));
+    if (mockData.confirmSignals[0]) {
+      if (maBear && maBear.triggered) {
+        mockData.confirmSignals[0].value = '反抽失败';
+        mockData.confirmSignals[0].signal = 'red';
+        mockData.confirmSignals[0].signalText = '跌破年线反抽失败';
+      } else if (maBull && maBull.triggered) {
+        mockData.confirmSignals[0].value = '站稳';
+        mockData.confirmSignals[0].signal = 'green';
+        mockData.confirmSignals[0].signalText = '突破年线并站稳';
+      } else {
+        mockData.confirmSignals[0].value = '--';
+        mockData.confirmSignals[0].signal = 'gray';
+        mockData.confirmSignals[0].signalText = '未触发';
+      }
+    }
+
+    // 确认信号[1]: MACD(月线) → 看 confirm_bear "月线MACD死叉" / confirm_bull "月线MACD金叉"
+    const macdBear = (signals.confirm_bear || []).find(s => s.name.includes('MACD'));
+    const macdBull = (signals.confirm_bull || []).find(s => s.name.includes('MACD'));
+    if (mockData.confirmSignals[1]) {
+      if (macdBear && macdBear.triggered) {
+        mockData.confirmSignals[1].value = '死叉';
+        mockData.confirmSignals[1].signal = 'red';
+        mockData.confirmSignals[1].signalText = macdBear.current_value || '月线MACD死叉';
+      } else if (macdBull && macdBull.triggered) {
+        mockData.confirmSignals[1].value = '金叉';
+        mockData.confirmSignals[1].signal = 'green';
+        mockData.confirmSignals[1].signalText = macdBull.current_value || '月线MACD金叉';
+      } else {
+        // 未触发但有数据 → 显示当前真实值
+        const val = macdBear ? macdBear.current_value : (macdBull ? macdBull.current_value : '数据待获取');
+        mockData.confirmSignals[1].value = '未触发';
+        mockData.confirmSignals[1].signal = 'gray';
+        mockData.confirmSignals[1].signalText = val;
+      }
+    }
+
+    // 确认信号[2]: 成交量 → 看 early_bear "成交萎缩" / early_bull "成交放量"
+    const volBear = (signals.early_bear || []).find(s => s.name.includes('成交'));
+    const volBull = (signals.early_bull || []).find(s => s.name.includes('成交'));
+    if (mockData.confirmSignals[2]) {
+      if (volBear && volBear.triggered) {
+        mockData.confirmSignals[2].value = '萎缩';
+        mockData.confirmSignals[2].signal = 'red';
+        mockData.confirmSignals[2].signalText = volBear.current_value || '成交量萎缩';
+      } else if (volBull && volBull.triggered) {
+        mockData.confirmSignals[2].value = '放量';
+        mockData.confirmSignals[2].signal = 'green';
+        mockData.confirmSignals[2].signalText = volBull.current_value || '成交量放大';
+      } else {
+        const val = volBear ? volBear.current_value : (volBull ? volBull.current_value : '数据待获取');
+        mockData.confirmSignals[2].value = '正常';
+        mockData.confirmSignals[2].signal = 'gray';
+        mockData.confirmSignals[2].signalText = val;
+      }
+    }
+  }
+
+  // --- 参考指标5项：从 timing_scores.json / timing_right_scores.json 读取 ---
+  if (rightData && rightData.signals) {
+    const sigs = rightData.signals;
+    // 参考指标[3]: 产业资本增减持 → early_bear "产业资本减持放大" / early_bull "产业资本转增持"
+    const capBear = (sigs.early_bear || []).find(s => s.name.includes('产业资本'));
+    const capBull = (sigs.early_bull || []).find(s => s.name.includes('产业资本'));
+    if (mockData.referenceIndicators[3]) {
+      if (capBear) {
+        const cv = capBear.current_value || '';
+        if (cv.includes('数据获取异常') || cv.includes('数据待获取')) {
+          mockData.referenceIndicators[3].value = '数据待获取';
+          mockData.referenceIndicators[3].signal = 'gray';
+          mockData.referenceIndicators[3].signalText = '数据待获取';
+        } else {
+          mockData.referenceIndicators[3].value = cv;
+          mockData.referenceIndicators[3].signal = capBear.triggered ? 'red' : 'yellow';
+          mockData.referenceIndicators[3].signalText = capBear.triggered ? '减持放大' : cv;
+        }
+      } else if (capBull) {
+        const cv = capBull.current_value || '';
+        if (cv.includes('数据获取异常') || cv.includes('数据待获取')) {
+          mockData.referenceIndicators[3].value = '数据待获取';
+          mockData.referenceIndicators[3].signal = 'gray';
+          mockData.referenceIndicators[3].signalText = '数据待获取';
+        } else {
+          mockData.referenceIndicators[3].value = cv;
+          mockData.referenceIndicators[3].signal = capBull.triggered ? 'green' : 'yellow';
+          mockData.referenceIndicators[3].signalText = capBull.triggered ? '转增持' : cv;
+        }
+      } else {
+        mockData.referenceIndicators[3].value = '数据待获取';
+        mockData.referenceIndicators[3].signal = 'gray';
+        mockData.referenceIndicators[3].signalText = '数据待获取';
+      }
+    }
+
+    // 参考指标[4]: 韭圈儿神奇指标 → 保留原值（第三方参考，非JSON数据源）
+    // 不做覆盖
+  }
+
+  // 北向资金 → 在参考指标中找不到的，检查early_bear/early_bull中的北向
+  if (rightData && rightData.signals) {
+    const northBear = (rightData.signals.early_bear || []).find(s => s.name.includes('北向'));
+    const northBull = (rightData.signals.early_bull || []).find(s => s.name.includes('北向'));
+    // 北向数据存储在referenceIndicators中没有专门项，但信号要能显示
+    // 这里暂不新增行，保持5项不变
+  }
+}
+
+// v3.3: 覆盖action-bar触发器列表
+function getRealTriggers() {
+  const leftData = StageEngine._timingData;
+  if (!leftData || !leftData.triggers) {
+    // fallback to hardcoded
+    return [
+      { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+      { cond: '新发基金份额月均 > 800 亿', met: false },
+      { cond: '偏股基金3年年化 > 25%', met: false },
+      { cond: '融资融券余额 > 2.0 万亿', met: false },
+      { cond: '交易拥挤度 > 90%分位，持续 ≥20 交易日', met: false }
+    ];
+  }
+  // 从 timing_scores.json 的 triggers.reduce_position 读取
+  const reduceTriggers = leftData.triggers.reduce_position || [];
+  const addTriggers = leftData.triggers.add_position || [];
+  const allTriggers = [];
+  reduceTriggers.forEach(t => {
+    allTriggers.push({ cond: t.condition, met: t.met || false });
+  });
+  // 如果 reduce_position 不足5条，补充 add_position
+  if (allTriggers.length < 5) {
+    addTriggers.forEach(t => {
+      if (allTriggers.length < 5) {
+        allTriggers.push({ cond: t.condition, met: t.met || false });
+      }
+    });
+  }
+  return allTriggers.length > 0 ? allTriggers : [
+    { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+    { cond: '新发基金份额月均 > 800 亿', met: false },
+    { cond: '偏股基金3年年化 > 25%', met: false },
+    { cond: '融资融券余额 > 2.0 万亿', met: false },
+    { cond: '交易拥挤度 > 90%分位，持续 ≥20 交易日', met: false }
+  ];
+}
+
+// 应用真实数据覆盖
+applyRealDataToMockData();
 
 
 // ============================================================
@@ -2024,7 +2241,8 @@ function renderActionBar() {
 
   // ③ 待确认信号行
   const triggerList = document.getElementById('action-trigger-list');
-  const c1Triggers = [
+  // v3.3: 从 timing_scores.json 动态读取触发器（去mock）
+  const c1Triggers = (typeof getRealTriggers === 'function') ? getRealTriggers() : [
     { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
     { cond: '新发基金份额月均 > 800 亿', met: false },
     { cond: '偏股基金3年年化 > 25%', met: false },
@@ -2127,6 +2345,8 @@ async function init() {
   try { await StageEngine.load(); } catch(e) { console.warn("[init] StageEngine.load failed:", e); }
   // 重新运行引擎（确保最新）
   runEngine();
+  // v3.3 修复: 异步数据加载完成后，用真实数据覆盖mockData并重新渲染
+  applyRealDataToMockData();
   renderStageBar();
   renderStageCards();
   renderActionBar();

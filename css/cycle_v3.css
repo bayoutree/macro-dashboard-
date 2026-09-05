@@ -419,3 +419,211 @@
 @media (max-width: 768px) {
   .svg-viz-row { flex-direction: column; align-items: center; }
 }
+
+
+/* ===== v3.3: Consensus Summary Section (置顶结论卡) ===== */
+.consensus-summary-section {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(17,24,39,0.95) 0%, rgba(17,24,39,0.85) 100%);
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+}
+
+.consensus-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.consensus-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
+.consensus-score-block .consensus-score {
+  font-size: 48px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.consensus-score-block .consensus-label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.consensus-assessment {
+  flex: 1;
+  min-width: 200px;
+}
+
+.consensus-assessment .assessment-text {
+  font-size: 15px;
+  color: #e2e8f0;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.consensus-assessment .assessment-signal {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.consensus-summary-header .consensus-date {
+  font-size: 12px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+/* 配置卡网格 - 4列横排 */
+.consensus-alloc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.consensus-alloc-card {
+  padding: 14px 12px;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.consensus-alloc-card:hover {
+  border-color: #334155;
+}
+
+.consensus-alloc-card .alloc-emoji {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.consensus-alloc-card .alloc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 6px;
+}
+
+.consensus-alloc-card .alloc-weight {
+  font-size: 20px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.consensus-alloc-card .alloc-rec {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.consensus-alloc-card .alloc-reason {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* 周期嵌套框 */
+.consensus-nesting-box {
+  padding: 14px 16px;
+  background: rgba(30,41,59,0.4);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border-left: 4px solid #3b82f6;
+}
+
+.consensus-nesting-box h4 {
+  font-size: 14px;
+  color: #e2e8f0;
+  margin-bottom: 8px;
+}
+
+.consensus-nesting-box p {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.consensus-nesting-box .nesting-interpretation {
+  color: #cbd5e1 !important;
+  font-weight: 500;
+}
+
+/* 风险提示 */
+.consensus-risks {
+  padding: 14px 16px;
+  background: rgba(239,68,68,0.06);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border-left: 4px solid #ef4444;
+}
+
+.consensus-risks h4 {
+  font-size: 14px;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.consensus-risks ul {
+  padding-left: 16px;
+  margin: 0;
+}
+
+.consensus-risks li {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+/* 展开按钮 */
+.expand-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  background: rgba(30,41,59,0.6);
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.expand-detail-btn:hover {
+  color: #e2e8f0;
+  background: rgba(30,41,59,0.9);
+  border-color: #334155;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .consensus-alloc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .consensus-summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .consensus-alloc-grid {
+    grid-template-columns: 1fr;
+  }
+}
