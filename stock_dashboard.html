@@ -892,15 +892,9 @@ const StageEngine = {
         const newIdx = Math.max(0, anchorIdx - 1);
         anchorStage = stageOrder[newIdx];
       }
-      
-      // 规则1b: 位置中性偏冷(B) + 右侧空方确认(bear>=40 或 confirm_bear>=2) → 标记为A-B过渡带
-      // 实现：强制触发过渡期flag，并在概率分布中注入额外A概率
-      if (anchorStage === 'B' && (bearScore >= 40 || confirmBearCount >= 2)) {
-        this._v33BearCorrection = true;
-      } else {
-        this._v33BearCorrection = false;
-      }
-      
+      // v3.3.1: 规则1b已撤销——B+空方确认不再注入A概率（A是位置概念，趋势向下不改变位置锚定）；
+      //         趋势逆风改由 applyTrendOverlay 以"仓位折扣+警告标签"表达，不再动概率分布。
+
       // 规则2: 位置偏冷(A/B) + 右侧多方确认(bull>=40 或 confirm_bull>=2) → 需连续2期才调（本次不调）
       // 回补要慢，此处不修改 anchorStage
     }
@@ -954,15 +948,72 @@ const StageEngine = {
     return Math.round(midSum * 10) / 10;
   },
 
-  // 计算仓位区间（各阶段仓位区间按概率加权）
-  calcPositionBand(probs) {
+  // 计算仓位区间（各阶段仓位区间按概率加权），返回数值端点便于趋势乘数复用
+  calcPositionBandParts(probs) {
     let minW = 0, maxW = 0;
     Object.entries(POSITION_TEMPLATES).forEach(([stage, t]) => {
       const w = probs[stage] / 100;
       minW += t.min * w;
       maxW += t.max * w;
     });
-    return `${Math.round(minW)}%-${Math.round(maxW)}%`;
+    return { min: minW, max: maxW };
+  },
+
+  // v3.3.1: 趋势层——只动仓位（折扣）+警告标签，不动概率分布
+  // 返回 {level, positionMultiplier, warning, triggers}
+  applyTrendOverlay(probs, rightData) {
+    const neutral = { level: null, positionMultiplier: 1.0, warning: null, triggers: [] };
+    const rd = rightData || this._rightScoresData;
+    if (!rd || !rd.signals) return neutral;
+
+    const bearScore = rd.bear_score || 0;
+    const bullScore = rd.bull_score || 0;
+    const confirmBear = (rd.signals.confirm_bear || []).filter(s => s.triggered);
+    const earlyBear   = (rd.signals.early_bear   || []).filter(s => s.triggered);
+    const confirmBull = (rd.signals.confirm_bull || []).filter(s => s.triggered);
+    const earlyBull   = (rd.signals.early_bull   || []).filter(s => s.triggered);
+
+    // 空方信号短名（用于警告文案）
+    const shortName = (name) => {
+      if (name.includes('MACD')) return '月线MACD死叉';
+      if (name.includes('年线')) return '跌破年线';
+      if (name.includes('60日线')) return '跌破60日线';
+      if (name.includes('成交')) return name.includes('放量') ? '成交放量' : '成交萎缩';
+      if (name.includes('产业资本')) return name.includes('增持') ? '产业资本增持' : '产业资本减持';
+      if (name.includes('北向')) return name.includes('流入') ? '北向净流入' : '北向净流出';
+      if (name.includes('宽度')) return name.includes('修复') ? '市场宽度修复' : '宽度恶化';
+      if (name.includes('两融')) return name.includes('回升') ? '两融回升' : '两融回落';
+      if (name.includes('量价')) return name.includes('配合') ? '量价配合' : '量价背离';
+      return name;
+    };
+
+    // 强空方：确认信号≥2项 或 bear_score≥50
+    if (confirmBear.length >= 2 || bearScore >= 50) {
+      const trig = confirmBear.length >= 2
+        ? confirmBear.map(s => shortName(s.name)).join('+')
+        : (confirmBear[0] ? shortName(confirmBear[0].name) : '多项空方信号');
+      return {
+        level: 'strong_bear',
+        positionMultiplier: 0.80,
+        warning: `趋势逆风：${trig} → 防御仓位`,
+        triggers: confirmBear.map(s => shortName(s.name))
+      };
+    }
+    // 弱空方：早期预警≥2项 或 bear_score≥35
+    if (earlyBear.length >= 2 || bearScore >= 35) {
+      const trig = earlyBear.slice(0, 2).map(s => shortName(s.name)).join('+');
+      return {
+        level: 'weak_bear',
+        positionMultiplier: 0.90,
+        warning: `趋势逆风·早期预警${trig ? '（' + trig + '）' : ''}`,
+        triggers: earlyBear.map(s => shortName(s.name))
+      };
+    }
+    // 强多方：确认信号≥2项 或 bull_score≥50 → 趋势顺风不额外加仓（回补要慢），乘数1.0
+    if (confirmBull.length >= 2 || bullScore >= 50) {
+      return { level: 'strong_bull', positionMultiplier: 1.0, warning: null, triggers: [] };
+    }
+    return neutral;
   },
 
   // 确定 current_stage（带滞后确认防抖动）
@@ -1007,30 +1058,24 @@ const StageEngine = {
   // 主运行方法：返回完整引擎输出
   run() {
     const scores = this.getDimensionScores();
-    let probs = this.calcProbabilities(scores);
-    
-    // v3.3: B+空方确认 → A-B过渡带修正（注入额外A概率，压制B概率）
-    if (this._v33BearCorrection) {
-      const shift = Math.min(probs.B - 5, 30); // 从B移出最多30%，至少保留B=5%
-      probs.B = Math.max(5, probs.B - shift);
-      probs.A = (probs.A || 0) + shift;
-      // 重新归一化到100
-      let total = Object.values(probs).reduce((a,b) => a+b, 0);
-      if (total !== 100) {
-        const maxKey = Object.keys(probs).reduce((a,b) => probs[a]>probs[b]?a:b);
-        probs[maxKey] += (100 - total);
-      }
-    }
-    
-    const weightedPos = this.calcWeightedPosition(probs);
-    const posBand = this.calcPositionBand(probs);
+    // v3.3.1: 概率分布纯位置锚定（高斯），趋势不再注入概率
+    const probs = this.calcProbabilities(scores);
+
+    const weightedPosRaw = this.calcWeightedPosition(probs);
+    const bandParts = this.calcPositionBandParts(probs);
     const currentStage = this.determineCurrentStage(probs);
-    let transition = this.isTransition(probs);
-    // v3.3: B+空方确认时强制标记过渡期
-    if (this._v33BearCorrection) transition = true;
+    // 过渡带仅由 isTransition 自然判定，不再强制标记
+    const transition = this.isTransition(probs);
     const migration = this.calcMigration(probs);
     const freezeTriggers = this.checkFreeze(scores, probs);
     const divergence = this.calcDivergence(scores);
+
+    // v3.3.1: 趋势层覆盖——仓位乘数+警告标签（不动概率）
+    const trend = this.applyTrendOverlay(probs, this._rightScoresData);
+    const mult = trend.positionMultiplier;
+    const weightedPos = Math.round(weightedPosRaw * mult * 10) / 10;
+    // 区间上下限同乘乘数后取整
+    const posBand = `${Math.round(bandParts.min * mult)}%-${Math.round(bandParts.max * mult)}%`;
 
     // 急冻override
     let freezeActive = freezeTriggers.length > 0;
@@ -1050,7 +1095,14 @@ const StageEngine = {
       freeze_triggers: freezeTriggers,
       divergence: Math.round(divergence * 10) / 10,
       composite_score: scores.composite,
-      scores: scores
+      scores: scores,
+      // v3.3.1: 趋势逆风层输出（仓位折扣+警告）
+      trend_overlay: {
+        level: trend.level,
+        position_multiplier: mult,
+        warning: trend.warning,
+        triggers: trend.triggers || []
+      }
     };
   }
 };
@@ -1521,14 +1573,17 @@ function renderStageCards() {
     const isActive = key === current;
     const cls = key.toLowerCase();
     const m = migration[key] || 0;
-    const mClass = m > 0 ? 'up' : m < 0 ? 'down' : 'flat';
-    const mStr = m > 0 ? `+${m}%` : m < 0 ? `${m}%` : '0';
+    const mClass = m > 0 ? 'up' : 'down';
+    // v3.3.1: 首期（无prev基准）或变化为0时不显示迁移箭头（+0/-0也不显示）
+    const mBadge = m !== 0
+      ? `<div class="migration-badge ${mClass}">↕ ${m > 0 ? '+' : ''}${m}%</div>`
+      : `<div class="migration-badge" style="visibility:hidden;">·</div>`;
     html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
       <span class="season-emoji">${s.emoji}</span>
       <div class="stage-name">${s.name}</div>
       <div class="stage-prob">${pct}%</div>
       <div class="stage-range">仓位 ${s.position}</div>
-      <div class="migration-badge ${mClass}">↕ ${mStr}</div>
+      ${mBadge}
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });
@@ -2046,7 +2101,7 @@ function renderConfirmSignals() {
           <div class="ind-name">${cf.name} <span style="font-size:10px;color:var(--text-muted);">(${cf.freq || ''})</span></div>
           <div class="ind-value">${cf.value}</div>
         </div>
-        <div class="ind-signal ${cf.signal === 'bullish' ? 'green' : cf.signal === 'bearish' ? 'red' : 'yellow'}">${cf.signalText}</div>
+        <div class="ind-signal ${cf.signal === 'green' || cf.signal === 'bullish' ? 'green' : cf.signal === 'red' || cf.signal === 'bearish' ? 'red' : cf.signal === 'gray' ? 'gray' : 'yellow'}">${cf.signalText}</div>
       </div>
       <div class="mini-sparkline" id="confirm-spark-${idx}"></div>
       <div class="sparkline-dates"><span>${startD}</span><span>${endD}</span></div>
@@ -2148,16 +2203,34 @@ function renderActionBar() {
   const freezeBanner = document.getElementById('freeze-banner');
   const actionBar = document.getElementById('action-bar');
 
+  // v3.3.1: 趋势逆风层（提前计算，banner/状态行/仓位行共用）
+  const trendOv = e.trend_overlay || { level: null, warning: null, position_multiplier: 1 };
+  const trendBear = trendOv.level === 'strong_bear' || trendOv.level === 'weak_bear';
+
   if (e.freeze_active) {
     freezeBanner.style.display = 'block';
     const exitInfo = _freezeState.active && !_freezeState.exitConfirmCount ? " · 等待退出确认中..." : "";
     freezeBanner.innerHTML = `⚡ 风险模式（急冻）· 仓位 snap 至 20-40%${exitInfo}<br><span style="font-size:12px;font-weight:400;">触发: ${e.freeze_triggers.join(' | ')}</span>`;
     actionBar.classList.add('freeze-mode');
     transitionBanner.style.display = 'none';
+  } else if (trendBear) {
+    // v3.3.1: 趋势逆风——过渡期横幅改显趋势警告（强空方红/弱空方橙），不再显示"信号混合·过渡期"
+    transitionBanner.style.display = 'block';
+    freezeBanner.style.display = 'none';
+    actionBar.classList.remove('freeze-mode');
+    const tc = trendOv.level === 'strong_bear' ? '255,107,107' : '255,169,77';
+    transitionBanner.style.background = `rgba(${tc},0.12)`;
+    transitionBanner.style.borderColor = `rgba(${tc},0.4)`;
+    transitionBanner.style.color = trendOv.level === 'strong_bear' ? 'var(--red)' : 'var(--orange)';
+    transitionBanner.textContent = `⚡ ${trendOv.warning || '趋势逆风'} · 仓位 ×${trendOv.position_multiplier}（概率分布不变）`;
   } else if (e.transition_flag) {
     transitionBanner.style.display = 'block';
     freezeBanner.style.display = 'none';
     actionBar.classList.remove('freeze-mode');
+    transitionBanner.style.background = 'rgba(255,215,110,0.15)';
+    transitionBanner.style.borderColor = 'rgba(255,215,110,0.3)';
+    transitionBanner.style.color = 'var(--yellow)';
+    transitionBanner.textContent = '⚠️ 信号混合·过渡期';
   } else {
     transitionBanner.style.display = 'none';
     freezeBanner.style.display = 'none';
@@ -2169,13 +2242,21 @@ function renderActionBar() {
   const divBadge = document.getElementById('action-divergence-badge');
   const migArrow = document.getElementById('action-migration-arrow');
 
+  // （trendOv / trendBear 已在上方 banner 逻辑中统一计算）
   if (e.freeze_active) {
     stageLabel.innerHTML = '⚡ 风险模式（急冻）';
     stageLabel.style.color = 'var(--red)';
+  } else if (trendBear && trendOv.warning) {
+    // 趋势逆风：主标签显示趋势警告（强空方红/弱空方橙），不再显示"升温方向"
+    stageLabel.innerHTML = `⚡ ${trendOv.warning}`;
+    stageLabel.style.color = trendOv.level === 'strong_bear' ? 'var(--red)' : 'var(--orange)';
   } else if (e.transition_flag) {
-    // 过渡期措辞；平票时升温方向（阶段序更靠后）优先（CIO验收修正）
+    // 过渡期措辞；平票排序：趋势逆风时降温优先，否则升温方向（阶段序更靠后）优先
     const _ord = ['A','B','C1','C2','D'];
-    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => (b[1]-a[1]) || (_ord.indexOf(b[0])-_ord.indexOf(a[0])));
+    const tie = trendBear
+      ? (_ord.indexOf(a[0]) - _ord.indexOf(b[0]))
+      : (_ord.indexOf(b[0]) - _ord.indexOf(a[0]));
+    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => (b[1]-a[1]) || tie);
     const s0 = sorted[0][0], s1 = sorted[1][0];
     const arrow = _ord.indexOf(s1) > _ord.indexOf(s0) ? '→' : '←';
     const dirTxt = _ord.indexOf(s1) > _ord.indexOf(s0) ? `升温方向 ${s1}` : `回退方向 ${s1}`;
@@ -2228,14 +2309,23 @@ function renderActionBar() {
     footnoteEl.textContent = '急冻override · 防御仓位 · 不等加权缓慢下移';
   } else {
     posEl.textContent = e.position_band;
-    posEl.style.color = '';
-    // 注脚：只有B∩C1相邻过渡态有交集
-    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => b[1] - a[1]);
-    const top2Stages = sorted.slice(0, 2).map(s => s[0]).sort();
-    if (top2Stages[0] === 'B' && top2Stages[1] === 'C1') {
-      footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}% · B∩C1 无悔仓位 70%-75%`;
+    posEl.style.color = trendBear
+      ? (trendOv.level === 'strong_bear' ? 'var(--red)' : 'var(--orange)')
+      : '';
+    // 注脚：趋势逆风时标注仓位折扣；否则仅B∩C1相邻过渡态显示无悔仓位交集
+    const trendNote = trendBear
+      ? `期望仓位 ${e.weighted_target_position}% · 趋势逆风仓位折扣 ×${trendOv.position_multiplier}`
+      : null;
+    if (trendNote) {
+      footnoteEl.textContent = trendNote;
     } else {
-      footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}%`;
+      const sorted = Object.entries(e.stage_probabilities).sort((a,b) => b[1] - a[1]);
+      const top2Stages = sorted.slice(0, 2).map(s => s[0]).sort();
+      if (top2Stages[0] === 'B' && top2Stages[1] === 'C1') {
+        footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}% · B∩C1 无悔仓位 70%-75%`;
+      } else {
+        footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}%`;
+      }
     }
   }
 
@@ -2343,6 +2433,9 @@ function renderCycleFreshness() {
 async function init() {
   // Load timing_scores.json for real engine data
   try { await StageEngine.load(); } catch(e) { console.warn("[init] StageEngine.load failed:", e); }
+  // v3.3.1: 首期迁移归零——脚本同步阶段的 runEngine() 使用内嵌fallback数据，
+  // 其结果不得作为真实数据期的迁移基准；置空 prev 后重算，迁移箭头首期全0
+  StageEngine._prevProbabilities = null;
   // 重新运行引擎（确保最新）
   runEngine();
   // v3.3 修复: 异步数据加载完成后，用真实数据覆盖mockData并重新渲染
@@ -2388,22 +2481,22 @@ async function init() {
     const macdIdx = mockData.confirmSignals.indexOf(macdConfirm);
     const macdEl = document.getElementById(`confirm-spark-${macdIdx}`);
     if (macdEl) {
-      // Clear the mini sparkline that was rendered
-      macdEl.innerHTML = '<div class="mini-tooltip"></div>';
-      // Render as a full sparkline with histogram
-      const container = document.createElement('div');
-      container.className = 'sparkline-container';
-      container.style.height = '80px';
-      container.style.marginTop = '8px';
-      container.innerHTML = '<div class="sparkline-tooltip"></div>';
-      container.id = 'macd-full-chart';
-      // Replace mini sparkline
-      const miniEl = macdEl.querySelector('.mini-sparkline');
-      if (miniEl) {
-        miniEl.innerHTML = '';
-        miniEl.style.height = '80px';
-        renderSparkline_inline(macdEl, macdConfirm);
-      }
+      // v3.3.1修复: 原实现查询 macdEl 内部的 .mini-sparkline 子元素（不存在——macdEl 自身
+      // 就是 .mini-sparkline），导致 miniEl=null、图表整块跳过。
+      // 现在：清空 macdEl，直接在其内插入80px图表容器并渲染 DIF/DEA 双线+柱状图。
+      macdEl.style.height = '80px';
+      macdEl.innerHTML = '';
+      const chartContainer = document.createElement('div');
+      chartContainer.className = 'sparkline-container';
+      chartContainer.id = 'macd-full-chart';
+      chartContainer.style.position = 'relative';
+      chartContainer.style.height = '80px';
+      chartContainer.style.width = '100%';
+      // tooltip 放在图表容器内，renderSparkline_inline 会自动挂载悬停交互
+      chartContainer.innerHTML = '<div class="mini-tooltip"></div>';
+      macdEl.appendChild(chartContainer);
+      // 历史序列（dif/dea/history/dates）不被 applyRealDataToMockData 覆盖，走势图用其绘制
+      renderSparkline_inline(chartContainer, macdConfirm);
     }
   }
   
