@@ -416,6 +416,45 @@ body::before {
 .ind-description .desc-range { color: var(--cyan); font-weight: 500; }
 .ind-description .desc-signal { color: var(--text-secondary); font-weight: 500; }
 
+/* ===== P2: Migration arrows ===== */
+.migration-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.migration-badge.up { color: var(--green); background: var(--green-dim); }
+.migration-badge.down { color: var(--red); background: var(--red-dim); }
+.migration-badge.flat { color: var(--text-muted); background: var(--surface); }
+
+/* ===== P2: Cycle freshness badge ===== */
+.cycle-freshness-badge {
+  position: absolute;
+  top: 8px; right: 12px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.cycle-freshness-badge.stale {
+  color: var(--yellow);
+  background: var(--yellow-dim);
+  border-color: rgba(255,215,110,0.3);
+}
+
+/* ===== v3.2: Freeze mode ===== */
+.action-bar.freeze-mode {
+  border-color: rgba(255,107,107,0.4) !important;
+  box-shadow: 0 0 20px rgba(255,107,107,0.15);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .anchor-grid { grid-template-columns: 1fr; }
@@ -444,8 +483,9 @@ body::before {
   <div class="range-info-bar" id="range-info-bar"></div>
 
   <!-- ===== 1. STAGE PROBABILITY DISTRIBUTION ===== -->
-  <section class="stage-gauge" id="stage-section">
-    <div class="section-title"><span class="emoji">🎯</span> 阶段概率分布</div>
+  <section class="stage-gauge" id="stage-section" style="position:relative;">
+    <div id="cycle-freshness" class="cycle-freshness-badge">全球周期: --</div>
+    <div class="section-title"><span class="emoji">🎯</span> 阶段概率分布 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(v3.2引擎驱动)</span></div>
     <div class="stage-bar-container">
       <div class="stage-bar" id="stage-bar"></div>
       <div class="stage-labels">
@@ -594,6 +634,64 @@ body::before {
     </div>
   </section>
 
+  <!-- ===== P1: 外部流动性三联卡 (v3.2 §2) ===== -->
+  <section class="anchor-section">
+    <div class="section-title"><span class="emoji">🌐</span> 外部流动性三联卡 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(v3.2新增)</span></div>
+    <div class="anchor-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <!-- 美债10Y -->
+      <div class="anchor-card" id="ust10y-card" style="position:relative;">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">美债10Y收益率 <span style="font-size:10px;color:var(--text-muted);">(FRED DGS10)</span></div>
+            <div class="indicator-value" id="ust10y-value">4.30%</div>
+            <div class="indicator-change down" id="ust10y-change">↓ 8bp (日) | ↓ 12bp (周)</div>
+          </div>
+          <div class="ind-signal yellow">高位回落</div>
+        </div>
+        <div class="sparkline-container" id="ust10y-sparkline" style="height:120px;">
+          <div class="sparkline-tooltip" id="ust10y-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="ust10y-dates"></div>
+        <div class="ind-description">美债10Y是全球资产贴现率锚，上行期压制高估值板块，并通过北向资金传导至A股。</div>
+        <div class="update-time">更新: 2026-09-01 (日频)</div>
+      </div>
+      <!-- 中美10Y利差 -->
+      <div class="anchor-card" id="spread-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">中美10Y利差 <span style="font-size:10px;color:var(--text-muted);">(中债-美债)</span></div>
+            <div class="indicator-value" id="spread-value">-2.60%</div>
+            <div class="indicator-change up" id="spread-change">↑ 4bp (日) | ↑ 6bp (周)</div>
+          </div>
+          <div class="ind-signal yellow">倒挂收窄</div>
+        </div>
+        <div class="sparkline-container" id="spread-sparkline" style="height:120px;">
+          <div class="sparkline-tooltip" id="spread-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="spread-dates"></div>
+        <div class="ind-description">中美利差反映资金跨境流动方向。倒挂收窄意味着外资流出压力减轻。</div>
+        <div class="update-time">更新: 2026-09-01 (日频)</div>
+      </div>
+      <!-- USDCNY -->
+      <div class="anchor-card" id="usdcny-card" style="position:relative;">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">USD/CNY 人民币汇率 <span style="font-size:10px;color:var(--text-muted);">(在岸即期)</span></div>
+            <div class="indicator-value" id="usdcny-value">7.18</div>
+            <div class="indicator-change flat" id="usdcny-change">→ +0.02 (日) | +0.05 (周)</div>
+          </div>
+          <div class="ind-signal yellow">基本稳定</div>
+        </div>
+        <div class="sparkline-container" id="usdcny-sparkline" style="height:120px;">
+          <div class="sparkline-tooltip" id="usdcny-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="usdcny-dates"></div>
+        <div class="ind-description">人民币汇率是资金面与风险偏好的综合阀门。贬值压力常伴随北向流出，压制外资重仓板块。<br><span style="color:var(--yellow);">⚠️ 注意：箭头方向与数值相反——贬值=风险升高</span></div>
+        <div class="update-time">更新: 2026-09-01 (日频)</div>
+      </div>
+    </div>
+  </section>
+
   <!-- E3: Bond yield + credit spread (new anchor-level indicator) -->
   <section class="anchor-section">
     <div class="section-title"><span class="emoji">📈</span> 利率与信用</div>
@@ -635,11 +733,28 @@ body::before {
     <span id="risk-warning-text">风险预警</span>
   </div>
 
-  <!-- ===== 4. ACTION BAR ===== -->
-  <div class="action-bar stage-b" id="action-bar">
-    <div class="stage-label" id="action-stage">B · 盛夏</div>
-    <div class="position-range" id="action-position">40%–60%</div>
-    <div class="action-desc">持有为主，精选结构性机会。关注月线MACD是否死叉确认，若死叉则升级至C1。</div>
+  <!-- ===== 4. ACTION BAR (v3.2 三块结构) ===== -->
+  <!-- 过渡期/急冻 横幅 -->
+  <div id="transition-banner" style="display:none; margin-bottom:12px; padding:10px 16px; background:rgba(255,215,110,0.15); border:1px solid rgba(255,215,110,0.3); border-radius:12px; font-size:14px; color:var(--yellow); font-weight:600; text-align:center;">⚠️ 信号混合·过渡期</div>
+  <div id="freeze-banner" style="display:none; margin-bottom:12px; padding:10px 16px; background:rgba(255,107,107,0.15); border:1px solid rgba(255,107,107,0.3); border-radius:12px; font-size:14px; color:var(--red); font-weight:600; text-align:center;">⚡ 风险模式（急冻）</div>
+
+  <div class="action-bar" id="action-bar">
+    <!-- ① 状态行 -->
+    <div id="action-status-row" style="font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+      <span id="action-stage-label"></span>
+      <span id="action-divergence-badge" style="font-size:11px; padding:2px 8px; border-radius:10px; background:var(--surface-hover); color:var(--text-secondary);"></span>
+      <span id="action-migration-arrow" style="font-size:12px; color:var(--text-muted);"></span>
+    </div>
+    <!-- ② 仓位行 -->
+    <div id="action-position-row" style="margin-bottom:12px;">
+      <div id="action-position" style="font-size:32px; font-weight:800; font-family:var(--font-mono);"></div>
+      <div id="action-position-footnote" style="font-size:11px; color:var(--text-muted); margin-top:4px;"></div>
+    </div>
+    <!-- ③ 待确认信号行 -->
+    <div id="action-signals-row" style="font-size:12px; color:var(--text-secondary); text-align:left; max-width:600px; margin:0 auto; padding:10px 16px; background:var(--surface); border-radius:8px; border:1px solid var(--border);">
+      <div style="font-weight:600; margin-bottom:6px; color:var(--text-primary);">📋 待确认信号（C1→C2 秋收触发器）</div>
+      <div id="action-trigger-list" style="line-height:1.8;"></div>
+    </div>
   </div>
 
   <!-- ===== 5. MAIN MODEL INDICATORS (E1: merged cards) ===== -->
@@ -666,17 +781,250 @@ body::before {
 // STAGE DEFINITIONS
 // ============================================================
 const STAGES = {
-  A: { name: 'A · 初春', emoji: '🌱', position: '20%–40%', desc: 'ERP高位，盈利底部回升', range: 'ERP>6%' },
-  B: { name: 'B · 盛夏', emoji: '☀️', position: '40%–60%', desc: '盈利加速，估值扩张', range: 'ERP 3-6%' },
-  C1: { name: 'C1 · 秋收', emoji: '🍂', position: '30%–50%', desc: '过热信号出现，减仓', range: '拥挤>80%' },
-  C2: { name: 'C2 · 深秋', emoji: '🍁', position: '20%–40%', desc: '流动性收紧，加速下行', range: '利率上行' },
-  D: { name: 'D · 寒冬', emoji: '❄️', position: '0%–20%', desc: '全面下跌，等待底部', range: 'ERP>7%' }
+  A:  { name: 'A·春播 🌱', emoji: '🌱', position: '30%-70%',  desc: '分批建仓，越跌越买',         range: 'ERP>4%' },
+  B:  { name: 'B·夏长 ☀️', emoji: '☀️', position: '70%-90%',  desc: '高仓位持有，享受复利',       range: 'ERP 2.5-4%' },
+  C1: { name: 'C1·享受泡沫 ☀️🌤', emoji: '🌤', position: '60%-75%', desc: '持有核心、停止加仓（不减仓）', range: 'ERP 2-2.5%' },
+  C2: { name: 'C2·秋收 ⚠️ 🍂', emoji: '🍂', position: '20%-40%', desc: '唯一主动减仓信号，颗粒归仓', range: 'ERP 1.6-2%' },
+  D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '0%-10%',   desc: '清仓离场，现金为王',         range: 'ERP<1.6%' }
+};
+// v3.1仓位模板（用于加权期望仓位计算）
+const POSITION_TEMPLATES = {
+  A:  { min: 30, max: 70 },
+  B:  { min: 70, max: 90 },
+  C1: { min: 60, max: 75 },
+  C2: { min: 20, max: 40 },
+  D:  { min: 0,  max: 10 }
 };
 
-const stageData = {
-  current: 'B',
-  probabilities: { A: 5, B: 35, C1: 40, C2: 15, D: 5 }
+
+// ============================================================
+// v3.2 PROBABILITY RULE ENGINE (去硬编码)
+// 输入: timing_scores.json 综合评分 + 六维分位
+// 输出: stage_probabilities, current_stage, weighted_target_position
+// ============================================================
+const StageEngine = {
+  _timingData: null,  // 缓存 timing_scores.json
+  _prevProbabilities: null, // 上一期概率（用于迁移箭头）
+
+  // 加载 timing_scores.json（若可用）或降级为模拟
+  async load() {
+    try {
+      const resp = await fetch('data/timing_scores.json');
+      if (resp.ok) {
+        this._timingData = await resp.json();
+      }
+    } catch(e) {
+      console.log('[StageEngine] timing_scores.json 未加载，使用内嵌评分');
+    }
+  },
+
+  // 从 timing_scores 提取六维评分
+  getDimensionScores() {
+    if (!this._timingData || !this._timingData.dimensions) {
+      // 降级：使用内嵌的模拟数据（来自 timing_scores.json 最近快照）
+      return {
+        composite: 46.3,
+        valuation: 48.4,
+        equity_bond: 35.0,
+        liquidity: 46.0,
+        sentiment: 55.0,
+        crowding: 66.2,
+        micro: 66.2
+      };
+    }
+    const d = this._timingData;
+    return {
+      composite: d.composite_score || 50,
+      valuation: d.dimensions.valuation?.score || 50,
+      equity_bond: d.dimensions.equity_bond?.score || 50,
+      liquidity: d.dimensions.liquidity?.score || 50,
+      sentiment: d.dimensions.sentiment?.score || 50,
+      crowding: d.dimensions.micro_structure?.score || 50,
+      micro: d.dimensions.micro_structure?.score || 50
+    };
+  },
+
+  // 计算信号分歧度（六维方向方差）
+  calcDivergence(scores) {
+    const dims = [scores.valuation, scores.equity_bond, scores.liquidity,
+                  scores.sentiment, scores.crowding, scores.micro];
+    const mean = dims.reduce((a,b) => a+b, 0) / dims.length;
+    const variance = dims.reduce((a,b) => a + (b-mean)**2, 0) / dims.length;
+    return Math.sqrt(variance); // 标准差作为分歧度
+  },
+
+  // 核心映射规则：综合得分 -> 锚定阶段 + 概率分布
+  calcProbabilities(scores) {
+    const composite = scores.composite;
+    const divergence = this.calcDivergence(scores);
+
+    // 锚定阶段（按 v3.2 §3.2 阈值）
+    let anchorStage;
+    if (composite < 25) anchorStage = 'A';
+    else if (composite < 55) anchorStage = 'B';
+    else if (composite < 70) anchorStage = 'C1';
+    else if (composite < 85) anchorStage = 'C2';
+    else anchorStage = 'D';
+
+    // 扩散宽度：分歧越大分布越扁平
+    // 基准 sigma=0.6（CIO验收修正：原1.0导致分布过扁平、过渡带恒亮），分歧度/20 范围 0.0 ~ 2.0
+    const sigma = 0.6 + Math.min(2.0, divergence / 20);
+
+    // 阶段顺序
+    const stageOrder = ['A','B','C1','C2','D'];
+    const anchorIdx = stageOrder.indexOf(anchorStage);
+
+    // 钟形分布（高斯）
+    const raw = {};
+    let total = 0;
+    stageOrder.forEach((s, i) => {
+      const dist = Math.abs(i - anchorIdx);
+      raw[s] = Math.exp(-0.5 * (dist / sigma) ** 2);
+      total += raw[s];
+    });
+
+    // 归一化为整数百分比（总和100）
+    const probs = {};
+    let sumPct = 0;
+    stageOrder.forEach((s, idx) => {
+      if (idx === stageOrder.length - 1) {
+        probs[s] = Math.max(1, 100 - sumPct);
+      } else {
+        probs[s] = Math.max(1, Math.round(raw[s] / total * 100));
+        sumPct += probs[s];
+      }
+    });
+
+    // 修正 sum = 100
+    let check = Object.values(probs).reduce((a,b)=>a+b,0);
+    if (check !== 100) {
+      const maxKey = stageOrder.reduce((a,b) => probs[a]>probs[b]?a:b);
+      probs[maxKey] += (100 - check);
+    }
+
+    return probs;
+  },
+
+  // 计算加权期望仓位
+  calcWeightedPosition(probs) {
+    let midSum = 0;
+    Object.entries(POSITION_TEMPLATES).forEach(([stage, t]) => {
+      const mid = (t.min + t.max) / 2;
+      midSum += mid * probs[stage] / 100;
+    });
+    return Math.round(midSum * 10) / 10;
+  },
+
+  // 计算仓位区间（各阶段仓位区间按概率加权）
+  calcPositionBand(probs) {
+    let minW = 0, maxW = 0;
+    Object.entries(POSITION_TEMPLATES).forEach(([stage, t]) => {
+      const w = probs[stage] / 100;
+      minW += t.min * w;
+      maxW += t.max * w;
+    });
+    return `${Math.round(minW)}%-${Math.round(maxW)}%`;
+  },
+
+  // 确定 current_stage（带滞后确认防抖动）
+  // 简化版：这里取最高概率的阶段
+  determineCurrentStage(probs, prevStage) {
+    const sorted = Object.entries(probs).sort((a,b) => b[1] - a[1]);
+    return sorted[0][0];
+  },
+
+  // 过渡期检测：最高概率<45% 或 前两名差<10%
+  isTransition(probs) {
+    const sorted = Object.entries(probs).sort((a,b) => b[1] - a[1]);
+    const top1 = sorted[0][1];
+    const top2 = sorted[1][1];
+    return top1 < 45 || (top1 - top2) < 10;
+  },
+
+  // 获取迁移箭头（概率变化）
+  calcMigration(probs) {
+    if (!this._prevProbabilities) {
+      const result = {};
+      Object.keys(probs).forEach(k => result[k] = 0);
+      return result;
+    }
+    const result = {};
+    Object.keys(probs).forEach(k => {
+      result[k] = probs[k] - (this._prevProbabilities[k] || 0);
+    });
+    return result;
+  },
+
+  // 急冻快车道检测（v3.2 §6）
+  checkFreeze(scores, probs) {
+    const triggers = [];
+    // 条件1: D概率 >= 35%（D 主导才是崩盘，C2 是有序减仓不触发急冻）
+    if (probs.D >= 35) triggers.push('D概率≥35%');
+    // 条件2-5: 综合评分 > 88（真正进入 D 核心区域，避免在 C2 区间误报）
+    if (scores.composite > 88) triggers.push('综合评分极高风险区 (>88)');
+    return triggers;
+  },
+
+  // 主运行方法：返回完整引擎输出
+  run() {
+    const scores = this.getDimensionScores();
+    let probs = this.calcProbabilities(scores);
+    const weightedPos = this.calcWeightedPosition(probs);
+    const posBand = this.calcPositionBand(probs);
+    const currentStage = this.determineCurrentStage(probs);
+    const transition = this.isTransition(probs);
+    const migration = this.calcMigration(probs);
+    const freezeTriggers = this.checkFreeze(scores, probs);
+    const divergence = this.calcDivergence(scores);
+
+    // 急冻override
+    let freezeActive = freezeTriggers.length > 0;
+
+    // 保存本期概率为下期prev
+    this._prevProbabilities = {...probs};
+
+    return {
+      update_date: this._timingData?.update_date || new Date().toISOString().slice(0,10),
+      current_stage: currentStage,
+      stage_probabilities: probs,
+      prob_change_vs_last: migration,
+      transition_flag: transition,
+      weighted_target_position: weightedPos,
+      position_band: posBand,
+      freeze_active: freezeActive,
+      freeze_triggers: freezeTriggers,
+      divergence: Math.round(divergence * 10) / 10,
+      composite_score: scores.composite,
+      scores: scores
+    };
+  }
 };
+
+// 引擎初始化输出（首次同步运行，后续可异步刷新）
+let engineOutput = null;
+let _freezeState = { active: false, exitConfirmCount: 0 };
+function runEngine() {
+  engineOutput = StageEngine.run();
+  
+  // Apply freeze stickiness: fast trigger, slow exit
+  const rawFreeze = engineOutput.freeze_active;
+  if (rawFreeze) {
+    _freezeState.active = true;
+    _freezeState.exitConfirmCount = 0;
+  } else if (_freezeState.active) {
+    _freezeState.exitConfirmCount++;
+    if (_freezeState.exitConfirmCount >= 2) {
+      _freezeState.active = false;
+      _freezeState.exitConfirmCount = 0;
+    }
+  }
+  engineOutput.freeze_active = _freezeState.active;
+  
+  return engineOutput;
+}
+// 初始运行（使用内嵌评分模拟）
+const stageData = runEngine();
+
 
 // ============================================================
 // MOCK DATA (all with dates arrays - A1 fix)
@@ -925,14 +1273,19 @@ function fmtDateLabel(d) {
 function renderStageBar() {
   const bar = document.getElementById('stage-bar');
   const stages = ['A','B','C1','C2','D'];
-  const total = Object.values(stageData.probabilities).reduce((a,b) => a+b, 0);
+  const probs = engineOutput.stage_probabilities;
+  const total = Object.values(probs).reduce((a,b) => a+b, 0);
+  const migration = engineOutput.prob_change_vs_last;
   let html = '';
   stages.forEach(key => {
-    const pct = stageData.probabilities[key];
+    const pct = probs[key];
     const width = (pct / total * 100).toFixed(1);
     const cls = key.toLowerCase();
+    const m = migration[key] || 0;
+    const mStr = m > 0 ? `<span style="color:var(--green);font-size:9px;">+${m}</span>` :
+                 m < 0 ? `<span style="color:var(--red);font-size:9px;">${m}</span>` : '';
     html += `<div class="stage-segment ${cls}" style="width:${width}%" title="${STAGES[key].name}: ${pct}%">
-      ${STAGES[key].emoji}<span class="pct">${pct}%</span>
+      ${STAGES[key].emoji}<span class="pct">${pct}%</span>${mStr}
     </div>`;
   });
   bar.innerHTML = html;
@@ -941,17 +1294,24 @@ function renderStageBar() {
 function renderStageCards() {
   const container = document.getElementById('stage-cards');
   const stages = ['A','B','C1','C2','D'];
+  const probs = engineOutput.stage_probabilities;
+  const migration = engineOutput.prob_change_vs_last;
+  const current = engineOutput.current_stage;
   let html = '';
   stages.forEach(key => {
     const s = STAGES[key];
-    const pct = stageData.probabilities[key];
-    const isActive = key === stageData.current;
+    const pct = probs[key];
+    const isActive = key === current;
     const cls = key.toLowerCase();
+    const m = migration[key] || 0;
+    const mClass = m > 0 ? 'up' : m < 0 ? 'down' : 'flat';
+    const mStr = m > 0 ? `+${m}%` : m < 0 ? `${m}%` : '0';
     html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
       <span class="season-emoji">${s.emoji}</span>
       <div class="stage-name">${s.name}</div>
       <div class="stage-prob">${pct}%</div>
       <div class="stage-range">仓位 ${s.position}</div>
+      <div class="migration-badge ${mClass}">↕ ${mStr}</div>
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });
@@ -1557,14 +1917,225 @@ function toggleLiquidityDetail() {
   }
 }
 
+
+// ============================================================
+// v3.2 ACTION BAR RENDERER (三块结构，引擎驱动)
+// ============================================================
+function renderActionBar() {
+  const e = engineOutput;
+  const current = e.current_stage;
+  const stage = STAGES[current];
+
+  // 过渡期/急冻 banner
+  const transitionBanner = document.getElementById('transition-banner');
+  const freezeBanner = document.getElementById('freeze-banner');
+  const actionBar = document.getElementById('action-bar');
+
+  if (e.freeze_active) {
+    freezeBanner.style.display = 'block';
+    const exitInfo = _freezeState.active && !_freezeState.exitConfirmCount ? " · 等待退出确认中..." : "";
+    freezeBanner.innerHTML = `⚡ 风险模式（急冻）· 仓位 snap 至 20-40%${exitInfo}<br><span style="font-size:12px;font-weight:400;">触发: ${e.freeze_triggers.join(' | ')}</span>`;
+    actionBar.classList.add('freeze-mode');
+    transitionBanner.style.display = 'none';
+  } else if (e.transition_flag) {
+    transitionBanner.style.display = 'block';
+    freezeBanner.style.display = 'none';
+    actionBar.classList.remove('freeze-mode');
+  } else {
+    transitionBanner.style.display = 'none';
+    freezeBanner.style.display = 'none';
+    actionBar.classList.remove('freeze-mode');
+  }
+
+  // ① 状态行
+  const stageLabel = document.getElementById('action-stage-label');
+  const divBadge = document.getElementById('action-divergence-badge');
+  const migArrow = document.getElementById('action-migration-arrow');
+
+  if (e.freeze_active) {
+    stageLabel.innerHTML = '⚡ 风险模式（急冻）';
+    stageLabel.style.color = 'var(--red)';
+  } else if (e.transition_flag) {
+    // 过渡期措辞；平票时升温方向（阶段序更靠后）优先（CIO验收修正）
+    const _ord = ['A','B','C1','C2','D'];
+    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => (b[1]-a[1]) || (_ord.indexOf(b[0])-_ord.indexOf(a[0])));
+    const s0 = sorted[0][0], s1 = sorted[1][0];
+    const arrow = _ord.indexOf(s1) > _ord.indexOf(s0) ? '→' : '←';
+    const dirTxt = _ord.indexOf(s1) > _ord.indexOf(s0) ? `升温方向 ${s1}` : `回退方向 ${s1}`;
+    stageLabel.innerHTML = `⚠️ 过渡带: ${STAGES[s0].emoji}${arrow}${STAGES[s1].emoji} ${dirTxt}`;
+    stageLabel.style.color = 'var(--yellow)';
+  } else {
+    stageLabel.innerHTML = `${stage.emoji} ${stage.name}`;
+    stageLabel.style.color = '';
+  }
+
+  // 分歧度标记
+  if (e.divergence > 20) {
+    divBadge.textContent = '⚠️ 高分歧';
+    divBadge.style.color = 'var(--red)';
+    divBadge.style.background = 'var(--red-dim)';
+  } else if (e.divergence > 10) {
+    divBadge.textContent = '△ 中分歧';
+    divBadge.style.color = 'var(--yellow)';
+    divBadge.style.background = 'var(--yellow-dim)';
+  } else {
+    divBadge.textContent = '✓ 低分歧';
+    divBadge.style.color = 'var(--green)';
+    divBadge.style.background = 'var(--green-dim)';
+  }
+
+  // 迁移箭头（下一档方向）
+  const stages = ['A','B','C1','C2','D'];
+  const currIdx = stages.indexOf(current);
+  const prevIdx = Math.max(0, currIdx - 1);
+  const nextIdx = Math.min(stages.length - 1, currIdx + 1);
+  const nextStage = stages[nextIdx];
+  const prevStage = stages[prevIdx];
+  const migNext = e.prob_change_vs_last[nextStage] || 0;
+  const migPrev = e.prob_change_vs_last[prevStage] || 0;
+  if (migNext > migPrev && nextIdx > currIdx) {
+    migArrow.innerHTML = `→ ${STAGES[nextStage].emoji}${STAGES[nextStage].name} 升温中`;
+  } else if (migPrev > migNext && prevIdx < currIdx) {
+    migArrow.innerHTML = `← ${STAGES[prevStage].emoji}${STAGES[prevStage].name} 回退中`;
+  } else {
+    migArrow.innerHTML = '';
+  }
+
+  // ② 仓位行
+  const posEl = document.getElementById('action-position');
+  const footnoteEl = document.getElementById('action-position-footnote');
+
+  if (e.freeze_active) {
+    posEl.textContent = '20%-40%';
+    posEl.style.color = 'var(--red)';
+    footnoteEl.textContent = '急冻override · 防御仓位 · 不等加权缓慢下移';
+  } else {
+    posEl.textContent = e.position_band;
+    posEl.style.color = '';
+    // 注脚：只有B∩C1相邻过渡态有交集
+    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => b[1] - a[1]);
+    const top2Stages = sorted.slice(0, 2).map(s => s[0]).sort();
+    if (top2Stages[0] === 'B' && top2Stages[1] === 'C1') {
+      footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}% · B∩C1 无悔仓位 70%-75%`;
+    } else {
+      footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}%`;
+    }
+  }
+
+  // ③ 待确认信号行
+  const triggerList = document.getElementById('action-trigger-list');
+  const c1Triggers = [
+    { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+    { cond: '新发基金份额月均 > 800 亿', met: false },
+    { cond: '偏股基金3年年化 > 25%', met: false },
+    { cond: '融资融券余额 > 2.0 万亿', met: false },
+    { cond: '交易拥挤度 > 90%分位，持续 ≥20 交易日', met: false }
+  ];
+  triggerList.innerHTML = c1Triggers.map(t =>
+    `<div style="display:flex;align-items:center;gap:6px;">
+      <span style="color:${t.met ? 'var(--red)' : 'var(--text-muted)'};">${t.met ? '✅' : '○'}</span>
+      <span>${t.cond}</span>
+    </div>`
+  ).join('');
+}
+
+// ============================================================
+// v3.2 EXTERNAL LIQUIDITY TRIPLE CARD - mock data
+// ============================================================
+const extLiqData = {
+  ust10y: {
+    name: '美债10Y', value: 4.30, unit: '%',
+    dailyChange: -0.08, weeklyChange: -0.12,
+    dates: [], history: [],
+    p25: 3.8, p50: 4.2, p75: 4.6
+  },
+  spread: {
+    name: '中美10Y利差', value: -2.60, unit: '%',
+    dailyChange: 0.04, weeklyChange: 0.06,
+    dates: [], history: [],
+    p25: -3.0, p50: -2.2, p75: -1.0
+  },
+  usdcny: {
+    name: 'USDCNY', value: 7.18, unit: '',
+    dailyChange: 0.02, weeklyChange: 0.05,
+    dates: [], history: [],
+    p25: 6.9, p50: 7.1, p75: 7.3
+  }
+};
+
+// 生成近1年日频mock数据（>=250点）
+(function generateMockDailyData() {
+  const startDate = new Date('2025-09-01');
+  const days = 260;
+  for (let i = 0; i < days; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const dateStr = d.toISOString().slice(0, 10);
+    const t = i / days;
+
+    // 美债10Y: 从4.5%逐步降至4.3%
+    const ust = 4.5 - 0.2 * t + 0.15 * Math.sin(t * 6) + (Math.random() - 0.5) * 0.1;
+    extLiqData.ust10y.dates.push(dateStr);
+    extLiqData.ust10y.history.push(Math.round(ust * 100) / 100);
+
+    // 中美利差: 从-2.8%逐步升至-2.6%
+    const spread = -2.8 + 0.2 * t + 0.1 * Math.sin(t * 4) + (Math.random() - 0.5) * 0.08;
+    extLiqData.spread.dates.push(dateStr);
+    extLiqData.spread.history.push(Math.round(spread * 100) / 100);
+
+    // USDCNY: 从7.25逐步降至7.18
+    const fx = 7.25 - 0.07 * t + 0.05 * Math.sin(t * 5) + (Math.random() - 0.5) * 0.03;
+    extLiqData.usdcny.dates.push(dateStr);
+    extLiqData.usdcny.history.push(Math.round(fx * 100) / 100);
+  }
+})();
+
+function renderExtLiqCards() {
+  // 渲染三张sparkline
+  renderSparkline('ust10y-sparkline', extLiqData.ust10y);
+  renderSparkline('spread-sparkline', extLiqData.spread);
+  renderSparkline('usdcny-sparkline', extLiqData.usdcny);
+  renderDateLabels('ust10y-dates', extLiqData.ust10y.dates);
+  renderDateLabels('spread-dates', extLiqData.spread.dates);
+  renderDateLabels('usdcny-dates', extLiqData.usdcny.dates);
+}
+
+// ============================================================
+// v3.2 CYCLE FRESHNESS BADGE
+// ============================================================
+function renderCycleFreshness() {
+  const badge = document.getElementById('cycle-freshness');
+  if (!badge) return;
+  const updateTime = '2026-09-01';
+  const data_freshness_score = 78; // from cycle_position_v3.json _meta.data_freshness_score
+  const freshnessScore = data_freshness_score;
+  const daysSince = Math.floor((Date.now() - new Date(updateTime).getTime()) / 86400000);
+  badge.textContent = `全球周期: ${updateTime} · 新鲜度 ${freshnessScore}`;
+  if (daysSince > 35) {
+    badge.classList.add('stale');
+  } else {
+    badge.classList.remove('stale');
+  }
+}
+
 // ============================================================
 // INIT
 // ============================================================
-function init() {
+async function init() {
+  // Load timing_scores.json for real engine data
+  try { await StageEngine.load(); } catch(e) { console.warn("[init] StageEngine.load failed:", e); }
+  // 重新运行引擎（确保最新）
+  runEngine();
   renderStageBar();
   renderStageCards();
+  renderActionBar();
+  renderCycleFreshness();
   renderRangeInfoBar();
   
+  // P1: External liquidity triple card
+  renderExtLiqCards();
+
   // Anchor sparklines with dates
   renderSparkline('erp-sparkline', mockData.erp);
   renderSparkline('buffett-sparkline', mockData.buffett);
