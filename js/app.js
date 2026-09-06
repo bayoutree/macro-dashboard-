@@ -1194,6 +1194,8 @@ const TabRenderers = {
 
   // ===== Allocation Tab =====
   renderAllocation(valData, priceData, summaryData) {
+    // v3.4: allocation tab removed, skip if element not found
+    if (!document.getElementById('allocation-content')) return;
     // Data timestamp banner (asset_prices.json + asset_valuation.json)
     let html = Utils.renderTimestampBanner(
       [priceData?.update_time, valData?.update_time],
@@ -1497,9 +1499,6 @@ const app = {
         break;
       case 'cycle':
         TabRenderers.renderCycle(this.data.cyclePosition);
-        break;
-      case 'allocation':
-        TabRenderers.renderAllocation(this.data.assetValuation, this.data.assetPrices, this.data.dashboardSummary);
         break;
       case 'stock':
         var iframe = document.getElementById('stock-iframe');
