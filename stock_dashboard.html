@@ -523,14 +523,14 @@ body::before {
         <div class="update-time">更新: 2026-09-01 (月频)</div>
       </div>
 
-      <div class="anchor-card">
+      <div class="anchor-card" id="fed-rate-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">美联储资产负债表规模 <span style="font-size:10px;color:var(--text-muted);">(万亿美元)</span></div>
-            <div class="indicator-value">7.85</div>
-            <div class="indicator-change down">↓ 0.08 (WoW)</div>
+            <div class="indicator-name">联邦基金利率 <span style="font-size:10px;color:var(--text-muted);">(Federal Funds Rate, %)</span></div>
+            <div class="indicator-value" id="fed-rate-value">--</div>
+            <div class="indicator-change" id="fed-rate-change">--</div>
           </div>
-          <div class="ind-signal yellow">缩表进行中</div>
+          <div class="ind-signal" id="fed-rate-signal">--</div>
         </div>
         <div class="sparkline-container" id="fed-sparkline">
           <div class="sparkline-tooltip" id="fed-tooltip"></div>
@@ -540,9 +540,10 @@ body::before {
         </div>
         <div class="sparkline-dates" id="fed-dates"></div>
         <div class="ind-description">
-          <span class="desc-range">合理范围:</span> 7-9万亿。趋势：美联储持续缩表但节奏放缓
+          <span class="desc-signal">利率是流动性"价"的核心。</span>下行=宽松利好成长股，上行=收紧压制估值
         </div>
-        <div class="update-time">更新: 2026-09-01 (月频)</div>
+        <div class="update-time" id="fed-rate-update">更新: --</div>
+        <!-- 备注：若未来Fed重启QE扩表，在此处用小字补充说明 -->
       </div>
     </div>
   </section>
@@ -643,8 +644,8 @@ body::before {
         <div class="card-header">
           <div>
             <div class="indicator-name">美债10Y收益率 <span style="font-size:10px;color:var(--text-muted);">(FRED DGS10)</span></div>
-            <div class="indicator-value" id="ust10y-value">4.30%</div>
-            <div class="indicator-change down" id="ust10y-change">↓ 8bp (日) | ↓ 12bp (周)</div>
+            <div class="indicator-value" id="ust10y-value">--</div>
+            <div class="indicator-change" id="ust10y-change">--</div>
           </div>
           <div class="ind-signal yellow">高位回落</div>
         </div>
@@ -660,8 +661,8 @@ body::before {
         <div class="card-header">
           <div>
             <div class="indicator-name">中美10Y利差 <span style="font-size:10px;color:var(--text-muted);">(中债-美债)</span></div>
-            <div class="indicator-value" id="spread-value">-2.60%</div>
-            <div class="indicator-change up" id="spread-change">↑ 4bp (日) | ↑ 6bp (周)</div>
+            <div class="indicator-value" id="spread-value">--</div>
+            <div class="indicator-change" id="spread-change">--</div>
           </div>
           <div class="ind-signal yellow">倒挂收窄</div>
         </div>
@@ -677,8 +678,8 @@ body::before {
         <div class="card-header">
           <div>
             <div class="indicator-name">USD/CNY 人民币汇率 <span style="font-size:10px;color:var(--text-muted);">(在岸即期)</span></div>
-            <div class="indicator-value" id="usdcny-value">7.18</div>
-            <div class="indicator-change flat" id="usdcny-change">→ +0.02 (日) | +0.05 (周)</div>
+            <div class="indicator-value" id="usdcny-value">--</div>
+            <div class="indicator-change" id="usdcny-change">--</div>
           </div>
           <div class="ind-signal yellow">基本稳定</div>
         </div>
@@ -686,7 +687,7 @@ body::before {
           <div class="sparkline-tooltip" id="usdcny-tooltip"></div>
         </div>
         <div class="sparkline-dates" id="usdcny-dates"></div>
-        <div class="ind-description">人民币汇率是资金面与风险偏好的综合阀门。贬值压力常伴随北向流出，压制外资重仓板块。<br><span style="color:var(--yellow);">⚠️ 注意：箭头方向与数值相反——贬值=风险升高</span></div>
+        <div class="ind-description">人民币汇率是资金面与风险偏好的综合阀门。贬值压力常伴随北向流出，压制外资重仓板块。<br><span style="color:var(--yellow);">⚠️ 注意：箭头方向与数值相反——贬值=风险升高</span><br><span style="color:var(--text-muted);font-size:10px;">(待接入FRED DEXCHUS)</span></div>
         <div class="update-time">更新: 2026-09-01 (日频)</div>
       </div>
     </div>
@@ -1520,10 +1521,17 @@ const m2AnchorData = {
   dates: ['2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'],
   p25: 7.5, p50: 8.5, p75: 10.0, freq: '月频'
 };
+// v3.4: Fed funds rate data (replaces Fed balance sheet). Will be populated from us_macro.json.
 const fedAnchorData = {
-  history: [4.45,4.51,4.52,4.55,4.55,4.51,4.58,4.58,4.66,4.65,4.67,4.74,4.72,4.82,4.77,4.82,4.77,4.89,4.85,4.92,4.93,4.93,4.97,4.96,5.07,5.07,5.07,5.0,5.03,5.07,5.11,5.17,5.12,5.16,6.77,8.33,9.5,9.5,9.5,9.5,9.5,9.5,6.54,6.63,6.84,6.92,6.9,7.12,7.08,7.22,7.44,7.35,7.59,7.6,7.75,7.85,8.04,8.02,8.16,8.29,8.35,8.42,8.56,8.66,8.64,8.48,8.44,8.41,8.32,8.25,8.19,8.09,8.02,8.02,7.87,7.92,7.8,7.66,7.67,7.6,7.56,7.52,7.43,7.39,7.38,7.34,7.34,7.37,7.34,7.3,7.27,7.31,7.25,7.21,7.29,7.31,7.31,7.43,7.47,7.46,7.5,7.55,7.56,7.64,7.71,7.66,7.72,7.77,7.74,7.74,7.87,7.78,7.98,7.97,7.97,8.0,8.11,8.01,8.04,7.85],
-  dates: ['2016-09','2016-10','2016-11','2016-12','2017-01','2017-02','2017-03','2017-04','2017-05','2017-06','2017-07','2017-08','2017-09','2017-10','2017-11','2017-12','2018-01','2018-02','2018-03','2018-04','2018-05','2018-06','2018-07','2018-08','2018-09','2018-10','2018-11','2018-12','2019-01','2019-02','2019-03','2019-04','2019-05','2019-06','2019-07','2019-08','2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03','2020-04','2020-05','2020-06','2020-07','2020-08','2020-09','2020-10','2020-11','2020-12','2021-01','2021-02','2021-03','2021-04','2021-05','2021-06','2021-07','2021-08','2021-09','2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
-  p25: 7.0, p50: 8.0, p75: 8.8, freq: '月频'
+  history: [],
+  dates: [],
+  p25: 3.5, p50: 4.3, p75: 5.0, freq: '月频'
+};
+// Fallback data in case fetch fails
+const fedAnchorDataFallback = {
+  history: [5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.13,4.83,4.64,4.48,4.33,4.33,4.33,4.33,4.33,4.33,4.33,4.22,4.09,3.88,3.72,3.64,3.64,3.64,3.64,3.63,3.63,3.63],
+  dates: ['2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07'],
+  p25: 3.5, p50: 4.3, p75: 5.0, freq: '月频'
 };
 
 // ============================================================
@@ -2350,54 +2358,207 @@ function renderActionBar() {
 // ============================================================
 // v3.2 EXTERNAL LIQUIDITY TRIPLE CARD - mock data
 // ============================================================
+// v3.4: External liquidity data - will be populated from real JSON files
 const extLiqData = {
   ust10y: {
-    name: '美债10Y', value: 4.30, unit: '%',
-    dailyChange: -0.08, weeklyChange: -0.12,
+    name: '美债10Y', value: null, unit: '%',
+    dailyChange: null, weeklyChange: null,
     dates: [], history: [],
     p25: 3.8, p50: 4.2, p75: 4.6
   },
   spread: {
-    name: '中美10Y利差', value: -2.60, unit: '%',
-    dailyChange: 0.04, weeklyChange: 0.06,
+    name: '中美10Y利差', value: null, unit: '%',
+    dailyChange: null, weeklyChange: null,
     dates: [], history: [],
     p25: -3.0, p50: -2.2, p75: -1.0
   },
   usdcny: {
-    name: 'USDCNY', value: 7.18, unit: '',
-    dailyChange: 0.02, weeklyChange: 0.05,
+    name: 'USDCNY', value: null, unit: '',
+    dailyChange: null, weeklyChange: null,
     dates: [], history: [],
     p25: 6.9, p50: 7.1, p75: 7.3
   }
 };
 
-// 生成近1年日频mock数据（>=250点）
-(function generateMockDailyData() {
-  const startDate = new Date('2025-09-01');
-  const days = 260;
-  for (let i = 0; i < days; i++) {
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + i);
-    if (d.getDay() === 0 || d.getDay() === 6) continue;
-    const dateStr = d.toISOString().slice(0, 10);
-    const t = i / days;
+// v3.4: Load real data from JSON files for external liquidity cards + fed rate card
+async function loadExternalLiqData() {
+  try {
+    const [usResp, cnResp] = await Promise.all([
+      fetch('data/us_macro.json').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('data/cn_macro.json').then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
 
-    // 美债10Y: 从4.5%逐步降至4.3%
-    const ust = 4.5 - 0.2 * t + 0.15 * Math.sin(t * 6) + (Math.random() - 0.5) * 0.1;
-    extLiqData.ust10y.dates.push(dateStr);
-    extLiqData.ust10y.history.push(Math.round(ust * 100) / 100);
+    // --- 美债10Y: from us_macro.json history.yield_10y ---
+    if (usResp && usResp.history && usResp.history.yield_10y) {
+      const y10 = usResp.history.yield_10y;
+      extLiqData.ust10y.dates = y10.map(d => d.date);
+      extLiqData.ust10y.history = y10.map(d => d.value);
+      const latest = y10[y10.length - 1];
+      extLiqData.ust10y.value = latest.value;
+      // Compute daily/weekly changes
+      if (y10.length >= 2) {
+        extLiqData.ust10y.dailyChange = +(latest.value - y10[y10.length - 2].value).toFixed(4);
+      }
+      if (y10.length >= 6) {
+        extLiqData.ust10y.weeklyChange = +(latest.value - y10[y10.length - 6].value).toFixed(4);
+      }
+      // Update card HTML
+      const ust10yEl = document.getElementById('ust10y-value');
+      if (ust10yEl) ust10yEl.textContent = latest.value.toFixed(2) + '%';
+      const ust10yChgEl = document.getElementById('ust10y-change');
+      if (ust10yChgEl) {
+        const dc = extLiqData.ust10y.dailyChange;
+        const wc = extLiqData.ust10y.weeklyChange;
+        const dcStr = dc !== null ? (dc >= 0 ? '↑' : '↓') + ' ' + Math.abs(dc * 100).toFixed(0) + 'bp' : '--';
+        const wcStr = wc !== null ? (wc >= 0 ? '↑' : '↓') + ' ' + Math.abs(wc * 100).toFixed(0) + 'bp' : '--';
+        ust10yChgEl.textContent = (dc !== null ? dcStr + ' (日)' : '--') + ' | ' + (wc !== null ? wcStr + ' (周)' : '--');
+        ust10yChgEl.className = 'indicator-change ' + (dc > 0 ? 'up' : dc < 0 ? 'down' : 'flat');
+      }
+    }
 
-    // 中美利差: 从-2.8%逐步升至-2.6%
-    const spread = -2.8 + 0.2 * t + 0.1 * Math.sin(t * 4) + (Math.random() - 0.5) * 0.08;
-    extLiqData.spread.dates.push(dateStr);
-    extLiqData.spread.history.push(Math.round(spread * 100) / 100);
+    // --- 中美10Y利差: cn_macro bond.cn_10y_yield - us_macro yield_10y ---
+    if (usResp && cnResp) {
+      const usYield = usResp.history && usResp.history.yield_10y;
+      const cnBond = cnResp.history && cnResp.history.cn_10y_bond;
+      if (usYield && cnBond && usYield.length > 0 && cnBond.length > 0) {
+        // Build aligned spread series from overlapping dates
+        const usMap = new Map(usYield.map(d => [d.date, d.value]));
+        const spreadDates = [];
+        const spreadValues = [];
+        cnBond.forEach(cnPt => {
+          if (usMap.has(cnPt.date)) {
+            spreadDates.push(cnPt.date);
+            spreadValues.push(+(cnPt.value - usMap.get(cnPt.date)).toFixed(4));
+          }
+        });
+        if (spreadValues.length > 0) {
+          extLiqData.spread.dates = spreadDates;
+          extLiqData.spread.history = spreadValues;
+          const latestSpread = spreadValues[spreadValues.length - 1];
+          extLiqData.spread.value = latestSpread;
+          if (spreadValues.length >= 2) {
+            extLiqData.spread.dailyChange = +(latestSpread - spreadValues[spreadValues.length - 2]).toFixed(4);
+          }
+          if (spreadValues.length >= 6) {
+            extLiqData.spread.weeklyChange = +(latestSpread - spreadValues[spreadValues.length - 6]).toFixed(4);
+          }
+          // Update card HTML
+          const spreadEl = document.getElementById('spread-value');
+          if (spreadEl) spreadEl.textContent = latestSpread.toFixed(2) + '%';
+          const spreadChgEl = document.getElementById('spread-change');
+          if (spreadChgEl) {
+            const dc = extLiqData.spread.dailyChange;
+            const wc = extLiqData.spread.weeklyChange;
+            const dcStr = dc !== null ? (dc >= 0 ? '↑' : '↓') + ' ' + Math.abs(dc * 100).toFixed(0) + 'bp' : '--';
+            const wcStr = wc !== null ? (wc >= 0 ? '↑' : '↓') + ' ' + Math.abs(wc * 100).toFixed(0) + 'bp' : '--';
+            spreadChgEl.textContent = (dc !== null ? dcStr + ' (日)' : '--') + ' | ' + (wc !== null ? wcStr + ' (周)' : '--');
+            spreadChgEl.className = 'indicator-change ' + (dc > 0 ? 'up' : dc < 0 ? 'down' : 'flat');
+          }
+        }
+      }
+      // CN 10Y current value from bond section
+      if (cnResp.bond && cnResp.bond.cn_10y_yield) {
+        const cn10yVal = cnResp.bond.cn_10y_yield.value;
+        // Update ERP card liquidity overlay
+        const liqItems = document.querySelectorAll('.liq-item .liq-value');
+        if (liqItems.length >= 1) {
+          liqItems[0].textContent = cn10yVal ? cn10yVal.toFixed(2) + '%' : '--';
+        }
+        // Update the "美10Y" in ERP overlay (3rd liq-item) with real US 10Y
+        if (usResp.rates && usResp.rates.yield_10y && liqItems.length >= 3) {
+          liqItems[2].textContent = usResp.rates.yield_10y.value.toFixed(2) + '%';
+        }
+        // Update "利差" in ERP overlay (2nd liq-item): CN-US spread in absolute terms
+        if (usResp.rates && usResp.rates.yield_10y && liqItems.length >= 2) {
+          const usY = usResp.rates.yield_10y.value;
+          const cnY = cn10yVal;
+          if (cnY && usY) {
+            const spreadVal = (cnY - usY).toFixed(2);
+            liqItems[1].textContent = spreadVal + '%';
+          }
+        }
+      }
+    }
 
-    // USDCNY: 从7.25逐步降至7.18
-    const fx = 7.25 - 0.07 * t + 0.05 * Math.sin(t * 5) + (Math.random() - 0.5) * 0.03;
-    extLiqData.usdcny.dates.push(dateStr);
-    extLiqData.usdcny.history.push(Math.round(fx * 100) / 100);
+    // --- USDCNY: no data source in current JSON files, keep mock ---
+    // Will be populated when FRED DEXCHUS is integrated
+    // For now, show a mock annotation (already in HTML)
+
+    // --- 联邦基金利率 (Fed Funds Rate): from us_macro.json history.fed_funds ---
+    if (usResp && usResp.history && usResp.history.fed_funds) {
+      const ff = usResp.history.fed_funds;
+      fedAnchorData.dates = ff.map(d => d.date);
+      fedAnchorData.history = ff.map(d => d.value);
+
+      // Current value: prefer lagging.fed_funds_rate, fallback to last history entry
+      let currentRate = null;
+      if (usResp.lagging && usResp.lagging.fed_funds_rate) {
+        const raw = usResp.lagging.fed_funds_rate.value;
+        currentRate = typeof raw === 'string' ? parseFloat(raw.replace('%', '')) : raw;
+      }
+      if (currentRate === null && ff.length > 0) {
+        currentRate = ff[ff.length - 1].value;
+      }
+
+      // Signal logic (3-state)
+      const rateEl = document.getElementById('fed-rate-value');
+      const chgEl = document.getElementById('fed-rate-change');
+      const sigEl = document.getElementById('fed-rate-signal');
+      const updEl = document.getElementById('fed-rate-update');
+
+      if (currentRate !== null && rateEl) {
+        rateEl.textContent = currentRate.toFixed(2) + '%';
+
+        // Signal: compare 3-month avg vs 12-month avg
+        let signalClass = 'yellow';
+        let signalText = '利率平稳';
+        if (ff.length >= 12) {
+          const last3 = ff.slice(-3).reduce((s, d) => s + d.value, 0) / 3;
+          const last12 = ff.slice(-12).reduce((s, d) => s + d.value, 0) / 12;
+          if (last3 < last12 - 0.25) {
+            signalClass = 'green';
+            signalText = '利率下行·宽松';
+          } else if (last3 > last12 + 0.25) {
+            signalClass = 'red';
+            signalText = '利率上行·收紧';
+          }
+        }
+        if (sigEl) {
+          sigEl.className = 'ind-signal ' + signalClass;
+          sigEl.textContent = signalText;
+        }
+
+        // Change: MoM
+        if (ff.length >= 2) {
+          const prev = ff[ff.length - 2].value;
+          const diff = currentRate - prev;
+          if (chgEl) {
+            const arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+            chgEl.textContent = arrow + ' ' + Math.abs(diff).toFixed(2) + '% (MoM)';
+            chgEl.className = 'indicator-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat');
+          }
+        }
+        if (updEl) {
+          const lastDate = ff[ff.length - 1].date;
+          updEl.textContent = '更新: ' + lastDate + ' (月频)';
+        }
+      }
+    } else {
+      // Fallback: use static data
+      Object.assign(fedAnchorData, fedAnchorDataFallback);
+      const rateEl = document.getElementById('fed-rate-value');
+      if (rateEl) rateEl.textContent = '3.63%';
+      const sigEl = document.getElementById('fed-rate-signal');
+      if (sigEl) { sigEl.className = 'ind-signal yellow'; sigEl.textContent = '利率平稳'; }
+    }
+  } catch(e) {
+    console.warn('[loadExternalLiqData] Error:', e);
+    // Fallback: use static fed funds data
+    if (fedAnchorData.history.length === 0) {
+      Object.assign(fedAnchorData, fedAnchorDataFallback);
+    }
   }
-})();
+}
 
 function renderExtLiqCards() {
   // 渲染三张sparkline
@@ -2445,6 +2606,9 @@ async function init() {
   renderActionBar();
   renderCycleFreshness();
   renderRangeInfoBar();
+  
+  // v3.4: Load real data for external liquidity cards + fed rate card
+  await loadExternalLiqData();
   
   // P1: External liquidity triple card
   renderExtLiqCards();
