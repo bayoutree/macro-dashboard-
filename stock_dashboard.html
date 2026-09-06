@@ -2480,9 +2480,51 @@ async function loadExternalLiqData() {
       }
     }
 
-    // --- USDCNY: no data source in current JSON files, keep mock ---
-    // Will be populated when FRED DEXCHUS is integrated
-    // For now, show a mock annotation (already in HTML)
+    // --- USDCNY: from us_macro.json history.usdcny (FRED DEXCHUS) ---
+    if (usResp && usResp.history && usResp.history.usdcny && usResp.history.usdcny.length > 0) {
+      const fx = usResp.history.usdcny;
+      extLiqData.usdcny.dates = fx.map(d => d.date);
+      extLiqData.usdcny.history = fx.map(d => d.value);
+
+      const latest = fx[fx.length - 1];
+      extLiqData.usdcny.value = latest.value;
+
+      if (fx.length >= 2) {
+        extLiqData.usdcny.dailyChange = +(latest.value - fx[fx.length - 2].value).toFixed(4);
+      }
+      if (fx.length >= 6) {
+        extLiqData.usdcny.weeklyChange = +(latest.value - fx[fx.length - 6].value).toFixed(4);
+      }
+
+      // Update HTML
+      const fxValEl = document.getElementById('usdcny-value');
+      const fxChgEl = document.getElementById('usdcny-change');
+      const fxSigEl = document.querySelector('#usdcny-card .ind-signal');
+      const fxUpdEl = document.querySelector('#usdcny-card .update-time');
+
+      if (fxValEl) fxValEl.textContent = latest.value.toFixed(4);
+      if (fxChgEl) {
+        const dc = extLiqData.usdcny.dailyChange || 0;
+        const wc = extLiqData.usdcny.weeklyChange || 0;
+        const dcArrow = dc > 0.001 ? '↑' : dc < -0.001 ? '↓' : '→';
+        const wcArrow = wc > 0.001 ? '↑' : wc < -0.001 ? '↓' : '→';
+        fxChgEl.textContent = `${dcArrow} ${Math.abs(dc).toFixed(4)} (日) | ${wcArrow} ${Math.abs(wc).toFixed(4)} (周)`;
+        // 贬值=风险升高，箭头方向与数值相反：升值=green，贬值=red
+        fxChgEl.className = 'indicator-change ' + (dc > 0.001 ? 'down' : dc < -0.001 ? 'up' : 'flat');
+      }
+      if (fxSigEl) {
+        // Signal: based on weekly change direction
+        const wc = extLiqData.usdcny.weeklyChange || 0;
+        if (wc > 0.02) { fxSigEl.className = 'ind-signal red'; fxSigEl.textContent = '贬值压力'; }
+        else if (wc < -0.02) { fxSigEl.className = 'ind-signal green'; fxSigEl.textContent = '升值趋势'; }
+        else { fxSigEl.className = 'ind-signal yellow'; fxSigEl.textContent = '基本稳定'; }
+      }
+      if (fxUpdEl) fxUpdEl.textContent = '更新: ' + latest.date + ' (日频·FRED DEXCHUS)';
+
+      // Remove the "待接入" annotation
+      const annotEl = document.querySelector('#usdcny-card .ind-description span[style*="text-muted"]');
+      if (annotEl) annotEl.remove();
+    }
 
     // --- 联邦基金利率 (Fed Funds Rate): from us_macro.json history.fed_funds ---
     if (usResp && usResp.history && usResp.history.fed_funds) {
