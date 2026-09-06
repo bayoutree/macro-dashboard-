@@ -97,6 +97,11 @@ def main():
     sp500 = fetch_series(fred, "SP500", "2019-01-01")
     vix = fetch_series(fred, "VIXCLS", "2019-01-01")
     walcl = fetch_series(fred, "WALCL", "2019-01-01")
+    # v3.4: USD/CNY exchange rate for external liquidity card
+    dexchus = fetch_series(fred, "DEXCHUS", "2019-01-01")
+    if dexchus.empty:
+        # Fallback: DEXCNUS (same series, different FRED code)
+        dexchus = fetch_series(fred, "DEXCNUS", "2019-01-01")
 
     # ============================================================
     # 计算衍生指标
@@ -200,34 +205,37 @@ def main():
     history["fed_funds"] = series_to_history(fed_funds, freq="monthly", max_points=36)
 
     # 10Y 国债收益率历史 (日频)
-    history["yield_10y"] = series_to_history(dgs10, freq="daily", max_points=60)
+    history["yield_10y"] = series_to_history(dgs10, freq="daily", max_points=250)
 
     # 2Y 国债收益率历史
-    history["yield_2y"] = series_to_history(dgs2, freq="daily", max_points=60)
+    history["yield_2y"] = series_to_history(dgs2, freq="daily", max_points=250)
 
     # 期限溢价历史
-    history["term_premium"] = series_to_history(term_prem, freq="daily", max_points=60)
+    history["term_premium"] = series_to_history(term_prem, freq="daily", max_points=250)
 
     # 通胀预期历史
-    history["inflation_expectation"] = series_to_history(breakeven, freq="daily", max_points=60)
+    history["inflation_expectation"] = series_to_history(breakeven, freq="daily", max_points=250)
 
     # 实际利率历史
-    history["real_rate_10y"] = series_to_history(tips, freq="daily", max_points=60)
+    history["real_rate_10y"] = series_to_history(tips, freq="daily", max_points=250)
 
     # S&P 500 历史
-    history["sp500"] = series_to_history(sp500, freq="daily", max_points=60)
+    history["sp500"] = series_to_history(sp500, freq="daily", max_points=250)
 
     # VIX 历史
-    history["vix"] = series_to_history(vix, freq="daily", max_points=60)
+    history["vix"] = series_to_history(vix, freq="daily", max_points=250)
 
     # 美联储资产负债表历史
-    history["fed_balance"] = series_to_history(walcl, freq="daily", max_points=60)
+    history["fed_balance"] = series_to_history(walcl, freq="daily", max_points=250)
 
     # 10Y-2Y 利差历史
-    history["yield_spread_10y_2y"] = series_to_history(yield_spread, freq="daily", max_points=60)
+    history["yield_spread_10y_2y"] = series_to_history(yield_spread, freq="daily", max_points=250)
 
     # OECD CLI 历史
     history["oecd_cli"] = series_to_history(oecd_cli, freq="monthly", max_points=36)
+
+    # v3.4: USD/CNY 汇率历史
+    history["usdcny"] = series_to_history(dexchus, freq="daily", max_points=250)
 
     # ============================================================
     # 最终 JSON
@@ -269,7 +277,9 @@ def main():
             "vix": {"value": safe_float(vix.iloc[-1]) if not vix.empty else None,
                     "date": ts_to_date_str(vix.index[-1]) if not vix.empty else None},
             "fed_balance": {"value": safe_float(walcl.iloc[-1]) if not walcl.empty else None,
-                            "date": ts_to_date_str(walcl.index[-1]) if not walcl.empty else None}
+                            "date": ts_to_date_str(walcl.index[-1]) if not walcl.empty else None},
+            "usdcny": {"value": safe_float(dexchus.iloc[-1]) if not dexchus.empty else None,
+                       "date": ts_to_date_str(dexchus.index[-1]) if not dexchus.empty else None}
         },
         "history": history
     }
