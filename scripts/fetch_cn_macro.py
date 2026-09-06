@@ -217,7 +217,7 @@ def main():
             bond_series = cn_bond.set_index('date')['close'].dropna()
             cn10y_val = safe_float(bond_series.iloc[-1])
             cn10y_date = str(bond_series.index[-1])[:10]
-            cn10y_history = series_to_history(bond_series, freq="daily", max_points=60)
+            cn10y_history = series_to_history(bond_series, freq="daily", max_points=250)
             logger.info(f"  中国10Y国债: {cn10y_val}%, 日期: {cn10y_date}")
         except Exception as e:
             logger.warning(f"  解析国债收益率失败: {e}")
@@ -239,7 +239,7 @@ def main():
                 pe_series.index = pd.to_datetime(pe_series.index)
                 if len(pe_series) > 100:
                     hs300_pe_pct = safe_float((pe_series < hs300_pe_val).mean() * 100)
-                hs300_pe_history = series_to_history(pe_series, freq="daily", max_points=60)
+                hs300_pe_history = series_to_history(pe_series, freq="daily", max_points=250)
             logger.info(f"  沪深300 PE(TTM): {hs300_pe_val}, 分位: {hs300_pe_pct}%")
         except Exception as e:
             logger.warning(f"  解析沪深300 PE失败: {e}")
@@ -263,7 +263,7 @@ def main():
             if pe_col in csi500_pe_df.columns:
                 csi500_pe_series = csi500_pe_df.set_index('日期')[pe_col].dropna()
                 csi500_pe_series.index = pd.to_datetime(csi500_pe_series.index)
-                csi500_pe_history = series_to_history(csi500_pe_series, freq="daily", max_points=60)
+                csi500_pe_history = series_to_history(csi500_pe_series, freq="daily", max_points=250)
             logger.info(f"  中证500 PE 历史: {len(csi500_pe_history)} 条")
         except Exception as e:
             logger.warning(f"  解析中证500 PE历史失败: {e}")
