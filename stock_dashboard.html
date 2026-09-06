@@ -1639,6 +1639,12 @@ function renderDateLabels(containerId, dates) {
 function renderSparkline(containerId, data, options = {}) {
   const container = document.getElementById(containerId);
   if (!container) return;
+  // v3.4.2修复: 空 history 守卫（data 未加载/为 [] 时 Math.min(...[]) = Infinity
+  // 且 points[0] 为 undefined，读 points[0].x 抛 TypeError 熔断 init 链）
+  if (!data || !Array.isArray(data.history) || data.history.length === 0) {
+    container.innerHTML = '<span style="color:var(--text-muted);font-size:11px">数据待获取</span>';
+    return;
+  }
   
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 200 120');
@@ -2261,10 +2267,12 @@ function renderActionBar() {
   } else if (e.transition_flag) {
     // 过渡期措辞；平票排序：趋势逆风时降温优先，否则升温方向（阶段序更靠后）优先
     const _ord = ['A','B','C1','C2','D'];
-    const tie = trendBear
-      ? (_ord.indexOf(a[0]) - _ord.indexOf(b[0]))
-      : (_ord.indexOf(b[0]) - _ord.indexOf(a[0]));
-    const sorted = Object.entries(e.stage_probabilities).sort((a,b) => (b[1]-a[1]) || tie);
+    // v3.4.2修复: tie 平票排序必须在 sort 回调内部引用 a/b（原代码在回调外定义
+    // tie 却引用回调参数，transition_flag=true 时 ReferenceError 熔断整个 init 链）
+    const sorted = Object.entries(e.stage_probabilities).sort((a,b) =>
+      (b[1]-a[1]) || (trendBear
+        ? (_ord.indexOf(a[0]) - _ord.indexOf(b[0]))
+        : (_ord.indexOf(b[0]) - _ord.indexOf(a[0]))));
     const s0 = sorted[0][0], s1 = sorted[1][0];
     const arrow = _ord.indexOf(s1) > _ord.indexOf(s0) ? '→' : '←';
     const dirTxt = _ord.indexOf(s1) > _ord.indexOf(s0) ? `升温方向 ${s1}` : `回退方向 ${s1}`;
@@ -2633,6 +2641,13 @@ function renderCycleFreshness() {
 // ============================================================
 // INIT
 // ============================================================
+// v3.4.2修复: 渲染链防御包裹——任一渲染步骤报错只记录警告并继续，
+// 不再单点熔断整条 init() 链（renderActionBar 的 ReferenceError 曾导致
+// sparkline、主模型/确认/参考三个指标区全部不渲染）
+function safeRender(name, fn) {
+  try { fn(); } catch (err) { console.warn('[render] ' + name + ' failed:', err); }
+}
+
 async function init() {
   // Load timing_scores.json for real engine data
   try { await StageEngine.load(); } catch(e) { console.warn("[init] StageEngine.load failed:", e); }
@@ -2640,46 +2655,48 @@ async function init() {
   // 其结果不得作为真实数据期的迁移基准；置空 prev 后重算，迁移箭头首期全0
   StageEngine._prevProbabilities = null;
   // 重新运行引擎（确保最新）
-  runEngine();
+  safeRender('runEngine', () => runEngine());
   // v3.3 修复: 异步数据加载完成后，用真实数据覆盖mockData并重新渲染
-  applyRealDataToMockData();
-  renderStageBar();
-  renderStageCards();
-  renderActionBar();
-  renderCycleFreshness();
-  renderRangeInfoBar();
-  
+  safeRender('applyRealDataToMockData', () => applyRealDataToMockData());
+  safeRender('renderStageBar', renderStageBar);
+  safeRender('renderStageCards', renderStageCards);
+  safeRender('renderActionBar', renderActionBar);
+  safeRender('renderCycleFreshness', renderCycleFreshness);
+  safeRender('renderRangeInfoBar', renderRangeInfoBar);
+
   // v3.4: Load real data for external liquidity cards + fed rate card
-  await loadExternalLiqData();
-  
+  try { await loadExternalLiqData(); } catch(e) { console.warn('[init] loadExternalLiqData failed:', e); }
+
   // P1: External liquidity triple card
-  renderExtLiqCards();
+  safeRender('renderExtLiqCards', renderExtLiqCards);
 
   // Anchor sparklines with dates
-  renderSparkline('erp-sparkline', mockData.erp);
-  renderSparkline('buffett-sparkline', mockData.buffett);
-  renderSparkline('earn-sparkline', mockData.earnings);
-  renderSparkline('pe-anchor-sparkline', mockData.medianPE);
-  renderSparkline('bond-sparkline', mockData.bondYield);
-  renderSparkline('expec-sparkline', mockData.expectation);
-  
+  safeRender('spark-erp', () => renderSparkline('erp-sparkline', mockData.erp));
+  safeRender('spark-buffett', () => renderSparkline('buffett-sparkline', mockData.buffett));
+  safeRender('spark-earn', () => renderSparkline('earn-sparkline', mockData.earnings));
+  safeRender('spark-pe', () => renderSparkline('pe-anchor-sparkline', mockData.medianPE));
+  safeRender('spark-bond', () => renderSparkline('bond-sparkline', mockData.bondYield));
+  safeRender('spark-expec', () => renderSparkline('expec-sparkline', mockData.expectation));
+
   // Liquidity sparklines
-  renderSparkline('m2-sparkline', m2AnchorData);
-  renderSparkline('fed-sparkline', fedAnchorData);
-  
+  safeRender('spark-m2', () => renderSparkline('m2-sparkline', m2AnchorData));
+  safeRender('spark-fed', () => renderSparkline('fed-sparkline', fedAnchorData));
+
   // A2: Date labels for anchor charts
-  renderDateLabels('erp-dates', mockData.erp.dates);
-  renderDateLabels('buffett-dates', mockData.buffett.dates);
-  renderDateLabels('earn-dates', mockData.earnings.dates);
-  renderDateLabels('pe-anchor-dates', mockData.medianPE.dates);
-  renderDateLabels('bond-dates', mockData.bondYield.dates);
-  renderDateLabels('expec-dates', mockData.expectation.dates);
-  renderDateLabels('m2-dates', m2AnchorData.dates);
-  renderDateLabels('fed-dates', fedAnchorData.dates);
-  
-  renderMainIndicators();
-  renderConfirmSignals();
-  renderReferenceIndicators();
+  safeRender('dateLabels', () => {
+    renderDateLabels('erp-dates', mockData.erp.dates);
+    renderDateLabels('buffett-dates', mockData.buffett.dates);
+    renderDateLabels('earn-dates', mockData.earnings.dates);
+    renderDateLabels('pe-anchor-dates', mockData.medianPE.dates);
+    renderDateLabels('bond-dates', mockData.bondYield.dates);
+    renderDateLabels('expec-dates', mockData.expectation.dates);
+    renderDateLabels('m2-dates', m2AnchorData.dates);
+    renderDateLabels('fed-dates', fedAnchorData.dates);
+  });
+
+  safeRender('renderMainIndicators', renderMainIndicators);
+  safeRender('renderConfirmSignals', renderConfirmSignals);
+  safeRender('renderReferenceIndicators', renderReferenceIndicators);
   
   // Render MACD special chart (B1: with histogram)
   const macdConfirm = mockData.confirmSignals.find(c => c.name.includes('MACD'));
@@ -2718,6 +2735,11 @@ async function init() {
 // Helper for inline MACD rendering
 function renderSparkline_inline(container, data) {
   // Reuse renderSparkline logic but inject into existing container
+  // v3.4.2修复: 空 history 守卫，与 renderSparkline 同理
+  if (!data || !Array.isArray(data.history) || data.history.length === 0) {
+    if (container) container.innerHTML = '<span style="color:var(--text-muted);font-size:11px">数据待获取</span>';
+    return;
+  }
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 200 80');
   svg.setAttribute('preserveAspectRatio', 'none');
