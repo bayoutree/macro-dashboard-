@@ -557,7 +557,7 @@ body::before {
       <div class="anchor-card" id="erp-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·月频)</span></div>
+            <div class="indicator-name" id="erp-title">沪深300 ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span></div>
             <div class="indicator-value" id="erp-value">2.30%</div>
             <div class="indicator-change down">↓ 0.05% (MoM)</div>
           </div>
@@ -577,7 +577,7 @@ body::before {
           <span class="percentile-label" style="top:68%">25%</span>
         </div>
         <div class="sparkline-dates" id="erp-dates"></div>
-        <div class="update-time">更新: 2026-09-01</div>
+        <div class="update-time" id="erp-updatetime">更新: 2026-09-01</div>
       </div>
 
       <!-- Buffett Card -->
@@ -597,7 +597,7 @@ body::before {
           <span class="percentile-label" style="top:68%">25%</span>
         </div>
         <div class="sparkline-dates" id="buffett-dates"></div>
-        <div class="update-time">更新: 2026-06-30</div>
+        <div class="update-time" id="buffett-updatetime">更新: 2026-06-30</div>
       </div>
 
       <!-- E2: Earnings growth (upgraded to anchor) -->
@@ -1210,37 +1210,23 @@ function applyRealDataToMockData() {
   // --- 参考指标5项：从 timing_scores.json / timing_right_scores.json 读取 ---
   if (rightData && rightData.signals) {
     const sigs = rightData.signals;
-    // 参考指标[3]: 产业资本增减持 → early_bear "产业资本减持放大" / early_bull "产业资本转增持"
+    // 参考指标[3]: 产业资本增减持 → right_scores 仅在信号 triggered 时作为预警上主数值位；
+    // 未触发或 current_value 为采集残差（"数据获取异常"/0.00亿残差）时一律不覆盖，
+    // 主数值由 applyTimingDataToMockData 用 timing_scores 月频真值（industrial_capital）填充
     const capBear = (sigs.early_bear || []).find(s => s.name.includes('产业资本'));
     const capBull = (sigs.early_bull || []).find(s => s.name.includes('产业资本'));
+    const _capBad = (cv) => !cv || cv.includes('数据获取异常') || cv.includes('数据待获取') || /0\.00亿/.test(cv);
     if (mockData.referenceIndicators[3]) {
-      if (capBear) {
-        const cv = capBear.current_value || '';
-        if (cv.includes('数据获取异常') || cv.includes('数据待获取')) {
-          mockData.referenceIndicators[3].value = '数据待获取';
-          mockData.referenceIndicators[3].signal = 'gray';
-          mockData.referenceIndicators[3].signalText = '数据待获取';
-        } else {
-          mockData.referenceIndicators[3].value = cv;
-          mockData.referenceIndicators[3].signal = capBear.triggered ? 'red' : 'yellow';
-          mockData.referenceIndicators[3].signalText = capBear.triggered ? '减持放大' : cv;
-        }
-      } else if (capBull) {
-        const cv = capBull.current_value || '';
-        if (cv.includes('数据获取异常') || cv.includes('数据待获取')) {
-          mockData.referenceIndicators[3].value = '数据待获取';
-          mockData.referenceIndicators[3].signal = 'gray';
-          mockData.referenceIndicators[3].signalText = '数据待获取';
-        } else {
-          mockData.referenceIndicators[3].value = cv;
-          mockData.referenceIndicators[3].signal = capBull.triggered ? 'green' : 'yellow';
-          mockData.referenceIndicators[3].signalText = capBull.triggered ? '转增持' : cv;
-        }
-      } else {
-        mockData.referenceIndicators[3].value = '数据待获取';
-        mockData.referenceIndicators[3].signal = 'gray';
-        mockData.referenceIndicators[3].signalText = '数据待获取';
+      if (capBear && capBear.triggered && !_capBad(capBear.current_value)) {
+        mockData.referenceIndicators[3].value = capBear.current_value;
+        mockData.referenceIndicators[3].signal = 'red';
+        mockData.referenceIndicators[3].signalText = '减持放大';
+      } else if (capBull && capBull.triggered && !_capBad(capBull.current_value)) {
+        mockData.referenceIndicators[3].value = capBull.current_value;
+        mockData.referenceIndicators[3].signal = 'green';
+        mockData.referenceIndicators[3].signalText = '转增持';
       }
+      // else: 不动 value/signal/signalText，保留 timing_scores 真值（applyTimingDataToMockData 后执行覆盖）
     }
 
     // 参考指标[4]: 韭圈儿神奇指标 → 保留原值（第三方参考，非JSON数据源）
@@ -2415,6 +2401,7 @@ function _setPending(ind, note) {
   ind.dates = [];
   ind.history = [];
   ind.history2 = undefined;
+  ind.slope = null; // P2-1: 灰灯卡不渲染"↑加速"角标
   ind.updateTime = '';
   if (note !== undefined) ind.description = note;
 }
@@ -2476,7 +2463,9 @@ function applyTimingDataToMockData() {
     M[1].dates = s1.dates; M[1].history = s1.history; M[1].history2 = undefined;
     M[1].freq = '周频';
     M[1].updateTime = s1.dates.length ? s1.dates[s1.dates.length-1] : '';
-    M[1].description = '两融余额/流通市值 ' + (margin.value||'') + '；融资买入占比 ' + (marginBuy ? marginBuy.value : '--');
+    const mbLast = (marginBuy && Array.isArray(marginBuy.history) && marginBuy.history.length)
+      ? marginBuy.history[marginBuy.history.length-1].value : null;
+    M[1].description = '两融余额/流通市值 ' + (margin.value||'--') + '；融资买入占比 ' + (mbLast !== null ? (Math.round(mbLast*10)/10) + '%' : (marginBuy ? marginBuy.value : '--'));
   } else _setPending(M[1]);
   // [2] 恐贪指数 — fear_greed_index
   const fg = _tsInd(ts, 'sentiment', 'fear_greed_index');
@@ -2509,7 +2498,8 @@ function applyTimingDataToMockData() {
   const f3 = _tsInd(ts, 'sentiment', 'fund_3y_annual');
   if (f3) {
     const s4 = _tsSeries(f3);
-    M[4].value = f3.value + '';
+    const f3Last = s4.history.length ? s4.history[s4.history.length-1] : null;
+    M[4].value = f3Last !== null ? (Math.round(f3Last*100)/100) + '%' : (f3.value + '');
     M[4].signal = _scoreSignal(f3.score);
     M[4].signalText = _scoreText(f3.score, '收益');
     M[4].dates = s4.dates; M[4].history = s4.history;
@@ -2524,9 +2514,13 @@ function applyTimingDataToMockData() {
   const cs = _tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio');
   if (cs) {
     const s6 = _tsSeries(cs);
-    M[7].value = cs.value + '';
+    // 卡片数值=走势末点（比值原始口径），灯语用指标自身 score 映射（与数值同源，不引 style_rotation 异源文案）
+    const csLast = s6.history.length ? s6.history[s6.history.length-1] : null;
+    M[7].value = csLast !== null ? (Math.round(csLast*100)/100) + '' : '数据待获取';
     M[7].signal = _scoreSignal(cs.score);
-    M[7].signalText = ts.style_rotation && ts.style_rotation.large_small ? (ts.style_rotation.large_small.status || '中性') : '中性';
+    M[7].signalText = _scoreText(cs.score, '小盘') ;
+    if (M[7].signalText === '中性') M[7].signalText = '大小盘均衡';
+    M[7].slope = null;
     M[7].dates = s6.dates; M[7].history = s6.history;
     M[7].freq = '月频';
     M[7].updateTime = s6.dates.length ? s6.dates[s6.dates.length-1] : '';
@@ -2556,15 +2550,13 @@ function applyTimingDataToMockData() {
     R[3].dates = si.dates; R[3].history = si.history;
     R[3].freq = '月频';
     R[3].updateTime = si.dates.length ? si.dates[si.dates.length-1] : R[3].updateTime;
-    // 若 rightScores 未覆盖到（仍为假值 +20亿），用真值兜底
-    if (R[3].value === '+20亿' || R[3].value === '数据待获取') {
-      const lastV = si.history.length ? si.history[si.history.length-1] : null;
-      if (lastV !== null) {
-        R[3].value = (lastV >= 0 ? '+' : '') + lastV.toFixed(0) + '亿';
-        R[3].signal = lastV >= 0 ? 'yellow' : 'red';
-        R[3].signalText = lastV >= 0 ? '净增持' : '净减持';
-      } else { _setPending(R[3]); }
-    }
+    // 月频真值为卡片主数值（right_scores 周度残差未触发时不占位）
+    const lastV = si.history.length ? si.history[si.history.length-1] : null;
+    if (lastV !== null && lastV !== 0) {
+      R[3].value = (lastV >= 0 ? '+' : '') + lastV.toFixed(0) + '亿';
+      R[3].signal = lastV >= 0 ? 'green' : 'red';
+      R[3].signalText = (ic.value || (lastV >= 0 ? '净增持' : '净减持')) + (lastV >= 0 ? '·净增持' : '·净减持');
+    } else { _setPending(R[3]); }
   }
   // [4] 韭圈儿神奇指标 — 第三方无 JSON 源
   _setPending(R[4], '韭圈儿神奇指标为第三方数据，无自动采集源，待接入');
@@ -2584,6 +2576,8 @@ function applyTimingDataToMockData() {
     if (ev) ev.textContent = erpTxt;
     _setAnchorValue('erp-card', erpTxt, _scoreSignal(erp.score),
       erp.score <= 30 ? '股票有吸引力' : erp.score >= 70 ? '股票偏贵' : '中性', '');
+    const eu = document.getElementById('erp-updatetime');
+    if (eu && se.dates.length) eu.textContent = '更新: ' + se.dates[se.dates.length-1] + ' (周频)';
   } else {
     mockData.erp.dates = []; mockData.erp.history = [];
     _setAnchorPending('erp-card');
@@ -2601,6 +2595,8 @@ function applyTimingDataToMockData() {
     if (bv) bv.textContent = bfTxt;
     _setAnchorValue('buffett-card', bfTxt, _scoreSignal(bf.score),
       bf.score >= 70 ? '高于历史中枢' : bf.score <= 30 ? '低于历史中枢' : '中性区间', '');
+    const bu = document.getElementById('buffett-updatetime');
+    if (bu && sb.dates.length) bu.textContent = '更新: ' + sb.dates[sb.dates.length-1] + ' (月频)';
   } else {
     mockData.buffett.dates = []; mockData.buffett.history = [];
     _setAnchorPending('buffett-card');
@@ -2703,15 +2699,23 @@ async function loadExternalLiqData() {
       const cnBond = cnResp.history && cnResp.history.cn_10y_bond;
       if (usYield && cnBond && usYield.length > 0 && cnBond.length > 0) {
         // Build aligned spread series from overlapping dates
+        // P2-4: 中/美/利差三处统一使用"共同日期对齐"末点（同日中债-美债），与三联卡利差同口径
         const usMap = new Map(usYield.map(d => [d.date, d.value]));
         const spreadDates = [];
         const spreadValues = [];
+        const cnAtCommon = [];
         cnBond.forEach(cnPt => {
           if (usMap.has(cnPt.date)) {
             spreadDates.push(cnPt.date);
             spreadValues.push(+(cnPt.value - usMap.get(cnPt.date)).toFixed(4));
+            cnAtCommon.push({ date: cnPt.date, cn: cnPt.value, us: usMap.get(cnPt.date) });
           }
         });
+        var _alignedCn = null, _alignedUs = null; // var: 提升至函数作用域，供下方 ERP overlay 同口径复用
+        if (cnAtCommon.length) {
+          const lastAligned = cnAtCommon[cnAtCommon.length-1];
+          _alignedCn = lastAligned.cn; _alignedUs = lastAligned.us;
+        }
         if (spreadValues.length > 0) {
           extLiqData.spread.dates = spreadDates;
           extLiqData.spread.history = spreadValues;
@@ -2737,27 +2741,15 @@ async function loadExternalLiqData() {
           }
         }
       }
-      // CN 10Y current value from bond section
-      if (cnResp.bond && cnResp.bond.cn_10y_yield) {
-        const cn10yVal = cnResp.bond.cn_10y_yield.value;
-        // Update ERP card liquidity overlay
+      // ERP card liquidity overlay：中/美/利差统一取"共同日期对齐"末点（与三联卡同口径）
+      if (usResp && cnResp && _alignedCn !== null && _alignedUs !== null) {
         const liqItems = document.querySelectorAll('.liq-item .liq-value');
-        if (liqItems.length >= 1) {
-          liqItems[0].textContent = cn10yVal ? cn10yVal.toFixed(2) + '%' : '--';
-        }
-        // Update the "美10Y" in ERP overlay (3rd liq-item) with real US 10Y
-        if (usResp.rates && usResp.rates.yield_10y && liqItems.length >= 3) {
-          liqItems[2].textContent = usResp.rates.yield_10y.value.toFixed(2) + '%';
-        }
-        // Update "利差" in ERP overlay (2nd liq-item): CN-US spread in absolute terms
-        if (usResp.rates && usResp.rates.yield_10y && liqItems.length >= 2) {
-          const usY = usResp.rates.yield_10y.value;
-          const cnY = cn10yVal;
-          if (cnY && usY) {
-            const spreadVal = (cnY - usY).toFixed(2);
-            liqItems[1].textContent = spreadVal + '%';
-          }
-        }
+        if (liqItems.length >= 1) liqItems[0].textContent = _alignedCn.toFixed(2) + '%';
+        if (liqItems.length >= 2) liqItems[1].textContent = (_alignedCn - _alignedUs).toFixed(2) + '%';
+        if (liqItems.length >= 3) liqItems[2].textContent = _alignedUs.toFixed(2) + '%';
+        // 利差静态箭头（↑/↓）与共同日期口径的日变化不一致，清除避免误导
+        const liqArrows = document.querySelectorAll('.liq-item .liq-arrow');
+        liqArrows.forEach(a => { a.textContent = ''; a.className = 'liq-arrow'; });
       }
     }
 
