@@ -54,9 +54,6 @@
           TabRenderers.renderCycle(this.data.cyclePosition);
         }
         break;
-      case 'allocation':
-        TabRenderers.renderAllocation(this.data.assetValuation, this.data.assetPrices, this.data.dashboardSummary);
-        break;
       case 'timing':
         if (typeof TimingTab !== 'undefined') TimingTab.init();
         break;
