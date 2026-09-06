@@ -84,7 +84,13 @@ def save_json(data: dict, filename: str):
 
 
 def merge_history_description(new_data: dict) -> dict:
-    """将旧 JSON 中的 history 和 description 字段合并到新数据中"""
+    """将旧 JSON 中的 description 字段合并到新数据中。
+
+    [v3.4.5 数据真实性整改] 禁止再从旧 JSON 继承 history：
+    旧 history 系 _legacy_FAKE_add_history_data.py 用随机数生成的假序列，
+    继承会导致假数据在每次真采集后永久存活。真历史序列须由采集脚本
+    基于真实数据源计算后写入；无源指标 history 保持缺省（前端灰灯）。
+    """
     import json
     try:
         filepath = DATA_DIR / "timing_scores.json"
@@ -100,8 +106,7 @@ def merge_history_description(new_data: dict) -> dict:
         old_dim = old.get("dimensions", {}).get(dim_key, {})
         for ind_key, ind in dim.get("indicators", {}).items():
             old_ind = old_dim.get("indicators", {}).get(ind_key, {})
-            if "history" in old_ind and "history" not in ind:
-                ind["history"] = old_ind["history"]
+            # v3.4.5: 仅合并 description；history 一律不继承（假数据清零）
             if "description" in old_ind and "description" not in ind:
                 ind["description"] = old_ind["description"]
     return new_data
