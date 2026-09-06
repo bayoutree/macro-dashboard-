@@ -557,9 +557,9 @@ body::before {
       <div class="anchor-card" id="erp-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name" id="erp-title">沪深300 ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span></div>
-            <div class="indicator-value" id="erp-value">2.30%</div>
-            <div class="indicator-change down">↓ 0.05% (MoM)</div>
+            <div class="indicator-name" id="erp-title">万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span></div>
+            <div class="indicator-value" id="erp-value">数据待获取</div>
+            <div class="indicator-change down"></div>
           </div>
           <div class="ind-signal yellow">中性偏便宜</div>
         </div>
@@ -577,16 +577,16 @@ body::before {
           <span class="percentile-label" style="top:68%">25%</span>
         </div>
         <div class="sparkline-dates" id="erp-dates"></div>
-        <div class="update-time" id="erp-updatetime">更新: 2026-09-01</div>
+        <div class="update-time" id="erp-updatetime">数据待获取</div>
       </div>
 
       <!-- Buffett Card -->
       <div class="anchor-card" id="buffett-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">巴菲特指标 <span style="font-size:10px;color:var(--text-muted);">(市值/GDP·季频)</span></div>
-            <div class="indicator-value" id="buffett-value">72.5%</div>
-            <div class="indicator-change up">↑ 0.8% (QoQ)</div>
+            <div class="indicator-name">巴菲特指标 <span style="font-size:10px;color:var(--text-muted);">(市值/GDP·月频)</span></div>
+            <div class="indicator-value" id="buffett-value">数据待获取</div>
+            <div class="indicator-change up"></div>
           </div>
           <div class="ind-signal yellow">合理偏高</div>
         </div>
@@ -597,7 +597,7 @@ body::before {
           <span class="percentile-label" style="top:68%">25%</span>
         </div>
         <div class="sparkline-dates" id="buffett-dates"></div>
-        <div class="update-time" id="buffett-updatetime">更新: 2026-06-30</div>
+        <div class="update-time" id="buffett-updatetime">数据待获取</div>
       </div>
 
       <!-- E2: Earnings growth (upgraded to anchor) -->
@@ -1240,6 +1240,20 @@ function applyRealDataToMockData() {
     // 北向数据存储在referenceIndicators中没有专门项，但信号要能显示
     // 这里暂不新增行，保持5项不变
   }
+
+  // v3.4.5: 确认信号3项的 mock 长历史（demo 演示线，非真实采集）一律下线，
+  // 走势区显示\"数据待获取\"；当前信号状态（value/signal/signalText）来自 right_scores 真实计算。
+  // 采集残差（\"数据获取异常\"）不进 signalText，一并置为\"未触发\"。
+  if (mockData.confirmSignals) {
+    const _d = (StageEngine._rightScoresData && StageEngine._rightScoresData.update_date) || '';
+    mockData.confirmSignals.forEach((cf) => {
+      cf.dates = [];
+      cf.history = [];
+      cf.dif = undefined; cf.dea = undefined; cf.historyMA = undefined;
+      cf.updateTime = _d;
+      if (typeof cf.signalText === 'string' && cf.signalText.includes('数据获取异常')) cf.signalText = '未触发';
+    });
+  }
 }
 
 // v3.3: 覆盖action-bar触发器列表
@@ -1290,7 +1304,7 @@ applyRealDataToMockData();
 const mockData = {
   // --- ERP (E2: upgraded to anchor) ---
   erp: {
-    name: '沪深300 ERP', freq: '周频', unit: '%', // v3.4.3a: 口径纠正——hs300_erp 沪深300口径
+    name: '万得全A ERP', freq: '周频', unit: '%', // v3.4.5: 口径回归——仅万得全A，真序列上线前灰灯，不设沪深300副卡
     dates: ['2016-09','2016-10','2016-11','2016-12','2017-01','2017-02','2017-03','2017-04','2017-05','2017-06','2017-07','2017-08','2017-09','2017-10','2017-11','2017-12','2018-01','2018-02','2018-03','2018-04','2018-05','2018-06','2018-07','2018-08','2018-09','2018-10','2018-11','2018-12','2019-01','2019-02','2019-03','2019-04','2019-05','2019-06','2019-07','2019-08','2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03','2020-04','2020-05','2020-06','2020-07','2020-08','2020-09','2020-10','2020-11','2020-12','2021-01','2021-02','2021-03','2021-04','2021-05','2021-06','2021-07','2021-08','2021-09','2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
     history: [5.5,5.3,5.1,4.6,4.7,4.7,5.2,5.3,5.5,5.8,6.0,6.3,6.5,6.6,6.7,6.8,7.2,7.4,7.4,7.5,7.7,7.5,7.8,8.1,8.3,8.2,8.4,8.5,8.1,7.3,7.1,6.3,5.6,5.4,5.2,5.3,5.1,4.7,4.8,4.3,4.4,4.3,4.3,4.3,4.2,4.1,4.0,3.9,3.7,3.6,3.5,3.6,3.7,4.3,4.0,4.2,4.7,5.0,5.0,5.3,5.6,5.6,5.6,5.9,6.2,5.9,6.2,6.3,6.3,6.5,6.6,6.9,6.7,6.6,6.6,6.7,6.9,6.7,6.7,6.8,6.6,6.6,6.3,6.4,6.5,6.6,6.7,6.5,6.6,6.6,6.8,6.8,6.7,6.6,6.9,6.9,7.1,6.9,7.3,6.9,7.3,7.1,7.0,6.9,7.1,7.4,7.3,7.3,6.9,7.4,7.4,7.2,7.2,7.2,7.4,7.0,7.0,7.3,6.9,7.2],
     updateTime: '2026-09-01',
@@ -1299,7 +1313,7 @@ const mockData = {
 
   // --- Buffett (E2: upgraded to anchor) ---
   buffett: {
-    name: '巴菲特指标', freq: '季频', unit: '%',
+    name: '巴菲特指标', freq: '月频', unit: '%', // v3.4.5: 月度快照
     dates: ['2011Q3','2011Q4','2012Q1','2012Q2','2012Q3','2012Q4','2013Q1','2013Q2','2013Q3','2013Q4','2014Q1','2014Q2','2014Q3','2014Q4','2015Q1','2015Q2','2015Q3','2015Q4','2016Q1','2016Q2','2016Q3','2016Q4','2017Q1','2017Q2','2017Q3','2017Q4','2018Q1','2018Q2','2018Q3','2018Q4','2019Q1','2019Q2','2019Q3','2019Q4','2020Q1','2020Q2','2020Q3','2020Q4','2021Q1','2021Q2','2021Q3','2021Q4','2022Q1','2022Q2','2022Q3','2022Q4','2023Q1','2023Q2','2023Q3','2023Q4','2024Q1','2024Q2','2024Q3','2024Q4','2025Q1','2025Q2','2025Q3','2025Q4','2026Q1','2026Q2'],
     history: [58.1,57.6,61.3,60.7,65.3,65.5,70.4,68.9,72.0,74.0,79.8,84.5,90.6,89.5,97.5,100.9,96.1,88.6,81.3,74.2,74.4,77.8,78.5,83.0,80.3,83.0,75.1,71.9,67.9,63.7,67.2,67.4,68.3,73.2,69.5,65.7,72.4,83.7,90.1,87.0,83.9,78.9,74.4,73.2,71.1,71.1,72.4,75.2,73.9,75.3,76.3,73.7,71.9,74.9,74.8,73.1,74.6,73.4,70.3,72.5],
     updateTime: '2026-06-30',
@@ -2430,6 +2444,20 @@ function _setAnchorPending(cardId, keepSignalText) {
   const chg = card.querySelector('.indicator-change');
   if (chg) chg.textContent = '';
 }
+// v3.4.5: 顶层真实快照上卡——主数值=顶层 value（真）、灯语=真实 score；
+// 走势线置灰"数据待获取"（history 系 add_history_data.py 随机生成，禁用）。
+function _setSnapshot(ind, ts, valueText, freq) {
+  ind._updateDate = (ts && ts._updateDate) || ind._updateDate || '';
+  ind.value = (valueText === undefined || valueText === null || valueText === '') ? '数据待获取' : (valueText + '');
+  ind.signal = _scoreSignal(ts.score);
+  ind.signalText = _scoreText(ts.score, '');
+  ind.dates = [];
+  ind.history = [];
+  ind.history2 = undefined;
+  ind.slope = null;
+  ind.freq = freq || ind.freq || '';
+  ind.updateTime = ind._updateDate || '';
+}
 function _setAnchorValue(cardId, text, sigClass, sigText, chgText) {
   const card = document.getElementById(cardId);
   if (!card) return;
@@ -2442,164 +2470,112 @@ function _setAnchorValue(cardId, text, sigClass, sigText, chgText) {
 
 function applyTimingDataToMockData() {
   const ts = StageEngine._timingData;
+  const _ud = (ts && ts.update_date) || '';
   if (!ts || !ts.dimensions) {
     console.warn('[applyTiming] timing_scores unavailable, marking pending');
-    // 全部无数据源项标灰
     return;
   }
+  // 给指标对象附上数据文件更新日期，供 _setSnapshot 使用
+  const _tag = (ind) => { if (ind) ind._updateDate = _ud; return ind; };
 
   // ============ 主指标 8 项 ============
   const M = mockData.mainIndicators;
   // [0] 机构仓位(公/私) — 无数据源
   _setPending(M[0], '公募/私募仓位无自动数据源，待接入');
-  // [1] 杠杆资金 — margin_ratio(两融/流通市值) + margin_buying_ratio(融资买入占比)
-  const margin = _tsInd(ts, 'capital_flow', 'margin_ratio');
+  // [1] 杠杆资金 — margin_ratio(两融/流通市值) 顶层快照 + margin_buying_ratio 区间描述
+  const margin = _tag(_tsInd(ts, 'capital_flow', 'margin_ratio'));
   const marginBuy = _tsInd(ts, 'sentiment', 'margin_buying_ratio');
   if (margin) {
-    const s1 = _tsSeries(margin);
-    M[1].value = margin.value + '';
-    M[1].signal = _scoreSignal(margin.score);
+    _setSnapshot(M[1], margin, margin.value, '周频');
     M[1].signalText = _scoreText(margin.score, '两融');
-    M[1].dates = s1.dates; M[1].history = s1.history; M[1].history2 = undefined;
-    M[1].freq = '周频';
-    M[1].updateTime = s1.dates.length ? s1.dates[s1.dates.length-1] : '';
-    const mbLast = (marginBuy && Array.isArray(marginBuy.history) && marginBuy.history.length)
-      ? marginBuy.history[marginBuy.history.length-1].value : null;
-    M[1].description = '两融余额/流通市值 ' + (margin.value||'--') + '；融资买入占比 ' + (mbLast !== null ? (Math.round(mbLast*10)/10) + '%' : (marginBuy ? marginBuy.value : '--'));
+    M[1].description = '两融余额/流通市值 ' + (margin.value || '--')
+      + '；融资买入占比 ' + (marginBuy ? (marginBuy.value || '--') : '--')
+      + '。趋势线待真采集';
   } else _setPending(M[1]);
-  // [2] 恐贪指数 — fear_greed_index
-  const fg = _tsInd(ts, 'sentiment', 'fear_greed_index');
+  // [2] 恐贪指数 — fear_greed_index 顶层快照（10=极度恐惧）；线待真成分历史回算
+  const fg = _tag(_tsInd(ts, 'sentiment', 'fear_greed_index'));
   if (fg) {
-    const s2 = _tsSeries(fg);
-    // 卡片数值取走势序列最后一点（与线一致）；顶层 value 为当期快照，可能与 history 量纲不同
-    const fgLast = s2.history.length ? s2.history[s2.history.length-1] : null;
-    M[2].value = fgLast !== null ? (Math.round(fgLast*10)/10) + '' : '数据待获取';
-    M[2].signal = _scoreSignal(fg.score);
+    _setSnapshot(M[2], fg, fg.value, '周频');
     M[2].signalText = fg.score <= 30 ? '恐惧区间' : fg.score >= 70 ? '贪婪区间' : '中性区间';
-    M[2].dates = s2.dates; M[2].history = s2.history;
-    M[2].freq = '周频';
-    M[2].updateTime = s2.dates.length ? s2.dates[s2.dates.length-1] : '';
-    M[2].description = '恐贪综合指数（换手率/融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号';
+    M[2].description = '恐贪综合指数（换手率/融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。趋势线待真成分历史回算';
   } else _setPending(M[2]);
-  // [3] 新发基金份额 — new_fund
-  const nf = _tsInd(ts, 'capital_flow', 'new_fund');
+  // [3] 新发基金份额 — new_fund 顶层状态（中等/火爆/冰点）；月度份额序列待中基协真采集
+  const nf = _tag(_tsInd(ts, 'capital_flow', 'new_fund'));
   if (nf) {
-    const s3 = _tsSeries(nf);
-    const nfLast = s3.history.length ? s3.history[s3.history.length-1] : null;
-    M[3].value = nfLast !== null ? (Math.round(nfLast*10)/10) + '亿' : (nf.value + '');
-    M[3].signal = _scoreSignal(nf.score);
-    M[3].signalText = (nf.value || _scoreText(nf.score, '发行')) + '';
-    M[3].dates = s3.dates; M[3].history = s3.history;
-    M[3].freq = '月频';
-    M[3].updateTime = s3.dates.length ? s3.dates[s3.dates.length-1] : '';
-    M[3].description = '新发基金热度/份额（亿）。发行火爆常对应市场高位，反向指标';
+    _setSnapshot(M[3], nf, nf.value, '月频');
+    M[3].signalText = _scoreText(nf.score, '发行');
+    M[3].description = '新发基金热度。发行火爆常对应市场高位，反向指标。份额历史序列待中基协/东财源真采集';
   } else _setPending(M[3]);
-  // [4] 偏股基金3年年化 — fund_3y_annual
-  const f3 = _tsInd(ts, 'sentiment', 'fund_3y_annual');
+  // [4] 偏股基金3年年化 — fund_3y_annual 顶层快照
+  const f3 = _tag(_tsInd(ts, 'sentiment', 'fund_3y_annual'));
   if (f3) {
-    const s4 = _tsSeries(f3);
-    const f3Last = s4.history.length ? s4.history[s4.history.length-1] : null;
-    M[4].value = f3Last !== null ? (Math.round(f3Last*100)/100) + '%' : (f3.value + '');
-    M[4].signal = _scoreSignal(f3.score);
+    _setSnapshot(M[4], f3, f3.value, '月频');
     M[4].signalText = _scoreText(f3.score, '收益');
-    M[4].dates = s4.dates; M[4].history = s4.history;
-    M[4].freq = '月频';
-    M[4].updateTime = s4.dates.length ? s4.dates[s4.dates.length-1] : '';
+    M[4].description = '偏股混合基金指数3年滚动年化收益率，反映公募赚钱效应。趋势线待真采集';
   } else _setPending(M[4]);
-  // [5] 北向资金累计净流入 — 2024-08 起交易所停止披露实时数据，timing_scores 已 deprecated，显式标灰
+  // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，指标已下线
   _setPending(M[5], '北向资金实时数据2024-08起停止披露，该指标已下线');
   // [6] ETF份额变化 — 无自动数据源
   _setPending(M[6], 'ETF份额净申购无自动数据源，待接入');
-  // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio
-  const cs = _tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio');
+  // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio 顶层状态（%B=0.45）；灯语用自身 score 同源
+  const cs = _tag(_tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio'));
   if (cs) {
-    const s6 = _tsSeries(cs);
-    // 卡片数值=走势末点（比值原始口径），灯语用指标自身 score 映射（与数值同源，不引 style_rotation 异源文案）
-    const csLast = s6.history.length ? s6.history[s6.history.length-1] : null;
-    M[7].value = csLast !== null ? (Math.round(csLast*100)/100) + '' : '数据待获取';
-    M[7].signal = _scoreSignal(cs.score);
-    M[7].signalText = _scoreText(cs.score, '小盘') ;
+    _setSnapshot(M[7], cs, cs.value, '月频');
+    M[7].signalText = _scoreText(cs.score, '小盘');
     if (M[7].signalText === '中性') M[7].signalText = '大小盘均衡';
-    M[7].slope = null;
-    M[7].dates = s6.dates; M[7].history = s6.history;
-    M[7].freq = '月频';
-    M[7].updateTime = s6.dates.length ? s6.dates[s6.dates.length-1] : '';
+    M[7].description = '中证1000/沪深300 相对强弱（%B 位置）。比值上升=小盘跑赢。趋势线待指数行情真算';
   } else _setPending(M[7]);
 
   // ============ 参考指标 5 项 ============
   const R = mockData.referenceIndicators;
   // [0] 新增开户数(周) — 无数据源
   _setPending(R[0], '新增投资者开户数无自动数据源（中登公司周度），待接入');
-  // [1] 全A换手率 — turnover_rate
-  const to = _tsInd(ts, 'sentiment', 'turnover_rate');
+  // [1] 全A换手率 — turnover_rate 顶层快照
+  const to = _tag(_tsInd(ts, 'sentiment', 'turnover_rate'));
   if (to) {
-    const sr = _tsSeries(to);
-    R[1].value = to.value + '';
-    R[1].signal = _scoreSignal(to.score);
+    _setSnapshot(R[1], to, to.value, '周频');
     R[1].signalText = _scoreText(to.score, '换手');
-    R[1].dates = sr.dates; R[1].history = sr.history;
-    R[1].freq = '周频';
-    R[1].updateTime = sr.dates.length ? sr.dates[sr.dates.length-1] : '';
   } else _setPending(R[1]);
   // [2] 财政支出增速 — 无数据源
   _setPending(R[2], '财政支出增速无自动数据源，待接入');
-  // [3] 产业资本增减持 — industrial_capital（数值以 applyRealDataToMockData 的 rightScores 为准，这里补真值 history）
-  const ic = _tsInd(ts, 'capital_flow', 'industrial_capital');
+  // [3] 产业资本增减持 — industrial_capital 顶层状态快照（平衡/增持/减持）；
+  //     right_scores 周度残差由 applyRealDataToMockData 的 _capBad 闸门拦截；月频序列待真采集
+  const ic = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
   if (ic) {
-    const si = _tsSeries(ic);
-    R[3].dates = si.dates; R[3].history = si.history;
-    R[3].freq = '月频';
-    R[3].updateTime = si.dates.length ? si.dates[si.dates.length-1] : R[3].updateTime;
-    // 月频真值为卡片主数值（right_scores 周度残差未触发时不占位）
-    const lastV = si.history.length ? si.history[si.history.length-1] : null;
-    if (lastV !== null && lastV !== 0) {
-      R[3].value = (lastV >= 0 ? '+' : '') + lastV.toFixed(0) + '亿';
-      R[3].signal = lastV >= 0 ? 'green' : 'red';
-      R[3].signalText = (ic.value || (lastV >= 0 ? '净增持' : '净减持')) + (lastV >= 0 ? '·净增持' : '·净减持');
-    } else { _setPending(R[3]); }
-  }
+    _setSnapshot(R[3], ic, ic.value, '月频');
+    R[3].signalText = '净增持状态: ' + (ic.value || '平衡');
+    R[3].description = '重要股东月度净增减持。大幅增持常出现在市场底部。月度净额序列待真采集（akshare stock_share_change 已失效，评估替代源）';
+  } else _setPending(R[3]);
   // [4] 韭圈儿神奇指标 — 第三方无 JSON 源
   _setPending(R[4], '韭圈儿神奇指标为第三方数据，无自动采集源，待接入');
 
   // ============ 锚点卡 ============
-  // ERP → timing_scores hs300_erp（沪深300口径，卡片名同步标注）
-  const erp = _tsInd(ts, 'equity_bond', 'hs300_erp');
-  if (erp) {
-    const se = _tsSeries(erp);
-    mockData.erp.name = '沪深300 ERP';
-    mockData.erp.dates = se.dates; mockData.erp.history = se.history;
-    mockData.erp.freq = '周频';
-    // 卡片数值取走势最后一点（顶层 value 为当期快照 5.97%，序列末点 5.27%，以序列为准）
-    const erpLast = se.history.length ? se.history[se.history.length-1] : null;
-    const erpTxt = erpLast !== null ? (Math.round(erpLast*100)/100) + '%' : '数据待获取';
-    const ev = document.getElementById('erp-value');
-    if (ev) ev.textContent = erpTxt;
-    _setAnchorValue('erp-card', erpTxt, _scoreSignal(erp.score),
-      erp.score <= 30 ? '股票有吸引力' : erp.score >= 70 ? '股票偏贵' : '中性', '');
+  // ERP —— 唯一口径：万得全A ERP（用户拍板）。真序列（1/PE(万得全A,TTM)−10Y）上线前灰灯，
+  //        禁止用沪深300顶替、不设副卡；overlay 的中/美/利差为独立真值（loadExternalLiqData），保留。
+  mockData.erp.name = '万得全A ERP';
+  mockData.erp.dates = []; mockData.erp.history = [];
+  _setAnchorPending('erp-card');
+  {
+    const et = document.getElementById('erp-title');
+    if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span>';
     const eu = document.getElementById('erp-updatetime');
-    if (eu && se.dates.length) eu.textContent = '更新: ' + se.dates[se.dates.length-1] + ' (周频)';
-  } else {
-    mockData.erp.dates = []; mockData.erp.history = [];
-    _setAnchorPending('erp-card');
+    if (eu) eu.textContent = '数据待获取（万得全A PE 序列采集中）';
   }
-  // 巴菲特指标 → buffett_ratio（季→月频历史）
-  const bf = _tsInd(ts, 'valuation', 'buffett_ratio');
+  // 巴菲特指标 — buffett_ratio 顶层快照 85%；月频历史线待全A总市值/GDP 真采集
+  const bf = _tag(_tsInd(ts, 'valuation', 'buffett_ratio'));
+  mockData.buffett.dates = []; mockData.buffett.history = [];
   if (bf) {
-    const sb = _tsSeries(bf);
-    mockData.buffett.dates = sb.dates; mockData.buffett.history = sb.history;
-    mockData.buffett.freq = '月频';
-    // 卡片数值取走势最后一点（顶层 value 口径待核，与序列不一致时以序列为准）
-    const bfLast = sb.history.length ? sb.history[sb.history.length-1] : null;
-    const bfTxt = bfLast !== null ? (Math.round(bfLast*100)/100) + '%' : '数据待获取';
+    const bfTxt = (bf.value !== undefined && bf.value !== null && bf.value !== '') ? (bf.value + '%') : '数据待获取';
     const bv = document.getElementById('buffett-value');
-    if (bv) bv.textContent = bfTxt;
+    if (bv) { bv.textContent = bfTxt; bv.style.color = ''; }
     _setAnchorValue('buffett-card', bfTxt, _scoreSignal(bf.score),
       bf.score >= 70 ? '高于历史中枢' : bf.score <= 30 ? '低于历史中枢' : '中性区间', '');
     const bu = document.getElementById('buffett-updatetime');
-    if (bu && sb.dates.length) bu.textContent = '更新: ' + sb.dates[sb.dates.length-1] + ' (月频)';
+    if (bu) bu.textContent = '更新: ' + _ud + ' (月频快照)';
   } else {
-    mockData.buffett.dates = []; mockData.buffett.history = [];
     _setAnchorPending('buffett-card');
+    const bu2 = document.getElementById('buffett-updatetime');
+    if (bu2) bu2.textContent = '数据待获取';
   }
   // 全A非金融盈利增速 — 无数据源
   mockData.earnings.dates = []; mockData.earnings.history = [];
