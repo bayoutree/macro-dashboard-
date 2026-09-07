@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-01",
+  "update_date": "2026-09-07",
   "version": "v2.0",
   "composite_score": 46.3,
   "position_range": "40%-55%",
@@ -44,13 +44,21 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.7,
+          "value": 7.2,
           "unit": "%",
-          "score": 40,
+          "score": 35,
           "sub_weight": 20,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
-          "description": "破净率：股价低于每股净资产的个股占比。破净率越高说明市场越悲观，常出现在底部区域。"
+          "description": "破净率：股价低于每股净资产的个股占比。破净率越高说明市场越悲观，常出现在底部区域。",
+          "data_source": "sina",
+          "collect_time": "2026-09-07T17:10:53",
+          "history": [
+            {
+              "date": "2026-09-07",
+              "value": 7.23
+            }
+          ]
         }
       }
     },
@@ -247,18 +255,26 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "51.4%",
+          "value": "46.89%",
           "percentile": "98.3%",
-          "score": 80,
+          "score": 55,
           "sub_weight": 35,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
+          "data_source": "sina",
+          "collect_time": "2026-09-07T17:10:53",
+          "history": [
+            {
+              "date": "2026-09-07",
+              "value": 46.89
+            }
+          ]
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "电子通信拥挤",
-          "score": 65,
+          "value": "数据待获取",
+          "score": 50,
           "sub_weight": 25,
           "bottom_threshold": "前三行业<25%",
           "top_threshold": "前三行业>40%",
@@ -266,12 +282,14 @@
         },
         "concentration_trend": {
           "name": "交易集中度趋势",
-          "value": "加速集中",
-          "score": 65,
+          "value": "数据待获取(依赖HHI)",
+          "score": 50,
           "sub_weight": 20,
           "bottom_signal": "从集中到分散",
           "top_signal": "加速集中",
-          "description": "行业集中度变化趋势。快速上升期需警惕抱团瓦解风险。"
+          "description": "行业集中度变化趋势。快速上升期需警惕抱团瓦解风险。",
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-09-07T17:10:53"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
