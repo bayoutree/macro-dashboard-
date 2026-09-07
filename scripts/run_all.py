@@ -23,6 +23,8 @@ SCRIPTS = [
     ("update_json.py", "V3周期-更新v3 JSON"),
     ("calculate_indicators.py", "V3周期-衍生指标计算"),
     ("validate_json.py", "V3周期-JSON格式校验"),
+    # ---- v3.4.6 第三步：微观结构+估值真采集 ----
+    ("collect_microstructure.py", "v3.4.6-拥挤度/破净率/集中度真采集"),
 ]
 
 
