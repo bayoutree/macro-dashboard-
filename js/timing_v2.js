@@ -15,11 +15,15 @@ const TimingTab = {
   miniCharts: [],
   miniChartObserver: null,
 
+  _escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  },
+
   async init() {
     try {
       const [leftResp, rightResp] = await Promise.all([
-        fetch('data/timing_scores.json'),
-        fetch('data/timing_right_scores.json')
+        fetch('data/timing_scores.json?v=20260912'),
+        fetch('data/timing_right_scores.json?v=20260912')
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();
@@ -308,11 +312,15 @@ const TimingTab = {
 
     if (sr.large_small) {
       const ls = sr.large_small;
+      const lsLabel = ls.label || '大盘/小盘比值';
+      let lsVal = '--';
+      if (ls.ratio != null) lsVal = Number.isInteger(ls.ratio) ? String(ls.ratio) : ls.ratio.toFixed(3);
+      else if (ls.value_text != null) lsVal = String(ls.value_text);
       html += `
         <div class="trp-style-item">
-          <div class="trp-style-label">大盘/小盘比值</div>
-          <div class="trp-style-val">${ls.ratio != null ? ls.ratio.toFixed(3) : '--'}</div>
-          <div class="trp-style-signal">${ls.trend || '--'}</div>
+          <div class="trp-style-label">${lsLabel}</div>
+          <div class="trp-style-val">${lsVal}</div>
+          <div class="trp-style-signal">${ls.trend || ls.signal || '--'}</div>
         </div>
       `;
     }
@@ -652,6 +660,8 @@ const TimingTab = {
                   </div>
                   ${hasHistory ? `<div class="timing-mini-chart" id="mini-chart-${key}-${iKey}" data-history='${JSON.stringify(ind.history)}' data-score="${ind.score}"></div>` : ''}
                   ${ind.description ? `<div class="timing-dim-indicator-desc">${ind.description}</div>` : ''}
+                  ${ind.note ? `<div class="timing-dim-indicator-note">📐 ${this._escHtml(ind.note)}</div>` : ''}
+                  ${ind.axis_note ? `<div class="timing-dim-indicator-note">📐 ${this._escHtml(ind.axis_note)}</div>` : ''}
                 </div>
               `;
             }).join('')}
