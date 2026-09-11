@@ -1594,7 +1594,7 @@ class TimingScoreEngine:
         return (prev.get("dimensions", {}).get("micro_structure", {}).get("indicators", {})
                 .get("csi1000_hs300_ratio", {}).get("score", 62),
                 prev.get("dimensions", {}).get("micro_structure", {}).get("indicators", {})
-                .get("csi1000_hs300_ratio", {}).get("value", "偏弱(%B=0.17)"))
+                .get("csi1000_hs300_ratio", {}).get("value", "数据待获取"))
 
     # ----------------------------------------------------------
     # 工具方法
@@ -1913,11 +1913,19 @@ class TimingScoreEngine:
         micro = dimensions.get("micro_structure", {}).get("indicators", {})
         ratio_data = micro.get("csi1000_hs300_ratio", {})
         if ratio_data:
+            # v3.4.7: 三态映射——偏弱/中性/走强（原二元逻辑把"中性"错判为"走强"，CIO复验FAIL）
+            _rv = str(ratio_data.get("value", ""))
+            if "偏弱" in _rv or "极弱" in _rv:
+                _st, _sig = "小盘偏弱", "不追涨"
+            elif "走强" in _rv or "占优" in _rv:
+                _st, _sig = "小盘走强", "可关注"
+            else:
+                _st, _sig = "大小盘均衡", "中性均衡"
             style_rotation["large_small"] = {
                 "indicator": "中证1000/沪深300比值",
                 "current_value": ratio_data.get("value", ""),
-                "status": "小盘偏弱" if "偏弱" in str(ratio_data.get("value", "")) else "小盘走强",
-                "signal": "不追涨" if "偏弱" in str(ratio_data.get("value", "")) else "可关注",
+                "status": _st,
+                "signal": _sig,
                 "detail": f"小盘风格{ratio_data.get('value', '待更新')}"
             }
 
