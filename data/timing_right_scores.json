@@ -214,9 +214,12 @@
   },
   "style_rotation": {
     "large_small": {
-      "ratio": 1.6679,
-      "trend": "小盘占优",
-      "signal": "小盘走强"
+      "label": "小盘风格%B(布林)",
+      "ratio": 0.36,
+      "value_text": "0.36",
+      "trend": "大小盘均衡",
+      "signal": "中性",
+      "note": "小盘%B=0.36均衡区(旧版比值口径1.668已废);数据源同步timing_scores.json style_rotation,2026-09-11核验"
     },
     "dividend_premium": {
       "value": null,
