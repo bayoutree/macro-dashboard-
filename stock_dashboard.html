@@ -546,6 +546,46 @@ body::before {
         <div class="update-time" id="fed-rate-update">更新: --</div>
         <!-- 备注：若未来Fed重启QE扩表，在此处用小字补充说明 -->
       </div>
+
+      <!-- v3.4.8: 社融存量TTM同比（liquidity.social_financing_trend，月频真值） -->
+      <div class="anchor-card" id="sf-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">社融存量同比(TTM) <span style="font-size:10px;color:var(--text-muted);">(月频·滚动12月增量同比)</span></div>
+            <div class="indicator-value" id="sf-value">--</div>
+            <div class="indicator-change" id="sf-change"></div>
+          </div>
+          <div class="ind-signal" id="sf-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="sf-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="sf-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="sf-dates"></div>
+        <div class="ind-description">
+          <span class="desc-signal">社融是经济领先指标。</span>社融存量同比触底回升利好盈利预期；TTM同比口径=滚动12月社融增量同比，剔除单月脉冲。
+        </div>
+        <div class="update-time" id="sf-update">更新: --</div>
+      </div>
+
+      <!-- v3.4.8: M1-M2剪刀差（liquidity.m1_m2_scissors，月频真值） -->
+      <div class="anchor-card" id="m12-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">M1-M2 剪刀差 <span style="font-size:10px;color:var(--text-muted);">(M1同比−M2同比·月频)</span></div>
+            <div class="indicator-value" id="m12-value">--</div>
+            <div class="indicator-change" id="m12-change"></div>
+          </div>
+          <div class="ind-signal" id="m12-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="m12-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="m12-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="m12-dates"></div>
+        <div class="ind-description">
+          <span class="desc-signal">剪刀差走阔=企业活期存款增加、经济活跃度提升。</span>负值收窄即资金活化改善；0轴参考线，低于0为M1弱于M2。
+        </div>
+        <div class="update-time" id="m12-update">更新: --</div>
+      </div>
     </div>
   </section>
 
@@ -633,6 +673,27 @@ body::before {
         <div class="sparkline-dates" id="pe-anchor-dates"></div>
         <div class="update-time">更新: 2026-09-01</div>
       </div>
+
+      <!-- v3.4.8: 沪深300 PB分位（valuation.hs300_pb_percentile，月频真值） -->
+      <div class="anchor-card" id="pb-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">沪深300 PB分位 <span style="font-size:10px;color:var(--text-muted);">(乐咕整体法PB·月频)</span></div>
+            <div class="indicator-value" id="pb-value">--</div>
+            <div class="indicator-change" id="pb-change"></div>
+          </div>
+          <div class="ind-signal" id="pb-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="pb-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="pb-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="pb-dates"></div>
+        <div class="ind-description">
+          <span class="desc-signal">PB分位比PE更稳定，适合衡量长期估值中枢。</span>
+          乐咕乐股沪深300整体法PB；分位样本为2005年起全历史（约21年）月频，当前算法为乐咕口径百分位，后续全看板统一为"全样本严格小于占比"口径。
+        </div>
+        <div class="update-time" id="pb-update">更新: --</div>
+      </div>
     </div>
   </section>
 
@@ -661,17 +722,17 @@ body::before {
       <div class="anchor-card" id="spread-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">中美10Y利差 <span style="font-size:10px;color:var(--text-muted);">(中债-美债)</span></div>
+            <div class="indicator-name">中美10Y利差 <span style="font-size:10px;color:var(--text-muted);">(走势线: 美债−中债)</span></div>
             <div class="indicator-value" id="spread-value">--</div>
             <div class="indicator-change" id="spread-change">--</div>
           </div>
-          <div class="ind-signal yellow">倒挂收窄</div>
+          <div class="ind-signal yellow">倒挂中(美债更高)</div>
         </div>
         <div class="sparkline-container" id="spread-sparkline" style="height:120px;">
           <div class="sparkline-tooltip" id="spread-tooltip"></div>
         </div>
         <div class="sparkline-dates" id="spread-dates"></div>
-        <div class="ind-description">中美利差反映资金跨境流动方向。倒挂收窄意味着外资流出压力减轻。</div>
+        <div class="ind-description">中美利差反映资金跨境流动方向。<br><span style="color:var(--yellow);font-size:11px;">⚠️ 符号约定：走势线=美债10Y−中债10Y，正值=美债利率更高（中美倒挂程度）；当前倒挂收窄=外资流出压力减轻。</span></div>
         <div class="update-time">更新: 2026-09-01 (日频)</div>
       </div>
       <!-- USDCNY -->
@@ -775,6 +836,55 @@ body::before {
   <section class="reference-section">
     <div class="section-title"><span class="emoji">📋</span> 参考指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(5项)</span></div>
     <div class="reference-grid" id="reference-indicators"></div>
+  </section>
+
+  <!-- ===== 8. INDUSTRY CONCENTRATION HHI (v3.4.8 新增) ===== -->
+  <section class="anchor-section">
+    <div class="section-title"><span class="emoji">🧩</span> 行业成交集中度 HHI <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(微观结构·周频真值)</span></div>
+    <div class="anchor-grid">
+      <div class="anchor-card" id="hhi-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">行业成交集中度HHI(水平) <span style="font-size:10px;color:var(--text-muted);">(中证800十大行业·周频)</span></div>
+            <div class="indicator-value" id="hhi-value">--</div>
+            <div class="indicator-change" id="hhi-change"></div>
+          </div>
+          <div class="ind-signal" id="hhi-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="hhi-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="hhi-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="hhi-dates"></div>
+        <div class="ind-description">
+          <span class="desc-signal">分位越高=资金越抱团少数行业、结构越脆弱。</span>
+          当前科技链(信息技术30.8%+电信16.2%=47%)抱团，HHI处91%分位=高度集中，警惕抱团松动。
+        </div>
+        <div class="update-time" id="hhi-update">更新: --</div>
+      </div>
+
+      <div class="anchor-card" id="hhit-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">集中度趋势(20周动量) <span style="font-size:10px;color:var(--text-muted);">(HHI−20周前HHI·周频)</span></div>
+            <div class="indicator-value" id="hhit-value">--</div>
+            <div class="indicator-change" id="hhit-change"></div>
+          </div>
+          <div class="ind-signal" id="hhit-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="hhit-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="hhit-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="hhit-dates"></div>
+        <div class="ind-description">
+          <span class="desc-signal">动量为负=集中度扩散、资金外溢、市场广度修复(积极)。</span>
+          当前处14%分位=强扩散(7月AI抱团高点后的健康轮动)；水平高分位+趋势强扩散=高位扩散背离信号。
+        </div>
+        <div class="update-time" id="hhit-update">更新: --</div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--text-muted);line-height:1.7;margin-top:6px;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
+      ⚠️ 口径说明：中证800十大一级行业(000928能源~000937公用)成交额HHI=∑(行业成交占比)^2×10000；10行业口径较东财86行业系统性偏高，仅用于趋势与自身历史分位，跨口径不可比；分位基于2018年以来周频样本。
+    </div>
   </section>
 </div>
 
@@ -1528,6 +1638,57 @@ const fedAnchorData = {
   dates: [],
   p25: 3.5, p50: 4.3, p75: 5.0, freq: '月频'
 };
+
+// v3.4.8: 新增锚点卡数据对象（timing_scores dimensions 真值驱动；无数据时灰灯）
+const sfAnchorData   = { history: [], dates: [], freq: '月频' };  // 社融存量TTM同比
+const m12AnchorData  = { history: [], dates: [], freq: '月频' };  // M1-M2剪刀差
+const pbAnchorData   = { history: [], dates: [], freq: '月频' };  // 沪深300 PB分位
+const hhiAnchorData  = { history: [], dates: [], freq: '周频' };  // HHI水平
+const hhitAnchorData = { history: [], dates: [], freq: '周频' };  // HHI 20周动量
+function _fillAnchorCard(cfg, ind, valueText) {
+  // cfg: {card, spark, dates, update, data, freq, valSuffix, sigText}
+  const card = document.getElementById(cfg.card);
+  const series = ind ? _tsSeries(ind) : { dates: [], history: [] };
+  if (ind && series.history.length >= 2) {
+    cfg.data.dates = series.dates;
+    cfg.data.history = series.history;
+    cfg.data.freq = cfg.freq;
+    const lastV = series.history[series.history.length - 1];
+    const vTxt = (valueText !== undefined && valueText !== null && valueText !== '') ? (valueText + '') : (lastV + (cfg.valSuffix || ''));
+    const vel = document.getElementById(cfg.card.replace('-card', '-value'));
+    if (vel) { vel.textContent = vTxt; vel.style.color = ''; }
+    const sig = document.getElementById(cfg.card.replace('-card', '-signal'));
+    if (sig) { sig.className = 'ind-signal ' + _scoreSignal(ind.score); sig.textContent = cfg.sigText || _scoreText(ind.score, ''); }
+    const n = series.history.length;
+    const chg = document.getElementById(cfg.card.replace('-card', '-change'));
+    if (chg) {
+      if (n >= 2) {
+        const d = series.history[n-1] - series.history[n-2];
+        const unit = cfg.valSuffix || '';
+        chg.textContent = (d >= 0 ? '↑ ' : '↓ ') + Math.abs(d).toFixed(1) + unit + ' (上期)';
+        chg.className = 'indicator-change ' + (d >= 0 ? 'up' : 'down');
+      }
+    }
+    const up = document.getElementById(cfg.card.replace('-card', '-update'));
+    if (up) { up.textContent = '更新: ' + (ind._updateDate || '') + ' (' + cfg.freq + ' · ' + n + '点)'; up.className = 'update-time'; }
+    const dl = document.getElementById(cfg.card.replace('-card', '-dates'));
+    if (dl) dl.innerHTML = '';
+  } else {
+    cfg.data.dates = []; cfg.data.history = [];
+    if (card) {
+      const vel = card.querySelector('.indicator-value');
+      if (vel) { vel.textContent = '数据待获取'; vel.style.color = 'var(--text-muted)'; }
+      const sig = card.querySelector('.ind-signal');
+      if (sig) { sig.className = 'ind-signal gray'; sig.textContent = '数据待获取'; }
+      const chg = card.querySelector('.indicator-change');
+      if (chg) chg.textContent = '';
+      const up = card.querySelector('.update-time');
+      if (up) { up.textContent = '数据待获取'; up.className = 'update-time expired'; }
+      const sc = card.querySelector('.sparkline-container');
+      if (sc) sc.innerHTML = '<span style="color:var(--text-muted);font-size:11px">数据待获取</span>';
+    }
+  }
+}
 // Fallback data in case fetch fails
 const fedAnchorDataFallback = {
   history: [5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.13,4.83,4.64,4.48,4.33,4.33,4.33,4.33,4.33,4.33,4.33,4.22,4.09,3.88,3.72,3.64,3.64,3.64,3.64,3.63,3.63,3.63],
@@ -1613,21 +1774,41 @@ function buildRangeLabel(data) {
 // A3: Render range info bar
 function renderRangeInfoBar() {
   const bar = document.getElementById('range-info-bar');
-  // Collect all data ranges
+  if (!bar) return;
+  // v3.4.8: 统计覆盖全部已渲染数据源（mockData 各卡 + 外部流动性 + 5张新锚点卡），
+  //         灰灯卡 dates 已置空，天然不计入；min/max 取真序列实际端点。
   const allDates = [];
-  [mockData.erp, mockData.buffett, ...mockData.mainIndicators, ...mockData.confirmSignals, ...mockData.referenceIndicators].forEach(d => {
-    if (d.dates && d.dates.length > 0) {
-      allDates.push({name: d.name, dates: d.dates, freq: d.freq});
-    }
-  });
-  // Find overall min/max
+  const _push = (name, dates, freq) => {
+    if (Array.isArray(dates) && dates.length > 0) allDates.push({ name, dates, freq });
+  };
+  [
+    mockData.erp, mockData.buffett, mockData.earnings, mockData.medianPE,
+    mockData.bondYield, mockData.expectation,
+    ...mockData.mainIndicators, ...mockData.confirmSignals, ...mockData.referenceIndicators
+  ].forEach(d => _push(d.name, d.dates, d.freq));
+  _push('中国M2同比', m2AnchorData.dates, m2AnchorData.freq);
+  _push('联邦基金利率', fedAnchorData.dates, fedAnchorData.freq);
+  _push('社融存量TTM同比', sfAnchorData.dates, sfAnchorData.freq);
+  _push('M1-M2剪刀差', m12AnchorData.dates, m12AnchorData.freq);
+  _push('沪深300 PB分位', pbAnchorData.dates, pbAnchorData.freq);
+  _push('行业成交集中度HHI', hhiAnchorData.dates, hhiAnchorData.freq);
+  _push('集中度20周动量', hhitAnchorData.dates, hhitAnchorData.freq);
+  if (typeof extLiqData !== 'undefined') {
+    _push('美债10Y', extLiqData.ust10y.dates, '日频');
+    _push('中美10Y利差', extLiqData.spread.dates, '日频');
+    _push('USD/CNY', extLiqData.usdcny.dates, '日频');
+  }
   let minDate = '9999', maxDate = '0000';
   allDates.forEach(d => {
     if (d.dates[0] < minDate) minDate = d.dates[0];
     if (d.dates[d.dates.length-1] > maxDate) maxDate = d.dates[d.dates.length-1];
   });
-  bar.innerHTML = `<span>数据范围: ${fmtDateLabel(minDate)} — ${fmtDateLabel(maxDate)}</span>
-    <span>指标数: ${allDates.length} · 月频≥36m · 周频≥104w · 更新 2026-09-01</span>`;
+  const _ud = (window.StageEngine && StageEngine._timingData && StageEngine._timingData.update_date) || '';
+  const rangeTxt = allDates.length
+    ? `数据范围: ${fmtDateLabel(minDate)} — ${fmtDateLabel(maxDate)}`
+    : '数据范围: 加载中…';
+  bar.innerHTML = `<span>${rangeTxt}</span>
+    <span>有效指标(真序列): ${allDates.length} · 月频≥36m · 周频≥104w · 更新 ${_ud || '--'}</span>`;
 }
 
 // A2: Render date labels under a sparkline container
@@ -2622,6 +2803,28 @@ function applyTimingDataToMockData() {
   // 信用利差无自动数据源 → 清空假线（10Y国债真值在 loadExternalLiqData 中接入）
   mockData.bondYield.creditSpread = [];
   // M2 卡标灰在 loadExternalLiqData 中统一处理（同样用 sparkline 容器反查）
+
+  // ============ v3.4.8 新增5张锚点卡（dimensions 真值驱动） ============
+  // 社融存量TTM同比 — liquidity.social_financing_trend（25月点）
+  const sf = _tag(_tsInd(ts, 'liquidity', 'social_financing_trend'));
+  _fillAnchorCard({card:'sf-card',  data:sfAnchorData,  freq:'月频', valSuffix:'%',
+    sigText: sf ? _scoreText(sf.score, '社融') : ''}, sf, sf ? sf.value : null);
+  // M1-M2剪刀差 — liquidity.m1_m2_scissors（59月点）
+  const m12 = _tag(_tsInd(ts, 'liquidity', 'm1_m2_scissors'));
+  _fillAnchorCard({card:'m12-card', data:m12AnchorData, freq:'月频', valSuffix:'%',
+    sigText: m12 ? (m12.score <= 30 ? '剪刀差偏冷(资金弱)' : m12.score >= 70 ? '活化偏热' : '中性') : ''}, m12, m12 ? m12.value : null);
+  // 沪深300 PB分位 — valuation.hs300_pb_percentile（61月点，2005年起全历史分位）
+  const pb = _tag(_tsInd(ts, 'valuation', 'hs300_pb_percentile'));
+  _fillAnchorCard({card:'pb-card',  data:pbAnchorData,  freq:'月频', valSuffix:'%分位',
+    sigText: pb ? (pb.score <= 30 ? '估值偏低' : pb.score >= 70 ? '估值偏高' : '估值中性') : ''}, pb, pb ? (pb.value + '%分位') : null);
+  // HHI水平 — micro_structure.industry_concentration（445周点）
+  const hhi = _tag(_tsInd(ts, 'micro_structure', 'industry_concentration'));
+  _fillAnchorCard({card:'hhi-card', data:hhiAnchorData, freq:'周频', valSuffix:'',
+    sigText: hhi ? (hhi.score >= 70 ? '高度集中' : hhi.score <= 30 ? '高度分散' : '集中度中性') : ''}, hhi, hhi ? hhi.value : null);
+  // HHI 20周动量 — micro_structure.concentration_trend（425周点）
+  const hhit = _tag(_tsInd(ts, 'micro_structure', 'concentration_trend'));
+  _fillAnchorCard({card:'hhit-card', data:hhitAnchorData, freq:'周频', valSuffix:'',
+    sigText: hhit ? (hhit.score <= 30 ? '强扩散(积极)' : hhit.score >= 70 ? '加速抱团' : '趋势中性') : ''}, hhit, hhit ? hhit.value : null);
 }
 
 // v3.4: Load real data from JSON files for external liquidity cards + fed rate card
@@ -2936,6 +3139,8 @@ async function init() {
 
   // P1: External liquidity triple card
   safeRender('renderExtLiqCards', renderExtLiqCards);
+  // v3.4.8: 外部流动性日频序列加载完成后重算统计（extLiqData 此时才填充）
+  safeRender('renderRangeInfoBar2', renderRangeInfoBar);
 
   // Anchor sparklines with dates
   safeRender('spark-erp', () => renderSparkline('erp-sparkline', mockData.erp));
@@ -2948,6 +3153,12 @@ async function init() {
   // Liquidity sparklines
   safeRender('spark-m2', () => renderSparkline('m2-sparkline', m2AnchorData));
   safeRender('spark-fed', () => renderSparkline('fed-sparkline', fedAnchorData));
+  // v3.4.8: 5张新锚点卡 sparkline
+  safeRender('spark-sf',  () => renderSparkline('sf-sparkline', sfAnchorData));
+  safeRender('spark-m12', () => renderSparkline('m12-sparkline', m12AnchorData));
+  safeRender('spark-pb',  () => renderSparkline('pb-sparkline', pbAnchorData));
+  safeRender('spark-hhi', () => renderSparkline('hhi-sparkline', hhiAnchorData));
+  safeRender('spark-hhit',() => renderSparkline('hhit-sparkline', hhitAnchorData));
 
   // A2: Date labels for anchor charts
   safeRender('dateLabels', () => {
@@ -2959,6 +3170,11 @@ async function init() {
     renderDateLabels('expec-dates', mockData.expectation.dates);
     renderDateLabels('m2-dates', m2AnchorData.dates);
     renderDateLabels('fed-dates', fedAnchorData.dates);
+    renderDateLabels('sf-dates', sfAnchorData.dates);
+    renderDateLabels('m12-dates', m12AnchorData.dates);
+    renderDateLabels('pb-dates', pbAnchorData.dates);
+    renderDateLabels('hhi-dates', hhiAnchorData.dates);
+    renderDateLabels('hhit-dates', hhitAnchorData.dates);
   });
 
   safeRender('renderMainIndicators', renderMainIndicators);
