@@ -2444,15 +2444,22 @@ function _setAnchorPending(cardId, keepSignalText) {
   const chg = card.querySelector('.indicator-change');
   if (chg) chg.textContent = '';
 }
-// v3.4.5: 顶层真实快照上卡——主数值=顶层 value（真）、灯语=真实 score；
-// 走势线置灰"数据待获取"（history 系 add_history_data.py 随机生成，禁用）。
+// v3.4.7: 顶层真实快照上卡——主数值=顶层 value（真）、灯语=真实 score；
+// 走势线：timing_scores.json 中 history>=2 点（真实回填序列）时渲染真线；
+// 无 history（无自动真实源）时置灰"数据待获取"，严禁假线（v3.4.5 铁律）。
 function _setSnapshot(ind, ts, valueText, freq) {
   ind._updateDate = (ts && ts._updateDate) || ind._updateDate || '';
   ind.value = (valueText === undefined || valueText === null || valueText === '') ? '数据待获取' : (valueText + '');
   ind.signal = _scoreSignal(ts.score);
   ind.signalText = _scoreText(ts.score, '');
-  ind.dates = [];
-  ind.history = [];
+  const _series = _tsSeries(ts);
+  if (_series.history.length >= 2) {
+    ind.dates = _series.dates;
+    ind.history = _series.history;
+  } else {
+    ind.dates = [];
+    ind.history = [];
+  }
   ind.history2 = undefined;
   ind.slope = null;
   ind.freq = freq || ind.freq || '';
@@ -2509,21 +2516,21 @@ function applyTimingDataToMockData() {
   // [4] 偏股基金3年年化 — fund_3y_annual 顶层快照
   const f3 = _tag(_tsInd(ts, 'sentiment', 'fund_3y_annual'));
   if (f3) {
-    _setSnapshot(M[4], f3, f3.value, '月频');
+    _setSnapshot(M[4], f3, f3.value, '周频');
     M[4].signalText = _scoreText(f3.score, '收益');
-    M[4].description = '偏股混合基金指数3年滚动年化收益率，反映公募赚钱效应。趋势线待真采集';
+    M[4].description = '偏股基金指数(930950)3年滚动年化收益率周频，反映公募赚钱效应；日频精确3自然年算法（删除旧4.10%占位值）';
   } else _setPending(M[4]);
   // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，指标已下线
   _setPending(M[5], '北向资金实时数据2024-08起停止披露，该指标已下线');
   // [6] ETF份额变化 — 无自动数据源
   _setPending(M[6], 'ETF份额净申购无自动数据源，待接入');
-  // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio 顶层状态（%B=0.45）；灯语用自身 score 同源
+  // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio（%B=0.36 小盘中性，csindex 000852/000300 周频105点真值）
   const cs = _tag(_tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio'));
   if (cs) {
-    _setSnapshot(M[7], cs, cs.value, '月频');
+    _setSnapshot(M[7], cs, cs.value, '周频');
     M[7].signalText = _scoreText(cs.score, '小盘');
     if (M[7].signalText === '中性') M[7].signalText = '大小盘均衡';
-    M[7].description = '中证1000/沪深300 相对强弱（%B 位置）。比值上升=小盘跑赢。趋势线待指数行情真算';
+    M[7].description = '中证1000/沪深300 相对强弱（%B 位置，csindex 官方收盘价比值周频）。比值上升=小盘跑赢。当前 %B=0.36 小盘中性';
   } else _setPending(M[7]);
 
   // ============ 参考指标 5 项 ============
@@ -2550,16 +2557,34 @@ function applyTimingDataToMockData() {
   _setPending(R[4], '韭圈儿神奇指标为第三方数据，无自动采集源，待接入');
 
   // ============ 锚点卡 ============
-  // ERP —— 唯一口径：万得全A ERP（用户拍板）。真序列（1/PE(万得全A,TTM)−10Y）上线前灰灯，
-  //        禁止用沪深300顶替、不设副卡；overlay 的中/美/利差为独立真值（loadExternalLiqData），保留。
+  // ERP —— 唯一口径：万得全A ERP（用户拍板）。
+  // v3.4.7: 真实序列已上线——中证全指000985（万得全A免费替身，覆盖率>99%、加权一致）
+  //        csindex 官方日频 PE(TTM) + 中国10Y国债，2020年起周频343点；CIO 裁决点亮。
+  //        分位口径"2020年以来"；overlay 的中/美/利差为独立真值（loadExternalLiqData），保留。
   mockData.erp.name = '万得全A ERP';
-  mockData.erp.dates = []; mockData.erp.history = [];
-  _setAnchorPending('erp-card');
   {
-    const et = document.getElementById('erp-title');
-    if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span>';
-    const eu = document.getElementById('erp-updatetime');
-    if (eu) eu.textContent = '数据待获取（万得全A PE 序列采集中）';
+    const erp = _tag(_tsInd(ts, 'equity_bond', 'hs300_erp'));
+    const erpSeries = erp ? _tsSeries(erp) : { dates: [], history: [] };
+    if (erp && erpSeries.history.length >= 2) {
+      mockData.erp.dates = erpSeries.dates;
+      mockData.erp.history = erpSeries.history;
+      // 真序列不叠旧口径分位带（p25/p50/p75 系沪深300尺度，与000985口径不匹配）
+      mockData.erp.p25 = undefined; mockData.erp.p50 = undefined; mockData.erp.p75 = undefined;
+      const erpTxt = (erp.value !== undefined && erp.value !== null && erp.value !== '') ? erp.value : '数据待获取';
+      _setAnchorValue('erp-card', erpTxt, _scoreSignal(erp.score),
+        erp.score >= 70 ? '偏贵' : erp.score <= 30 ? '偏便宜' : '中性偏吸引力', '');
+      const et = document.getElementById('erp-title');
+      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频·000985口径)</span>';
+      const eu = document.getElementById('erp-updatetime');
+      if (eu) eu.textContent = '更新: ' + _ud + ' | 中证全指000985 PE(TTM)−中国10Y国债,周频 | 分位: ' + (erp.percentile || '2020年以来');
+    } else {
+      mockData.erp.dates = []; mockData.erp.history = [];
+      _setAnchorPending('erp-card');
+      const et = document.getElementById('erp-title');
+      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span>';
+      const eu = document.getElementById('erp-updatetime');
+      if (eu) eu.textContent = '数据待获取（万得全A PE 序列采集中）';
+    }
   }
   // 巴菲特指标 — buffett_ratio 顶层快照 85%；月频历史线待全A总市值/GDP 真采集
   const bf = _tag(_tsInd(ts, 'valuation', 'buffett_ratio'));
