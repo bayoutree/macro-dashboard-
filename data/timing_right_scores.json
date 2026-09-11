@@ -219,7 +219,7 @@
       "value_text": "0.36",
       "trend": "大小盘均衡",
       "signal": "中性",
-      "note": "小盘%B=0.36均衡区(旧版比值口径1.668已废);数据源同步timing_scores.json style_rotation,2026-09-11核验"
+      "note": "小盘%B=0.36均衡区(旧版大盘/小盘价格比值口径已废弃);数据源同步timing_scores.json style_rotation,2026-09-11核验"
     },
     "dividend_premium": {
       "value": null,
