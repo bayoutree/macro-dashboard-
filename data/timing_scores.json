@@ -6328,14 +6328,19 @@
         },
         "northbound": {
           "name": "北向资金趋势",
-          "value": "⚠️数据已停更(2024-08起)",
+          "value": "已折叠",
           "score": 50,
           "sub_weight": 0,
           "status": "deprecated",
-          "note": "北向资金每日净买入于2024-08起官方停止披露,指标永久灰灯(sub_weight=0);历史序列保留停更前参考。",
+          "note": "北向净买卖数据 2024-08 起东财停更;仅成交额可获取但缺方向信号;已折叠至参考区;2024-08-20 为最后有效数据点",
           "bottom_signal": "—",
           "top_signal": "—",
-          "description": "北向资金累计净流入趋势。外资持续流入说明国际资本看好A股。"
+          "description": "北向资金累计净流入趋势。外资持续流入说明国际资本看好A股。",
+          "unit": "",
+          "signal": "neutral",
+          "history": [],
+          "update_date": "2024-08-20",
+          "source": "东财 RPT_MUTUAL_DEAL_HISTORY（已停更）"
         },
         "new_fund": {
           "name": "新发基金热度",
