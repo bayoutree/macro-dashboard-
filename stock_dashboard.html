@@ -958,7 +958,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914');
+      const resp = await fetch('data/timing_scores.json?v=20260915');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2945,7 +2945,7 @@ function applyTimingDataToMockData() {
   // 破净率 — valuation.break_net_rate（445周点，2018年起）
   const bnr = _tag(_tsInd(ts, 'valuation', 'break_net_rate'));
   _fillAnchorCard({card:'break-net-rate-card', data:bnrAnchorData, freq:'周频', valSuffix:'%',
-    sigText: bnr ? (bnr.score <= 30 ? '市场健康' : bnr.score >= 70 ? '破净偏高' : '中性') : ''}, bnr, bnr ? (bnr.value + '%') : null);
+    sigText: bnr ? (bnr.score <= 30 ? '市场健康' : bnr.score >= 70 ? '破净偏高' : '中性') : ''}, bnr, bnr ? (parseFloat(bnr.value).toFixed(2) + '%') : null);
   // 破净率 note
   if (bnr && bnr.note) {
     const bnrNote = document.getElementById('break-net-rate-note');

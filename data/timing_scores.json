@@ -4287,7 +4287,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "全A股债利差",
-          "value": "0.91%",
+          "value": 0.91,
           "score": 74,
           "sub_weight": 20,
           "bottom_threshold": ">2%",
