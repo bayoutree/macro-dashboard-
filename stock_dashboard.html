@@ -1658,7 +1658,7 @@ function _fillAnchorCard(cfg, ind, valueText) {
     const vel = document.getElementById(cfg.card.replace('-card', '-value'));
     if (vel) { vel.textContent = vTxt; vel.style.color = ''; }
     const sig = document.getElementById(cfg.card.replace('-card', '-signal'));
-    if (sig) { sig.className = 'ind-signal ' + _scoreSignal(ind.score); sig.textContent = cfg.sigText || _scoreText(ind.score, ''); }
+    if (sig) { sig.className = 'ind-signal ' + _scoreSignal(ind.score); sig.textContent = cfg.sigText || _scoreText(ind.score, ''); cfg.data.signal = _scoreSignal(ind.score); }
     const n = series.history.length;
     const chg = document.getElementById(cfg.card.replace('-card', '-change'));
     if (chg) {
@@ -1679,7 +1679,7 @@ function _fillAnchorCard(cfg, ind, valueText) {
       const vel = card.querySelector('.indicator-value');
       if (vel) { vel.textContent = '数据待获取'; vel.style.color = 'var(--text-muted)'; }
       const sig = card.querySelector('.ind-signal');
-      if (sig) { sig.className = 'ind-signal gray'; sig.textContent = '数据待获取'; }
+      if (sig) { sig.className = 'ind-signal gray'; sig.textContent = '数据待获取';  cfg.data.signal = 'gray'; }
       const chg = card.querySelector('.indicator-change');
       if (chg) chg.textContent = '';
       const up = card.querySelector('.update-time');
@@ -2031,7 +2031,7 @@ function renderSparkline(containerId, data, options = {}) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   line.setAttribute('d', linePath);
   line.setAttribute('class', 'sparkline-line');
-  if (options.color) line.setAttribute('stroke', options.color);
+  if (options.color) line.style.stroke = options.color;
   svg.appendChild(line);
   
   // A6: Step line dots for monthly/quarterly
@@ -2789,7 +2789,8 @@ function applyTimingDataToMockData() {
       mockData.erp.p25 = undefined; mockData.erp.p50 = undefined; mockData.erp.p75 = undefined;
       const erpTxt = (erp.value !== undefined && erp.value !== null && erp.value !== '') ? erp.value : '数据待获取';
       _setAnchorValue('erp-card', erpTxt, _scoreSignal(erp.score),
-        erp.score >= 70 ? '偏贵' : erp.score <= 30 ? '偏便宜' : '中性偏吸引力', '');
+        erp.score >= 70 ? '偏贵' : erp.score <= 30 ? '偏便宜' : '中性偏吸引力', '')
+      mockData.erp.signal = _scoreSignal(erp.score);
       const et = document.getElementById('erp-title');
       if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频·000985口径)</span>';
       const eu = document.getElementById('erp-updatetime');
@@ -2797,6 +2798,7 @@ function applyTimingDataToMockData() {
     } else {
       mockData.erp.dates = []; mockData.erp.history = [];
       _setAnchorPending('erp-card');
+      mockData.erp.signal = 'gray';
       const et = document.getElementById('erp-title');
       if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span>';
       const eu = document.getElementById('erp-updatetime');
@@ -3179,7 +3181,7 @@ async function init() {
   safeRender('renderRangeInfoBar2', renderRangeInfoBar);
 
   // Anchor sparklines with dates
-  safeRender('spark-erp', () => renderSparkline('erp-sparkline', mockData.erp));
+  safeRender('spark-erp', () => renderSparkline('erp-sparkline', mockData.erp, { color: _signalColorMap[mockData.erp.signal] || null }));
   safeRender('spark-buffett', () => renderSparkline('buffett-sparkline', mockData.buffett));
   safeRender('spark-earn', () => renderSparkline('earn-sparkline', mockData.earnings));
   safeRender('spark-pe', () => renderSparkline('pe-anchor-sparkline', mockData.medianPE));
@@ -3190,11 +3192,11 @@ async function init() {
   safeRender('spark-m2', () => renderSparkline('m2-sparkline', m2AnchorData));
   safeRender('spark-fed', () => renderSparkline('fed-sparkline', fedAnchorData));
   // v3.4.8: 5张新锚点卡 sparkline
-  safeRender('spark-sf',  () => renderSparkline('sf-sparkline', sfAnchorData));
-  safeRender('spark-m12', () => renderSparkline('m12-sparkline', m12AnchorData));
-  safeRender('spark-pb',  () => renderSparkline('pb-sparkline', pbAnchorData));
-  safeRender('spark-hhi', () => renderSparkline('hhi-sparkline', hhiAnchorData));
-  safeRender('spark-hhit',() => renderSparkline('hhit-sparkline', hhitAnchorData));
+  safeRender('spark-sf',  () => renderSparkline('sf-sparkline', sfAnchorData, { color: _signalColorMap[sfAnchorData.signal] || null }));
+  safeRender('spark-m12', () => renderSparkline('m12-sparkline', m12AnchorData, { color: _signalColorMap[m12AnchorData.signal] || null }));
+  safeRender('spark-pb',  () => renderSparkline('pb-sparkline', pbAnchorData, { color: _signalColorMap[pbAnchorData.signal] || null }));
+  safeRender('spark-hhi', () => renderSparkline('hhi-sparkline', hhiAnchorData, { color: _signalColorMap[hhiAnchorData.signal] || null }));
+  safeRender('spark-hhit',() => renderSparkline('hhit-sparkline', hhitAnchorData, { color: _signalColorMap[hhitAnchorData.signal] || null }));
 
   // A2: Date labels for anchor charts
   safeRender('dateLabels', () => {
