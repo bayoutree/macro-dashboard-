@@ -196,8 +196,8 @@ body::before {
 .percentile-band.middle { fill: transparent; }
 .percentile-band.top { fill: var(--red); }
 .percentile-divider { stroke: rgba(255,255,255,0.1); stroke-width: 1; stroke-dasharray: 4 4; }
-.sparkline-line { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.sparkline-area { fill: url(#sparkGradient); opacity: 0.3; }
+.sparkline-line { fill: none; stroke: var(--cyan); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.sparkline-area { fill: url(#sparkGradient); opacity: 0.15; }
 .sparkline-dot { fill: var(--cyan); stroke: var(--canvas); stroke-width: 2; }
 .moving-avg-line { fill: none; stroke-width: 1.5; stroke-dasharray: 6 3; }
 .moving-avg-line.ma20 { stroke: rgba(255,255,255,0.5); }
@@ -294,7 +294,7 @@ body::before {
 /* A4: mini sparkline height 48px for main model */
 .indicator-card .mini-sparkline { height: 48px; margin-top: var(--gap-sm); }
 .indicator-card .mini-sparkline svg { width: 100%; height: 100%; }
-.indicator-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.indicator-card .mini-sparkline .sparkline-line { stroke-width: 1.2; }
 .indicator-card .update-time {
   position: absolute; bottom: 6px; right: 10px;
   font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
@@ -357,7 +357,7 @@ body::before {
 /* A4: confirm mini sparkline 40px */
 .confirm-card .mini-sparkline { height: 40px; margin-top: var(--gap-sm); }
 .confirm-card .mini-sparkline svg { width: 100%; height: 100%; }
-.confirm-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.confirm-card .mini-sparkline .sparkline-line { stroke-width: 1.2; }
 .confirm-card .update-time {
   position: absolute; bottom: 6px; right: 10px;
   font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
@@ -391,7 +391,7 @@ body::before {
 /* A4: ref mini sparkline 40px */
 .ref-card .mini-sparkline { height: 40px; margin-top: var(--gap-sm); }
 .ref-card .mini-sparkline svg { width: 100%; height: 100%; }
-.ref-card .mini-sparkline .sparkline-line { stroke-width: 1.5; }
+.ref-card .mini-sparkline .sparkline-line { stroke-width: 1.2; }
 .ref-card .update-time {
   position: absolute; bottom: 6px; right: 10px;
   font-size: 9px; color: var(--text-muted); font-family: var(--font-mono);
@@ -1912,7 +1912,7 @@ function renderSparkline(containerId, data, options = {}) {
     difLine.setAttribute('d', difPath);
     difLine.setAttribute('fill', 'none');
     difLine.setAttribute('stroke', 'var(--cyan)');
-    difLine.setAttribute('stroke-width', '1.5');
+    difLine.setAttribute('stroke-width', '1.2');
     svg.appendChild(difLine);
     
     // DEA line
@@ -1925,7 +1925,7 @@ function renderSparkline(containerId, data, options = {}) {
     deaLine.setAttribute('d', deaPath);
     deaLine.setAttribute('fill', 'none');
     deaLine.setAttribute('stroke', 'var(--orange)');
-    deaLine.setAttribute('stroke-width', '1.5');
+    deaLine.setAttribute('stroke-width', '1.2');
     deaLine.setAttribute('stroke-dasharray', '4 2');
     svg.appendChild(deaLine);
     
@@ -2004,10 +2004,11 @@ function renderSparkline(containerId, data, options = {}) {
   gradient.setAttribute('id', containerId + '_gradient');
   gradient.setAttribute('x1', '0'); gradient.setAttribute('y1', '0');
   gradient.setAttribute('x2', '0'); gradient.setAttribute('y2', '1');
+  const _lineColor = options.color || 'var(--cyan)';
   const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', 'var(--cyan)'); stop1.setAttribute('stop-opacity', '0.3');
+  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', _lineColor); stop1.setAttribute('stop-opacity', '0.15');
   const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', 'var(--cyan)'); stop2.setAttribute('stop-opacity', '0');
+  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', _lineColor); stop2.setAttribute('stop-opacity', '0');
   gradient.appendChild(stop1); gradient.appendChild(stop2);
   defs.appendChild(gradient);
   svg.appendChild(defs);
@@ -2030,6 +2031,7 @@ function renderSparkline(containerId, data, options = {}) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   line.setAttribute('d', linePath);
   line.setAttribute('class', 'sparkline-line');
+  if (options.color) line.setAttribute('stroke', options.color);
   svg.appendChild(line);
   
   // A6: Step line dots for monthly/quarterly
@@ -2186,10 +2188,30 @@ function renderMiniSparkline(container, data, options = {}) {
     linePath = `M` + points.map(p => `${p.x},${p.y}`).join(' L');
   }
   
+  // Gradient fill for mini sparkline
+  const _miniColor = options.color || 'var(--cyan)';
+  const miniDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const miniGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  miniGrad.setAttribute('id', 'miniGrad_' + (container.id || Math.random().toString(36).slice(2)));
+  miniGrad.setAttribute('x1', '0'); miniGrad.setAttribute('y1', '0');
+  miniGrad.setAttribute('x2', '0'); miniGrad.setAttribute('y2', '1');
+  const ms1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  ms1.setAttribute('offset', '0%'); ms1.setAttribute('stop-color', _miniColor); ms1.setAttribute('stop-opacity', '0.15');
+  const ms2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  ms2.setAttribute('offset', '100%'); ms2.setAttribute('stop-color', _miniColor); ms2.setAttribute('stop-opacity', '0');
+  miniGrad.appendChild(ms1); miniGrad.appendChild(ms2);
+  miniDefs.appendChild(miniGrad);
+  svg.appendChild(miniDefs);
+  const _miniAreaPath = `M${points[0].x},${h} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length-1].x},${h} Z`;
+  const _miniArea = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  _miniArea.setAttribute('d', _miniAreaPath);
+  _miniArea.setAttribute('fill', `url(#${miniGrad.id})`);
+  svg.appendChild(_miniArea);
+
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   line.setAttribute('d', linePath);
   line.setAttribute('class', 'sparkline-line');
-  line.style.stroke = 'var(--cyan)';
+  line.style.stroke = _miniColor;
   svg.appendChild(line);
   
   // Extra line (history2 for merged indicators)
@@ -2248,6 +2270,17 @@ function renderMiniSparkline(container, data, options = {}) {
   container.appendChild(svg);
 }
 
+
+// v3.4.8 SVG: signal-to-color mapping for sparkline gradient
+const _signalColorMap = {
+  'green': 'var(--green)',
+  'yellow': 'var(--yellow)',
+  'red': 'var(--red)',
+  'gray': 'rgba(156,163,175,0.6)',
+  'bullish': 'var(--green)',
+  'bearish': 'var(--red)'
+};
+
 function renderMainIndicators() {
   const container = document.getElementById('main-indicators');
   let html = '';
@@ -2282,7 +2315,8 @@ function renderMainIndicators() {
         dates: ind.dates,
         freq: ind.freq,
         height: 48,
-        history2: ind.history2 || null
+        history2: ind.history2 || null,
+        color: _signalColorMap[ind.signal] || null
       });
     }
   });
@@ -2320,7 +2354,8 @@ function renderConfirmSignals() {
         unit: '',
         dates: cf.dates,
         freq: cf.freq,
-        height: 40
+        height: 40,
+        color: _signalColorMap[cf.signal] || null
       });
     }
   });
@@ -2360,7 +2395,8 @@ function renderReferenceIndicators() {
         unit: '',
         dates: ref.dates,
         freq: ref.freq,
-        height: 40
+        height: 40,
+        color: _signalColorMap[ref.signal] || null
       });
     }
   });
@@ -3276,7 +3312,7 @@ function renderSparkline_inline(container, data) {
   difLine.setAttribute('d', `M${difPts.join(' L')}`);
   difLine.setAttribute('fill', 'none');
   difLine.setAttribute('stroke', 'var(--cyan)');
-  difLine.setAttribute('stroke-width', '1.5');
+  difLine.setAttribute('stroke-width', '1.2');
   svg.appendChild(difLine);
   
   // DEA line
@@ -3289,7 +3325,7 @@ function renderSparkline_inline(container, data) {
   deaLine.setAttribute('d', `M${deaPts.join(' L')}`);
   deaLine.setAttribute('fill', 'none');
   deaLine.setAttribute('stroke', 'var(--orange)');
-  deaLine.setAttribute('stroke-width', '1.5');
+  deaLine.setAttribute('stroke-width', '1.2');
   deaLine.setAttribute('stroke-dasharray', '4 2');
   svg.appendChild(deaLine);
   
