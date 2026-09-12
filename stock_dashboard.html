@@ -694,6 +694,42 @@ body::before {
         </div>
         <div class="update-time" id="pb-update">更新: --</div>
       </div>
+
+      <!-- v3.4.9: 破净率（valuation.break_net_rate，周频真值） -->
+      <div class="anchor-card" id="break-net-rate-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">破净率 <span style="font-size:10px;color:var(--text-muted);">(全A PB&lt;1 个股占比)</span></div>
+            <div class="indicator-value" id="break-net-rate-value">--</div>
+            <div class="indicator-change" id="break-net-rate-change"></div>
+          </div>
+          <div class="ind-signal" id="break-net-rate-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="break-net-rate-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="break-net-rate-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="break-net-rate-dates"></div>
+        <div class="indicator-note" id="break-net-rate-note" style="font-size:10px;color:var(--text-muted);margin-top:4px;"></div>
+        <div class="update-time" id="break-net-rate-update">数据待获取</div>
+      </div>
+
+      <!-- v3.4.9: 股息率利差（equity_bond.dividend_bond_spread_red，周频真值） -->
+      <div class="anchor-card" id="dividend-spread-card">
+        <div class="card-header">
+          <div>
+            <div class="indicator-name">股息率利差 <span style="font-size:10px;color:var(--text-muted);">(全A股息率 − 10Y国债)</span></div>
+            <div class="indicator-value" id="dividend-spread-value">--</div>
+            <div class="indicator-change" id="dividend-spread-change"></div>
+          </div>
+          <div class="ind-signal" id="dividend-spread-signal">--</div>
+        </div>
+        <div class="sparkline-container" id="dividend-spread-sparkline" style="height:110px;">
+          <div class="sparkline-tooltip" id="dividend-spread-tooltip"></div>
+        </div>
+        <div class="sparkline-dates" id="dividend-spread-dates"></div>
+        <div class="indicator-note" id="dividend-spread-note" style="font-size:10px;color:var(--text-muted);margin-top:4px;"></div>
+        <div class="update-time" id="dividend-spread-update">数据待获取</div>
+      </div>
     </div>
   </section>
 
@@ -922,7 +958,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json');
+      const resp = await fetch('data/timing_scores.json?v=20260914');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -1645,6 +1681,8 @@ const m12AnchorData  = { history: [], dates: [], freq: '月频' };  // M1-M2剪�
 const pbAnchorData   = { history: [], dates: [], freq: '月频' };  // 沪深300 PB分位
 const hhiAnchorData  = { history: [], dates: [], freq: '周频' };  // HHI水平
 const hhitAnchorData = { history: [], dates: [], freq: '周频' };  // HHI 20周动量
+const bnrAnchorData  = { history: [], dates: [], freq: '周频' };  // 破净率（全A PB<1占比）
+const dbsAnchorData  = { history: [], dates: [], freq: '周频' };  // 股息率利差（股息率-10Y国债）
 function _fillAnchorCard(cfg, ind, valueText) {
   // cfg: {card, spark, dates, update, data, freq, valSuffix, sigText}
   const card = document.getElementById(cfg.card);
@@ -1793,6 +1831,8 @@ function renderRangeInfoBar() {
   _push('沪深300 PB分位', pbAnchorData.dates, pbAnchorData.freq);
   _push('行业成交集中度HHI', hhiAnchorData.dates, hhiAnchorData.freq);
   _push('集中度20周动量', hhitAnchorData.dates, hhitAnchorData.freq);
+  _push('破净率', bnrAnchorData.dates, bnrAnchorData.freq);
+  _push('股息率利差', dbsAnchorData.dates, dbsAnchorData.freq);
   if (typeof extLiqData !== 'undefined') {
     _push('美债10Y', extLiqData.ust10y.dates, '日频');
     _push('中美10Y利差', extLiqData.spread.dates, '日频');
@@ -2863,6 +2903,27 @@ function applyTimingDataToMockData() {
   const hhit = _tag(_tsInd(ts, 'micro_structure', 'concentration_trend'));
   _fillAnchorCard({card:'hhit-card', data:hhitAnchorData, freq:'周频', valSuffix:'',
     sigText: hhit ? (hhit.score <= 30 ? '强扩散(积极)' : hhit.score >= 70 ? '加速抱团' : '趋势中性') : ''}, hhit, hhit ? hhit.value : null);
+
+  // ============ v3.4.9 新增2张锚点卡（工单2/3：股息率利差 + 破净率） ============
+  // 破净率 — valuation.break_net_rate（445周点，2018年起）
+  const bnr = _tag(_tsInd(ts, 'valuation', 'break_net_rate'));
+  _fillAnchorCard({card:'break-net-rate-card', data:bnrAnchorData, freq:'周频', valSuffix:'%',
+    sigText: bnr ? (bnr.score <= 30 ? '市场健康' : bnr.score >= 70 ? '破净偏高' : '中性') : ''}, bnr, bnr ? (bnr.value + '%') : null);
+  // 破净率 note
+  if (bnr && bnr.note) {
+    const bnrNote = document.getElementById('break-net-rate-note');
+    if (bnrNote) bnrNote.textContent = bnr.note;
+  }
+
+  // 股息率利差 — equity_bond.dividend_bond_spread_red（445周点，2018年起）
+  const dbs = _tag(_tsInd(ts, 'equity_bond', 'dividend_bond_spread_red'));
+  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'%',
+    sigText: dbs ? (dbs.score <= 30 ? '股票吸引力高' : dbs.score >= 70 ? '股票吸引力低' : '中性') : ''}, dbs, dbs ? (dbs.value + '%') : null);
+  // 股息率利差 note
+  if (dbs && dbs.note) {
+    const dbsNote = document.getElementById('dividend-spread-note');
+    if (dbsNote) dbsNote.textContent = dbs.note;
+  }
 }
 
 // v3.4: Load real data from JSON files for external liquidity cards + fed rate card
@@ -3197,6 +3258,9 @@ async function init() {
   safeRender('spark-pb',  () => renderSparkline('pb-sparkline', pbAnchorData, { color: _signalColorMap[pbAnchorData.signal] || null }));
   safeRender('spark-hhi', () => renderSparkline('hhi-sparkline', hhiAnchorData, { color: _signalColorMap[hhiAnchorData.signal] || null }));
   safeRender('spark-hhit',() => renderSparkline('hhit-sparkline', hhitAnchorData, { color: _signalColorMap[hhitAnchorData.signal] || null }));
+  // v3.4.9: 破净率 + 股息率利差 sparkline
+  safeRender('spark-bnr', () => renderSparkline('break-net-rate-sparkline', bnrAnchorData, { color: _signalColorMap[bnrAnchorData.signal] || null }));
+  safeRender('spark-dbs', () => renderSparkline('dividend-spread-sparkline', dbsAnchorData, { color: _signalColorMap[dbsAnchorData.signal] || null }));
 
   // A2: Date labels for anchor charts
   safeRender('dateLabels', () => {
@@ -3213,6 +3277,8 @@ async function init() {
     renderDateLabels('pb-dates', pbAnchorData.dates);
     renderDateLabels('hhi-dates', hhiAnchorData.dates);
     renderDateLabels('hhit-dates', hhitAnchorData.dates);
+    renderDateLabels('break-net-rate-dates', bnrAnchorData.dates);
+    renderDateLabels('dividend-spread-dates', dbsAnchorData.dates);
   });
 
   safeRender('renderMainIndicators', renderMainIndicators);
