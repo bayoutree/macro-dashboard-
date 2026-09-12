@@ -22,8 +22,8 @@ const TimingTab = {
   async init() {
     try {
       const [leftResp, rightResp] = await Promise.all([
-        fetch('data/timing_scores.json?v=20260912'),
-        fetch('data/timing_right_scores.json?v=20260912')
+        fetch('data/timing_scores.json?v=20260913'),
+        fetch('data/timing_right_scores.json?v=20260913')
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();
@@ -914,10 +914,10 @@ const TimingTab = {
         yAxis: { type: 'value', show: false, scale: true },
         series: [{
           type: 'line', data: values, smooth: true, symbol: 'none',
-          lineStyle: { width: 1.5, color: color },
+          lineStyle: { width: 1.2, color: color },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: hexToRgba(color, 0.25) },
+              { offset: 0, color: hexToRgba(color, 0.15) },
               { offset: 1, color: hexToRgba(color, 0.02) },
             ]),
           },
