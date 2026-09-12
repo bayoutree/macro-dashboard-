@@ -637,6 +637,7 @@ body::before {
           <span class="percentile-label" style="top:68%">25%</span>
         </div>
         <div class="sparkline-dates" id="buffett-dates"></div>
+        <div class="indicator-note" id="buffett-note" style="font-size:10px;color:var(--text-muted);margin-top:4px;"></div>
         <div class="update-time" id="buffett-updatetime">数据待获取</div>
       </div>
 
@@ -958,7 +959,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260915');
+      const resp = await fetch('data/timing_scores.json?v=20260916');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -1691,7 +1692,8 @@ const fedAnchorData = {
   p25: 3.5, p50: 4.3, p75: 5.0, freq: '月频'
 };
 
-// v3.4.8: 新增锚点卡数据对象（timing_scores dimensions 真值驱动；无数据时灰灯）
+// v3.4.10: 新增锚点卡数据对象（timing_scores dimensions 真值驱动；无数据时灰灯）
+const buffettAnchorData = { history: [], dates: [], freq: '月频' };  // 巴菲特指标（总市值/GDP）
 const sfAnchorData   = { history: [], dates: [], freq: '月频' };  // 社融存量TTM同比
 const m12AnchorData  = { history: [], dates: [], freq: '月频' };  // M1-M2剪刀差
 const pbAnchorData   = { history: [], dates: [], freq: '月频' };  // 沪深300 PB分位
@@ -1842,6 +1844,7 @@ function renderRangeInfoBar() {
   ].forEach(d => _push(d.name, d.dates, d.freq));
   _push('中国M2同比', m2AnchorData.dates, m2AnchorData.freq);
   _push('联邦基金利率', fedAnchorData.dates, fedAnchorData.freq);
+  _push('巴菲特指标', buffettAnchorData.dates, buffettAnchorData.freq);
   _push('社融存量TTM同比', sfAnchorData.dates, sfAnchorData.freq);
   _push('M1-M2剪刀差', m12AnchorData.dates, m12AnchorData.freq);
   _push('沪深300 PB分位', pbAnchorData.dates, pbAnchorData.freq);
@@ -2882,21 +2885,14 @@ function applyTimingDataToMockData() {
       if (eu) eu.textContent = '数据待获取（万得全A PE 序列采集中）';
     }
   }
-  // 巴菲特指标 — buffett_ratio 顶层快照 85%；月频历史线待全A总市值/GDP 真采集
+  // 巴菲特指标 — buffett_ratio 工单4真数据（257月点，2005-04~2026-08）
   const bf = _tag(_tsInd(ts, 'valuation', 'buffett_ratio'));
-  mockData.buffett.dates = []; mockData.buffett.history = [];
-  if (bf) {
-    const bfTxt = (bf.value !== undefined && bf.value !== null && bf.value !== '') ? (bf.value + '%') : '数据待获取';
-    const bv = document.getElementById('buffett-value');
-    if (bv) { bv.textContent = bfTxt; bv.style.color = ''; }
-    _setAnchorValue('buffett-card', bfTxt, _scoreSignal(bf.score),
-      bf.score >= 70 ? '高于历史中枢' : bf.score <= 30 ? '低于历史中枢' : '中性区间', '');
-    const bu = document.getElementById('buffett-updatetime');
-    if (bu) bu.textContent = '更新: ' + _ud + ' (月频快照)';
-  } else {
-    _setAnchorPending('buffett-card');
-    const bu2 = document.getElementById('buffett-updatetime');
-    if (bu2) bu2.textContent = '数据待获取';
+  _fillAnchorCard({card:'buffett-card', data:buffettAnchorData, freq:'月频', valSuffix:'%',
+    sigText: bf ? (bf.score >= 70 ? '高于历史中枢(风险)' : bf.score <= 30 ? '低于历史中枢(便宜)' : '中性区间') : ''}, bf, bf ? (bf.value + '%') : null);
+  // 巴菲特 note
+  if (bf && bf.note) {
+    const bfNote = document.getElementById('buffett-note');
+    if (bfNote) bfNote.textContent = bf.note;
   }
   // 全A非金融盈利增速 — 无数据源
   mockData.earnings.dates = []; mockData.earnings.history = [];
@@ -3280,7 +3276,7 @@ async function init() {
 
   // Anchor sparklines with dates
   safeRender('spark-erp', () => renderSparkline('erp-sparkline', mockData.erp, { color: _signalColorMap[mockData.erp.signal] || null }));
-  safeRender('spark-buffett', () => renderSparkline('buffett-sparkline', mockData.buffett));
+  safeRender('spark-buffett', () => renderSparkline('buffett-sparkline', buffettAnchorData, { color: _signalColorMap[buffettAnchorData.signal] || null }));
   safeRender('spark-earn', () => renderSparkline('earn-sparkline', mockData.earnings));
   safeRender('spark-pe', () => renderSparkline('pe-anchor-sparkline', mockData.medianPE));
   safeRender('spark-bond', () => renderSparkline('bond-sparkline', mockData.bondYield));
@@ -3302,7 +3298,7 @@ async function init() {
   // A2: Date labels for anchor charts
   safeRender('dateLabels', () => {
     renderDateLabels('erp-dates', mockData.erp.dates);
-    renderDateLabels('buffett-dates', mockData.buffett.dates);
+    renderDateLabels('buffett-dates', buffettAnchorData.dates);
     renderDateLabels('earn-dates', mockData.earnings.dates);
     renderDateLabels('pe-anchor-dates', mockData.medianPE.dates);
     renderDateLabels('bond-dates', mockData.bondYield.dates);
