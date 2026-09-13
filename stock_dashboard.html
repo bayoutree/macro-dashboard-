@@ -291,6 +291,8 @@ body::before {
 .ind-signal.yellow { color: var(--yellow); background: var(--yellow-dim); }
 .ind-signal.red { color: var(--red); background: var(--red-dim); }
 .ind-signal.gray, .ref-signal.gray { color: var(--text-muted); background: rgba(128,128,128,0.15); }
+.ind-signal.green2 { color: #9BE8C4; background: rgba(155,232,196,0.13); }
+.ind-signal.neutral { color: #AAB4C8; background: rgba(170,180,200,0.14); }
 /* A4: mini sparkline height 48px for main model */
 .indicator-card .mini-sparkline { height: 48px; margin-top: var(--gap-sm); }
 .indicator-card .mini-sparkline svg { width: 100%; height: 100%; }
@@ -956,6 +958,7 @@ const StageEngine = {
   _prevProbabilities: null, // 上一期概率（用于迁移箭头）
 
   // 加载 timing_scores.json（若可用）或降级为模拟
+  _fearGreedPointer: null,  // 工单7: 恐贪指针(QVIX单因子) data/feargreed_pointer.json
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
@@ -965,6 +968,13 @@ const StageEngine = {
       }
     } catch(e) {
       console.log('[StageEngine] timing_scores.json 未加载，使用内嵌评分');
+    }
+    // 工单7: 恐贪指针（QVIX单因子，五档zone_confirmed驱动取色）
+    try {
+      const respFG = await fetch('data/feargreed_pointer.json?v=20260917');
+      if (respFG.ok) this._fearGreedPointer = await respFG.json();
+    } catch(e) {
+      console.log('[StageEngine] feargreed_pointer.json 未加载');
     }
     // v3.3: 加载右侧趋势确认数据
     try {
@@ -2339,6 +2349,10 @@ const _signalColorMap = {
   'bullish': 'var(--green)',
   'bearish': 'var(--red)'
 };
+// 工单7: 恐贪指针五档取色（极度恐惧绿/恐惧浅绿/中性灰/贪婪琥珀/极度贪婪红）
+function _fgZoneSignal(zone) {
+  return ({'极度恐惧':'green','恐惧':'green2','中性':'neutral','贪婪':'yellow','极度贪婪':'red'})[zone] || 'gray';
+}
 
 function renderMainIndicators() {
   const container = document.getElementById('main-indicators');
@@ -2357,7 +2371,7 @@ function renderMainIndicators() {
           <div class="ind-name">${ind.name} <span style="font-size:10px;color:var(--text-muted);">(${ind.freq})</span></div>
           <div class="ind-value">${ind.value}${slopeHtml}</div>
         </div>
-        <div class="ind-signal ${ind.signal === 'green' || ind.signal === 'bullish' ? 'green' : ind.signal === 'red' || ind.signal === 'bearish' ? 'red' : ind.signal === 'gray' ? 'gray' : 'yellow'}">${ind.signalText}</div>
+        <div class="ind-signal ${['green','red','gray','yellow','green2','neutral'].includes(ind.signal) ? ind.signal : (ind.signal === 'bullish' ? 'green' : ind.signal === 'bearish' ? 'red' : 'yellow')}">${ind.signalText}</div>
       </div>
       <div class="mini-sparkline" id="mini-spark-${idx}"></div>
       <div class="sparkline-dates"><span>${startD}</span><span>${endD}</span></div>
@@ -2777,13 +2791,31 @@ function applyTimingDataToMockData() {
       + '；融资买入占比 ' + (marginBuy ? (marginBuy.value || '--') : '--')
       + '。趋势线待真采集';
   } else _setPending(M[1]);
-  // [2] 恐贪指数 — fear_greed_index 顶层快照（10=极度恐惧）；线待真成分历史回算
-  const fg = _tag(_tsInd(ts, 'sentiment', 'fear_greed_index'));
-  if (fg) {
-    _setSnapshot(M[2], fg, fg.value, '周频');
-    M[2].signalText = fg.score <= 30 ? '恐惧区间' : fg.score >= 70 ? '贪婪区间' : '中性区间';
-    M[2].description = '恐贪综合指数（换手率/融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。趋势线待真成分历史回算';
-  } else _setPending(M[2]);
+  // [2] 恐贪指针 — 工单7: QVIX单因子（50ETF期权隐含波动率），score=100-滚动252日百分位
+  //     五档取色严格跟随 zone_confirmed（极度贪婪为双条件: score>85 且 QVIX<14），禁止用score自行分档
+  //     走势线 feargreed_pointer.json history 2560真实日点（2016-02起）；无伪造/插值（v3.4.5铁律）
+  const fgp = StageEngine._fearGreedPointer;
+  if (fgp && Array.isArray(fgp.history) && fgp.history.length >= 2) {
+    M[2].name = '恐贪指针';
+    M[2].freq = '日频';
+    M[2].value = (+fgp.score).toFixed(1);
+    const _zoneSig = _fgZoneSignal(fgp.zone_confirmed);
+    M[2].signal = _zoneSig;
+    M[2].signalText = fgp.zone_confirmed;
+    M[2].slope = null;
+    M[2].dates = fgp.history.map(p => p.date);
+    M[2].history = fgp.history.map(p => +p.value);
+    M[2].history2 = undefined;
+    const _qvixTxt = (fgp.qvix_close !== undefined) ? (+fgp.qvix_close).toFixed(2) : '--';
+    const _pctTxt = (fgp.qvix_pctile_252 !== undefined) ? (+fgp.qvix_pctile_252).toFixed(1) + '%' : '--';
+    M[2].description = '<span class="desc-range">QVIX ' + _qvixTxt + ' · 一年分位 ' + _pctTxt + '</span>'
+      + ' 50ETF期权隐含波动率反向标准化；低分=恐慌(底部区域)，高分=自满(拥挤)。'
+      + '极度恐惧&lt;15；极度贪婪需 score&gt;85 且 QVIX&lt;14 双重确认。'
+      + (fgp.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">非对称阈值设计说明</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(fgp.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
+    M[2].updateTime = fgp.as_of || '';
+  } else {
+    _setPending(M[2], '恐贪指针(QVIX)数据待获取');
+  }
   // [3] 新发基金份额 — new_fund 顶层状态（中等/火爆/冰点）；月度份额序列待中基协真采集
   const nf = _tag(_tsInd(ts, 'capital_flow', 'new_fund'));
   if (nf) {
