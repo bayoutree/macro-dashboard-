@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260916');
+      const resp = await fetch('data/timing_scores.json?v=20260917');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2781,15 +2781,29 @@ function applyTimingDataToMockData() {
   const M = mockData.mainIndicators;
   // [0] 机构仓位(公/私) — 无数据源
   _setPending(M[0], '公募/私募仓位无自动数据源，待接入');
-  // [1] 杠杆资金 — margin_ratio(两融/流通市值) 顶层快照 + margin_buying_ratio 区间描述
+  // [1] 融资买入占比 — 工单6a: 两市融资买入额/成交额 20MA，非对称分档+护栏阈值
+  //     数据源: guard_margin_buying_ratio_daily_2010_2026.json (3989点)
+  //     评分: 2016后百分位 + 护栏 floor (≥15%→90/≥11%→75/≥9%→60), 取max
+  //     低分=冰点(反向积极), 高分=过热(反向风险); 顶部信号领先指数
   const margin = _tag(_tsInd(ts, 'capital_flow', 'margin_ratio'));
-  const marginBuy = _tsInd(ts, 'sentiment', 'margin_buying_ratio');
-  if (margin) {
-    _setSnapshot(M[1], margin, margin.value, '周频');
-    M[1].signalText = _scoreText(margin.score, '两融');
-    M[1].description = '两融余额/流通市值 ' + (margin.value || '--')
-      + '；融资买入占比 ' + (marginBuy ? (marginBuy.value || '--') : '--')
-      + '。趋势线待真采集';
+  if (margin && Array.isArray(margin.history) && margin.history.length >= 2) {
+    M[1].name = '融资买入占比';
+    M[1].freq = '日频(20MA)';
+    M[1].value = (+margin.value).toFixed(2) + '%';
+    const _tierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','fear':'green','extreme_fear':'green'};
+    M[1].signal = _tierSig[margin.tier] || _scoreSignal(margin.score);
+    const _tierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','fear':'偏冷','extreme_fear':'冰点'};
+    M[1].signalText = _tierText[margin.tier] || _scoreText(margin.score, '');
+    M[1].slope = null;
+    M[1].dates = margin.dates;
+    M[1].history = margin.history;
+    M[1].history2 = undefined;
+    const _pctTxt = (margin.pctile_2016 !== undefined) ? (+margin.pctile_2016).toFixed(0) + '%分位' : '';
+    M[1].description = '<span class="desc-range">2016后 ' + _pctTxt + '</span>'
+      + ' 两市融资买入额/成交额 20MA。低占比=杠杆冰点(反向积极)，高占比=杠杆过热(反向风险)。'
+      + '顶部信号领先指数约4个月(2015占比2月见顶、指数6月见顶)。'
+      + (margin.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">护栏分档与历史触发率</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(margin.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
+    M[1].updateTime = margin.update_date || margin._updateDate || '';
   } else _setPending(M[1]);
   // [2] 恐贪指针 — 工单7: QVIX单因子（50ETF期权隐含波动率），score=100-滚动252日百分位
   //     五档取色严格跟随 zone_confirmed（极度贪婪为双条件: score>85 且 QVIX<14），禁止用score自行分档
@@ -2816,12 +2830,29 @@ function applyTimingDataToMockData() {
   } else {
     _setPending(M[2], '恐贪指针(QVIX)数据待获取');
   }
-  // [3] 新发基金份额 — new_fund 顶层状态（中等/火爆/冰点）；月度份额序列待中基协真采集
+  // [3] 新发主动偏股基金 — 工单6b: 成立份额3月滚动和，2015起全历史百分位+护栏阈值
+  //     数据源: 东方财富二级分类+新浪财经成立份额 (5044只基金，A/C去重)
+  //     评分: 全历史百分位分档(≥80→75/≥60→60/≤20→25/≤40→40/中50) + 护栏(≥8000亿→90/≥5000→75/≥3000→60)
+  //     低分=冰点(反向积极), 高分=过热(反向风险); 反向指标，发行火爆常对应市场高位
   const nf = _tag(_tsInd(ts, 'capital_flow', 'new_fund'));
-  if (nf) {
-    _setSnapshot(M[3], nf, nf.value, '月频');
-    M[3].signalText = _scoreText(nf.score, '发行');
-    M[3].description = '新发基金热度。发行火爆常对应市场高位，反向指标。份额历史序列待中基协/东财源真采集';
+  if (nf && Array.isArray(nf.history) && nf.history.length >= 2) {
+    M[3].name = '新发主动偏股基金';
+    M[3].freq = '月频(3月滚动和)';
+    M[3].value = Math.round(+nf.value) + '亿份';
+    const _nfTierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','cool':'green','cold':'green'};
+    M[3].signal = _nfTierSig[nf.tier] || _scoreSignal(nf.score);
+    const _nfTierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','cool':'偏冷','cold':'冰点'};
+    M[3].signalText = _nfTierText[nf.tier] || _scoreText(nf.score, '发行');
+    M[3].slope = null;
+    M[3].dates = nf.dates;
+    M[3].history = nf.history;
+    M[3].history2 = undefined;
+    const _nfPctTxt = (nf.pctile_all !== undefined) ? (+nf.pctile_all).toFixed(0) + '%分位' : '';
+    M[3].description = '<span class="desc-range">2015起 ' + _nfPctTxt + '</span>'
+      + ' 新发主动偏股基金(股票型+偏股混合+灵活配置)成立份额3月滚动和，严格剔除ETF/指数/债基/FOF。'
+      + '反向指标：发行冰点常对应底部区域，爆款频现常对应顶部。'
+      + (nf.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">阈值说明与采集方法</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(nf.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
+    M[3].updateTime = nf.update_date || nf._updateDate || '';
   } else _setPending(M[3]);
   // [4] 偏股基金3年年化 — fund_3y_annual 顶层快照
   const f3 = _tag(_tsInd(ts, 'sentiment', 'fund_3y_annual'));
