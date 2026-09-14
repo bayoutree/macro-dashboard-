@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914b');
+      const resp = await fetch('data/timing_scores.json?v=20260914c');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -1398,15 +1398,13 @@ function applyRealDataToMockData() {
     // 这里暂不新增行，保持5项不变
   }
 
-  // v3.4.5: 确认信号3项的 mock 长历史（demo 演示线，非真实采集）一律下线，
-  // 走势区显示\"数据待获取\"；当前信号状态（value/signal/signalText）来自 right_scores 真实计算。
-  // 采集残差（\"数据获取异常\"）不进 signalText，一并置为\"未触发\"。
+  // v3.4.5→v3.4.12: 确认信号3项保留前端硬编码静态快照用于 sparkline 渲染
+  // 当前信号状态（value/signal/signalText）来自 right_scores 真实计算。
+  // 采集残差（"数据获取异常"）不进 signalText，一并置为"未触发"。
   if (mockData.confirmSignals) {
     const _d = (StageEngine._rightScoresData && StageEngine._rightScoresData.update_date) || '';
     mockData.confirmSignals.forEach((cf) => {
-      cf.dates = [];
-      cf.history = [];
-      cf.dif = undefined; cf.dea = undefined; cf.historyMA = undefined;
+      // 保留 dates/history/dif/dea/historyMA 不清空，保留 sparkline 数据
       cf.updateTime = _d;
       if (typeof cf.signalText === 'string' && cf.signalText.includes('数据获取异常')) cf.signalText = '未触发';
     });
@@ -2982,23 +2980,13 @@ function applyTimingDataToMockData() {
     const bfNote = document.getElementById('buffett-note');
     if (bfNote) bfNote.textContent = bf.note;
   }
-  // 全A非金融盈利增速 — 无数据源
-  mockData.earnings.dates = []; mockData.earnings.history = [];
-  _setAnchorPending('earn-card');
-  // 中位数PE(全A) — 无数据源（hs300_pe_percentile 为沪深300口径，不冒充全A）
-  mockData.medianPE.dates = []; mockData.medianPE.history = [];
-  _setAnchorPending('pe-card');
-  // 盈利预期调整 — 无数据源（expec 卡无 card id，用 sparkline 容器反查）
-  mockData.expectation.dates = []; mockData.expectation.history = [];
-  {
-    const expecCard = document.querySelector('[id="expec-sparkline"]')?.closest('.anchor-card');
-    if (expecCard) {
-      const ev2 = expecCard.querySelector('.indicator-value');
-      if (ev2) { ev2.textContent = '数据待获取'; ev2.style.color = 'var(--text-muted)'; }
-      const esig = expecCard.querySelector('.ind-signal');
-      if (esig) { esig.className = 'ind-signal gray'; esig.textContent = '数据待获取'; }
-    }
-  }
+  // 全A非金融盈利增速 — 保留前端硬编码静态快照（40季，2016Q4~2026Q3）
+  // 无 timing_scores 自动数据源，保留静态数据用于 sparkline 渲染
+  // _setAnchorPending('earn-card'); // 不再清空
+  // 中位数PE(全A) — 保留前端硬编码静态快照（520周，2016-09~2026-08）
+  // _setAnchorPending('pe-card'); // 不再清空
+  // 盈利预期调整 — 保留前端硬编码静态快照（60月，2021-10~2026-09）
+  // 不再清空 dates/history，保留 sparkline 数据
   // 信用利差无自动数据源 → 清空假线（10Y国债真值在 loadExternalLiqData 中接入）
   mockData.bondYield.creditSpread = [];
   // M2 卡标灰在 loadExternalLiqData 中统一处理（同样用 sparkline 容器反查）
@@ -3105,17 +3093,8 @@ async function loadExternalLiqData() {
       const bondCard = document.querySelector('[id="bond-sparkline"]')?.closest('.anchor-card');
       if (bondCard) { const bv = bondCard.querySelector('.indicator-value'); if (bv) { bv.textContent='数据待获取'; bv.style.color='var(--text-muted)'; } }
     }
-    // M2 锚点卡：无有效历史序列，显式待获取
-    m2AnchorData.dates = []; m2AnchorData.history = [];
-    {
-      const m2Card = document.querySelector('[id="m2-sparkline"]')?.closest('.anchor-card');
-      if (m2Card) {
-        const mv = m2Card.querySelector('.indicator-value');
-        if (mv) { mv.textContent = '数据待获取'; mv.style.color = 'var(--text-muted)'; }
-        const msig = m2Card.querySelector('.ind-signal');
-        if (msig) { msig.className = 'ind-signal gray'; msig.textContent = '数据待获取'; }
-      }
-    }
+    // M2 锚点卡：保留前端硬编码静态快照（60月，2021-10~2026-09）
+    // 不再清空 dates/history，保留 sparkline 数据
 
     // --- 中美10Y利差: cn_macro bond.cn_10y_yield - us_macro yield_10y ---
     if (usResp && cnResp) {
