@@ -872,7 +872,7 @@ body::before {
 
   <!-- ===== 5. MAIN MODEL INDICATORS (E1: merged cards) ===== -->
   <section>
-    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(6项)</span></div>
+    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(7项 · 含3组合并)</span></div>
     <div class="indicators-grid" id="main-indicators"></div>
   </section>
 
@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914p');
+      const resp = await fetch('data/timing_scores.json?v=20260914q');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2778,8 +2778,8 @@ function applyTimingDataToMockData() {
   //         452周点 (2017-12~2026-09)，低股基金仓位+灵活配置仓位双线
   //         低分=仓位低(积极/有空间), 高分=仓位高(偏热/拥挤)
   {
-    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'equity_fund_position'));
-    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'flexible_fund_position'));
+    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'fund_position_stock'));
+    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'fund_position_flexible'));
     const fs = fundStock ? _tsSeries(fundStock) : { dates: [], history: [] };
     const fl = fundFlex ? _tsSeries(fundFlex) : { dates: [], history: [] };
     if (fs.history.length >= 2 && fl.history.length >= 2) {
@@ -2812,7 +2812,7 @@ function applyTimingDataToMockData() {
   if (margin && Array.isArray(margin.history) && margin.history.length >= 2) {
     M[1].name = '融资买入占比';
     M[1].freq = '日频(20MA)';
-    M[1].value = parseFloat(margin.value).toFixed(2) + '%';
+    M[1].value = (+margin.value).toFixed(2) + '%';
     const _tierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','fear':'green','extreme_fear':'green'};
     M[1].signal = _tierSig[margin.tier] || _scoreSignal(margin.score);
     const _tierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','fear':'偏冷','extreme_fear':'冰点'};
@@ -2930,10 +2930,9 @@ function applyTimingDataToMockData() {
       + (ic6.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">数据说明与局限</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(ic6.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
     M[6].updateTime = ic6.update_date || ic6._updateDate || '';
   } else _setPending(M[6], '产业资本净减持率数据待获取');
-  
+
   // ============ 参考指标 5 项 ============
   const R = mockData.referenceIndicators;
-  
   // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio（%B=0.36 小盘中性，csindex 000852/000300 周频105点真值）
   const cs = _tag(_tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio'));
   if (cs) {
@@ -2942,8 +2941,9 @@ function applyTimingDataToMockData() {
     if (R[5].signalText === '中性') R[5].signalText = '大小盘均衡';
     R[5].description = '中证1000/沪深300 相对强弱（%B 位置，csindex 官方收盘价比值周频）。比值上升=小盘跑赢。当前 %B=0.36 小盘中性';
   } else _setPending(R[5]);
-  // [0] 新增开户数(月) — timing_scores.json sentiment.new_account_opening
-  const _na = _tag(_tsInd(ts, 'sentiment', 'new_account_opening'));
+
+  // [0] 新增开户数(月) — timing_scores.json capital_flow.new_accounts
+  const _na = _tag(_tsInd(ts, 'capital_flow', 'new_accounts'));
   if (_na && Array.isArray(_na.history) && _na.history.length >= 2) {
     _setSnapshot(R[0], _na, Math.round(+_na.value) + '万户', '月频');
     // 开户数：高分位=市场过热→红（标准映射，_setSnapshot 已处理）
@@ -3069,8 +3069,8 @@ function applyTimingDataToMockData() {
 
   // 股息率利差 — equity_bond.dividend_bond_spread_red（445周点，2018年起）
   const dbs = _tag(_tsInd(ts, 'equity_bond', 'dividend_bond_spread_red'));
-  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'',
-    sigText: dbs ? (dbs.score <= 30 ? '股票吸引力高' : dbs.score >= 70 ? '股票吸引力低' : '中性') : ''}, dbs, dbs ? dbs.value : null);
+  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'%',
+    sigText: dbs ? (dbs.score <= 30 ? '股票吸引力高' : dbs.score >= 70 ? '股票吸引力低' : '中性') : ''}, dbs, dbs ? (dbs.value + '%') : null);
   // 股息率利差 note
   if (dbs && dbs.note) {
     const dbsNote = document.getElementById('dividend-spread-note');
