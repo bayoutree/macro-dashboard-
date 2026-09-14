@@ -872,7 +872,7 @@ body::before {
 
   <!-- ===== 5. MAIN MODEL INDICATORS (E1: merged cards) ===== -->
   <section>
-    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(5项)</span></div>
+    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(6项)</span></div>
     <div class="indicators-grid" id="main-indicators"></div>
   </section>
 
@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914l');
+      const resp = await fetch('data/timing_scores.json?v=20260914m');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2941,8 +2941,8 @@ function applyTimingDataToMockData() {
 
   // ============ 参考指标 5 项 ============
   const R = mockData.referenceIndicators;
-  // [0] 新增开户数(月) — timing_scores.json capital_flow.new_accounts
-  const _na = _tag(_tsInd(ts, 'capital_flow', 'new_accounts'));
+  // [0] 新增开户数(月) — timing_scores.json sentiment.new_account_opening
+  const _na = _tag(_tsInd(ts, 'sentiment', 'new_account_opening'));
   if (_na && Array.isArray(_na.history) && _na.history.length >= 2) {
     _setSnapshot(R[0], _na, Math.round(+_na.value) + '万户', '月频');
     // 开户数：高分位=市场过热→红（标准映射，_setSnapshot 已处理）
