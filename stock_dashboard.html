@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914f');
+      const resp = await fetch('data/timing_scores.json?v=20260914g');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2954,6 +2954,11 @@ function applyTimingDataToMockData() {
     if (_feScore >= 60) R[2].signalText = '财政积极';
     else if (_feScore >= 40) R[2].signalText = '财政中性';
     else R[2].signalText = '财政偏弱';
+    // 财政支出信号灯：0-40绿，40-60灰，60-80黄，80-100红
+    if (_feScore <= 40) R[2].signal = 'green';
+    else if (_feScore <= 60) R[2].signal = 'gray';
+    else if (_feScore <= 80) R[2].signal = 'yellow';
+    else R[2].signal = 'red';
   } else _setPending(R[2], '财政支出增速数据待获取');
   // [3] 产业资本净减持率 — 工单6c真数据已接入M[6]主指标，参考区同步更新
   const ic = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
