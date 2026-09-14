@@ -22,8 +22,8 @@ const TimingTab = {
   async init() {
     try {
       const [leftResp, rightResp] = await Promise.all([
-        fetch('data/timing_scores.json?v=20260914'),
-        fetch('data/timing_right_scores.json?v=20260914')
+        fetch('data/timing_scores.json?v=20260914h'),
+        fetch('data/timing_right_scores.json?v=20260914h')
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();
@@ -367,24 +367,24 @@ const TimingTab = {
       posColor = 'bear';
     }
 
-    // 吴伟志四季定位 (豆包ABCD双标)
+    // 吴伟志四季定位 (v4.1 等宽25分)
     let seasonName, seasonIcon, seasonDesc;
-    if (compositeScore < 35) {
+    if (compositeScore < 25) {
       seasonName = '🌱 春播季';
       seasonIcon = '🌱';
       seasonDesc = '对应豆包A段：底部区域，左侧布局期';
-    } else if (compositeScore < 58) {
+    } else if (compositeScore < 50) {
       seasonName = '☀️ 夏长季';
       seasonIcon = '☀️';
       seasonDesc = '对应豆包B段：牛市中期，持有为主';
-    } else if (compositeScore < 80) {
+    } else if (compositeScore < 75) {
       seasonName = '🍂 秋收季';
       seasonIcon = '🍂';
       seasonDesc = '对应豆包C段：牛市末期/顶部区域';
     } else {
       seasonName = '❄️ 冬藏季';
       seasonIcon = '❄️';
-      seasonDesc = '对应豆包D段：熊市，清仓观望';
+      seasonDesc = '对应豆包D段：过热清仓区';
     }
 
     // Trend direction (based on signal light)
@@ -1029,19 +1029,19 @@ const TimingTab = {
   // ================================================================
 
   getScoreColor(score) {
-    if (score < 35) return '#10b981';
+    if (score < 25) return '#10b981';
     if (score < 65) return '#f59e0b';
     return '#ef4444';
   },
 
   getScoreClass(score) {
-    if (score < 35) return 'low';
+    if (score < 25) return 'low';
     if (score < 65) return 'mid';
     return 'high';
   },
 
   getStatusClass(score) {
-    if (score < 35) return 'bullish';
+    if (score < 25) return 'bullish';
     if (score < 65) return 'neutral';
     return 'bearish';
   },

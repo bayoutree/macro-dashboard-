@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914g');
+      const resp = await fetch('data/timing_scores.json?v=20260914h');
       if (resp.ok) {
         this._timingData = await resp.json();
       }

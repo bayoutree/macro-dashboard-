@@ -245,7 +245,7 @@ class TimingScoreEngine:
             "value": safe_float(hs300_pe_pct) if hs300_pe_pct else None,
             "unit": "%分位",
             "score": pe_score,
-            "sub_weight": 35,
+            "sub_weight": 40,
             "bottom_threshold": "<10%",
             "top_threshold": ">90%"
         }
@@ -255,7 +255,8 @@ class TimingScoreEngine:
             "value": safe_float(hs300_pb_pct) if hs300_pb_pct else None,
             "unit": "%分位",
             "score": pb_score,
-            "sub_weight": 20,
+            "sub_weight": 0,
+            "note": "【参考】PB分位仅作辅助参考",
             "bottom_threshold": "<10%",
             "top_threshold": ">90%"
         }
@@ -268,7 +269,7 @@ class TimingScoreEngine:
             "value": safe_float(buffett_val) if buffett_val else None,
             "unit": "%",
             "score": buffett_score,
-            "sub_weight": 25,
+            "sub_weight": 35,
             "bottom_threshold": "<70%",
             "top_threshold": ">100%"
         }
@@ -281,7 +282,7 @@ class TimingScoreEngine:
             "value": safe_float(break_net_rate) if break_net_rate else None,
             "unit": "%",
             "score": break_score,
-            "sub_weight": 20,
+            "sub_weight": 25,
             "bottom_threshold": ">10%",
             "top_threshold": "<3%"
         }
@@ -401,12 +402,12 @@ class TimingScoreEngine:
     # ----------------------------------------------------------
     def calc_liquidity(self) -> dict:
         """
-        宏观流动性维度
+        宏观流动性维度 (v4.1)
         指标:
-          - 社融增速趋势: 权重35%
-          - 利率水平: 权重30%
-          - M1-M2剪刀差: 权重20%
-          - 美联储政策: 权重15%
+          - 社融增速趋势(加速度法): 权重40%
+          - 利率水平(国内分档): 权重35%
+          - M1-M2剪刀差: 参考(权重0%)
+          - 美联储政策: 权重25%
         """
         logger.info("  [维度2/6] 宏观流动性...")
         ak = self.init_akshare()
@@ -418,7 +419,7 @@ class TimingScoreEngine:
             "name": "社融增速趋势",
             "value": sf_value or "数据待更新",
             "score": sf_score,
-            "sub_weight": 35,
+            "sub_weight": 40,
             "bottom_signal": "触底回升",
             "top_signal": "见顶回落"
         }
@@ -429,7 +430,7 @@ class TimingScoreEngine:
             "name": "利率水平",
             "value": rate_value or "数据待更新",
             "score": rate_score,
-            "sub_weight": 30,
+            "sub_weight": 35,
             "bottom_signal": "降息周期",
             "top_signal": "加息周期"
         }
@@ -440,7 +441,8 @@ class TimingScoreEngine:
             "name": "M1-M2剪刀差",
             "value": m1m2_value or "数据待更新",
             "score": m1m2_score,
-            "sub_weight": 20,
+            "sub_weight": 0,
+            "note": "【参考】M1-M2剪刀差仅作辅助参考",
             "bottom_signal": "从-8%收窄",
             "top_signal": ">+5%扩张"
         }
@@ -451,7 +453,7 @@ class TimingScoreEngine:
             "name": "美联储政策",
             "value": fed_value or "中性",
             "score": fed_score,
-            "sub_weight": 15,
+            "sub_weight": 25,
             "bottom_signal": "降息周期",
             "top_signal": "加息周期"
         }
@@ -462,54 +464,45 @@ class TimingScoreEngine:
         return {
             "name": "宏观流动性",
             "score": dim_score,
-            "weight": 17,
-            "weighted_score": round(dim_score * 0.17, 2),
+            "weight": 15,
+            "weighted_score": round(dim_score * 0.15, 2),
             "signal": signal,
             "indicators": indicators
         }
 
     def _calc_social_financing(self):
-        """社融增速趋势"""
+        """社融增速趋势 (v4.1 加速度法)
+        铁律: 低分=紧缩=便宜(恐惧); 高分=宽松=已反映(贪婪)
+        """
         try:
             ak = self.init_akshare()
             sf_df = safe_ak_call(ak.macro_china_shrzgm)
             if sf_df is not None and not sf_df.empty:
                 col = '社会融资规模增量'
                 if col in sf_df.columns:
-                    # 数据按时间升序排列，tail = 最新
                     sf_series = sf_df[col].dropna()
-                    if len(sf_series) >= 24:
-                        # 近3月均值 (最新) vs 前3月
+                    if len(sf_series) >= 6:
+                        # v4.1: 加速度法 — 环比动量
                         recent_3m = sf_series.tail(3).mean()
                         prev_3m = sf_series.iloc[-6:-3].mean()
+                        delta = recent_3m - prev_3m  # 加速度
 
-                        # 社融增速 = 近12月累计 / 前12月累计
-                        recent_12m = sf_series.tail(12).sum()
-                        prev_12m = sf_series.iloc[-24:-12].sum()
-                        growth_rate = (recent_12m / prev_12m - 1) * 100 if prev_12m > 0 else 0
-
-                        # 环比趋势
-                        trend = (recent_3m / prev_3m - 1) * 100 if prev_3m > 0 else 0
-
-                        val_str = f"{growth_rate:.1f}%{'企稳' if abs(trend) < 5 else '回升' if trend > 0 else '回落'}"
-
-                        # 评分: 社融回升 → 利好 → 低分(安全)
-                        if growth_rate > 15:
-                            score = 30
-                        elif growth_rate > 8:
-                            score = 45
-                        elif growth_rate > 5:
-                            score = 50
-                        elif growth_rate > 0:
-                            score = 55
+                        # 评分: 低分=紧缩=便宜(恐惧); 高分=宽松=已反映(贪婪)
+                        if delta > 2 and recent_3m > 0:
+                            score = 75  # 强宽松
+                            label = "强宽松"
+                        elif delta > 0:
+                            score = 60  # 宽松趋势
+                            label = "宽松加速"
+                        elif delta > -2 and recent_3m > 0:
+                            score = 45  # 宽松见顶
+                            label = "宽松见顶"
                         else:
-                            score = 65
+                            score = 25  # 紧缩
+                            label = "紧缩"
 
-                        # 触底回升加分
-                        if trend > 5:
-                            score = max(20, score - 15)
-
-                        logger.info(f"      社融增速: {growth_rate:.1f}%, 环比: {trend:.1f}% → {val_str}")
+                        val_str = f"{label}(Δ{delta:.1f})"
+                        logger.info(f"      社融加速度: Δ={delta:.1f}, 近3月={recent_3m:.0f} → {label} score={score}")
                         return score, val_str
         except Exception as e:
             logger.warning(f"      社融计算异常: {e}")
@@ -520,10 +513,11 @@ class TimingScoreEngine:
         return prev_score, prev_val
 
     def _calc_interest_rate(self):
-        """利率水平评分"""
+        """利率水平评分 (v4.1 国内分档)
+        铁律: 低分=紧缩=便宜(恐惧); 高分=宽松=已反映(贪婪)
+        """
         try:
             ak = self.init_akshare()
-            # 中国10年国债收益率
             bond_df = safe_ak_call(ak.bond_gb_zh_sina, symbol="中国10年期国债")
             if bond_df is not None and not bond_df.empty and 'close' in bond_df.columns:
                 bond_df['date'] = pd.to_datetime(bond_df['date'])
@@ -531,25 +525,29 @@ class TimingScoreEngine:
                 cn10y = safe_float(bond_series.iloc[-1])
 
                 if cn10y:
-                    # 判断利率周期
-                    # 历史中枢约 2.8-3.2%
-                    avg_1y = bond_series.tail(250).mean() if len(bond_series) >= 250 else cn10y
-                    trend = "降息周期" if cn10y < avg_1y * 0.95 else "加息周期" if cn10y > avg_1y * 1.05 else "中性"
-
-                    # 评分: 低利率 → 利好 → 低分
-                    if cn10y < 1.5:
-                        score = 25
-                    elif cn10y < 2.0:
-                        score = 35
-                    elif cn10y < 2.5:
-                        score = 45
-                    elif cn10y < 3.0:
-                        score = 55
+                    # v4.1: 国内分档
+                    # 低分=紧缩=便宜(恐惧); 高分=宽松=已反映(贪婪)
+                    if cn10y <= 1.5:
+                        score = 70  # 历史极底=过热
+                        label = "历史极底/过热"
+                    elif cn10y <= 1.8:
+                        score = 60  # 极低=偏热
+                        label = "极低/偏热"
+                    elif cn10y <= 2.2:
+                        score = 50  # 偏低=中性
+                        label = "偏低/中性"
+                    elif cn10y <= 2.8:
+                        score = 40  # 中位
+                        label = "中位"
+                    elif cn10y <= 3.2:
+                        score = 30  # 偏高=紧缩=便宜
+                        label = "偏高/紧缩"
                     else:
-                        score = 65
+                        score = 20  # 极度紧缩=逆向机会
+                        label = "极度紧缩/逆向机会"
 
-                    val_str = f"{trend}({cn10y:.2f}%)"
-                    logger.info(f"      10Y国债: {cn10y}%, 判断: {trend}")
+                    val_str = f"{label}({cn10y:.2f}%)"
+                    logger.info(f"      10Y国债: {cn10y:.2f}%, 分档: {label}, score={score}")
                     return score, val_str
         except Exception as e:
             logger.warning(f"      利率计算异常: {e}")
@@ -640,12 +638,13 @@ class TimingScoreEngine:
     # ----------------------------------------------------------
     def calc_equity_bond(self) -> dict:
         """
-        股债性价比维度
+        股债性价比维度 (v4.1)
         指标:
-          - 沪深300 ERP: 权重50%
+          - 沪深300 ERP: 参考(权重0%)
+          - 万得全A ERP ★主指标: 权重40%
           - 红利指数股债利差: 权重20%
-          - 股息率-国债利差(沪深300): 权重15%
-          - 中美双视角利差: 权重15%
+          - 股息率-国债利差(沪深300): 权重20%
+          - 中美双视角利差: 权重20%
         """
         logger.info("  [维度3/6] 股债性价比...")
         ak = self.init_akshare()
@@ -658,8 +657,8 @@ class TimingScoreEngine:
             "value": f"{erp_val:.2f}%" if erp_val else "数据待更新",
             "percentile": f"{erp_pct:.1f}%" if erp_pct is not None else "数据待更新",
             "score": erp_score,
-            "sub_weight": 25,
-            "note": "【参考】沪深300口径仅供参考，主指标为万得全A ERP",
+            "sub_weight": 0,
+            "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
             "bottom_threshold": ">6%",
             "top_threshold": "<2.5%"
         }
@@ -672,7 +671,7 @@ class TimingScoreEngine:
                 "value": f"{wanda_erp_val:.2f}%",
                 "percentile": f"{wanda_erp_pct:.1f}%" if wanda_erp_pct is not None else "数据待更新",
                 "score": wanda_erp_score,
-                "sub_weight": 50,
+                "sub_weight": 40,
                 "note": "【新】股债性价比主指标，取代沪深300 ERP",
                 "bottom_threshold": ">4%",
                 "top_threshold": "<1.5%"
@@ -698,7 +697,7 @@ class TimingScoreEngine:
             "name": "股息率-国债利差(沪深300)",
             "value": f"{hs300_spread:.2f}%" if hs300_spread else "数据待更新",
             "score": hs300_sp_score,
-            "sub_weight": 15,
+            "sub_weight": 20,
             "bottom_threshold": ">3%",
             "top_threshold": "<0.3%"
         }
@@ -709,7 +708,7 @@ class TimingScoreEngine:
             "name": "中美双视角利差",
             "value": cn_us_val or "分歧",
             "score": cn_us_score,
-            "sub_weight": 15,
+            "sub_weight": 20,
             "bottom_signal": "内外资均认为便宜",
             "top_signal": "内外资均认为贵"
         }
@@ -720,8 +719,8 @@ class TimingScoreEngine:
         return {
             "name": "股债性价比",
             "score": dim_score,
-            "weight": 18,
-            "weighted_score": round(dim_score * 0.18, 2),
+            "weight": 20,
+            "weighted_score": round(dim_score * 0.20, 2),
             "signal": signal,
             "indicators": indicators
         }
@@ -984,12 +983,16 @@ class TimingScoreEngine:
     # ----------------------------------------------------------
     def calc_capital_flow(self) -> dict:
         """
-        资金面维度
+        资金面维度 (v4.1)
         指标:
-          - 两融/流通市值: 权重35%
-          - 北向资金趋势: 权重25%
+          - 股基仓位: 权重25%
+          - 融资买入占比: 权重20%
+          - 灵基仓位: 权重20%
           - 新发基金热度: 权重20%
-          - 产业资本增减持: 权重20%
+          - 产业资本增减持: 权重15%
+          - 北向资金: 已停更(权重0%)
+          - 两融/流通市值: 参考(权重0%)
+          - 财政支出: 参考(权重0%)
         """
         logger.info("  [维度4/6] 资金面...")
         ak = self.init_akshare()
@@ -1006,9 +1009,43 @@ class TimingScoreEngine:
             "name": "两融/流通市值",
             "value": margin_display,
             "score": margin_score,
-            "sub_weight": 35,
+            "sub_weight": 0,
+            "note": "【参考】两融/流通市值仅作辅助参考",
             "bottom_threshold": "<2.0%",
             "top_threshold": ">3.5%"
+        }
+
+        # --- 股基仓位 (v4.1新增) ---
+        efp_score, efp_val = self._calc_equity_fund_position()
+        indicators["equity_fund_position"] = {
+            "name": "股基仓位",
+            "value": efp_val or "数据待更新",
+            "score": efp_score,
+            "sub_weight": 25,
+            "bottom_signal": "仓位极低(恐慌)",
+            "top_signal": "仓位极高(狂热)"
+        }
+
+        # --- 融资买入占比 (v4.1从情绪移入) ---
+        mb_score, mb_val = self._calc_margin_buying()
+        indicators["margin_buying_ratio"] = {
+            "name": "融资买入占比",
+            "value": mb_val or "数据待更新",
+            "score": mb_score,
+            "sub_weight": 20,
+            "bottom_threshold": "<7%",
+            "top_threshold": ">11%"
+        }
+
+        # --- 灵基仓位 (v4.1新增) ---
+        ffp_score, ffp_val = self._calc_flexible_fund_position()
+        indicators["flexible_fund_position"] = {
+            "name": "灵基仓位",
+            "value": ffp_val or "数据待更新",
+            "score": ffp_score,
+            "sub_weight": 20,
+            "bottom_signal": "仓位极低",
+            "top_signal": "仓位极高"
         }
 
         # --- 北向资金趋势 ---
@@ -1041,9 +1078,21 @@ class TimingScoreEngine:
             "name": "产业资本增减持",
             "value": capital_val or "平衡",
             "score": capital_score,
-            "sub_weight": 20,
+            "sub_weight": 15,
             "bottom_signal": "净增持/回购潮",
             "top_signal": "大举减持"
+        }
+
+        # --- 财政支出 (v4.1新增, 参考) ---
+        fe_score, fe_val = self._calc_fiscal_expenditure()
+        indicators["fiscal_expenditure"] = {
+            "name": "财政支出",
+            "value": fe_val or "数据待更新",
+            "score": fe_score,
+            "sub_weight": 0,
+            "note": "【参考】财政支出仅作辅助参考",
+            "bottom_signal": "财政紧缩",
+            "top_signal": "财政扩张"
         }
 
         dim_score = self._weighted_score(indicators)
@@ -1052,8 +1101,8 @@ class TimingScoreEngine:
         return {
             "name": "资金面",
             "score": dim_score,
-            "weight": 15,
-            "weighted_score": round(dim_score * 0.15, 2),
+            "weight": 17,
+            "weighted_score": round(dim_score * 0.17, 2),
             "signal": signal,
             "indicators": indicators
         }
@@ -1164,17 +1213,50 @@ class TimingScoreEngine:
         logger.info(f"      产业资本: {prev_val} (使用上期值)")
         return prev_score, prev_val
 
+    def _calc_equity_fund_position(self):
+        """股基仓位 (v4.1新增)"""
+        prev = load_json("timing_scores.json")
+        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("equity_fund_position", {}).get("value", "数据待更新")
+        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("equity_fund_position", {}).get("score", 50)
+        logger.info(f"      股基仓位: {prev_val} (使用上期值)")
+        return prev_score, prev_val
+
+    def _calc_flexible_fund_position(self):
+        """灵基仓位 (v4.1新增)"""
+        prev = load_json("timing_scores.json")
+        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("flexible_fund_position", {}).get("value", "数据待更新")
+        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("flexible_fund_position", {}).get("score", 50)
+        logger.info(f"      灵基仓位: {prev_val} (使用上期值)")
+        return prev_score, prev_val
+
+    def _calc_fiscal_expenditure(self):
+        """财政支出 (v4.1新增, 参考指标)"""
+        prev = load_json("timing_scores.json")
+        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("fiscal_expenditure", {}).get("value", "数据待更新")
+        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("fiscal_expenditure", {}).get("score", 50)
+        logger.info(f"      财政支出: {prev_val} (使用上期值)")
+        return prev_score, prev_val
+
+    def _calc_new_account_opening(self):
+        """新增开户数 (v4.1从资金面移入情绪)"""
+        prev = load_json("timing_scores.json")
+        prev_val = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("new_account_opening", {}).get("value", "数据待更新")
+        prev_score = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("new_account_opening", {}).get("score", 50)
+        logger.info(f"      新增开户数: {prev_val} (使用上期值)")
+        return prev_score, prev_val
+
     # ----------------------------------------------------------
     # 维度5: 市场情绪 (sentiment)
     # ----------------------------------------------------------
     def calc_sentiment(self) -> dict:
         """
-        市场情绪维度
+        市场情绪维度 (v4.1)
         指标:
-          - 偏股基金滚动3年年化: 权重25%
-          - 恐贪指数: 权重25%
+          - 恐贪指数: 权重35%
           - 全A换手率: 权重25%
-          - 融资买入占比: 权重25%
+          - 偏股基金滚动3年年化: 权重20%
+          - 新增开户数: 权重20%
+          - 融资买入占比: 参考(已移至资金面, 权重0%)
         """
         logger.info("  [维度5/6] 市场情绪...")
         ak = self.init_akshare()
@@ -1186,7 +1268,7 @@ class TimingScoreEngine:
             "name": "偏股基金滚动3年年化",
             "value": fund_val or "数据待更新",
             "score": fund_score,
-            "sub_weight": 25,
+            "sub_weight": 20,
             "bottom_threshold": "<-10%",
             "top_threshold": ">30%"
         }
@@ -1197,7 +1279,7 @@ class TimingScoreEngine:
             "name": "恐贪指数",
             "value": fg_val if fg_val else 50,
             "score": fg_score,
-            "sub_weight": 25,
+            "sub_weight": 35,
             "bottom_threshold": "<20",
             "top_threshold": ">80"
         }
@@ -1219,9 +1301,21 @@ class TimingScoreEngine:
             "name": "融资买入占比",
             "value": fb_val or "数据待更新",
             "score": fb_score,
-            "sub_weight": 25,
+            "sub_weight": 0,
+            "note": "【已移至资金面】",
             "bottom_threshold": "<7%",
             "top_threshold": ">11%"
+        }
+
+        # --- 新增开户数 (从资金面移入) ---
+        nao_score, nao_val = self._calc_new_account_opening()
+        indicators["new_account_opening"] = {
+            "name": "新增开户数",
+            "value": nao_val or "数据待更新",
+            "score": nao_score,
+            "sub_weight": 20,
+            "bottom_threshold": "<80万",
+            "top_threshold": ">200万"
         }
 
         dim_score = self._weighted_score(indicators)
@@ -1230,8 +1324,8 @@ class TimingScoreEngine:
         return {
             "name": "市场情绪",
             "score": dim_score,
-            "weight": 18,
-            "weighted_score": round(dim_score * 0.18, 2),
+            "weight": 16,
+            "weighted_score": round(dim_score * 0.16, 2),
             "signal": signal,
             "indicators": indicators
         }
@@ -1356,12 +1450,12 @@ class TimingScoreEngine:
     # ----------------------------------------------------------
     def calc_micro_structure(self) -> dict:
         """
-        微观结构维度
+        微观结构维度 (v4.1)
         指标:
-          - 交易拥挤度(前5%占比): 权重35%
-          - 行业成交集中度: 权重25%
-          - 交易集中度趋势: 权重20%
-          - 中证1000/沪深300比值: 权重20%
+          - 交易拥挤度(前5%占比): 权重40%
+          - 行业成交集中度(HHI): 权重35%
+          - 交易集中度趋势: 权重25%
+          - 中证1000/沪深300比值: 参考(权重0%)
         """
         logger.info("  [维度6/6] 微观结构...")
         ak = self.init_akshare()
@@ -1374,7 +1468,7 @@ class TimingScoreEngine:
             "value": crowd_val or "数据待更新",
             "percentile": crowd_pct,
             "score": crowd_score,
-            "sub_weight": 35,
+            "sub_weight": 40,
             "bottom_threshold": "从极端回落至40%以下",
             "top_threshold": ">48%"
         }
@@ -1385,7 +1479,7 @@ class TimingScoreEngine:
             "name": "行业成交集中度",
             "value": ind_val or "数据待更新",
             "score": ind_score,
-            "sub_weight": 25,
+            "sub_weight": 35,
             "bottom_threshold": "前三行业<25%",
             "top_threshold": "前三行业>40%"
         }
@@ -1396,7 +1490,7 @@ class TimingScoreEngine:
             "name": "交易集中度趋势",
             "value": trend_val or "数据待更新",
             "score": trend_score,
-            "sub_weight": 20,
+            "sub_weight": 25,
             "bottom_signal": "从集中到分散",
             "top_signal": "加速集中"
         }
@@ -1407,7 +1501,8 @@ class TimingScoreEngine:
             "name": "中证1000/沪深300比值",
             "value": ratio_val or "数据待更新",
             "score": ratio_score,
-            "sub_weight": 20,
+            "sub_weight": 0,
+            "note": "【参考】中证1000/沪深300比值仅作辅助参考",
             "bottom_signal": "比值触底回升",
             "top_signal": "比值加速下跌"
         }
@@ -1763,26 +1858,24 @@ class TimingScoreEngine:
         return {"add_position": add_triggers, "reduce_position": reduce_triggers}
 
     def generate_position_advice(self, composite_score, dimensions):
-        """生成仓位建议"""
-        # 根据综合得分确定仓位区间
+        """生成仓位建议 (v4.1 四级等宽)"""
+        # 四级等宽仓位映射
         if composite_score < 25:
-            equity_range = "60%-75%"
-            base_equity = 67
-        elif composite_score < 35:
-            equity_range = "50%-65%"
-            base_equity = 57
-        elif composite_score < 45:
+            equity_range = "55%-70%"
+            base_equity = 62
+            status = "极度恐惧，逆向布局"
+        elif composite_score < 50:
             equity_range = "40%-55%"
             base_equity = 47
-        elif composite_score < 55:
-            equity_range = "35%-50%"
-            base_equity = 42
-        elif composite_score < 65:
+            status = "中性偏恐惧，正常配置"
+        elif composite_score < 75:
             equity_range = "25%-40%"
             base_equity = 32
+            status = "中性偏贪婪，逐步兑现"
         else:
-            equity_range = "15%-30%"
-            base_equity = 22
+            equity_range = "10%-25%"
+            base_equity = 17
+            status = "极度贪婪，过热清仓"
 
         cash_low = 100 - base_equity
         cash_range = f"{cash_low-5}%-{cash_low+10}%"
@@ -1820,16 +1913,20 @@ class TimingScoreEngine:
         value_range = "10%-15%"
         value_note = "维持"
 
-        # 小盘
-        ratio_val = dimensions.get("micro_structure", {}).get("indicators", {}).get("csi1000_hs300_ratio", {}).get("value", "")
-        if "极弱" in ratio_val or "偏弱" in ratio_val:
+        # 小盘 (v4.1: 从style_rotation读取)
+        style_rot = dimensions.get("_style_rotation", {})
+        ls_status = style_rot.get("large_small", {}).get("status", "")
+        if "偏弱" in ls_status or "极弱" in ls_status:
             small_range = "5%-8%"
             small_note = "比值仍处下行通道，暂不追涨"
+        elif "走强" in ls_status or "占优" in ls_status:
+            small_range = "8%-12%"
+            small_note = "小盘走强，可适度增配"
         else:
             small_range = "8%-12%"
-            small_note = "小盘有企稳迹象"
+            small_note = "大小盘均衡，中性配置"
 
-        status = "中性区间，略偏暖" if 40 <= composite_score <= 60 else "偏低/有吸引力" if composite_score < 40 else "偏高/谨慎" if composite_score > 60 else "中性"
+        # status already set in 4-level mapping above
 
         return {
             "equity_range": equity_range,
@@ -1889,31 +1986,15 @@ class TimingScoreEngine:
             1
         )
 
-        # 仓位区间
-        if composite_score < 30:
-            pos_range = "55%-70%"
-        elif composite_score < 40:
-            pos_range = "45%-60%"
-        elif composite_score < 50:
-            pos_range = "40%-55%"
-        elif composite_score < 60:
-            pos_range = "30%-45%"
-        else:
-            pos_range = "20%-35%"
+        # 仓位区间: 统一使用 generate_position_advice() 返回的 equity_range
 
-        # 生成信号和建议
-        signals = self.generate_signals(dimensions)
-        triggers = self.generate_triggers(dimensions)
-        position_advice, market_status = self.generate_position_advice(composite_score, dimensions)
-
-        # 风格轮动 (从上期数据继承)
+        # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
         prev = load_json("timing_scores.json")
         style_rotation = prev.get("style_rotation", {})
         # 更新大小盘比值
         micro = dimensions.get("micro_structure", {}).get("indicators", {})
         ratio_data = micro.get("csi1000_hs300_ratio", {})
         if ratio_data:
-            # v3.4.7: 三态映射——偏弱/中性/走强（原二元逻辑把"中性"错判为"走强"，CIO复验FAIL）
             _rv = str(ratio_data.get("value", ""))
             if "偏弱" in _rv or "极弱" in _rv:
                 _st, _sig = "小盘偏弱", "不追涨"
@@ -1929,11 +2010,19 @@ class TimingScoreEngine:
                 "detail": f"小盘风格{ratio_data.get('value', '待更新')}"
             }
 
+        # 将 style_rotation 传入 dimensions 供 generate_position_advice 使用
+        dimensions["_style_rotation"] = style_rotation
+
+        # 生成信号和建议
+        signals = self.generate_signals(dimensions)
+        triggers = self.generate_triggers(dimensions)
+        position_advice, market_status = self.generate_position_advice(composite_score, dimensions)
+
         output = {
             "update_date": today_str(),
-            "version": "v2.0",
+            "version": "v4.1",
             "composite_score": composite_score,
-            "position_range": pos_range,
+            "position_range": position_advice["equity_range"],
             "market_status": market_status,
             "dimensions": dimensions,
             "style_rotation": style_rotation,
@@ -1943,7 +2032,7 @@ class TimingScoreEngine:
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
-        logger.info(f"  📊 仓位区间: {pos_range}")
+        logger.info(f"  📊 仓位区间: {position_advice['equity_range']}")
         logger.info(f"  📊 市场状态: {market_status}")
 
         return output
@@ -2677,7 +2766,7 @@ class TimingRightEngine:
 
         output = {
             "update_date": today,
-            "version": "v2.0",
+            "version": "v4.1",
             "signal_light": signal_light,
             "signal_direction": signal_direction,
             "bull_score": bull_score,
