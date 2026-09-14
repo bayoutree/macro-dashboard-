@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A股周期定位看板 V4.0</title>
+<title>A股周期定位看板 V4.1</title>
 <style>
 :root {
   --canvas: #070A14;
@@ -29,8 +29,8 @@
   --orange-dim: rgba(255,169,77,0.15);
   --stage-a: #62FAD3;
   --stage-b: #69E7FF;
-  --stage-c1: #FFD76E;
-  --stage-c2: #FFA94D;
+  --stage-c: #FFB347; /* 秋收 amber */
+  
   --stage-d: #FF6B6B;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -131,8 +131,8 @@ body::before {
 .stage-segment:hover { filter: brightness(1.15); }
 .stage-segment.a { background: var(--stage-a); }
 .stage-segment.b { background: var(--stage-b); }
-.stage-segment.c1 { background: var(--stage-c1); }
-.stage-segment.c2 { background: var(--stage-c2); }
+.stage-segment.c { background: var(--stage-c); }
+
 .stage-segment.d { background: var(--stage-d); }
 .stage-segment .pct { font-size: 10px; opacity: 0.8; margin-left: 2px; }
 .stage-labels {
@@ -156,8 +156,8 @@ body::before {
 .stage-card .stage-range { font-size: 11px; color: var(--text-muted); }
 .stage-card.a .stage-prob { color: var(--stage-a); }
 .stage-card.b .stage-prob { color: var(--stage-b); }
-.stage-card.c1 .stage-prob { color: var(--stage-c1); }
-.stage-card.c2 .stage-prob { color: var(--stage-c2); }
+.stage-card.c .stage-prob { color: var(--stage-c); }
+
 .stage-card.d .stage-prob { color: var(--stage-d); }
 
 /* ===== ANCHOR INDICATORS ===== */
@@ -474,7 +474,7 @@ body::before {
   <header class="header">
     <div class="header-left">
       <h1>A股周期定位看板</h1>
-      <div class="subtitle">V4.0 · 5段状态机 · 月线级择时 · 真实日期跨度</div>
+      <div class="subtitle">V4.1 · 4段等宽 · 月线级择时</div>
     </div>
     <div class="header-right">
       <span class="data-status fresh"><span class="dot"></span>数据正常</span>
@@ -854,7 +854,7 @@ body::before {
     </div>
     <!-- ③ 待确认信号行 -->
     <div id="action-signals-row" style="font-size:12px; color:var(--text-secondary); text-align:left; max-width:600px; margin:0 auto; padding:10px 16px; background:var(--surface); border-radius:8px; border:1px solid var(--border);">
-      <div style="font-weight:600; margin-bottom:6px; color:var(--text-primary);">📋 待确认信号（C1→C2 秋收触发器）</div>
+      <div style="font-weight:600; margin-bottom:6px; color:var(--text-primary);">📋 待确认信号（秋收季触发器）</div>
       <div id="action-trigger-list" style="line-height:1.8;"></div>
     </div>
   </div>
@@ -932,19 +932,17 @@ body::before {
 // STAGE DEFINITIONS
 // ============================================================
 const STAGES = {
-  A:  { name: 'A·春播 🌱', emoji: '🌱', position: '30%-70%',  desc: '分批建仓，越跌越买',         range: 'ERP>4%' },
-  B:  { name: 'B·夏长 ☀️', emoji: '☀️', position: '70%-90%',  desc: '高仓位持有，享受复利',       range: 'ERP 2.5-4%' },
-  C1: { name: 'C1·享受泡沫 ☀️🌤', emoji: '🌤', position: '60%-75%', desc: '持有核心、停止加仓（不减仓）', range: 'ERP 2-2.5%' },
-  C2: { name: 'C2·秋收 ⚠️ 🍂', emoji: '🍂', position: '20%-40%', desc: '唯一主动减仓信号，颗粒归仓', range: 'ERP 1.6-2%' },
-  D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '0%-10%',   desc: '清仓离场，现金为王',         range: 'ERP<1.6%' }
+  A:  { name: 'A·春播 🌱', emoji: '🌱', position: '55%-70%',  desc: '极度恐惧，逆向布局',         range: 'composite<25' },
+  B:  { name: 'B·夏长 ☀️', emoji: '☀️', position: '40%-55%',  desc: '中性偏恐惧，正常配置',       range: 'composite 25-49' },
+  C:  { name: 'C·秋收 🍂', emoji: '🍂', position: '25%-40%', desc: '中性偏贪婪，逐步兑现', range: 'composite 50-74' },
+  D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '10%-25%',   desc: '极度贪婪，过热清仓',         range: 'composite≥75' }
 };
 // v3.1仓位模板（用于加权期望仓位计算）
 const POSITION_TEMPLATES = {
-  A:  { min: 30, max: 70 },
-  B:  { min: 70, max: 90 },
-  C1: { min: 60, max: 75 },
-  C2: { min: 20, max: 40 },
-  D:  { min: 0,  max: 10 }
+  A:  { min: 55, max: 70 },
+  B:  { min: 40, max: 55 },
+  C:  { min: 25, max: 40 },
+  D:  { min: 10, max: 25 }
 };
 
 
@@ -1030,9 +1028,8 @@ const StageEngine = {
     // 锚定阶段（按 v3.2 §3.2 阈值）
     let anchorStage;
     if (composite < 25) anchorStage = 'A';
-    else if (composite < 55) anchorStage = 'B';
-    else if (composite < 70) anchorStage = 'C1';
-    else if (composite < 85) anchorStage = 'C2';
+    else if (composite < 50) anchorStage = 'B';
+    else if (composite < 75) anchorStage = 'C';
     else anchorStage = 'D';
 
     // v3.3: 融合右侧趋势确认层（不对称修正）
@@ -1043,10 +1040,10 @@ const StageEngine = {
       const confirmBearCount = (rd.signals?.confirm_bear || []).filter(s => s.triggered).length;
       const confirmBullCount = (rd.signals?.confirm_bull || []).filter(s => s.triggered).length;
       
-      // 规则1: 位置偏热(C1/C2/D) + 右侧空方确认(bear>=40 或 confirm_bear>=2) → 向降温快调一档
-      const stageOrder = ['A','B','C1','C2','D'];
+      // 规则1: 位置偏热(C/D) + 右侧空方确认(bear>=40 或 confirm_bear>=2) → 向降温快调一档
+      const stageOrder = ['A','B','C','D'];
       const anchorIdx = stageOrder.indexOf(anchorStage);
-      const hotStages = ['C1','C2','D'];
+      const hotStages = ['C','D'];
       if (hotStages.includes(anchorStage) && (bearScore >= 40 || confirmBearCount >= 2)) {
         const newIdx = Math.max(0, anchorIdx - 1);
         anchorStage = stageOrder[newIdx];
@@ -1063,7 +1060,7 @@ const StageEngine = {
     const sigma = 0.6 + Math.min(2.0, divergence / 20);
 
     // 阶段顺序
-    const stageOrder = ['A','B','C1','C2','D'];
+    const stageOrder = ['A','B','C','D'];
     const anchorIdx = stageOrder.indexOf(anchorStage);
 
     // 钟形分布（高斯）
@@ -1207,9 +1204,9 @@ const StageEngine = {
   // 急冻快车道检测（v3.2 §6）
   checkFreeze(scores, probs) {
     const triggers = [];
-    // 条件1: D概率 >= 35%（D 主导才是崩盘，C2 是有序减仓不触发急冻）
+    // 条件1: D概率 >= 35%（D 主导才是崩盘，C 是有序减仓不触发急冻）
     if (probs.D >= 35) triggers.push('D概率≥35%');
-    // 条件2-5: 综合评分 > 88（真正进入 D 核心区域，避免在 C2 区间误报）
+    // 条件2-5: 综合评分 > 88（真正进入 D 核心区域，避免在 C 区间误报）
     if (scores.composite > 88) triggers.push('综合评分极高风险区 (>88)');
     return triggers;
   },
@@ -1763,7 +1760,7 @@ function fmtDateLabel(d) {
 
 function renderStageBar() {
   const bar = document.getElementById('stage-bar');
-  const stages = ['A','B','C1','C2','D'];
+  const stages = ['A','B','C','D'];
   const probs = engineOutput.stage_probabilities;
   const total = Object.values(probs).reduce((a,b) => a+b, 0);
   const migration = engineOutput.prob_change_vs_last;
@@ -1784,7 +1781,7 @@ function renderStageBar() {
 
 function renderStageCards() {
   const container = document.getElementById('stage-cards');
-  const stages = ['A','B','C1','C2','D'];
+  const stages = ['A','B','C','D'];
   const probs = engineOutput.stage_probabilities;
   const migration = engineOutput.prob_change_vs_last;
   const current = engineOutput.current_stage;
@@ -2551,7 +2548,7 @@ function renderActionBar() {
     stageLabel.style.color = trendOv.level === 'strong_bear' ? 'var(--red)' : 'var(--orange)';
   } else if (e.transition_flag) {
     // 过渡期措辞；平票排序：趋势逆风时降温优先，否则升温方向（阶段序更靠后）优先
-    const _ord = ['A','B','C1','C2','D'];
+    const _ord = ['A','B','C','D'];
     // v3.4.2修复: tie 平票排序必须在 sort 回调内部引用 a/b（原代码在回调外定义
     // tie 却引用回调参数，transition_flag=true 时 ReferenceError 熔断整个 init 链）
     const sorted = Object.entries(e.stage_probabilities).sort((a,b) =>
@@ -2584,7 +2581,7 @@ function renderActionBar() {
   }
 
   // 迁移箭头（下一档方向）
-  const stages = ['A','B','C1','C2','D'];
+  const stages = ['A','B','C','D'];
   const currIdx = stages.indexOf(current);
   const prevIdx = Math.max(0, currIdx - 1);
   const nextIdx = Math.min(stages.length - 1, currIdx + 1);
@@ -2622,7 +2619,7 @@ function renderActionBar() {
     } else {
       const sorted = Object.entries(e.stage_probabilities).sort((a,b) => b[1] - a[1]);
       const top2Stages = sorted.slice(0, 2).map(s => s[0]).sort();
-      if (top2Stages[0] === 'B' && top2Stages[1] === 'C1') {
+      if (false) { // v4.1: B∩C1无悔仓位逻辑已移除
         footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}% · B∩C1 无悔仓位 70%-75%`;
       } else {
         footnoteEl.textContent = `期望仓位 ${e.weighted_target_position}%`;
@@ -2700,8 +2697,8 @@ function _setPending(ind, note) {
 function _scoreSignal(score) {
   const s = parseFloat(score);
   if (isNaN(s)) return 'yellow';
-  if (s >= 70) return 'red';
-  if (s <= 30) return 'green';
+  if (s >= 65) return 'red';
+  if (s < 25) return 'green';
   return 'yellow';
 }
 function _scoreText(score, name) {
