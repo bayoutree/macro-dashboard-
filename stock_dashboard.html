@@ -872,7 +872,7 @@ body::before {
 
   <!-- ===== 5. MAIN MODEL INDICATORS (E1: merged cards) ===== -->
   <section>
-    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(7项 · 含3组合并)</span></div>
+    <div class="section-title"><span class="emoji">📊</span> 主模型指标 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(5项)</span></div>
     <div class="indicators-grid" id="main-indicators"></div>
   </section>
 
@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914h');
+      const resp = await fetch('data/timing_scores.json?v=20260914l');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2812,7 +2812,7 @@ function applyTimingDataToMockData() {
   if (margin && Array.isArray(margin.history) && margin.history.length >= 2) {
     M[1].name = '融资买入占比';
     M[1].freq = '日频(20MA)';
-    M[1].value = (+margin.value).toFixed(2) + '%';
+    M[1].value = parseFloat(margin.value).toFixed(2) + '%';
     const _tierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','fear':'green','extreme_fear':'green'};
     M[1].signal = _tierSig[margin.tier] || _scoreSignal(margin.score);
     const _tierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','fear':'偏冷','extreme_fear':'冰点'};
