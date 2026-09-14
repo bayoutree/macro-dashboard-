@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914q');
+      const resp = await fetch('data/timing_scores.json?v=20260914r');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2363,7 +2363,7 @@ function renderMainIndicators() {
     html += `<div class="indicator-card">
       <div class="card-top">
         <div>
-          <div class="ind-name">${ind.name} <span style="font-size:10px;color:var(--text-muted);">(${ind.freq})</span>${ind.dim ? ` <span class="dim-tag ${ind.dimClass}">${ind.dim}</span>` : ''}
+          <div class="ind-name">${ind.name} <span style="font-size:10px;color:var(--text-muted);">(${ind.freq})</span>${ind.dim ? ` <span class="dim-tag ${ind.dimClass}">${ind.dim}</span>` : ''}</div>
           <div class="ind-value">${ind.value}${slopeHtml}</div>
         </div>
         <div class="ind-signal ${['green','red','gray','yellow','green2','neutral'].includes(ind.signal) ? ind.signal : (ind.signal === 'bullish' ? 'green' : ind.signal === 'bearish' ? 'red' : 'yellow')}">${ind.signalText}</div>
@@ -2445,7 +2445,7 @@ function renderReferenceIndicators() {
     html += `<div class="ref-card">
       <div class="ref-top">
         <div>
-          <div class="ref-name">${ref.name} ${freqStr}${ref.dim ? ` <span class="dim-tag ${ref.dimClass}">${ref.dim}</span>` : ''}
+          <div class="ref-name">${ref.name} ${freqStr}${ref.dim ? ` <span class="dim-tag ${ref.dimClass}">${ref.dim}</span>` : ''}</div>
           <div class="ref-value">${ref.value}</div>
         </div>
         <div class="ref-signal ${sigCls}">${ref.signalText || ''}</div>
