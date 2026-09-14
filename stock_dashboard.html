@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260917');
+      const resp = await fetch('data/timing_scores.json?v=20260914');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2882,8 +2882,31 @@ function applyTimingDataToMockData() {
     mockData.referenceIndicators[5].history = [];
     mockData.referenceIndicators[5].updateTime = '2024-08-20（最后有效）';
   }
-  // [6] ETF份额变化 — 无自动数据源
-  _setPending(M[6], 'ETF份额净申购无自动数据源，待接入');
+  // [6] 产业资本净减持率 — 工单6c: 股东增减持净减持额/流通市值，2018起全历史百分位
+  //     数据源: 东方财富RPTA_WEB_GDSCTJ日度汇总(公告日口径) + AKShare流通市值
+  //     评分: 全历史百分位分档 + 护栏(≥0.15%→90/≥0.10%→75/≥0.05%→60)
+  //     反向指标：净减持率低=产业资本大举卖出=风险；净减持率低/净增持=底部区域=积极
+  //     注意：未含回购，净减持额偏高~20-25%，当前值为上限估计
+  const ic6 = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
+  if (ic6 && Array.isArray(ic6.history) && ic6.history.length >= 2) {
+    M[6].name = '产业资本净减持率';
+    M[6].freq = '月频';
+    M[6].value = (+ic6.value).toFixed(3) + '%';
+    const _ic6TierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','cool':'green','cold':'green'};
+    M[6].signal = _ic6TierSig[ic6.tier] || _scoreSignal(ic6.score);
+    const _ic6TierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','cool':'偏冷','cold':'冰点'};
+    M[6].signalText = _ic6TierText[ic6.tier] || _scoreText(ic6.score, '减持');
+    M[6].slope = null;
+    M[6].dates = ic6.dates;
+    M[6].history = ic6.history;
+    M[6].history2 = undefined;
+    const _ic6PctTxt = (ic6.pctile_all !== undefined) ? (+ic6.pctile_all).toFixed(0) + '%分位' : '';
+    M[6].description = '<span class="desc-range">2018起 ' + _ic6PctTxt + '</span>'
+      + ' 产业资本净减持额/流通市值。低减持率=产业资本不卖(底部区域)，高减持率=大举卖出(风险信号)。'
+      + '回购计入增持端后数据将下修，当前值为上限估计。'
+      + (ic6.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">数据说明与局限</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(ic6.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
+    M[6].updateTime = ic6.update_date || ic6._updateDate || '';
+  } else _setPending(M[6], '产业资本净减持率数据待获取');
   // [7] 中证1000/沪深300比值 — csi1000_hs300_ratio（%B=0.36 小盘中性，csindex 000852/000300 周频105点真值）
   const cs = _tag(_tsInd(ts, 'micro_structure', 'csi1000_hs300_ratio'));
   if (cs) {
@@ -2905,14 +2928,16 @@ function applyTimingDataToMockData() {
   } else _setPending(R[1]);
   // [2] 财政支出增速 — 无数据源
   _setPending(R[2], '财政支出增速无自动数据源，待接入');
-  // [3] 产业资本增减持 — industrial_capital 顶层状态快照（平衡/增持/减持）；
-  //     right_scores 周度残差由 applyRealDataToMockData 的 _capBad 闸门拦截；月频序列待真采集
+  // [3] 产业资本净减持率 — 工单6c真数据已接入M[6]主指标，参考区同步更新
   const ic = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
-  if (ic) {
-    _setSnapshot(R[3], ic, ic.value, '月频');
-    R[3].signalText = '净增持状态: ' + (ic.value || '平衡');
-    R[3].description = '重要股东月度净增减持。大幅增持常出现在市场底部。月度净额序列待真采集（akshare stock_share_change 已失效，评估替代源）';
-  } else _setPending(R[3]);
+  if (ic && Array.isArray(ic.history) && ic.history.length >= 2) {
+    _setSnapshot(R[3], ic, (+ic.value).toFixed(3) + '%', '月频');
+    const _icRefTierText = {'extreme_greed':'大举减持','greed':'偏热减持','watch':'减持偏高','neutral':'中性','cool':'减持偏冷','cold':'冰点/净增持'};
+    R[3].signalText = _icRefTierText[ic.tier] || ('净减持率: ' + (+ic.value).toFixed(3) + '%');
+    R[3].description = '产业资本净减持额/流通市值（2018起）。未含回购，当前值为上限估计。';
+    R[3].dates = ic.dates;
+    R[3].history = ic.history;
+  } else _setPending(R[3], '产业资本数据待获取');
   // [4] 韭圈儿神奇指标 — 第三方无 JSON 源
   _setPending(R[4], '韭圈儿神奇指标为第三方数据，无自动采集源，待接入');
 
