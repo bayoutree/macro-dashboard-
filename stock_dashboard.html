@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914e');
+      const resp = await fetch('data/timing_scores.json?v=20260914f');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -1632,7 +1632,6 @@ const mockData = {
       description: 'A股新增开户数（上交所），历史分位数评分。80%+分位=极热，60-80=活跃',
       dates: [], history: [],
       updateTime: '2026-08'
-    },
     },
     // 2. 全A换手率
     {
