@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914o');
+      const resp = await fetch('data/timing_scores.json?v=20260914p');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2778,8 +2778,8 @@ function applyTimingDataToMockData() {
   //         452周点 (2017-12~2026-09)，低股基金仓位+灵活配置仓位双线
   //         低分=仓位低(积极/有空间), 高分=仓位高(偏热/拥挤)
   {
-    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'fund_position_stock'));
-    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'fund_position_flexible'));
+    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'equity_fund_position'));
+    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'flexible_fund_position'));
     const fs = fundStock ? _tsSeries(fundStock) : { dates: [], history: [] };
     const fl = fundFlex ? _tsSeries(fundFlex) : { dates: [], history: [] };
     if (fs.history.length >= 2 && fl.history.length >= 2) {
@@ -3069,7 +3069,7 @@ function applyTimingDataToMockData() {
 
   // 股息率利差 — equity_bond.dividend_bond_spread_red（445周点，2018年起）
   const dbs = _tag(_tsInd(ts, 'equity_bond', 'dividend_bond_spread_red'));
-  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'%',
+  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'',
     sigText: dbs ? (dbs.score <= 30 ? '股票吸引力高' : dbs.score >= 70 ? '股票吸引力低' : '中性') : ''}, dbs, dbs ? dbs.value : null);
   // 股息率利差 note
   if (dbs && dbs.note) {
