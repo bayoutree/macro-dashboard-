@@ -962,7 +962,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914');
+      const resp = await fetch('data/timing_scores.json?v=20260914b');
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -2795,8 +2795,8 @@ function applyTimingDataToMockData() {
     const _tierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','fear':'偏冷','extreme_fear':'冰点'};
     M[1].signalText = _tierText[margin.tier] || _scoreText(margin.score, '');
     M[1].slope = null;
-    M[1].dates = margin.dates;
-    M[1].history = margin.history;
+    M[1].dates = margin.history.map(p => p.date);
+    M[1].history = margin.history.map(p => +p.value);
     M[1].history2 = undefined;
     const _pctTxt = (margin.pctile_2016 !== undefined) ? (+margin.pctile_2016).toFixed(0) + '%分位' : '';
     M[1].description = '<span class="desc-range">2016后 ' + _pctTxt + '</span>'
@@ -2844,8 +2844,8 @@ function applyTimingDataToMockData() {
     const _nfTierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','cool':'偏冷','cold':'冰点'};
     M[3].signalText = _nfTierText[nf.tier] || _scoreText(nf.score, '发行');
     M[3].slope = null;
-    M[3].dates = nf.dates;
-    M[3].history = nf.history;
+    M[3].dates = nf.history.map(p => p.date);
+    M[3].history = nf.history.map(p => +p.value);
     M[3].history2 = undefined;
     const _nfPctTxt = (nf.pctile_all !== undefined) ? (+nf.pctile_all).toFixed(0) + '%分位' : '';
     M[3].description = '<span class="desc-range">2015起 ' + _nfPctTxt + '</span>'
@@ -2897,8 +2897,8 @@ function applyTimingDataToMockData() {
     const _ic6TierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','cool':'偏冷','cold':'冰点'};
     M[6].signalText = _ic6TierText[ic6.tier] || _scoreText(ic6.score, '减持');
     M[6].slope = null;
-    M[6].dates = ic6.dates;
-    M[6].history = ic6.history;
+    M[6].dates = ic6.history.map(p => p.date);
+    M[6].history = ic6.history.map(p => +p.value);
     M[6].history2 = undefined;
     const _ic6PctTxt = (ic6.pctile_all !== undefined) ? (+ic6.pctile_all).toFixed(0) + '%分位' : '';
     M[6].description = '<span class="desc-range">2018起 ' + _ic6PctTxt + '</span>'
@@ -2935,8 +2935,8 @@ function applyTimingDataToMockData() {
     const _icRefTierText = {'extreme_greed':'大举减持','greed':'偏热减持','watch':'减持偏高','neutral':'中性','cool':'减持偏冷','cold':'冰点/净增持'};
     R[3].signalText = _icRefTierText[ic.tier] || ('净减持率: ' + (+ic.value).toFixed(3) + '%');
     R[3].description = '产业资本净减持额/流通市值（2018起）。未含回购，当前值为上限估计。';
-    R[3].dates = ic.dates;
-    R[3].history = ic.history;
+    R[3].dates = ic.history.map(p => p.date);
+    R[3].history = ic.history.map(p => +p.value);
   } else _setPending(R[3], '产业资本数据待获取');
   // [4] 韭圈儿神奇指标 — 第三方无 JSON 源
   _setPending(R[4], '韭圈儿神奇指标为第三方数据，无自动采集源，待接入');
