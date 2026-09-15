@@ -18,20 +18,20 @@
   // 2. 保存原始方法
   const _originalLoadAllData = app.loadAllData.bind(app);
 
-  // 3. 覆盖 loadAllData - 额外加载 cycle_position_v3.json
+  // 3. 覆盖 loadAllData - 额外加载 cycle_position_v4.json
   app.loadAllData = async function() {
     await _originalLoadAllData();
 
     try {
-      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v3.json?_v=${Date.now()}`, { cache: 'no-store' });
+      const resp = await fetch(`${CONFIG.dataDir}/cycle_position_v4.json?_v=${Date.now()}`, { cache: 'no-store' });
       if (resp.ok) {
         this.data.cyclePositionV3 = await resp.json();
-        console.log('[V3] cycle_position_v3.json loaded');
+        console.log('[V3] cycle_position_v4.json loaded');
       } else {
-        console.warn('[V3] Failed to load cycle_position_v3.json:', resp.status);
+        console.warn('[V3] Failed to load cycle_position_v4.json:', resp.status);
       }
     } catch (err) {
-      console.warn('[V3] Error loading cycle_position_v3.json:', err);
+      console.warn('[V3] Error loading cycle_position_v4.json:', err);
     }
   };
 
