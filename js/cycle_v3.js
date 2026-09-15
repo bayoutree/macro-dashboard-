@@ -12,8 +12,8 @@ const CycleV3Module = (() => {
   let resizeHandler = null;
   let resizeTimer = null;
   const LAYER_MAP = {
-    0: 'layer_0_debt_cycle', 1: 'layer_1_kondratieff', 2: 'layer_2_perez',
-    3: 'layer_3_rate_regime', 4: 'layer_4_juglar', 5: 'layer_5_kitchner', 6: 'layer_6_merrill'
+    0: 'constraint_debt_cycle', 1: 'narrative_kondratieff', 2: 'narrative_perez',
+    3: 'constraint_rate_regime', 4: 'cycle_juglar', 5: 'cycle_kitchin', 6: 'cycle_merrill_3d'
   };
   const COLORS = {
     bullish: '#10b981', cautiousBullish: '#84cc16', neutral: '#f59e0b',
@@ -39,6 +39,24 @@ const CycleV3Module = (() => {
     bullish:'#10b981', cautious:'#f59e0b', bearish:'#ef4444',
     caution_bullish:'#84cc16', neutral:'#6b7280', constraint:'#f59e0b'
   };
+  // Phase 2B: Merrill 3D 8-state definitions
+  const MERRILL_3D_STATES = [
+    {growth:'up', inflation:'down', credit:'up', name:'金发女孩复苏', best:'股票', score:2},
+    {growth:'up', inflation:'down', credit:'down', name:'无信贷支撑复苏', best:'股票(选择性)', score:1},
+    {growth:'up', inflation:'up', credit:'up', name:'过热', best:'商品', score:1},
+    {growth:'up', inflation:'up', credit:'down', name:'滞胀前兆', best:'现金/短债', score:-1},
+    {growth:'down', inflation:'up', credit:'up', name:'信贷驱动通胀', best:'商品/黄金', score:-1},
+    {growth:'down', inflation:'up', credit:'down', name:'滞胀', best:'黄金/现金', score:-2},
+    {growth:'down', inflation:'down', credit:'up', name:'信贷宽松实体弱', best:'债券(信用债)', score:0},
+    {growth:'down', inflation:'down', credit:'down', name:'衰退', best:'利率债/现金', score:-1},
+  ];
+  const MERRILL_MATRIX_ROWS = [
+    {growth:'up', inflation:'down', label:'增长↑ 通胀↓'},
+    {growth:'up', inflation:'up', label:'增长↑ 通胀↑'},
+    {growth:'down', inflation:'up', label:'增长↓ 通胀↑'},
+    {growth:'down', inflation:'down', label:'增长↓ 通胀↓'},
+  ];
+
 
   // ========== Utilities ==========
   function tooltipConfig() {
@@ -120,7 +138,7 @@ const CycleV3Module = (() => {
   }
 
   /** 改进点#1: 大债务周期 Layer 0 */
-  function renderDebtCycle(layer) {
+  function renderConstraintDebt(layer) {
     if (!layer) return '';
     const renderRegion = (r, key) => {
       if (!r) return '';
@@ -166,6 +184,7 @@ const CycleV3Module = (() => {
     return `
     <section class="v3-section" id="section-debt-cycle">
       <h2 class="section-title"> 达里奥·大债务周期 <span class="section-subtitle">第0层 · 约束层</span></h2>
+      ${layer.constraint_triggered ? '<div class="constraint-warning" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:8px;padding:10px 14px;margin-bottom:12px;color:#fca5a5;font-size:13px;">⚠️ 债务约束生效：所有量化层bullish信号已降级为cautious_bullish，共识度上限60分</div>' : ''}
       <p class="section-desc">${escapeHtml(layer.description||'')}</p>
       <div class="regions-row">
         ${renderRegion(layer.us, 'us')}
@@ -237,7 +256,7 @@ const CycleV3Module = (() => {
   }
 
   /** 改进点#10 + #18: 康波 with TFP chart + percentile bands */
-  function renderKondratieff(layer) {
+  function renderNarrativeKondratieff(layer) {
     if (!layer) return '';
     const cnTfp = layer.indicators?.tfp_growth?.cn;
     const usTfp = layer.indicators?.tfp_growth?.us;
@@ -272,11 +291,12 @@ const CycleV3Module = (() => {
       </div>
       <div class="waves-timeline">${historyWaves}</div>
       ${renderCommodityFramework(layer)}
+      ${renderCommodityForecast(layer.commodity_forecast)}
     </section>`;
   }
 
   /** 改进点#8 + #19 + #22: 佩雷斯 with Turning Point + threshold_params */
-  function renderPerez(layer) {
+  function renderNarrativePerez(layer) {
     if (!layer) return '';
     const tpSignals = (layer.turning_point_signals||[]).map(s => {
       const color = s.status==='green'?'#10b981':s.status==='yellow'?'#f59e0b':'#ef4444';
@@ -323,7 +343,7 @@ const CycleV3Module = (() => {
   }
 
   /** 改进点#2: 高利率时代跟踪 */
-  function renderRateRegime(layer, highRateTracker) {
+  function renderConstraintRate(layer, highRateTracker) {
     if (!layer && !highRateTracker) return '';
     const allIndicators = [];
     ['structural','forward_looking','market_based'].forEach(group => {
@@ -414,6 +434,7 @@ const CycleV3Module = (() => {
     return `
     <section class="v3-section" id="section-rate-regime">
       <h2 class="section-title"> 高利率时代跟踪<span class="section-subtitle">第3层</span></h2>
+      ${layer?.regime_state ? renderRegimeStateBadge(layer.regime_state) : ''}
       ${assessment}
       ${gridHtml}
       ${scenarioHtml}
@@ -457,46 +478,6 @@ const CycleV3Module = (() => {
         ${r.key_driver?`<div class="driver-box">🔑 ${escapeHtml(r.key_driver)}</div>`:''}
         ${r.evidence?`<div class="evidence-box"><h4>证据</h4><ul>${r.evidence.map(e=>`<li>${escapeHtml(e)}</li>`).join('')}</ul></div>`:''}
         ${r.investment_advice?`<div class="advice-box"><h4>配置建议</h4><ul>${r.investment_advice.map(a=>`<li>${escapeHtml(a)}</li>`).join('')}</ul></div>`:''}
-      </div>`;
-    };
-    return renderRegion(layer.us, 'us') + renderRegion(layer.cn, 'cn');
-  }
-
-  /** 美林时钟 with quadrant_trajectory */
-  function renderMerrill(layer) {
-    if (!layer) return '';
-    const renderRegion = (r, key) => {
-      if (!r) return '';
-      const swColor = signalColor(r.signal_weight > 0 ? 'bullish' : r.signal_weight < 0 ? 'bearish' : 'neutral');
-      const trajectory = r.quadrant_trajectory || [];
-      let trajHtml = '';
-      if (trajectory.length > 0) {
-        trajHtml = `<div class="trajectory-box"><h4>美林时钟轨迹</h4><div class="trajectory-chain">${
-          trajectory.map(t => `<span class="traj-node"><span class="traj-label">${escapeHtml(t.label||'')}</span>${escapeHtml(t.quadrant)} <span class="traj-period">${escapeHtml(t.start||'')}→${escapeHtml(t.end||'至今')}</span></span>`).join(' → ')
-        }</div></div>`;
-      }
-      const indicators = r.indicators || {};
-      const indHtml = Object.entries(indicators).map(([k, ind]) => {
-        const f = freshnessBadge(ind.last_updated, ind.frequency);
-        const merrillSourceUrl = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
-        return `
-        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
-          <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
-          <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
-          <div id="chart-merrill-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
-          ${merrillSourceUrl}
-        </div>`;
-      }).join('');
-      return `
-      <div class="region-card">
-        <div class="region-header">
-          <span class="region-flag">${key==='us'?'🇺🇸':'🇨🇳'}</span>
-          <span class="region-name">${key==='us'?'美国':'中国'}</span>
-          <span class="region-phase">${escapeHtml(r.current_phase||'')}</span>
-          <span class="signal-weight-badge" style="color:${swColor}">${r.signal_weight>0?'+':''}${r.signal_weight}</span>
-        </div>
-        ${trajHtml}
-        <div class="indicators-grid">${indHtml}</div>
       </div>`;
     };
     return renderRegion(layer.us, 'us') + renderRegion(layer.cn, 'cn');
@@ -565,40 +546,6 @@ const CycleV3Module = (() => {
     </section>`;
   }
 
-  /** 改进点#3: 共识度评分卡 - 详细版本 */
-  function renderConsensus(consensus) {
-    if (!consensus) return '';
-    const score = consensus.score || 0;
-    const scoreColor = score >= 70 ? '#10b981' : score >= 50 ? '#f59e0b' : score >= 30 ? '#f97316' : '#ef4444';
-    const scenario = consensus.scenario || '--';
-    const dims = consensus.dimension_scores || [];
-    const dimRows = dims.map(d => {
-      const sw = d.score ?? d.us_score ?? 0;
-      const swColor = sw > 0 ? '#10b981' : sw < 0 ? '#ef4444' : '#6b7280';
-      return `<tr>
-        <td>${d.layer!=null?'L'+d.layer+' · ':''} ${escapeHtml(d.dimension)}</td>
-        <td style="color:${swColor};font-weight:600">${sw>0?'+':''}${sw}</td>
-        <td>×${d.weight||1}</td>
-        <td style="font-weight:600">${d.weighted_score>0?'+':''}${fmtNum(d.weighted_score)}</td>
-      </tr>`;
-    }).join('');
-    return `
-    <section class="v3-section" id="section-consensus">
-      <h2 class="section-title">🎯 周期共识度评分卡<span class="section-subtitle">分数+情景双轨制</span></h2>
-      <div class="consensus-header">
-        <div class="consensus-score" style="color:${scoreColor}">${score}</div>
-        <div class="consensus-info">
-          <div class="consensus-score-label">${getScoreLabel(score)}</div>
-          <div class="consensus-scenario">情景: <strong>${escapeHtml(scenario)}</strong> - ${escapeHtml(consensus.scenario_description||'')}</div>
-          <div class="consensus-date">${freshnessBadge(consensus.last_updated)} ${consensus.last_updated||''}</div>
-        </div>
-      </div>
-      <table class="dimension-table">
-        <thead><tr><th>维度</th><th>信号</th><th>权重</th><th>加权</th></tr></thead>
-        <tbody>${dimRows}</tbody>
-      </table>
-    </section>`;
-  }
   function getScoreLabel(s) {
     if (s>=80) return '强烈看多（黄金时代）';
     if (s>=60) return '温和看多（结构性机会）';
@@ -646,6 +593,13 @@ const CycleV3Module = (() => {
     if (!allocation) return '';
     const current = allocation.current || [];
     const cards = current.map(a => {
+      // Phase 2B: Handle empty placeholder objects (e.g. 中国房地产)
+      if (!a || (!a.asset && !a.signal && !a.view)) {
+        return '<div class="asset-card asset-placeholder" style="border-left:3px solid #374151;opacity:0.6;">' +
+          '<div class="asset-header"><span class="asset-name" style="color:#6b7280;">' + escapeHtml(a?.asset || '待获取') + '</span></div>' +
+          '<div style="color:#6b7280;font-size:13px;padding:12px 0;">📊 数据待获取</div>' +
+          '</div>';
+      }
       const bg = signalBg(a.signal);
       const fg = signalFg(a.signal);
       const f = freshnessBadge(a.last_updated, a.frequency);
@@ -890,11 +844,259 @@ const CycleV3Module = (() => {
     </section>`;
   }
 
+
+  // ========== Phase 2B: New Helper Functions ==========
+
+  /** Render commodity_forecast card (v4 addition to Kondratieff) */
+  function renderCommodityForecast(cf) {
+    if (!cf) return '';
+    return `
+    <div class="cycle-card commodity-forecast" style="border:1px solid #d97706;border-radius:10px;background:linear-gradient(135deg,rgba(217,119,6,0.08),rgba(245,158,11,0.04));padding:16px;margin-top:16px;">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h4 style="margin:0;color:#f59e0b;font-size:15px;">🛢️ 康波视角下的大宗商品</h4>
+        <span class="disclaimer-tag" style="font-size:11px;color:#fbbf24;background:rgba(251,191,36,0.12);padding:2px 8px;border-radius:4px;border:1px solid rgba(251,191,36,0.3);">⚠️ 主观判断·仅供参考</span>
+      </div>
+      <div class="card-body">
+        <p class="phase-label" style="font-size:14px;font-weight:600;color:#fbbf24;margin-bottom:8px;">当前阶段: ${escapeHtml(cf.current_phase||'')} → 商品${escapeHtml(cf.commodity_phase||'')}</p>
+        <p style="color:#e2e8f0;margin-bottom:12px;">${escapeHtml(cf.outlook||'')}</p>
+        <div class="forecast-section" style="margin-bottom:10px;">
+          <h5 style="color:#d97706;font-size:13px;margin-bottom:4px;">中期展望（3-5年）</h5>
+          <p style="color:#cbd5e1;font-size:13px;">${escapeHtml(cf.medium_term_3_5year||'')}</p>
+        </div>
+        <div class="forecast-section" style="margin-bottom:10px;">
+          <h5 style="color:#d97706;font-size:13px;margin-bottom:4px;">交叉验证（vs P2基钦）</h5>
+          <p style="color:#cbd5e1;font-size:13px;">${escapeHtml(cf.cross_validation||'')}</p>
+        </div>
+        <div class="forecast-section">
+          <h5 style="color:#d97706;font-size:13px;margin-bottom:4px;">历史参考</h5>
+          <p style="color:#cbd5e1;font-size:13px;">${escapeHtml(cf.historical_reference||'')}</p>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /** Render regime_state badge for Rate Regime */
+  function renderRegimeStateBadge(rs) {
+    if (!rs) return '';
+    const regime = rs.current_regime || 'normal';
+    const regimeColors = { high_rate:'#ef4444', transition:'#f59e0b', normal:'#10b981' };
+    const regimeLabels = { high_rate:'🔴 高利率', transition:'🟡 过渡期', normal:'🟢 正常' };
+    const color = regimeColors[regime] || '#6b7280';
+    const label = regimeLabels[regime] || regime;
+    const constraintText = rs.constraint_active ? '约束生效中' : '无约束';
+    const constraintColor = rs.constraint_active ? '#ef4444' : '#10b981';
+    return `
+    <div class="regime-badge ${regime}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(${regime==='high_rate'?'239,68,68':regime==='transition'?'245,158,11':'16,185,129'},0.1);border:1px solid ${color};margin-bottom:12px;">
+      <span class="regime-label" style="color:#94a3b8;font-size:12px;">利率环境</span>
+      <span class="regime-value" style="color:${color};font-size:15px;font-weight:700;">${label}</span>
+      <span class="constraint-indicator" style="margin-left:auto;color:${constraintColor};font-size:12px;font-weight:600;padding:3px 10px;border-radius:4px;background:rgba(${rs.constraint_active?'239,68,68,0.12':'16,185,129,0.12'});border:1px solid ${constraintColor}40;">${constraintText}</span>
+    </div>`;
+  }
+
+  /** Phase 2B: Merrill 3D Matrix (4×2 grid) */
+  function renderMerrill3D(layer) {
+    if (!layer) return '';
+
+    // Build 4×2 matrix HTML
+    let matrixHtml = '';
+    // Determine current positions
+    const usG = layer.us?.growth_direction || layer.us?.growth;
+    const usI = layer.us?.inflation_direction || layer.us?.inflation;
+    const usC = layer.us?.credit_direction || layer.us?.credit;
+    const cnG = layer.cn?.growth_direction || layer.cn?.growth;
+    const cnI = layer.cn?.inflation_direction || layer.cn?.inflation;
+    const cnC = layer.cn?.credit_direction || layer.cn?.credit;
+
+    const matchState = (g, i, c) => {
+      if (!g || !i || !c) return null;
+      return MERRILL_3D_STATES.find(s =>
+        s.growth === g && s.inflation === i && s.credit === c
+      ) || null;
+    };
+    const usState = matchState(usG, usI, usC);
+    const cnState = matchState(cnG, cnI, cnC);
+
+    const scoreBg = (score) => {
+      if (score >= 2) return 'rgba(16,185,129,0.25)';
+      if (score >= 1) return 'rgba(16,185,129,0.12)';
+      if (score === 0) return 'rgba(107,114,128,0.15)';
+      if (score >= -1) return 'rgba(239,68,68,0.12)';
+      return 'rgba(239,68,68,0.25)';
+    };
+    const scoreBorder = (score) => {
+      if (score >= 1) return '#10b981';
+      if (score === 0) return '#6b7280';
+      return '#ef4444';
+    };
+
+    let rows = '';
+    MERRILL_MATRIX_ROWS.forEach(row => {
+      let cells = '';
+      ['up','down'].forEach(credit => {
+        const state = MERRILL_3D_STATES.find(s =>
+          s.growth === row.growth && s.inflation === row.inflation && s.credit === credit
+        );
+        if (!state) { cells += '<div class="m3d-cell empty"></div>'; return; }
+        const isUsCur = usState && state.name === usState.name;
+        const isCnCur = cnState && state.name === cnState.name;
+        const isCurrent = isUsCur || isCnCur;
+        const bg = isCurrent ? 'rgba(6,182,212,0.2)' : scoreBg(state.score);
+        const border = isCurrent ? '#06b6d4' : scoreBorder(state.score);
+        const flag = isUsCur && isCnCur ? ' 🇺🇸🇨🇳' : isUsCur ? ' 🇺🇸' : isCnCur ? ' 🇨🇳' : '';
+        const star = isCurrent ? ' ★' : '';
+        cells += `
+        <div class="m3d-cell${isCurrent ? ' m3d-current' : ''}" style="background:${bg};border:2px solid ${border};border-radius:8px;padding:10px;text-align:center;min-height:90px;display:flex;flex-direction:column;justify-content:center;${isCurrent?'box-shadow:0 0 12px rgba(6,182,212,0.4);':''}">
+          <div class="m3d-name" style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:4px;">${escapeHtml(state.name)}${star}</div>
+          <div class="m3d-score" style="font-size:11px;color:${state.score>=0?'#10b981':'#ef4444'};margin-bottom:2px;">Score: ${state.score>0?'+':''}${state.score}</div>
+          <div class="m3d-best" style="font-size:11px;color:#94a3b8;">最优: ${escapeHtml(state.best)}</div>
+          ${flag ? '<div class="m3d-flag" style="font-size:13px;margin-top:4px;">' + flag + '</div>' : ''}
+        </div>`;
+      });
+      rows += `
+      <div class="m3d-row-label" style="display:flex;align-items:center;font-size:11px;color:#94a3b8;font-weight:600;padding-right:8px;white-space:nowrap;">${escapeHtml(row.label)}</div>
+      ${cells}`;
+    });
+
+    matrixHtml = `
+    <div class="merrill-3d-matrix" style="margin-bottom:20px;">
+      <div class="m3d-header" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin-bottom:8px;font-size:12px;font-weight:700;color:#94a3b8;">
+        <div></div>
+        <div style="text-align:center;">信贷↑</div>
+        <div style="text-align:center;">信贷↓</div>
+      </div>
+      <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;">
+        ${rows}
+      </div>
+    </div>`;
+
+    // Render regional detail cards (indicators, trajectory)
+    const renderRegionDetail = (r, key) => {
+      if (!r) return '';
+      const swColor = signalColor(r.signal_weight > 0 ? 'bullish' : r.signal_weight < 0 ? 'bearish' : 'neutral');
+      const trajectory = r.quadrant_trajectory || [];
+      let trajHtml = '';
+      if (trajectory.length > 0) {
+        trajHtml = '<div class="trajectory-box"><h4>美林时钟轨迹</h4><div class="trajectory-chain">' +
+          trajectory.map(t => '<span class="traj-node"><span class="traj-label">' + escapeHtml(t.label||'') + '</span>' + escapeHtml(t.quadrant) + ' <span class="traj-period">' + escapeHtml(t.start||'') + '→' + escapeHtml(t.end||'至今') + '</span></span>').join(' → ') +
+          '</div></div>';
+      }
+      const indicators = r.indicators || {};
+      const indHtml = Object.entries(indicators).map(([k, ind]) => {
+        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const merrillSourceUrl = ind.source_url ? '<a href="' + escapeHtml(ind.source_url) + '" target="_blank" class="source-link">📎 数据来源</a>' : '';
+        return '<div class="indicator-card ' + getFreshness(ind.last_updated, ind.frequency).cls + '">' +
+          '<div class="ind-header"><span class="ind-name">' + escapeHtml(ind.name) + '</span>' + f + '</div>' +
+          '<div class="ind-value">' + fmtNum(ind.current) + ' <span class="ind-unit">' + escapeHtml(ind.unit||'') + '</span></div>' +
+          '<div id="chart-merrill-' + key + '-' + k + '" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>' +
+          merrillSourceUrl +
+          '</div>';
+      }).join('');
+      return '<div class="region-card">' +
+        '<div class="region-header">' +
+          '<span class="region-flag">' + (key==='us'?'🇺🇸':'🇨🇳') + '</span>' +
+          '<span class="region-name">' + (key==='us'?'美国':'中国') + '</span>' +
+          '<span class="region-phase">' + escapeHtml(r.current_phase||'') + '</span>' +
+          '<span class="signal-weight-badge" style="color:' + swColor + '">' + (r.signal_weight>0?'+':'') + r.signal_weight + '</span>' +
+        '</div>' +
+        trajHtml +
+        '<div class="indicators-grid">' + indHtml + '</div>' +
+        '</div>';
+    };
+
+    return matrixHtml + renderRegionDetail(layer.us, 'us') + renderRegionDetail(layer.cn, 'cn');
+  }
+
+  /** Phase 2B: renderConsensus rewritten for v4 3-dimension scoring */
+  function renderConsensus(consensus) {
+    if (!consensus) return '';
+    const scoreData = consensus.score || {};
+    const usScore = scoreData.us ?? scoreData.us_raw ?? 0;
+    const cnScore = scoreData.cn ?? scoreData.cn_raw ?? 0;
+    const avgScore = typeof scoreData.us === 'number' && typeof scoreData.cn === 'number'
+      ? ((scoreData.us + scoreData.cn) / 2) : (usScore + cnScore) / 2;
+    const scoreColor = avgScore >= 70 ? '#10b981' : avgScore >= 50 ? '#f59e0b' : avgScore >= 30 ? '#f97316' : '#ef4444';
+
+    const dims = consensus.dimension_scores || [];
+    const dimRows = dims.map(d => {
+      const usS = d.us_score ?? d.us_raw ?? 0;
+      const cnS = d.cn_score ?? d.cn_raw ?? 0;
+      const w = d.weight || 0;
+      const weighted = d.weighted_score ?? ((usS * w + cnS * w) / 200).toFixed(2);
+      return '<tr>' +
+        '<td>' + escapeHtml(d.dimension) + '</td>' +
+        '<td style="text-align:center;color:#60a5fa;">' + fmtNum(usS, 1) + '</td>' +
+        '<td style="text-align:center;color:#f87171;">' + fmtNum(cnS, 1) + '</td>' +
+        '<td style="text-align:center;">' + (w * 100) + '%</td>' +
+        '<td style="text-align:right;font-weight:600;">' + fmtNum(weighted, 2) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    // constraint_override info
+    const rules = consensus.scoring_rules || {};
+    const co = rules.constraint_override || {};
+    let constraintHtml = '';
+    if (co.active || co.triggered) {
+      const notes = (co.notes || co.description || []);
+      const notesArr = Array.isArray(notes) ? notes : [notes];
+      constraintHtml = '<div class="constraint-override-box" style="margin-top:16px;padding:12px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid #ef4444;">' +
+        '<h4 style="color:#fca5a5;margin-bottom:8px;">⚠️ 约束覆盖生效</h4>' +
+        '<p style="color:#e2e8f0;font-size:13px;">' + escapeHtml(co.description || co.reason || 'C1/C2约束层生效，量化信号已降级') + '</p>' +
+        (notesArr.length ? '<ul style="margin-top:6px;">' + notesArr.map(n => '<li style="color:#fca5a5;font-size:12px;">' + escapeHtml(n) + '</li>').join('') + '</ul>' : '') +
+        '</div>';
+    }
+
+    // narrative_notes (N1/N2)
+    const narrativeNotes = consensus.narrative_notes || {};
+    let narrativeHtml = '';
+    const noteKeys = Object.keys(narrativeNotes);
+    if (noteKeys.length > 0) {
+      const noteCards = noteKeys.map(k => {
+        const note = narrativeNotes[k];
+        const noteText = typeof note === 'string' ? note : (note.text || note.content || note.assessment || '');
+        const noteTitle = k.replace(/_/g, ' ').replace(/^N\d+\s*/, '');
+        return '<div class="narrative-note-card" style="padding:10px;border-radius:8px;background:rgba(139,92,246,0.08);border:1px solid #8b5cf640;margin-bottom:8px;">' +
+          '<div style="font-size:12px;font-weight:700;color:#a78bfa;margin-bottom:4px;">' + escapeHtml(k) + '</div>' +
+          '<p style="font-size:13px;color:#cbd5e1;margin:0;">' + escapeHtml(noteText) + '</p>' +
+          '</div>';
+      }).join('');
+      narrativeHtml = '<div class="narrative-notes-section" style="margin-top:16px;">' +
+        '<h4 style="color:#a78bfa;margin-bottom:10px;">📝 定性判断备注</h4>' +
+        noteCards +
+        '</div>';
+    }
+
+    return '<section class="v3-section" id="section-consensus">' +
+      '<h2 class="section-title">🎯 周期共识度评分卡<span class="section-subtitle">3维量化评分</span></h2>' +
+      '<div class="consensus-header" style="display:flex;align-items:center;gap:20px;margin-bottom:16px;">' +
+        '<div class="consensus-score" style="font-size:36px;font-weight:800;color:' + scoreColor + ';">' + fmtNum(avgScore, 1) + '</div>' +
+        '<div class="consensus-info">' +
+          '<div style="display:flex;gap:16px;margin-bottom:4px;">' +
+            '<span style="color:#60a5fa;font-size:14px;">🇺🇸 US: <strong>' + fmtNum(usScore, 1) + '</strong></span>' +
+            '<span style="color:#f87171;font-size:14px;">🇨🇳 CN: <strong>' + fmtNum(cnScore, 1) + '</strong></span>' +
+          '</div>' +
+          '<div style="font-size:12px;color:#94a3b8;">' + freshnessBadge(consensus.last_updated) + ' ' + (consensus.last_updated || '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<table class="dimension-table" style="width:100%;border-collapse:collapse;font-size:13px;">' +
+        '<thead><tr style="border-bottom:1px solid #334155;">' +
+          '<th style="text-align:left;padding:8px;color:#94a3b8;">维度</th>' +
+          '<th style="text-align:center;padding:8px;color:#60a5fa;">🇺🇸 US</th>' +
+          '<th style="text-align:center;padding:8px;color:#f87171;">🇨🇳 CN</th>' +
+          '<th style="text-align:center;padding:8px;color:#94a3b8;">权重</th>' +
+          '<th style="text-align:right;padding:8px;color:#94a3b8;">加权得分</th>' +
+        '</tr></thead>' +
+        '<tbody>' + dimRows + '</tbody>' +
+      '</table>' +
+      constraintHtml +
+      narrativeHtml +
+    '</section>';
+  }
+
   // ========== Chart Rendering ==========
   function renderCharts(data) {
     // TFP chart (Kondratieff)
-    const cnTfp = data.cycle_layers?.layer_1_kondratieff?.indicators?.tfp_growth?.cn;
-    const usTfp = data.cycle_layers?.layer_1_kondratieff?.indicators?.tfp_growth?.us;
+    const cnTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.cn;
+    const usTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.us;
     if (cnTfp?.history?.length) {
       const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[h.date, h.value]), type:'line', smooth:true,
         lineStyle:{width:2}, itemStyle:{color:'#3b82f6'},
@@ -926,7 +1128,7 @@ const CycleV3Module = (() => {
     }
 
     // Perez key_ratio chart
-    const kr = data.cycle_layers?.layer_2_perez?.key_ratio;
+    const kr = data.cycle_layers?.narrative_perez?.key_ratio;
     if (kr?.history?.length) {
       const tp = kr.threshold_params || {};
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
@@ -964,7 +1166,7 @@ const CycleV3Module = (() => {
     });
 
     // G-07: Layer 3 Rate Regime sparkline charts
-    const layer3 = data.cycle_layers?.layer_3_rate_regime;
+    const layer3 = data.cycle_layers?.constraint_rate_regime;
     if (layer3) {
       ['structural', 'forward_looking', 'market_based'].forEach(groupName => {
         const groupData = layer3[groupName];
@@ -1021,11 +1223,11 @@ const CycleV3Module = (() => {
 
     // Juglar/Kitchin/Merrill indicator charts
     const layerPrefixMap = {
-      'layer_4_juglar': 'juglar',
-      'layer_5_kitchner': 'kitchner',
-      'layer_6_merrill': 'merrill'
+      'cycle_juglar': 'juglar',
+      'cycle_kitchin': 'kitchin',
+      'cycle_merrill_3d': 'merrill'
     };
-    ['layer_4_juglar','layer_5_kitchner','layer_6_merrill'].forEach(layerKey => {
+    ['cycle_juglar','cycle_kitchin','cycle_merrill_3d'].forEach(layerKey => {
       const layer = data.cycle_layers?.[layerKey];
       if (!layer) return;
       const prefix = layerPrefixMap[layerKey] || 'juglar';
@@ -1070,7 +1272,7 @@ const CycleV3Module = (() => {
     const allocation = data.asset_allocation || null;
     const synthesis = data.synthesis || null;
     const creditImpulse = data.credit_impulse || null;
-    const consensus = data.cycle_consensus || null;
+    const consensus = data.cross_analysis?.consensus || data.cycle_consensus || null;
 
     let html = '';
     // Meta header
@@ -1080,32 +1282,32 @@ const CycleV3Module = (() => {
       html += renderConsensusSummary(consensus);
     }
     // Layer 0: Debt Cycle
-    html += renderDebtCycle(layers.layer_0_debt_cycle);
+    html += renderConstraintDebt(layers.constraint_debt_cycle);
     // Layer 1: Kondratieff
-    html += renderKondratieff(layers.layer_1_kondratieff);
+    html += renderNarrativeKondratieff(layers.narrative_kondratieff);
     // Layer 2: Perez
-    html += renderPerez(layers.layer_2_perez);
+    html += renderNarrativePerez(layers.narrative_perez);
     // ★ 中美周期错位表（移到评分卡下方）
     html += renderUsChinaMatrix(cross.us_china_matrix);
     // Layer 3: Rate Regime + High Rate Tracker
-    html += renderRateRegime(layers.layer_3_rate_regime, cross.high_rate_tracker);
+    html += renderConstraintRate(layers.constraint_rate_regime, cross.high_rate_tracker);
     // Layer 4: Juglar
     html += `
     <section class="v3-section" id="section-juglar">
       <h2 class="section-title">⚙️ 朱格拉周期<span class="section-subtitle">第4层</span></h2>
-      <div class="regions-row">${renderJuglar(layers.layer_4_juglar)}</div>
+      <div class="regions-row">${renderJuglar(layers.cycle_juglar)}</div>
     </section>`;
     // Layer 5: Kitchner
     html += `
-    <section class="v3-section" id="section-kitchner">
+    <section class="v3-section" id="section-kitchin">
       <h2 class="section-title">📦 基钦周期<span class="section-subtitle">第5层</span></h2>
-      <div class="regions-row">${renderJuglar(layers.layer_5_kitchner, 'kitchner')}</div>
+      <div class="regions-row">${renderJuglar(layers.cycle_kitchin, 'kitchin')}</div>
     </section>`;
     // Layer 6: Merrill
     html += `
     <section class="v3-section" id="section-merrill">
-      <h2 class="section-title">🕐 美林时钟<span class="section-subtitle">第6层</span></h2>
-      <div class="regions-row">${renderMerrill(layers.layer_6_merrill)}</div>
+      <h2 class="section-title">🕐 美林时钟 3D（增长×通胀×信贷）<span class="section-subtitle">第6层</span></h2>
+      <div class="regions-row">${renderMerrill3D(layers.cycle_merrill_3d)}</div>
     </section>`;
     // Credit Impulse (#9)
     html += renderCreditImpulse(creditImpulse);
