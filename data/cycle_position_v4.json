@@ -14731,7 +14731,8 @@
         "position": "美:晚期去杠杆 / 中:结构性去杠杆",
         "signal": "约束层",
         "signal_weight": -2,
-        "color": "#f59e0b"
+        "color": "#f59e0b",
+        "phase": "美:晚期去杠杆 / 中:结构性去杠杆"
       },
       {
         "cycle": "康波",
@@ -14739,7 +14740,8 @@
         "position": "萧条尾声→回升初期",
         "signal": "看多新科技",
         "signal_weight": 2,
-        "color": "#10b981"
+        "color": "#10b981",
+        "phase": "萧条尾声→回升初期"
       },
       {
         "cycle": "佩雷斯",
@@ -14747,7 +14749,8 @@
         "position": "Frenzy中后期",
         "signal": "谨慎",
         "signal_weight": -1,
-        "color": "#f59e0b"
+        "color": "#f59e0b",
+        "phase": "Frenzy中后期"
       },
       {
         "cycle": "利率范式",
@@ -14755,7 +14758,8 @@
         "position": "高利率过渡",
         "signal": "偏空",
         "signal_weight": -1,
-        "color": "#ef4444"
+        "color": "#ef4444",
+        "phase": "高利率过渡"
       },
       {
         "cycle": "朱格拉·美",
@@ -14763,7 +14767,8 @@
         "position": "上升段（AI驱动）",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981"
+        "color": "#10b981",
+        "phase": "上升段（AI驱动）"
       },
       {
         "cycle": "朱格拉·中",
@@ -14771,7 +14776,8 @@
         "position": "上升初期",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981"
+        "color": "#10b981",
+        "phase": "上升初期"
       },
       {
         "cycle": "基钦·美",
@@ -14779,7 +14785,8 @@
         "position": "主动补库中期",
         "signal": "温和看多",
         "signal_weight": 2,
-        "color": "#84cc16"
+        "color": "#84cc16",
+        "phase": "主动补库中期"
       },
       {
         "cycle": "基钦·中",
@@ -14787,7 +14794,8 @@
         "position": "K型补库",
         "signal": "温和看多",
         "signal_weight": 1,
-        "color": "#84cc16"
+        "color": "#84cc16",
+        "phase": "K型补库"
       },
       {
         "cycle": "美林·美",
@@ -14795,7 +14803,8 @@
         "position": "复苏→过热",
         "signal": "谨慎",
         "signal_weight": 1,
-        "color": "#fef3c7"
+        "color": "#fef3c7",
+        "phase": "复苏→过热"
       },
       {
         "cycle": "美林·中",
@@ -14803,7 +14812,8 @@
         "position": "复苏中期",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981"
+        "color": "#10b981",
+        "phase": "复苏中期"
       }
     ],
     "asset_views": [
