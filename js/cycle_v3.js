@@ -57,6 +57,19 @@ const CycleV3Module = (() => {
     {growth:'down', inflation:'down', label:'增长↓ 通胀↓'},
   ];
 
+  // Phase 3: Asset ranking per Merrill 3D state (based on Merrill Lynch Investment Clock paper)
+  const STATE_ASSET_RANKING = {
+    '金发女孩复苏':   {stocks:'★★★', bonds:'★★', commodities:'★', gold:'★', cash:'☆', re:'★★', credit:'★★★', fx_domestic:'★★'},
+    '无信贷支撑复苏': {stocks:'★★', bonds:'★', commodities:'★★', gold:'★', cash:'☆', re:'★★', credit:'★★', fx_domestic:'★'},
+    '过热':           {stocks:'★★', bonds:'★', commodities:'★★★', gold:'★★', cash:'☆', re:'★', credit:'★', fx_domestic:'☆'},
+    '滞胀前兆':       {stocks:'☆', bonds:'★', commodities:'★★', gold:'★★', cash:'★★★', re:'☆', credit:'☆', fx_domestic:'★★'},
+    '信贷驱动通胀':   {stocks:'★', bonds:'☆', commodities:'★★★', gold:'★★★', cash:'☆', re:'★', credit:'☆', fx_domestic:'☆'},
+    '滞胀':           {stocks:'☆', bonds:'★', commodities:'★★', gold:'★★★', cash:'★★', re:'☆', credit:'☆', fx_domestic:'☆'},
+    '信贷宽松实体弱': {stocks:'★★', bonds:'★★★', commodities:'☆', gold:'★', cash:'★', re:'☆', credit:'★★', fx_domestic:'★'},
+    '衰退':           {stocks:'☆', bonds:'★★★', commodities:'☆', gold:'★★', cash:'★★★', re:'☆', credit:'★', fx_domestic:'★★'}
+  };
+  const ASSET_LABELS = {stocks:'股票', bonds:'债券', commodities:'商品', gold:'黄金', cash:'现金', re:'房地产', credit:'信用债', fx_domestic:'本币'};
+
 
   // ========== Utilities ==========
   function tooltipConfig() {
@@ -944,13 +957,27 @@ const CycleV3Module = (() => {
         const border = isCurrent ? '#06b6d4' : scoreBorder(state.score);
         const flag = isUsCur && isCnCur ? ' 🇺🇸🇨🇳' : isUsCur ? ' 🇺🇸' : isCnCur ? ' 🇨🇳' : '';
         const star = isCurrent ? ' ★' : '';
-        cells += `
-        <div class="m3d-cell${isCurrent ? ' m3d-current' : ''}" style="background:${bg};border:2px solid ${border};border-radius:8px;padding:10px;text-align:center;min-height:90px;display:flex;flex-direction:column;justify-content:center;${isCurrent?'box-shadow:0 0 12px rgba(6,182,212,0.4);':''}">
-          <div class="m3d-name" style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:4px;">${escapeHtml(state.name)}${star}</div>
-          <div class="m3d-score" style="font-size:11px;color:${state.score>=0?'#10b981':'#ef4444'};margin-bottom:2px;">Score: ${state.score>0?'+':''}${state.score}</div>
-          <div class="m3d-best" style="font-size:11px;color:#94a3b8;">最优: ${escapeHtml(state.best)}</div>
-          ${flag ? '<div class="m3d-flag" style="font-size:13px;margin-top:4px;">' + flag + '</div>' : ''}
-        </div>`;
+        // Phase 3: Tooltip + onclick + pulse
+        const ranking = STATE_ASSET_RANKING[state.name] || {};
+        const rankLines = Object.entries(ranking).map(function(e){ return (ASSET_LABELS[e[0]]||e[0]) + ':' + e[1]; }).join(' | ');
+        const scoreMeaning = state.score > 0 ? '看多' : state.score < 0 ? '看空' : '中性';
+        const tooltipText = escapeHtml(state.name) + '\n' +
+          '增长:' + (state.growth==='up'?'↑':'↓') + ' 通胀:' + (state.inflation==='up'?'↑':'↓') + ' 信贷:' + (state.credit==='up'?'↑':'↓') + '\n' +
+          'Score: ' + (state.score>0?'+':'') + state.score + ' (' + scoreMeaning + ')\n' +
+          '最优: ' + escapeHtml(state.best) + '\n' +
+          '资产排名: ' + escapeHtml(rankLines);
+        const pulseClass = isCurrent ? ' m3d-pulse' : '';
+        const currentGlow = isCurrent ? 'box-shadow:0 0 12px rgba(6,182,212,0.4);' : '';
+        cells += '<div class="m3d-cell' + (isCurrent ? ' m3d-current' : '') + pulseClass + '"' +
+          ' title="' + tooltipText + '"' +
+          ' onclick="window._merrillDetail(\'' + escapeHtml(state.name).replace(/'/g, "\\'") + '\')"' +
+          ' style="background:' + bg + ';border:2px solid ' + border + ';border-radius:8px;padding:10px;text-align:center;min-height:90px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:transform 0.2s;' + currentGlow + '"' +
+          ' onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'">' +
+          '<div class="m3d-name" style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:4px;">' + escapeHtml(state.name) + star + '</div>' +
+          '<div class="m3d-score" style="font-size:11px;color:' + (state.score>=0?'#10b981':'#ef4444') + ';margin-bottom:2px;">Score: ' + (state.score>0?'+':'') + state.score + '</div>' +
+          '<div class="m3d-best" style="font-size:11px;color:#94a3b8;">最优: ' + escapeHtml(state.best) + '</div>' +
+          (flag ? '<div class="m3d-flag" style="font-size:13px;margin-top:4px;">' + flag + '</div>' : '') +
+          '</div>';
       });
       rows += `
       <div class="m3d-row-label" style="display:flex;align-items:center;font-size:11px;color:#94a3b8;font-weight:600;padding-right:8px;white-space:nowrap;">${escapeHtml(row.label)}</div>
@@ -958,6 +985,25 @@ const CycleV3Module = (() => {
     });
 
     matrixHtml = `
+    <style>
+      @keyframes m3d-pulse {
+        0% { box-shadow: 0 0 12px rgba(6,182,212,0.4); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(6,182,212,0.7); transform: scale(1.03); }
+        100% { box-shadow: 0 0 12px rgba(6,182,212,0.4); transform: scale(1); }
+      }
+      .m3d-pulse { animation: m3d-pulse 2s infinite; }
+      .m3d-detail-panel {
+        margin-top: 16px; padding: 16px; border-radius: 10px;
+        background: rgba(17,24,39,0.95); border: 1px solid #334155;
+        display: none; transition: all 0.3s ease;
+      }
+      .m3d-detail-panel.active { display: block; }
+      .m3d-detail-panel h3 { margin: 0 0 12px 0; color: #06b6d4; font-size: 16px; }
+      .m3d-detail-panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .m3d-detail-panel th, .m3d-detail-panel td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #1e293b; }
+      .m3d-detail-panel th { color: #94a3b8; font-weight: 600; }
+      .m3d-traj-chart { width: 100%; height: 280px; margin: 16px 0; }
+    </style>
     <div class="merrill-3d-matrix" style="margin-bottom:20px;">
       <div class="m3d-header" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin-bottom:8px;font-size:12px;font-weight:700;color:#94a3b8;">
         <div></div>
@@ -967,7 +1013,8 @@ const CycleV3Module = (() => {
       <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;">
         ${rows}
       </div>
-    </div>`;
+    </div>
+    <div id="merrill-detail-panel" class="m3d-detail-panel"></div>`;
 
     // Render regional detail cards (indicators, trajectory)
     const renderRegionDetail = (r, key) => {
@@ -976,9 +1023,8 @@ const CycleV3Module = (() => {
       const trajectory = r.quadrant_trajectory || [];
       let trajHtml = '';
       if (trajectory.length > 0) {
-        trajHtml = '<div class="trajectory-box"><h4>美林时钟轨迹</h4><div class="trajectory-chain">' +
-          trajectory.map(t => '<span class="traj-node"><span class="traj-label">' + escapeHtml(t.label||'') + '</span>' + escapeHtml(t.quadrant) + ' <span class="traj-period">' + escapeHtml(t.start||'') + '→' + escapeHtml(t.end||'至今') + '</span></span>').join(' → ') +
-          '</div></div>';
+        trajHtml = '<div class="trajectory-box"><h4>美林时钟轨迹</h4>' +
+          '<div id="m3d-traj-chart-' + key + '" class="m3d-traj-chart"></div></div>';
       }
       const indicators = r.indicators || {};
       const indHtml = Object.entries(indicators).map(([k, ind]) => {
@@ -1003,7 +1049,209 @@ const CycleV3Module = (() => {
         '</div>';
     };
 
-    return matrixHtml + renderRegionDetail(layer.us, 'us') + renderRegionDetail(layer.cn, 'cn');
+    var regionHtml = renderRegionDetail(layer.us, 'us') + renderRegionDetail(layer.cn, 'cn');
+    
+    // Phase 3: Schedule trajectory chart rendering after DOM update
+    setTimeout(function() {
+      if (layer.us && layer.us.quadrant_trajectory && layer.us.quadrant_trajectory.length) {
+        renderMerrillTrajectoryChart('m3d-traj-chart-us', layer.us.quadrant_trajectory, 'us', usState);
+      }
+      if (layer.cn && layer.cn.quadrant_trajectory && layer.cn.quadrant_trajectory.length) {
+        renderMerrillTrajectoryChart('m3d-traj-chart-cn', layer.cn.quadrant_trajectory, 'cn', cnState);
+      }
+    }, 100);
+    
+    return matrixHtml + regionHtml;
+  }
+
+  // Phase 3: ECharts trajectory ring chart
+  function renderMerrillTrajectoryChart(containerId, trajectory, region, currentState) {
+    var el = document.getElementById(containerId);
+    if (!el || !trajectory || trajectory.length === 0) return;
+    var chart = echarts.init(el, null, {renderer:'canvas'});
+    chartInstances.push(chart);
+    
+    var regionLabel = region === 'us' ? '\ud83c\uddfa\ud83c\uddf8 美国' : '\ud83c\udde8\ud83c\uddf3 中国';
+    var stateNames = MERRILL_3D_STATES.map(function(s){ return s.name; });
+    var shortNames = {
+      '金发女孩复苏':'金发复苏','无信贷支撑复苏':'无信贷复苏','过热':'过热',
+      '滞胀前兆':'滞胀前兆','信贷驱动通胀':'信贷通胀','滞胀':'滞胀',
+      '信贷宽松实体弱':'信贷宽松','衰退':'衰退'
+    };
+    
+    // Build nodes (circular layout)
+    var nodes = stateNames.map(function(name, i) {
+      var angle = (i / stateNames.length) * 2 * Math.PI - Math.PI / 2;
+      var x = 50 + 35 * Math.cos(angle);
+      var y = 50 + 35 * Math.sin(angle);
+      var isCur = currentState && currentState.name === name;
+      var stateObj = MERRILL_3D_STATES.find(function(s){ return s.name === name; });
+      return {
+        name: shortNames[name] || name,
+        x: x, y: y,
+        symbolSize: isCur ? 28 : 16,
+        itemStyle: {
+          color: isCur ? '#06b6d4' : (stateObj && stateObj.score >= 0 ? '#10b981' : '#ef4444'),
+          borderColor: isCur ? '#06b6d4' : '#334155',
+          borderWidth: isCur ? 3 : 1,
+          shadowBlur: isCur ? 15 : 0,
+          shadowColor: isCur ? 'rgba(6,182,212,0.6)' : 'transparent'
+        },
+        label: {
+          show: true,
+          fontSize: isCur ? 12 : 10,
+          color: isCur ? '#06b6d4' : '#94a3b8',
+          fontWeight: isCur ? 'bold' : 'normal'
+        },
+        _fullName: name
+      };
+    });
+    
+    // Build edges from trajectory transitions
+    var edges = [];
+    for (var i = 0; i < trajectory.length - 1; i++) {
+      var fromQ = trajectory[i].quadrant;
+      var toQ = trajectory[i + 1].quadrant;
+      var fromShort = shortNames[fromQ] || fromQ;
+      var toShort = shortNames[toQ] || toQ;
+      if (fromShort !== toShort) {
+        edges.push({
+          source: fromShort,
+          target: toShort,
+          lineStyle: {
+            color: '#06b6d4',
+            width: 2,
+            curveness: 0.2,
+            type: 'solid'
+          },
+          symbol: ['none', 'arrow'],
+          symbolSize: 8
+        });
+      }
+    }
+    
+    var option = {
+      title: {
+        text: regionLabel + ' 周期轨迹',
+        left: 'center',
+        top: 5,
+        textStyle: { color: '#e2e8f0', fontSize: 13, fontWeight: '600' }
+      },
+      tooltip: Object.assign({}, tooltipConfig(), {
+        formatter: function(params) {
+          if (params.dataType === 'node') {
+            var fullName = params.data._fullName || params.data.name;
+            var st = MERRILL_3D_STATES.find(function(s){ return s.name === fullName; });
+            if (st) {
+              return '<b>' + escapeHtml(st.name) + '</b><br/>' +
+                '增长:' + (st.growth==='up'?'↑':'↓') + ' 通胀:' + (st.inflation==='up'?'↑':'↓') + ' 信贷:' + (st.credit==='up'?'↑':'↓') + '<br/>' +
+                'Score: ' + (st.score>0?'+':'') + st.score + '<br/>' +
+                '最优: ' + escapeHtml(st.best);
+            }
+          }
+          return params.data.source + ' → ' + params.data.target;
+        }
+      }),
+      series: [{
+        type: 'graph',
+        layout: 'none',
+        coordinateSystem: null,
+        data: nodes,
+        links: edges,
+        roam: false,
+        lineStyle: { opacity: 0.8 },
+        emphasis: {
+          focus: 'adjacency',
+          lineStyle: { width: 3 }
+        }
+      }]
+    };
+    chart.setOption(option);
+  }
+
+  // Phase 3: Global detail panel handler
+  function initMerrillDetailPanel() {
+    if (window._merrillDetail) return;
+    window._merrillDetail = function(stateName) {
+      var panel = document.getElementById('merrill-detail-panel');
+      if (!panel) return;
+      
+      // Toggle if same state clicked
+      if (panel.dataset.state === stateName && panel.classList.contains('active')) {
+        panel.classList.remove('active');
+        panel.dataset.state = '';
+        return;
+      }
+      
+      var state = MERRILL_3D_STATES.find(function(s){ return s.name === stateName; });
+      if (!state) return;
+      
+      var ranking = STATE_ASSET_RANKING[stateName] || {};
+      var scoreMeaning = state.score > 0 ? '看多' : state.score < 0 ? '看空' : '中性';
+      var scoreColor = state.score > 0 ? '#10b981' : state.score < 0 ? '#ef4444' : '#94a3b8';
+      
+      // Asset ranking table
+      var rankRows = Object.entries(ranking).map(function(e) {
+        var label = ASSET_LABELS[e[0]] || e[0];
+        var v = e[1];
+        var color = v === '★★★' ? '#10b981' : v === '★★' ? '#84cc16' : v === '★' ? '#f59e0b' : '#6b7280';
+        return '<tr><td>' + escapeHtml(label) + '</td><td style="color:' + color + ';font-weight:600;">' + escapeHtml(v) + '</td></tr>';
+      }).join('');
+      
+      // Historical trajectory records
+      var trajData = window._merrillData || {};
+      var historyRows = '';
+      ['us', 'cn'].forEach(function(region) {
+        var traj = (trajData[region] && trajData[region].quadrant_trajectory) || [];
+        var regionLabel = region === 'us' ? '\ud83c\uddfa\ud83c\uddf8 美国' : '\ud83c\udde8\ud83c\uddf3 中国';
+        var filtered = traj.filter(function(t){ return t.quadrant === stateName; });
+        filtered.forEach(function(t) {
+          var duration = '--';
+          if (t.start && t.end) {
+            var dMs = new Date(t.end).getTime() - new Date(t.start).getTime();
+            duration = Math.ceil(dMs / (1000*60*60*24)) + '天';
+          } else if (!t.end) {
+            duration = '进行中';
+          }
+          historyRows += '<tr><td>' + regionLabel + '</td><td>' + escapeHtml(t.start || '--') + ' → ' + escapeHtml(t.end || '至今') + '</td><td>' + escapeHtml(duration) + '</td></tr>';
+        });
+      });
+      
+      if (!historyRows) {
+        historyRows = '<tr><td colspan="3" style="text-align:center;color:#64748b;">暂无历史记录</td></tr>';
+      }
+      
+      var html = 
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+          '<h3 style="margin:0;">' + escapeHtml(stateName) + '</h3>' +
+          '<button onclick="document.getElementById(\'merrill-detail-panel\').classList.remove(\'active\');document.getElementById(\'merrill-detail-panel\').dataset.state=\'\'" style="background:none;border:1px solid #475569;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">✕ 关闭</button>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">' +
+          '<div>' +
+            '<h4 style="color:#94a3b8;font-size:13px;margin:0 0 8px 0;">📊 三维方向 & 评分</h4>' +
+            '<div style="font-size:14px;margin-bottom:8px;">' +
+              '<span style="margin-right:12px;">增长: <b style="color:' + (state.growth==='up'?'#10b981':'#ef4444') + '">' + (state.growth==='up'?'↑ 上行':'↓ 下行') + '</b></span>' +
+              '<span style="margin-right:12px;">通胀: <b style="color:' + (state.inflation==='up'?'#ef4444':'#10b981') + '">' + (state.inflation==='up'?'↑ 上行':'↓ 下行') + '</b></span>' +
+              '<span>信贷: <b style="color:' + (state.credit==='up'?'#10b981':'#ef4444') + '">' + (state.credit==='up'?'↑ 上行':'↓ 下行') + '</b></span>' +
+            '</div>' +
+            '<div style="font-size:14px;">Score: <b style="color:' + scoreColor + ';">' + (state.score>0?'+':'') + state.score + ' (' + scoreMeaning + ')</b></div>' +
+            '<div style="font-size:13px;color:#94a3b8;margin-top:4px;">最优资产: ' + escapeHtml(state.best) + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<h4 style="color:#94a3b8;font-size:13px;margin:0 0 8px 0;">🏆 资产配置建议</h4>' +
+            '<table><thead><tr><th>资产</th><th>评级</th></tr></thead><tbody>' + rankRows + '</tbody></table>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:16px;">' +
+          '<h4 style="color:#94a3b8;font-size:13px;margin:0 0 8px 0;">📜 历史进入记录</h4>' +
+          '<table><thead><tr><th>区域</th><th>时间段</th><th>持续时长</th></tr></thead><tbody>' + historyRows + '</tbody></table>' +
+        '</div>';
+      
+      panel.innerHTML = html;
+      panel.classList.add('active');
+      panel.dataset.state = stateName;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
   }
 
   /** Phase 2B: renderConsensus rewritten for v4 3-dimension scoring */
@@ -1319,6 +1567,13 @@ const CycleV3Module = (() => {
     html += renderSynthesis(synthesis);
 
     container.innerHTML = html;
+    
+    // Phase 3: Store Merrill data for detail panel access
+    window._merrillData = {
+      us: (data.cycle_layers && data.cycle_layers.cycle_merrill_3d && data.cycle_layers.cycle_merrill_3d.us) || null,
+      cn: (data.cycle_layers && data.cycle_layers.cycle_merrill_3d && data.cycle_layers.cycle_merrill_3d.cn) || null
+    };
+    initMerrillDetailPanel();
 
     // Render ECharts after DOM update
     requestAnimationFrame(() => { renderCharts(data); });
