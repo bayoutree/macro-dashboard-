@@ -3337,8 +3337,8 @@ function renderExtLiqCards() {
 function renderCycleFreshness() {
   const badge = document.getElementById('cycle-freshness');
   if (!badge) return;
-  const updateTime = '2026-09-01';
-  const data_freshness_score = 78; // from cycle_position_v3.json _meta.data_freshness_score
+  const updateTime = '2026-09-01'; // Will be dynamically loaded
+  const data_freshness_score = 78; // Will be dynamically loaded from cycle_position_v4.json // from cycle_position_v3.json _meta.data_freshness_score
   const freshnessScore = data_freshness_score;
   const daysSince = Math.floor((Date.now() - new Date(updateTime).getTime()) / 86400000);
   badge.textContent = `全球周期: ${updateTime} · 新鲜度 ${freshnessScore}`;
