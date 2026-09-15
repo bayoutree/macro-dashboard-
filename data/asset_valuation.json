@@ -5309,7 +5309,7 @@
   },
   "gold": {
     "price_usd": {
-      "value": null,
+      "value": 4411.0,
       "history": []
     },
     "central_bank_buying": {
@@ -6346,12 +6346,12 @@
   },
   "commodity": {
     "copper": {
-      "price": null,
+      "price": 13542.82086956522,
       "inventory": null,
       "history": []
     },
     "crude_oil": {
-      "brent": null,
+      "brent": 97.26,
       "history": []
     }
   }
