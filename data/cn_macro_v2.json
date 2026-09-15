@@ -2,9 +2,9 @@
   "update_time": "2026-09-15T09:11:31",
   "indicators": {
     "us_ism_pmi": {
-      "current": 48.7,
-      "date": "2025-09-02",
-      "history_count": 669
+      "current": 54.6,
+      "date": "2026-08-01",
+      "history_count": 680
     },
     "hs300": {
       "current": 4480.08,
@@ -30,6 +30,11 @@
     "cn_social_financing": {
       "current": 6245.0,
       "date": "2026-04"
+    },
+    "us_ism_subindexes": {
+      "current": 54.6,
+      "date": "2026-08-01",
+      "note": "ISM Manufacturing sub-indexes from official ISM releases"
     }
   },
   "prices": {
@@ -4095,6 +4100,50 @@
       {
         "date": "2025-09-02",
         "value": 48.7
+      },
+      {
+        "date": "2025-10-01",
+        "value": 48.8
+      },
+      {
+        "date": "2025-11-03",
+        "value": 48.0
+      },
+      {
+        "date": "2025-12-01",
+        "value": 47.9
+      },
+      {
+        "date": "2026-01-02",
+        "value": 52.6
+      },
+      {
+        "date": "2026-02-03",
+        "value": 52.4
+      },
+      {
+        "date": "2026-03-03",
+        "value": 52.7
+      },
+      {
+        "date": "2026-04-01",
+        "value": 52.7
+      },
+      {
+        "date": "2026-05-01",
+        "value": 54.0
+      },
+      {
+        "date": "2026-06-02",
+        "value": 53.3
+      },
+      {
+        "date": "2026-07-01",
+        "value": 55.6
+      },
+      {
+        "date": "2026-08-01",
+        "value": 54.6
       }
     ],
     "cn_industrial_value_added": [
@@ -7987,6 +8036,164 @@
       {
         "date": "2026-04",
         "value": 6245.0
+      }
+    ],
+    "us_ism_subindexes": [
+      {
+        "date": "2025-09",
+        "pmi": 48.9,
+        "new_orders": 48.9,
+        "production": 51.0,
+        "employment": 45.3,
+        "inventories": 47.7,
+        "supplier_deliveries": 52.6,
+        "prices": 61.9,
+        "backlog": 46.2,
+        "exports": 43.0,
+        "imports": 44.7
+      },
+      {
+        "date": "2025-10",
+        "pmi": 48.8,
+        "new_orders": 48.7,
+        "production": 48.7,
+        "employment": 45.8,
+        "inventories": 46.7,
+        "supplier_deliveries": 54.2,
+        "prices": 58.0,
+        "backlog": 47.9,
+        "exports": 44.5,
+        "imports": 45.4
+      },
+      {
+        "date": "2025-11",
+        "pmi": 48.0,
+        "new_orders": 47.3,
+        "production": 51.1,
+        "employment": 44.1,
+        "inventories": 48.5,
+        "supplier_deliveries": 49.3,
+        "prices": 58.5,
+        "backlog": 44.0,
+        "exports": 46.2,
+        "imports": 48.9
+      },
+      {
+        "date": "2025-12",
+        "pmi": 47.9,
+        "new_orders": 47.4,
+        "production": 50.7,
+        "employment": 44.8,
+        "inventories": 45.7,
+        "supplier_deliveries": 50.8,
+        "prices": 58.5,
+        "backlog": 45.8,
+        "exports": 46.8,
+        "imports": 44.6
+      },
+      {
+        "date": "2026-01",
+        "pmi": 52.6,
+        "new_orders": 57.1,
+        "production": 55.9,
+        "employment": 48.1,
+        "inventories": 47.6,
+        "supplier_deliveries": 54.4,
+        "prices": 59.0,
+        "backlog": 51.6,
+        "exports": 50.2,
+        "imports": 50.0
+      },
+      {
+        "date": "2026-02",
+        "pmi": 52.4,
+        "new_orders": 55.8,
+        "production": 53.5,
+        "employment": 48.8,
+        "inventories": 48.8,
+        "supplier_deliveries": 55.1,
+        "prices": 70.5,
+        "backlog": 56.6,
+        "exports": 50.3,
+        "imports": 54.9
+      },
+      {
+        "date": "2026-03",
+        "pmi": 52.7,
+        "new_orders": 53.5,
+        "production": 55.1,
+        "employment": 48.7,
+        "inventories": 47.1,
+        "supplier_deliveries": 58.9,
+        "prices": 78.3,
+        "backlog": 54.4,
+        "exports": 49.9,
+        "imports": 52.6
+      },
+      {
+        "date": "2026-04",
+        "pmi": 52.7,
+        "new_orders": 54.1,
+        "production": 53.4,
+        "employment": 46.4,
+        "inventories": 49.0,
+        "supplier_deliveries": 60.6,
+        "prices": 84.6,
+        "backlog": 51.4,
+        "exports": 47.9,
+        "imports": 50.3
+      },
+      {
+        "date": "2026-05",
+        "pmi": 54.0,
+        "new_orders": 56.8,
+        "production": 54.3,
+        "employment": 48.6,
+        "inventories": 49.9,
+        "supplier_deliveries": 60.6,
+        "prices": 82.1,
+        "backlog": 52.2,
+        "exports": 50.6,
+        "imports": 53.0
+      },
+      {
+        "date": "2026-06",
+        "pmi": 53.3,
+        "new_orders": 56.0,
+        "production": 52.2,
+        "employment": 49.7,
+        "inventories": 51.4,
+        "supplier_deliveries": 57.4,
+        "prices": 73.0,
+        "backlog": 50.5,
+        "exports": 48.5,
+        "imports": 52.9
+      },
+      {
+        "date": "2026-07",
+        "pmi": 55.6,
+        "new_orders": 56.7,
+        "production": 58.5,
+        "employment": 52.8,
+        "inventories": 51.2,
+        "supplier_deliveries": 58.9,
+        "prices": 71.1,
+        "backlog": 55.0,
+        "exports": 53.0,
+        "imports": 55.7
+      },
+      {
+        "date": "2026-08",
+        "pmi": 54.6,
+        "new_orders": 53.7,
+        "production": 58.3,
+        "employment": 51.2,
+        "inventories": 50.6,
+        "supplier_deliveries": 59.3,
+        "prices": 71.1,
+        "backlog": 51.8,
+        "exports": 53.2,
+        "imports": 52.5
       }
     ]
   },
