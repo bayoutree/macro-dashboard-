@@ -1,8 +1,8 @@
 {
-  "update_time": "2026-09-14",
+  "update_time": "2026-09-15",
   "layers": {
     "L1_cycle": {
-      "conclusion": "周期共振: 未知",
+      "conclusion": "周期共振: 被动去库阶段 (P2=+1)",
       "signal": "bullish",
       "assets_impact": {
         "stock": "+",
@@ -12,7 +12,7 @@
       }
     },
     "L2_macro": {
-      "conclusion": "美国GDP增速1.5%；通胀偏高(CPI=3.5398%)；中国制造业收缩；中国GDP增速5.0%",
+      "conclusion": "美国GDP增速1.5%；通胀偏高(CPI=3.5%)；中国制造业收缩；中国GDP增速5.0%",
       "signal": "neutral"
     },
     "L3_valuation": {
@@ -26,19 +26,23 @@
   },
   "allocation": {
     "overweight": [
-      "铜"
+      "SP500",
+      "大宗商品"
     ],
     "market_weight": [
       "黄金",
-      "中国国债",
-      "科技成长股",
-      "美债"
+      "HS300"
     ],
     "underweight": [
-      "美股",
-      "原油",
-      "比特币"
+      "美债长端"
     ]
+  },
+  "allocation_rationale": {
+    "SP500": "被动去库阶段历史表现优异(12M +11.7%, 82%胜率)",
+    "大宗商品": "周期共振利好(12M +15.5%, 64%胜率)",
+    "黄金": "实际利率高位压制，但央行购金支撑",
+    "HS300": "估值中性，等待政策催化",
+    "美债长端": "收益率曲线陡峭化，长端承压"
   },
   "key_risks": [
     "通胀粘性超预期→美联储推迟降息",
