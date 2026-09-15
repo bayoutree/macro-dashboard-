@@ -9,6 +9,8 @@
 
 const CycleV3Module = (() => {
   let chartInstances = [];
+  let resizeHandler = null;
+  let resizeTimer = null;
   const LAYER_MAP = {
     0: 'layer_0_debt_cycle', 1: 'layer_1_kondratieff', 2: 'layer_2_perez',
     3: 'layer_3_rate_regime', 4: 'layer_4_juglar', 5: 'layer_5_kitchner', 6: 'layer_6_merrill'
@@ -419,7 +421,8 @@ const CycleV3Module = (() => {
   }
 
   /** 朱格拉 / 基钦 / 美林 通用渲染 */
-  function renderJuglar(layer) {
+  function renderJuglar(layer, prefix) {
+    prefix = prefix || 'juglar';
     if (!layer) return '';
     const renderRegion = (r, key) => {
       if (!r) return '';
@@ -437,7 +440,7 @@ const CycleV3Module = (() => {
         <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f} ${pctBadge}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
-          <div id="chart-juglar-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
+          <div id="chart-${prefix}-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
           ${juglarSourceUrl}
         </div>`;
       }).join('');
@@ -1017,14 +1020,20 @@ const CycleV3Module = (() => {
     }
 
     // Juglar/Kitchin/Merrill indicator charts
+    const layerPrefixMap = {
+      'layer_4_juglar': 'juglar',
+      'layer_5_kitchner': 'kitchner',
+      'layer_6_merrill': 'merrill'
+    };
     ['layer_4_juglar','layer_5_kitchner','layer_6_merrill'].forEach(layerKey => {
       const layer = data.cycle_layers?.[layerKey];
       if (!layer) return;
+      const prefix = layerPrefixMap[layerKey] || 'juglar';
       ['us','cn'].forEach(regionKey => {
         const r = layer[regionKey];
         if (!r?.indicators) return;
         Object.entries(r.indicators).forEach(([indKey, ind]) => {
-          const chartId = `chart-juglar-${regionKey}-${indKey}`;
+          const chartId = `chart-${prefix}-${regionKey}-${indKey}`;
           const el = document.getElementById(chartId);
           if (!el || !ind.history?.length) return;
           const pct = ind.percentile;
@@ -1090,7 +1099,7 @@ const CycleV3Module = (() => {
     html += `
     <section class="v3-section" id="section-kitchner">
       <h2 class="section-title">📦 基钦周期<span class="section-subtitle">第5层</span></h2>
-      <div class="regions-row">${renderJuglar(layers.layer_5_kitchner)}</div>
+      <div class="regions-row">${renderJuglar(layers.layer_5_kitchner, 'kitchner')}</div>
     </section>`;
     // Layer 6: Merrill
     html += `
@@ -1111,11 +1120,26 @@ const CycleV3Module = (() => {
 
     // Render ECharts after DOM update
     requestAnimationFrame(() => { renderCharts(data); });
+
+    // Debounced resize handler for ECharts
+    if (!resizeHandler) {
+      resizeHandler = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          chartInstances.forEach(c => { try { c.resize(); } catch(e){} });
+        }, 200);
+      };
+      window.addEventListener('resize', resizeHandler);
+    }
   }
 
   function dispose() {
     chartInstances.forEach(c => { try { c.dispose(); } catch(e){} });
     chartInstances = [];
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+      resizeHandler = null;
+    }
   }
 
   return { render, dispose };
