@@ -1346,3 +1346,6 @@ const CycleV3Module = (() => {
 
   return { render, dispose };
 })();
+
+// Expose to global scope
+window.CycleV3Module = CycleV3Module;
