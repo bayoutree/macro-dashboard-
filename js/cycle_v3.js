@@ -82,25 +82,22 @@ const CycleV3Module = (() => {
   function gridConfig(extra={}) {
     return Object.assign({top:36,right:16,bottom:28,left:16,containLabel:true}, extra);
   }
-  function createChart(id, option) {
+  function createChart(id, option, skipSizeCheck) {
     const el = document.getElementById(id);
     if (!el) { console.warn('[Chart] Container not found:', id); return null; }
+    // Dispose existing instance if re-rendering
+    try { var _ei = echarts.getInstanceByDom(el); if (_ei) _ei.dispose(); } catch(e){}
     try {
-      // Ensure container has measurable dimensions
-      if (!el.offsetHeight) {
-        el.style.height = el.style.height || '200px';
-      }
-      // Force synchronous reflow so ECharts reads correct dimensions
+      if (!el.offsetHeight) { el.style.height = el.style.height || '200px'; }
       void el.offsetHeight;
-      if (!el.offsetWidth || !el.offsetHeight) {
-        console.warn('[Chart] Container still zero-size after reflow:', id, el.offsetWidth, 'x', el.offsetHeight);
+      if (!skipSizeCheck && (!el.offsetWidth || !el.offsetHeight)) {
+        console.warn('[Chart] Container zero-size:', id, el.offsetWidth+'x'+el.offsetHeight);
         return null;
       }
-      // Use SVG renderer for better compatibility
       const chart = echarts.init(el, null, {renderer:'svg'});
       chart.setOption(option, true);
       chartInstances.push(chart);
-      console.log('[Chart] ✓ Rendered', id, 'size:', el.offsetWidth, 'x', el.offsetHeight);
+      console.log('[Chart] ✓ Rendered', id, el.offsetWidth+'x'+el.offsetHeight, skipSizeCheck?'(forced)':'');
       return chart;
     } catch(e) {
       console.error('[Chart] Error rendering', id, ':', e.message, e.stack);
@@ -1401,8 +1398,10 @@ const CycleV3Module = (() => {
   let _chartRetryCount = 0;
   const MAX_CHART_RETRIES = 3;
 
-  function renderCharts(data) {
-    console.log('[Charts] renderCharts called. Instances:', chartInstances.length, 'Retry:', _chartRetryCount);
+  function renderCharts(data, _skipSizeCheck, _failedCharts) {
+    _skipSizeCheck = _skipSizeCheck || false;
+    _failedCharts = _failedCharts || new Set();
+    console.log('[Charts] renderCharts called. skipSizeCheck:', _skipSizeCheck, 'Instances:', chartInstances.length);
     const _echartsAvailable = typeof echarts !== 'undefined';
     console.log('[Charts] echarts available:', _echartsAvailable);
 
@@ -1442,10 +1441,9 @@ const CycleV3Module = (() => {
           axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
         series
-      });
-      if (!tfpResult && _chartRetryCount < MAX_CHART_RETRIES) {
-        console.warn('[Charts] TFP chart failed, will retry');
-      }
+      }, _skipSizeCheck);
+      if (!tfpResult) _failedCharts.add('chart-kondratieff-tfp');
+      else _failedCharts.delete('chart-kondratieff-tfp');
     } else {
       console.warn('[Charts] No TFP data to render');
     }
@@ -1473,10 +1471,9 @@ const CycleV3Module = (() => {
         series:[{type:'line',data:kr.history.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
           lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
           markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
-      });
-      if (!perezResult && _chartRetryCount < MAX_CHART_RETRIES) {
-        console.warn('[Charts] Perez chart failed, will retry');
-      }
+      }, _skipSizeCheck);
+      if (!perezResult) _failedCharts.add('chart-perez-ratio');
+      else _failedCharts.delete('chart-perez-ratio');
     } else {
       console.warn('[Charts] No Perez data to render');
     }
@@ -1666,21 +1663,26 @@ const CycleV3Module = (() => {
     };
     initMerrillDetailPanel();
 
-    // Render ECharts after DOM update — use multiple timing strategies
+    // Render ECharts after DOM update — per-chart retry tracking
+    let _failedCharts = new Set();
+    let _retryAttempt = 0;
+
+    function tryRenderCharts(skipSizeCheck) {
+      _failedCharts.clear();
+      renderCharts(data, skipSizeCheck, _failedCharts);
+    }
+
     requestAnimationFrame(() => {
-      renderCharts(data);
-      // If charts still failed, retry with setTimeout delays
-      if (chartInstances.length === 0 && _chartRetryCount < MAX_CHART_RETRIES) {
-        _chartRetryCount++;
-        console.log('[Charts] No charts rendered on first try, retrying in 300ms (attempt', _chartRetryCount, ')');
+      tryRenderCharts(false);
+      if (_failedCharts.size > 0) {
+        console.log('[Charts]', _failedCharts.size, 'chart(s) failed, retry 1 in 500ms:', [..._failedCharts]);
         setTimeout(() => {
-          renderCharts(data);
-          if (chartInstances.length === 0 && _chartRetryCount < MAX_CHART_RETRIES) {
-            _chartRetryCount++;
-            console.log('[Charts] Still no charts, retrying in 800ms (attempt', _chartRetryCount, ')');
-            setTimeout(() => renderCharts(data), 800);
+          tryRenderCharts(false);
+          if (_failedCharts.size > 0) {
+            console.log('[Charts] Still failing, retry 2 in 1500ms (force):', [..._failedCharts]);
+            setTimeout(() => tryRenderCharts(true), 1500);
           }
-        }, 300);
+        }, 500);
       }
     });
 
