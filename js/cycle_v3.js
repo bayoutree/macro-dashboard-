@@ -86,13 +86,24 @@ const CycleV3Module = (() => {
     const el = document.getElementById(id);
     if (!el) { console.warn('[Chart] Container not found:', id); return null; }
     try {
-      if (!el.offsetWidth || !el.offsetHeight) el.style.height = el.style.height || '200px';
-      const chart = echarts.init(el, null, {renderer:'canvas'});
+      // Ensure container has measurable dimensions
+      if (!el.offsetHeight) {
+        el.style.height = el.style.height || '200px';
+      }
+      // Force synchronous reflow so ECharts reads correct dimensions
+      void el.offsetHeight;
+      if (!el.offsetWidth || !el.offsetHeight) {
+        console.warn('[Chart] Container still zero-size after reflow:', id, el.offsetWidth, 'x', el.offsetHeight);
+        return null;
+      }
+      // Use SVG renderer for better compatibility
+      const chart = echarts.init(el, null, {renderer:'svg'});
       chart.setOption(option, true);
       chartInstances.push(chart);
+      console.log('[Chart] ✓ Rendered', id, 'size:', el.offsetWidth, 'x', el.offsetHeight);
       return chart;
     } catch(e) {
-      console.error('[Chart] Error rendering', id, ':', e.message);
+      console.error('[Chart] Error rendering', id, ':', e.message, e.stack);
       return null;
     }
   }
@@ -307,7 +318,7 @@ const CycleV3Module = (() => {
       <h2 class="section-title">🌊 康波（康德拉季耶夫长波）<span class="section-subtitle">第1层</span></h2>
       <div class="phase-banner" style="border-left:4px solid ${COLORS.bullish}">
         <span class="phase-text">${escapeHtml(layer.current_phase||'')}</span>
-        <span class="signal-weight-badge" style="color:${COLORS.bullish}">${layer.signal_weight>0?'+':''}${layer.signal_weight}</span>
+        ${layer.signal_weight != null ? `<span class="signal-weight-badge" style="color:${COLORS.bullish}">${layer.signal_weight>0?'+':''}${layer.signal_weight}</span>` : ''}
         <span class="confidence-badge">${layer.confidence==='high'?'高置信度':layer.confidence==='medium'?'中置信度':'低置信度'}</span>
       </div>
       <div class="usage-box"><strong>投资含义:</strong> ${escapeHtml(layer.investment_usage||'')}</div>
@@ -361,7 +372,7 @@ const CycleV3Module = (() => {
       <h2 class="section-title">🔬 佩雷斯（技术革命周期）<span class="section-subtitle">第2层</span></h2>
       <div class="phase-banner" style="border-left:4px solid ${COLORS.cautious}">
         <span class="phase-text">${escapeHtml(layer.current_phase||'')}</span>
-        <span class="signal-weight-badge" style="color:${COLORS.cautious}">${layer.signal_weight}</span>
+        ${layer.signal_weight != null ? `<span class="signal-weight-badge" style="color:${COLORS.cautious}">${layer.signal_weight}</span>` : ''}
       </div>
       <div class="tp-section">
         <h3 class="tp-title">🚨 Turning Point 预警子模块</h3>
@@ -1386,16 +1397,25 @@ const CycleV3Module = (() => {
   }
 
   // ========== Chart Rendering ==========
+  // Retry mechanism: if charts fail to render, retry after delay
+  let _chartRetryCount = 0;
+  const MAX_CHART_RETRIES = 3;
+
   function renderCharts(data) {
-    console.log('[Charts] renderCharts called. chartInstances:', chartInstances.length);
+    console.log('[Charts] renderCharts called. Instances:', chartInstances.length, 'Retry:', _chartRetryCount);
+    const _echartsAvailable = typeof echarts !== 'undefined';
+    console.log('[Charts] echarts available:', _echartsAvailable);
+
     // TFP chart (Kondratieff)
     const cnTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.cn;
     const usTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.us;
     console.log('[Charts] cnTfp history:', cnTfp?.history?.length, 'usTfp history:', usTfp?.history?.length);
     if (cnTfp?.history?.length) {
       const chartEl = document.getElementById('chart-kondratieff-tfp');
-      console.log('[Charts] TFP chart container:', chartEl ? 'found ('+chartEl.offsetWidth+'x'+chartEl.offsetHeight+')' : 'NOT FOUND');
-      // Helper: convert year-only strings to "YYYY-01-01" for ECharts time axis
+      console.log('[Charts] TFP container:', chartEl ? 'FOUND ('+chartEl.offsetWidth+'x'+chartEl.offsetHeight+')' : 'NOT FOUND');
+      if (!chartEl) {
+        console.error('[Charts] TFP container missing! Section HTML may not have been rendered.');
+      }
       const toDateStr = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
       const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
         lineStyle:{width:2}, itemStyle:{color:'#3b82f6'},
@@ -1405,7 +1425,6 @@ const CycleV3Module = (() => {
         series.push({ name:'美国TFP', data:usTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
           lineStyle:{width:2}, itemStyle:{color:'#8b5cf6'} });
       }
-      // Percentile bands
       let markLines = [];
       if (cnTfp.percentile) {
         const p = cnTfp.percentile;
@@ -1413,7 +1432,7 @@ const CycleV3Module = (() => {
         if (p.p50!=null) markLines.push({lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'},data:[{yAxis:p.p50}]});
         if (p.p75!=null) markLines.push({lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'},data:[{yAxis:p.p75}]});
       }
-      createChart('chart-kondratieff-tfp', {
+      const tfpResult = createChart('chart-kondratieff-tfp', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         legend:{textStyle:{color:COLORS.textSecondary}, top:0},
         grid: gridConfig({top:30}),
@@ -1424,6 +1443,11 @@ const CycleV3Module = (() => {
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
         series
       });
+      if (!tfpResult && _chartRetryCount < MAX_CHART_RETRIES) {
+        console.warn('[Charts] TFP chart failed, will retry');
+      }
+    } else {
+      console.warn('[Charts] No TFP data to render');
     }
 
     // Perez key_ratio chart
@@ -1431,12 +1455,15 @@ const CycleV3Module = (() => {
     console.log('[Charts] Perez key_ratio history:', kr?.history?.length);
     if (kr?.history?.length) {
       const perezEl = document.getElementById('chart-perez-ratio');
-      console.log('[Charts] Perez chart container:', perezEl ? 'found ('+perezEl.offsetWidth+'x'+perezEl.offsetHeight+')' : 'NOT FOUND');
+      console.log('[Charts] Perez container:', perezEl ? 'FOUND ('+perezEl.offsetWidth+'x'+perezEl.offsetHeight+')' : 'NOT FOUND');
+      if (!perezEl) {
+        console.error('[Charts] Perez container missing!');
+      }
       const tp = kr.threshold_params || {};
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
       const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];
       const toDateStr2 = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
-      createChart('chart-perez-ratio', {
+      const perezResult = createChart('chart-perez-ratio', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         grid: gridConfig({top:20}),
         xAxis:{type:'time', axisLine:{lineStyle:{color:COLORS.borderSubtle}},
@@ -1447,6 +1474,11 @@ const CycleV3Module = (() => {
           lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
           markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
       });
+      if (!perezResult && _chartRetryCount < MAX_CHART_RETRIES) {
+        console.warn('[Charts] Perez chart failed, will retry');
+      }
+    } else {
+      console.warn('[Charts] No Perez data to render');
     }
 
     // Credit impulse charts
@@ -1634,8 +1666,23 @@ const CycleV3Module = (() => {
     };
     initMerrillDetailPanel();
 
-    // Render ECharts after DOM update
-    requestAnimationFrame(() => { renderCharts(data); });
+    // Render ECharts after DOM update — use multiple timing strategies
+    requestAnimationFrame(() => {
+      renderCharts(data);
+      // If charts still failed, retry with setTimeout delays
+      if (chartInstances.length === 0 && _chartRetryCount < MAX_CHART_RETRIES) {
+        _chartRetryCount++;
+        console.log('[Charts] No charts rendered on first try, retrying in 300ms (attempt', _chartRetryCount, ')');
+        setTimeout(() => {
+          renderCharts(data);
+          if (chartInstances.length === 0 && _chartRetryCount < MAX_CHART_RETRIES) {
+            _chartRetryCount++;
+            console.log('[Charts] Still no charts, retrying in 800ms (attempt', _chartRetryCount, ')');
+            setTimeout(() => renderCharts(data), 800);
+          }
+        }, 300);
+      }
+    });
 
     // Debounced resize handler for ECharts
     if (!resizeHandler) {
