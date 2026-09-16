@@ -882,7 +882,6 @@
       "name": "康波（康德拉季耶夫长波）",
       "current_phase": "第五轮萧条尾声 → 第六轮回升初期",
       "phase_code": "trough_to_recovery",
-      "signal_weight": 2,
       "confidence": "medium",
       "last_updated": "2026-08-06",
       "investment_usage": "康波决定大类资产的长期战略方向。回升初期利好新科技和新基建。",
@@ -1379,7 +1378,6 @@
       "name": "佩雷斯（技术革命周期）",
       "current_phase": "Frenzy中后期 → Turning Point前兆",
       "phase_code": "frenzy_late",
-      "signal_weight": -1,
       "confidence": "medium",
       "last_updated": "2026-08-06",
       "investment_usage": "Frenzy后期投机泡沫风险上升，Turning Point标志向Deployment过渡。",
@@ -15365,86 +15363,37 @@
     "kitchin": "cycle_layers.cycle_kitchin"
   },
   "cycle_consensus": {
-    "last_updated": "2026-09-01",
-    "overall_score": 68,
-    "overall_assessment": "复苏早期，多周期共振向上",
-    "overall_signal": "bullish",
-    "dimension_scores": [
-      {
-        "dimension": "大债务周期",
-        "us_score": -2,
-        "cn_score": 0,
-        "assessment": "美国晚期去杠杆约束利率敏感资产，中国结构性去杠杆中后期空间较充裕",
-        "signal": "constraint"
+    "last_updated": "2026-09-16",
+    "formula": {
+      "description": "三维度共识度公式（v3.0）",
+      "weights": {
+        "P1_juglar": 0.3,
+        "P2_kitchin": 0.4,
+        "P3_merrill": 0.3
       },
-      {
-        "dimension": "康波长波",
-        "score": 2,
-        "assessment": "第五轮萧条尾声→第六轮回升初期，AI技术突破标志新周期起点",
-        "signal": "bullish"
-      },
-      {
-        "dimension": "佩雷斯技术周期",
-        "score": 1,
-        "assessment": "新技术部署期，TFP开始回升，但旧动能仍在出清",
-        "signal": "cautious_bullish"
-      },
-      {
-        "dimension": "利率体制",
-        "assessment": "高利率时代延续但见顶概率上升",
-        "signal": "neutral"
-      },
-      {
-        "dimension": "朱格拉设备周期",
-        "us_score": 1,
-        "cn_score": 1,
-        "assessment": "中美均处于扩张早期，产能利用率回升",
-        "signal": "bullish"
-      },
-      {
-        "dimension": "基钦库存周期",
-        "us_score": 2,
-        "cn_score": 1,
-        "assessment": "美国主动补库存，中国被动去库存→主动补库存过渡",
-        "signal": "bullish"
-      },
-      {
-        "dimension": "美林时钟",
-        "us_assessment": "复苏期→过热前期",
-        "cn_assessment": "复苏早期",
-        "signal": "bullish"
-      }
-    ],
-    "asset_allocation_summary": {
-      "equity": {
-        "recommendation": "超配",
-        "weight": "60-70%",
-        "rationale": "多周期共振向上，股票风险收益比最优"
-      },
-      "bonds": {
-        "recommendation": "低配",
-        "weight": "15-20%",
-        "rationale": "利率见顶但仍在高位，长久期债券承压"
-      },
-      "commodities": {
-        "recommendation": "超配",
-        "weight": "15-20%",
-        "rationale": "康波回升初期+库存周期补库，商品迎来战略配置窗口"
-      },
-      "cash": {
-        "recommendation": "标配",
-        "weight": "5-10%",
-        "rationale": "保留流动性应对潜在波动"
-      }
+      "raw_calculation": "P1×0.3 + P2×0.4 + P3×0.3",
+      "score_calculation": "(raw + 2) / 4 × 100",
+      "score_range": "0-100, 50=中性, >60偏多, <40偏空"
     },
-    "key_risks": [
-      "美国债务上限博弈可能引发短期流动性冲击",
-      "中国地产风险尚未完全出清",
-      "地缘政治不确定性"
-    ],
-    "cycle_nesting": {
-      "description": "当前处于康波回升初期+佩雷斯部署期+朱格拉扩张早期+基钦补库阶段的四重共振",
-      "interpretation": "大周期向好，中小周期同步向上，是较为难得的多周期共振配置窗口"
+    "united_states": {
+      "scores": {
+        "P1": 2,
+        "P2": 2,
+        "P3": -0.33
+      },
+      "raw_score": 1.3,
+      "consensus_score": 82.5,
+      "interpretation": "偏多（>60）"
+    },
+    "china": {
+      "scores": {
+        "P1": 1,
+        "P2": 2,
+        "P3": 1.67
+      },
+      "raw_score": 1.6,
+      "consensus_score": 90.0,
+      "interpretation": "偏多（>60）"
     }
   },
   "commodity_framework": {
@@ -16425,6 +16374,216 @@
         "final": "neutral",
         "note": "C1降一档，C2不影响"
       }
+    }
+  },
+  "contradiction_status": {
+    "version": "3.0",
+    "last_updated": "2026-09-16",
+    "description": "矛盾信号状态监控（v3.0第五章）",
+    "rules": {
+      "definition": "当P1/P2/P3信号方向不一致时触发矛盾状态",
+      "trigger_conditions": [
+        {
+          "condition": "P1↑且P2↓",
+          "severity": "medium",
+          "action": "标注⚠️周期错位"
+        },
+        {
+          "condition": "P1↓且P2↑",
+          "severity": "medium",
+          "action": "标注⚠️周期错位"
+        },
+        {
+          "condition": "P3与P1/P2主方向相反",
+          "severity": "low",
+          "action": "降低置信度"
+        },
+        {
+          "condition": "transmission_table.contradictory=true",
+          "severity": "high",
+          "action": "触发矛盾状态+防御优先"
+        }
+      ],
+      "default_behavior": "矛盾状态下默认采取防御优先（不超配风险资产）"
+    },
+    "current_status": {
+      "united_states": {
+        "has_contradiction": false,
+        "details": "P1/P2/P3方向一致，无矛盾"
+      },
+      "china": {
+        "has_contradiction": false,
+        "details": "P1/P2/P3方向一致，无矛盾"
+      }
+    },
+    "display_rules": {
+      "show_warning": "当has_contradiction=true时主屏显示⚠️",
+      "warning_message": "⚠️ 周期信号矛盾，数据异常或周期错位",
+      "confidence_adjustment": "矛盾组合的置信度全部降为★"
+    }
+  },
+  "data_quality": {
+    "version": "3.0",
+    "last_updated": "2026-09-16",
+    "description": "数据质量等级标注（v3.0要求）",
+    "quality_levels": {
+      "HIGH": "数据源可靠，更新频率<7天，有交叉验证",
+      "MEDIUM": "数据源可靠，更新频率7-30天，或有轻微缺失",
+      "LOW": "数据源有限，更新频率>30天，或有明显缺失/估算"
+    },
+    "current_quality": {
+      "united_states": {
+        "overall": "HIGH",
+        "details": {
+          "P1_juglar": "HIGH",
+          "P2_kitchin": "HIGH",
+          "P3_merrill": "HIGH",
+          "C1_debt_cycle": "HIGH",
+          "C2_rate_regime": "HIGH"
+        }
+      },
+      "china": {
+        "overall": "MEDIUM",
+        "details": {
+          "P1_juglar": "MEDIUM",
+          "P2_kitchin": "MEDIUM",
+          "P3_merrill": "MEDIUM",
+          "C1_debt_cycle": "LOW",
+          "C2_rate_regime": "LOW"
+        }
+      }
+    },
+    "display_rules": {
+      "color_coding": {
+        "HIGH": "绿色",
+        "MEDIUM": "黄色",
+        "LOW": "红色"
+      },
+      "freshness_indicator": "数据更新时间标注（<7天/7-30天/>30天）"
+    }
+  },
+  "asset_ranking": {
+    "version": "3.0",
+    "last_updated": "2026-09-16",
+    "description": "8资产相对强弱排序（v3.0要求）",
+    "calculation_method": "基于transmission_table当前组合+constraint_degradation降级+data_quality调整",
+    "current_ranking": {
+      "united_states": {
+        "current_combination": {
+          "P1": 2,
+          "P2": 2
+        },
+        "rankings": [
+          {
+            "asset": "gold",
+            "rank": 1,
+            "direction": "up",
+            "reason": "避险+利率下行预期"
+          },
+          {
+            "asset": "us_bond_long",
+            "rank": 2,
+            "direction": "down",
+            "reason": "C2降级，但方向明确"
+          },
+          {
+            "asset": "us_equity",
+            "rank": 3,
+            "direction": "neutral",
+            "reason": "C1降级，方向不明"
+          },
+          {
+            "asset": "commodities",
+            "rank": 4,
+            "direction": "neutral",
+            "reason": "C1降级"
+          },
+          {
+            "asset": "usd",
+            "rank": 5,
+            "direction": "neutral",
+            "reason": "中性"
+          },
+          {
+            "asset": "china_equity",
+            "rank": 6,
+            "direction": "neutral",
+            "reason": "全球信号混合"
+          },
+          {
+            "asset": "china_bond",
+            "rank": 7,
+            "direction": "neutral",
+            "reason": "中性"
+          },
+          {
+            "asset": "china_realestate",
+            "rank": 8,
+            "direction": "neutral",
+            "reason": "中性"
+          }
+        ]
+      },
+      "china": {
+        "current_combination": {
+          "P1": 1,
+          "P2": 2
+        },
+        "rankings": [
+          {
+            "asset": "china_bond",
+            "rank": 1,
+            "direction": "up",
+            "reason": "利率下行预期"
+          },
+          {
+            "asset": "gold",
+            "rank": 2,
+            "direction": "up",
+            "reason": "避险需求"
+          },
+          {
+            "asset": "china_realestate",
+            "rank": 3,
+            "direction": "down",
+            "reason": "需求恶化"
+          },
+          {
+            "asset": "china_equity",
+            "rank": 4,
+            "direction": "down",
+            "reason": "全球需求恶化"
+          },
+          {
+            "asset": "us_bond_long",
+            "rank": 5,
+            "direction": "down",
+            "reason": "利率下行"
+          },
+          {
+            "asset": "commodities",
+            "rank": 6,
+            "direction": "down",
+            "reason": "需求萎缩"
+          },
+          {
+            "asset": "us_equity",
+            "rank": 7,
+            "direction": "neutral",
+            "reason": "方向不明"
+          },
+          {
+            "asset": "usd",
+            "rank": 8,
+            "direction": "neutral",
+            "reason": "中性"
+          }
+        ]
+      }
+    },
+    "display_rules": {
+      "order": "按rank从1到8显示",
+      "highlight": "direction=up的用绿色，down的用红色，neutral用灰色"
     }
   }
 }
