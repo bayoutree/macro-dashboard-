@@ -497,63 +497,86 @@ const CycleV3Module = (() => {
   }
 
 
-  /** 改进点#3: 周期共识度评分卡 - 置顶版本（结论先行） */
+  /** 改进点#3: 周期共识度评分卡 - 置顶版本（结论先行）
+   *  兼容v4结构：cycle_consensus.united_states / .china 各含 p1/p2/p3 score+label */
   function renderConsensusSummary(consensus) {
     if (!consensus) return '';
-    const score = consensus.overall_score || 0;
+
+    // v4 structure: has united_states / china sub-objects
+    const us = consensus.united_states || {};
+    const cn = consensus.china || {};
+    const isV4 = us.consensus_score !== undefined;
+
+    if (isV4) {
+      // === v4 双区域共识卡 ===
+      const scoreColor = (s) => s >= 80 ? '#10b981' : s >= 60 ? '#84cc16' : s >= 40 ? '#f59e0b' : s >= 20 ? '#f97316' : '#ef4444';
+
+      function renderRegionCard(flag, label, d) {
+        const sc = scoreColor(d.consensus_score);
+        const pItems = [
+          { name: 'P1 朱格拉', score: d.p1_score, label: d.p1_label },
+          { name: 'P2 基钦', score: d.p2_score, label: d.p2_label },
+          { name: 'P3 美林', score: d.p3_score, label: d.p3_label }
+        ];
+        const pHtml = pItems.map(p => {
+          const pColor = p.score > 0 ? '#10b981' : p.score < 0 ? '#ef4444' : '#f59e0b';
+          return `<div class="consensus-p-item">
+            <span class="consensus-p-name">${p.name}</span>
+            <span class="consensus-p-score" style="color:${pColor};font-weight:700">${p.score}</span>
+            <span class="consensus-p-label">${escapeHtml(p.label || '')}</span>
+          </div>`;
+        }).join('');
+
+        return `<div class="consensus-region-card">
+          <div class="crc-header">
+            <span class="crc-flag">${flag}</span>
+            <span class="crc-name">${label}</span>
+          </div>
+          <div class="crc-score" style="color:${sc}">${d.consensus_score.toFixed(1)}</div>
+          <div class="crc-signal" style="color:${sc}">${escapeHtml(d.signal || '')}</div>
+          <div class="crc-formula">raw=${d.raw_score.toFixed(1)}</div>
+          <div class="crc-p-grid">${pHtml}</div>
+        </div>`;
+      }
+
+      return `
+      <section class="v3-section consensus-summary-section" id="section-consensus-summary">
+        <div class="consensus-v4-header">
+          <h2 class="section-title">📊 周期共识评分</h2>
+          <span class="consensus-date">📅 ${escapeHtml(consensus.last_updated || '--')}</span>
+        </div>
+        <div class="consensus-formula-bar">${escapeHtml(consensus.formula || '')}</div>
+        <div class="consensus-v4-grid">
+          ${renderRegionCard('🇺🇸', '美国', us)}
+          ${renderRegionCard('🇨🇳', '中国', cn)}
+        </div>
+        <button class="expand-detail-btn" onclick="var el=document.getElementById('section-kondratieff');if(el)el.scrollIntoView({behavior:'smooth'})">
+          📊 查看各周期详细分析 ▾
+        </button>
+      </section>`;
+    }
+
+    // === 旧版 fallback (cross_analysis.consensus) ===
+    const score = consensus.overall_score || consensus.score || 0;
     const scoreColor = score >= 70 ? '#10b981' : score >= 50 ? '#f59e0b' : score >= 30 ? '#f97316' : '#ef4444';
     const signal = consensus.overall_signal || 'neutral';
     const signalColor = signal === 'bullish' ? '#10b981' : signal === 'bearish' ? '#ef4444' : '#f59e0b';
-    
-    const allocation = consensus.asset_allocation_summary || {};
-    const allocCards = Object.entries(allocation).map(([key, item]) => {
-      const emoji = key === 'equity' ? '📈' : key === 'bonds' ? '📊' : key === 'commodities' ? '🛢️' : '💵';
-      return `
-        <div class="consensus-alloc-card">
-          <div class="alloc-emoji">${emoji}</div>
-          <div class="alloc-name">${key === 'equity' ? '股票' : key === 'bonds' ? '债券' : key === 'commodities' ? '商品' : '现金'}</div>
-          <div class="alloc-weight" style="color:${signalColor}">${item.weight || '--'}</div>
-          <div class="alloc-rec">${item.recommendation || ''}</div>
-          <div class="alloc-reason">${item.rationale || ''}</div>
-        </div>`;
-    }).join('');
-    
-    const nesting = consensus.cycle_nesting || {};
-    
+    const assessment = consensus.overall_assessment || consensus.scenario_description || '';
+
     return `
     <section class="v3-section consensus-summary-section" id="section-consensus-summary">
       <div class="consensus-summary-header">
         <div class="consensus-score-block">
-          <div class="consensus-score" style="color:${scoreColor}">${score}</div>
+          <div class="consensus-score" style="color:${scoreColor}">${typeof score === 'number' ? score.toFixed(1) : score}</div>
           <div class="consensus-label">综合周期评分</div>
         </div>
         <div class="consensus-assessment">
-          <div class="assessment-text">${escapeHtml(consensus.overall_assessment || '')}</div>
+          <div class="assessment-text">${escapeHtml(assessment)}</div>
           <div class="assessment-signal" style="color:${signalColor}">信号: ${signal === 'bullish' ? '偏多' : signal === 'bearish' ? '偏空' : '中性'}</div>
         </div>
-        <div class="consensus-date">📅 ${consensus.last_updated || '--'}</div>
+        <div class="consensus-date">📅 ${escapeHtml(consensus.last_updated || '--')}</div>
       </div>
-      
-      <!-- 资产配置建议卡片 -->
-      <div class="consensus-alloc-grid">
-        ${allocCards}
-      </div>
-      
-      <!-- 周期嵌套解读 -->
-      <div class="consensus-nesting-box">
-        <h4>🔄 周期嵌套结构</h4>
-        <p>${escapeHtml(nesting.description || '')}</p>
-        <p class="nesting-interpretation">💡 ${escapeHtml(nesting.interpretation || '')}</p>
-      </div>
-      
-      <!-- 风险提示 -->
-      ${consensus.key_risks?.length ? `
-      <div class="consensus-risks">
-        <h4>⚠️ 关键风险</h4>
-        <ul>${consensus.key_risks.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
-      </div>` : ''}
-      
-      <button class="expand-detail-btn" onclick="document.getElementById('section-consensus-detail')?.scrollIntoView({behavior:'smooth'})">
+      <button class="expand-detail-btn" onclick="var el=document.getElementById('section-kondratieff');if(el)el.scrollIntoView({behavior:'smooth'})">
         📊 查看各周期详细分析 ▾
       </button>
     </section>`;
@@ -1520,7 +1543,7 @@ const CycleV3Module = (() => {
     const allocation = data.asset_allocation || null;
     const synthesis = data.synthesis || null;
     const creditImpulse = data.credit_impulse || null;
-    const consensus = data.cross_analysis?.consensus || data.cycle_consensus || null;
+    const consensus = data.cycle_consensus || data.cross_analysis?.consensus || null;
 
     let html = '';
     // Meta header
@@ -1535,8 +1558,6 @@ const CycleV3Module = (() => {
     html += renderNarrativeKondratieff(layers.narrative_kondratieff);
     // Layer 2: Perez
     html += renderNarrativePerez(layers.narrative_perez);
-    // ★ 中美周期错位表（移到评分卡下方）
-    html += renderUsChinaMatrix(cross.us_china_matrix);
     // Layer 3: Rate Regime + High Rate Tracker
     html += renderConstraintRate(layers.constraint_rate_regime, cross.high_rate_tracker);
     // Layer 4: Juglar
@@ -1555,6 +1576,7 @@ const CycleV3Module = (() => {
     html += `
     <section class="v3-section" id="section-merrill">
       <h2 class="section-title">🕐 美林时钟 3D（增长×通胀×信贷）<span class="section-subtitle">第6层</span></h2>
+      <div class="merrill-combined-label" style="font-size:12px;color:#94a3b8;margin-bottom:8px;">📊 中美综合矩阵（点击单元格查看详情）</div>
       <div class="regions-row">${renderMerrill3D(layers.cycle_merrill_3d)}</div>
     </section>`;
     // Credit Impulse (#9)
@@ -1565,6 +1587,8 @@ const CycleV3Module = (() => {
     html += renderAssetAllocation(allocation);
     // Synthesis
     html += renderSynthesis(synthesis);
+    // ★ 中美周期错位矩阵移到最底部（总结性内容放页面末尾）
+    html += renderUsChinaMatrix(cross.us_china_matrix);
 
     container.innerHTML = html;
     

@@ -471,6 +471,216 @@
     }
   }
 
+  // ========== 9. Cycle Panorama (周期全景图) ==========
+  function renderCyclePanorama(data) {
+    var layers = (data.cycle_layers || {});
+    var ci = data.credit_impulse || {};
+
+    // Helper: get phase from layer
+    function getPhase(layerKey, region) {
+      var layer = layers[layerKey];
+      if (!layer) return { phase: 'N/A', direction: 'neutral' };
+      // Some layers have us/cn sub-keys
+      if (region && layer[region]) {
+        var r = layer[region];
+        var phase = r.current_phase || r.phase || 'N/A';
+        // Determine direction from signal_weight
+        var sw = r.signal_weight || 0;
+        var dir = sw > 0 ? 'up' : sw < 0 ? 'down' : 'neutral';
+        return { phase: phase, direction: dir, signal_weight: sw };
+      }
+      // For layers without region split
+      var phase = layer.current_phase || 'N/A';
+      var sw = layer.signal_weight || 0;
+      var dir = sw > 0 ? 'up' : sw < 0 ? 'down' : 'neutral';
+      return { phase: phase, direction: dir, signal_weight: sw };
+    }
+
+    // Build panorama rows
+    var panoramaData = [
+      {
+        layer: 0, name: '大债务周期', icon: '🏦', key: 'constraint_debt_cycle',
+        hasRegion: true, order: 0
+      },
+      {
+        layer: 1, name: '康波长波', icon: '🌊', key: 'narrative_kondratieff',
+        hasRegion: false, order: 1
+      },
+      {
+        layer: 2, name: '佩雷斯技术革命', icon: '🔬', key: 'narrative_perez',
+        hasRegion: false, order: 2
+      },
+      {
+        layer: 0, name: '利率Regime', icon: '🏛️', key: 'constraint_rate_regime',
+        hasRegion: false, order: 3, note: '美国主导'
+      },
+      {
+        layer: 4, name: '朱格拉设备周期', icon: '⚙️', key: 'cycle_juglar',
+        hasRegion: true, order: 4
+      },
+      {
+        layer: 5, name: '基钦库存周期', icon: '📦', key: 'cycle_kitchin',
+        hasRegion: true, order: 5
+      },
+      {
+        layer: 6, name: '美林时钟', icon: '🕐', key: 'cycle_merrill_3d',
+        hasRegion: true, order: 6
+      },
+      {
+        layer: '-', name: '信贷脉冲', icon: '💓', key: '__credit_impulse__',
+        hasRegion: true, order: 7
+      }
+    ];
+
+    // Direction arrow helper
+    function dirArrow(dir) {
+      if (dir === 'up') return '<span style="color:#10b981;font-weight:700">↑</span>';
+      if (dir === 'down') return '<span style="color:#ef4444;font-weight:700">↓</span>';
+      return '<span style="color:#f59e0b;font-weight:700">→</span>';
+    }
+
+    // Signal weight badge
+    function swBadge(sw) {
+      if (sw === undefined || sw === null) return '';
+      var color = sw > 0 ? '#10b981' : sw < 0 ? '#ef4444' : '#6b7280';
+      var text = sw > 0 ? '+' + sw : '' + sw;
+      return '<span class="v4-pano-sw" style="color:' + color + ';font-size:11px;font-weight:600;margin-left:4px;">' + text + '</span>';
+    }
+
+    var rows = panoramaData.map(function(item) {
+      var usPhase, cnPhase, usDir, cnDir, usSw, cnSw;
+
+      if (item.key === '__credit_impulse__') {
+        // Credit impulse special handling
+        var usCI = ci.us || {};
+        var cnCI = ci.cn || {};
+        usPhase = usCI.phase || 'N/A';
+        cnPhase = cnCI.phase || 'N/A';
+        var usVal = usCI.current_value;
+        var cnVal = cnCI.current_value;
+        usDir = usVal > 0 ? 'up' : usVal < 0 ? 'down' : 'neutral';
+        cnDir = cnVal > 0 ? 'up' : cnVal < 0 ? 'down' : 'neutral';
+        usSw = undefined;
+        cnSw = undefined;
+      } else if (item.hasRegion) {
+        var usData = getPhase(item.key, 'us');
+        var cnData = getPhase(item.key, 'cn');
+        usPhase = usData.phase;
+        cnPhase = cnData.phase;
+        usDir = usData.direction;
+        cnDir = cnData.direction;
+        usSw = usData.signal_weight;
+        cnSw = cnData.signal_weight;
+      } else {
+        var globalData = getPhase(item.key);
+        usPhase = globalData.phase;
+        cnPhase = globalData.phase;
+        usDir = globalData.direction;
+        cnDir = globalData.direction;
+        usSw = globalData.signal_weight;
+        cnSw = globalData.signal_weight;
+      }
+
+      return '<tr class="v4-pano-row">' +
+        '<td class="v4-pano-layer">' +
+          '<span class="v4-pano-icon">' + item.icon + '</span>' +
+          '<span class="v4-pano-name">' + esc(item.name) + '</span>' +
+        '</td>' +
+        '<td class="v4-pano-cell">' +
+          dirArrow(usDir) + ' ' +
+          '<span class="v4-pano-phase">' + esc(usPhase) + '</span>' +
+          swBadge(usSw) +
+        '</td>' +
+        '<td class="v4-pano-cell">' +
+          dirArrow(cnDir) + ' ' +
+          '<span class="v4-pano-phase">' + esc(cnPhase) + '</span>' +
+          swBadge(cnSw) +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    return '<section class="v4-section v4-panorama-section" id="v4-panorama">' +
+      '<h2 class="v4-section-title">🗺️ 周期全景图</h2>' +
+      '<div class="v4-panorama-desc">所有周期层当前定位一览。↑改善/扩张 →稳定 ↓恶化/收缩</div>' +
+      '<table class="v4-panorama-table">' +
+        '<thead><tr>' +
+          '<th>周期层</th>' +
+          '<th>🇺🇸 美国</th>' +
+          '<th>🇨🇳 中国</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+    '</section>';
+  }
+
+  // ========== 10. Indicator Timestamps ==========
+  function addIndicatorTimestamps(data) {
+    var layers = data.cycle_layers || {};
+    var meta = data._meta || {};
+    var sources = meta.data_sources || [];
+
+    // Build a map of source dates
+    var sourceDateMap = {};
+    sources.forEach(function(s) {
+      sourceDateMap[s.name] = s.last_fetch || '';
+    });
+
+    // Map section IDs to their data source info
+    var sectionSources = {
+      'section-debt-cycle': { label: 'FRED', date: sourceDateMap['FRED'] || '' },
+      'section-kondratieff': { label: 'Penn World Table', date: sourceDateMap['Penn World Table'] || '' },
+      'section-perez': { label: 'Crunchbase', date: sourceDateMap['Crunchbase'] || '' },
+      'section-rate-regime': { label: 'FRED', date: sourceDateMap['FRED'] || '' },
+      'section-juglar': { label: 'FRED', date: sourceDateMap['FRED'] || '' },
+      'section-kitchin': { label: 'FRED', date: sourceDateMap['FRED'] || '' },
+      'section-merrill': { label: 'FRED/AKShare', date: sourceDateMap['FRED'] || '' }
+    };
+
+    // Also check layer-level last_updated
+    Object.keys(layers).forEach(function(layerKey) {
+      var layer = layers[layerKey];
+      var layerDate = layer.last_updated || '';
+      var sectionId = {
+        'constraint_debt_cycle': 'section-debt-cycle',
+        'narrative_kondratieff': 'section-kondratieff',
+        'narrative_perez': 'section-perez',
+        'constraint_rate_regime': 'section-rate-regime',
+        'cycle_juglar': 'section-juglar',
+        'cycle_kitchin': 'section-kitchin',
+        'cycle_merrill_3d': 'section-merrill'
+      }[layerKey];
+
+      if (sectionId) {
+        var section = document.getElementById(sectionId);
+        if (!section) return;
+        var title = section.querySelector('.section-title');
+        if (!title) return;
+
+        // Determine freshness
+        var displayDate = layerDate || sourceDateMap[sectionSources[sectionId] && sectionSources[sectionId].label] || '';
+        if (!displayDate) return;
+
+        // Check staleness (>30 days)
+        var isStale = false;
+        try {
+          var updateDate = new Date(displayDate);
+          var now = new Date();
+          var diffDays = (now - updateDate) / (1000 * 60 * 60 * 24);
+          isStale = diffDays > 30;
+        } catch(e) {}
+
+        var badgeColor = isStale ? '#ef4444' : '#10b981';
+        var badgeBg = isStale ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)';
+        var staleLabel = isStale ? ' ⚠️过期' : '';
+
+        var tsBadge = '<span class="v4-indicator-ts" style="color:' + badgeColor + ';background:' + badgeBg + ';font-size:11px;padding:2px 8px;border-radius:4px;margin-left:8px;font-weight:500;" title="数据更新时间">' +
+          '📅 ' + esc(displayDate) + staleLabel + '</span>';
+
+        title.insertAdjacentHTML('beforeend', tsBadge);
+      }
+    });
+  }
+
   // ========== DOM Reorganization ==========
   function reorganizeDOM(data) {
     var container = document.getElementById('cycle-content');
@@ -507,19 +717,33 @@
       heroSection.insertAdjacentHTML('afterend', falsHtml);
     }
 
-    // 5. Insert Data Quality at bottom
+    // 5. Insert Cycle Panorama after falsification (before cycle layers)
+    var panoHtml = renderCyclePanorama(data);
+    var falsSection = document.getElementById('v4-falsification');
+    if (falsSection && panoHtml) {
+      falsSection.insertAdjacentHTML('afterend', panoHtml);
+    } else if (rankingSection && panoHtml) {
+      rankingSection.insertAdjacentHTML('afterend', panoHtml);
+    } else if (heroSection && panoHtml) {
+      heroSection.insertAdjacentHTML('afterend', panoHtml);
+    }
+
+    // 6. Insert Data Quality at bottom
     var freshHtml = renderFreshnessSection(data);
     if (freshHtml) {
       container.insertAdjacentHTML('beforeend', freshHtml);
     }
 
-    // 6. Add quality badges to existing layer sections
+    // 7. Add quality badges to existing layer sections
     addQualityBadges(data);
 
-    // 7. Add freshness timestamps
+    // 8. Add freshness timestamps
     addFreshnessTimestamps(data);
 
-    // 8. Update comparison tracking
+    // 9. Add indicator update timestamps to each layer section
+    addIndicatorTimestamps(data);
+
+    // 10. Update comparison tracking
     updateComparison(data);
   }
 

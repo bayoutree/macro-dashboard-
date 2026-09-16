@@ -506,3 +506,61 @@
     gap: 8px;
   }
 }
+
+/* ===== Cycle Panorama (周期全景图) ===== */
+.v4-panorama-section {
+  margin: 24px 0;
+}
+.v4-panorama-desc {
+  font-size: 13px; color: #94a3b8; margin-bottom: 12px;
+}
+.v4-panorama-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.v4-panorama-table thead th {
+  background: rgba(30,41,59,0.6); color: #94a3b8; font-weight: 600;
+  padding: 10px 14px; text-align: left; border-bottom: 2px solid #334155;
+  font-size: 13px;
+}
+.v4-panorama-table thead th:first-child {
+  border-radius: 8px 0 0 0;
+}
+.v4-panorama-table thead th:last-child {
+  border-radius: 0 8px 0 0;
+}
+.v4-pano-row {
+  transition: background 0.2s;
+}
+.v4-pano-row:hover {
+  background: rgba(30,41,59,0.3);
+}
+.v4-panorama-table td {
+  padding: 10px 14px; border-bottom: 1px solid #1e293b; vertical-align: middle;
+}
+.v4-pano-layer {
+  display: flex; align-items: center; gap: 8px; font-weight: 600; color: #e2e8f0;
+}
+.v4-pano-icon {
+  font-size: 18px;
+}
+.v4-pano-name {
+  font-size: 13px;
+}
+.v4-pano-cell {
+  font-size: 13px; color: #e2e8f0;
+}
+.v4-pano-phase {
+  font-size: 12px;
+}
+.v4-pano-sw {
+  font-family: 'JetBrains Mono', monospace;
+}
+@media (max-width: 768px) {
+  .v4-panorama-table { font-size: 12px; }
+  .v4-panorama-table td, .v4-panorama-table th { padding: 8px 10px; }
+  .v4-pano-phase { font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .v4-pano-name { font-size: 11px; }
+  .v4-pano-icon { font-size: 14px; }
+}
