@@ -15511,5 +15511,920 @@
         "logic": "气候异常+库存低位+生物燃料需求"
       }
     ]
+  },
+  "transmission_table": {
+    "version": "1.0",
+    "author": "投资分析",
+    "reviewer": "CIO",
+    "last_updated": "2026-09-16",
+    "description": "16种P1×P2组合→8资产方向查找表。基于回测数据BT1/BT2（2005-2026）。",
+    "direction_codes": {
+      "up": "↑看多（超配）",
+      "neutral": "→中性（标配）",
+      "down": "↓看空（低配）"
+    },
+    "confidence_codes": {
+      "3": "★★★强信号",
+      "2": "★★中等信号",
+      "1": "★弱信号"
+    },
+    "p3_modifier": {
+      "same_direction_boost": "+1 confidence (★→★★, ★★→★★★)",
+      "opposite_direction_penalty": "-1 confidence (★★★→★★, ★★→★)"
+    },
+    "contradictory_combinations": [
+      4,
+      8,
+      9,
+      10,
+      13,
+      14
+    ],
+    "contradictory_handling": "置信度全部降为★，主屏标注⚠️数据异常或周期错位，触发矛盾状态",
+    "entries": [
+      {
+        "p1_score": 2,
+        "p2_score": 2,
+        "scenario": "多周期共振上行",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "设备扩张+补库共振，盈利预期上修"
+          },
+          "us_bond": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "经济强劲→利率上行压力"
+          },
+          "gold": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "风险偏好上升压制，但不确定性仍在"
+          },
+          "commodities": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "补库+扩产双驱动需求上升"
+          },
+          "china_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "全球共振利好中国"
+          },
+          "china_bond": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "经济回暖→利率上行压力"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "间接受益，传导链长"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "经济上行→加息预期"
+          }
+        }
+      },
+      {
+        "p1_score": 2,
+        "p2_score": 1,
+        "scenario": "扩张早期+被动补库（当前美国）",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "扩张早期利好，但库存尚未主动补充"
+          },
+          "us_bond": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "经济回暖但库存调整期利率未必急升"
+          },
+          "gold": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "中性环境"
+          },
+          "commodities": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "被动补库后补库预期推动"
+          },
+          "china_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "全球需求预期改善"
+          },
+          "china_bond": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "间接但弱"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "方向不明确"
+          }
+        }
+      },
+      {
+        "p1_score": 2,
+        "p2_score": -1,
+        "scenario": "扩张早期+被动去库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "扩张早期支撑，但去库阶段盈利承压"
+          },
+          "us_bond": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "经济回暖vs去库压力，利率方向不明"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "不确定性上升，避险需求"
+          },
+          "commodities": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "需求预期改善vs去库现实"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "全球信号混合"
+          },
+          "china_bond": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "方向不明确"
+          }
+        }
+      },
+      {
+        "p1_score": 2,
+        "p2_score": -2,
+        "scenario": "扩张早期+主动去库（⚠️经济上罕见）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "扩张vs去库矛盾"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "去库压力→经济放缓→利率下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "不确定性+利率下行→避险之王"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "去库阶段需求萎缩"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "全球信号矛盾"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "经济放缓→降息预期"
+          }
+        }
+      },
+      {
+        "p1_score": 1,
+        "p2_score": 2,
+        "scenario": "扩张晚期+主动补库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "补库支撑，但扩张晚期估值压力上升"
+          },
+          "us_bond": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "经济过热→利率上行"
+          },
+          "gold": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "风险偏好高企压制金价"
+          },
+          "commodities": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "补库+过热双驱动，商品最佳"
+          },
+          "china_equity": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "全球过热利好，需警惕拐点"
+          },
+          "china_bond": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "利率上行压力"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "加息预期→美元走强"
+          }
+        }
+      },
+      {
+        "p1_score": 1,
+        "p2_score": 1,
+        "scenario": "扩张晚期+被动补库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "扩张晚期vs补库放缓"
+          },
+          "us_bond": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "经济仍强→利率上行压力"
+          },
+          "gold": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "中性"
+          },
+          "commodities": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "补库尾声仍有支撑"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "全球信号混合"
+          },
+          "china_bond": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "利率上行压力"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "加息预期"
+          }
+        }
+      },
+      {
+        "p1_score": 1,
+        "p2_score": -1,
+        "scenario": "扩张晚期+被动去库（⚠️拐点信号）",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "扩张晚期vs去库开始，拐点临近"
+          },
+          "us_bond": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "方向不明"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "不确定性上升"
+          },
+          "commodities": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "需求放缓vs价格粘性"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 2,
+            "logic": "全球信号混合"
+          },
+          "china_bond": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "方向不明"
+          }
+        }
+      },
+      {
+        "p1_score": 1,
+        "p2_score": -2,
+        "scenario": "扩张晚期+主动去库（⚠️经济上矛盾）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "去库主导，扩张晚期难独善其身"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "经济放缓→利率下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "避险需求+利率下行"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "去库阶段需求萎缩"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "全球需求恶化"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求恶化"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "方向不明"
+          }
+        }
+      },
+      {
+        "p1_score": -1,
+        "p2_score": 2,
+        "scenario": "收缩早期+主动补库（⚠️经济上矛盾）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "补库vs收缩矛盾"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "收缩主导→利率下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          },
+          "commodities": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "补库vs收缩矛盾"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "全球信号矛盾"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "方向不明"
+          }
+        }
+      },
+      {
+        "p1_score": -1,
+        "p2_score": 1,
+        "scenario": "收缩早期+被动补库（⚠️经济上矛盾）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "收缩主导"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "经济放缓→利率下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "需求萎缩"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "全球需求恶化"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求恶化"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "方向不明"
+          }
+        }
+      },
+      {
+        "p1_score": -1,
+        "p2_score": -1,
+        "scenario": "收缩早期+被动去库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "收缩+去库双压力"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "经济放缓→利率下行→债券走强"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求+利率下行"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "需求萎缩"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "全球需求恶化"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求恶化"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求→美元走强"
+          }
+        }
+      },
+      {
+        "p1_score": -1,
+        "p2_score": -2,
+        "scenario": "收缩早期+主动去库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "收缩+主动去库，盈利大幅下修"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "经济衰退→利率大幅下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "避险之王"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "需求崩塌"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "全球需求恶化"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求恶化"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          }
+        }
+      },
+      {
+        "p1_score": -2,
+        "p2_score": 2,
+        "scenario": "收缩晚期+主动补库（⚠️经济上矛盾）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "补库vs收缩矛盾"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "收缩主导"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          },
+          "commodities": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "矛盾"
+          },
+          "china_equity": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "矛盾"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "中性"
+          },
+          "usd": {
+            "direction": "neutral",
+            "confidence": 1,
+            "logic": "方向不明"
+          }
+        }
+      },
+      {
+        "p1_score": -2,
+        "p2_score": 1,
+        "scenario": "收缩晚期+被动补库（⚠️经济上矛盾）",
+        "contradictory": true,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "收缩主导"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "经济衰退→利率下行"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "避险之王"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "需求萎缩"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "全球需求恶化"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求恶化"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "避险需求"
+          }
+        }
+      },
+      {
+        "p1_score": -2,
+        "p2_score": -1,
+        "scenario": "收缩晚期+被动去库",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "收缩晚期+去库，但接近触底"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "利率下行，但接近拐点"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "需求仍弱"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "全球需求仍弱"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "利率下行预期"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求仍弱"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 1,
+            "logic": "避险需求"
+          }
+        }
+      },
+      {
+        "p1_score": -2,
+        "p2_score": -2,
+        "scenario": "收缩晚期+主动去库（衰退最深处）",
+        "contradictory": false,
+        "assets": {
+          "us_equity": {
+            "direction": "down",
+            "confidence": 2,
+            "logic": "衰退最深，但接近触底反弹"
+          },
+          "us_bond": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "利率大幅下行→债券最强"
+          },
+          "gold": {
+            "direction": "up",
+            "confidence": 3,
+            "logic": "避险之王"
+          },
+          "commodities": {
+            "direction": "down",
+            "confidence": 3,
+            "logic": "需求崩塌"
+          },
+          "china_equity": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "全球需求最差"
+          },
+          "china_bond": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "利率大幅下行"
+          },
+          "china_realestate": {
+            "direction": "down",
+            "confidence": 1,
+            "logic": "需求最差"
+          },
+          "usd": {
+            "direction": "up",
+            "confidence": 2,
+            "logic": "避险需求"
+          }
+        }
+      }
+    ]
+  },
+  "constraint_degradation": {
+    "version": "3.0",
+    "last_updated": "2026-09-16",
+    "description": "约束层触发时的资产方向降级规则（v3.0第4.4节）",
+    "C1_debt_cycle": {
+      "name": "大债务周期约束",
+      "trigger_condition": "联邦债务/GDP>130% 且 利息/财政收入>20%",
+      "currently_triggered": true,
+      "current_values": {
+        "debt_to_gdp": 132,
+        "interest_to_revenue": 22
+      },
+      "degradation_rules": {
+        "us_equity": {
+          "adjustment": -1,
+          "description": "↓一档（↑→→, →不变, ↓不变）"
+        },
+        "us_bond": {
+          "adjustment": 0,
+          "description": "不变（C1不直接约束，C2处理）"
+        },
+        "gold": {
+          "adjustment": 1,
+          "description": "↑一档（→↑ 或 ↑维持）"
+        },
+        "commodities": {
+          "adjustment": -1,
+          "description": "↓一档"
+        },
+        "china_equity": {
+          "adjustment": 0,
+          "description": "不变（中国财政结构不同）"
+        },
+        "china_bond": {
+          "adjustment": 0,
+          "description": "不变"
+        },
+        "china_realestate": {
+          "adjustment": 0,
+          "description": "不变"
+        },
+        "usd": {
+          "adjustment": 0,
+          "description": "不变"
+        }
+      }
+    },
+    "C2_rate_regime": {
+      "name": "高利率Regime约束",
+      "trigger_condition": "高利率Regime持续（联邦基金利率>3%且实际利率>1%）",
+      "currently_triggered": true,
+      "current_values": {
+        "fed_funds_rate": 4.5,
+        "real_rate": 1.8
+      },
+      "degradation_rules": {
+        "us_equity_valuation_sensitive": {
+          "adjustment": -1,
+          "description": "估值敏感板块↓一档"
+        },
+        "us_bond_long_duration": {
+          "adjustment": -1,
+          "description": "长久期美债↓一档（自动降档）"
+        },
+        "us_bond_short_duration": {
+          "adjustment": 0,
+          "description": "短久期不变"
+        },
+        "gold": {
+          "adjustment": -1,
+          "description": "↓一档（实际利率高企）"
+        },
+        "commodities": {
+          "adjustment": 0,
+          "description": "不变（供给端逻辑独立）"
+        },
+        "others": {
+          "adjustment": 0,
+          "description": "不变"
+        }
+      }
+    },
+    "combined_note": "C1+C2同时触发时叠加执行，不额外降级",
+    "current_effective_degradations": {
+      "description": "当前C1+C2同时触发的综合降级效果",
+      "us_equity": {
+        "base": "up",
+        "after_c1": "neutral",
+        "after_c2": "neutral",
+        "final": "neutral",
+        "note": "C1降一档，C2对估值敏感板块再降一档，但已在neutral不再降"
+      },
+      "us_bond_long": {
+        "base": "neutral",
+        "after_c1": "neutral",
+        "after_c2": "down",
+        "final": "down",
+        "note": "C2降长久期一档"
+      },
+      "gold": {
+        "base": "neutral",
+        "after_c1": "up",
+        "after_c2": "neutral",
+        "final": "neutral",
+        "note": "C1升一档，C2降一档，抵消"
+      },
+      "commodities": {
+        "base": "up",
+        "after_c1": "neutral",
+        "after_c2": "neutral",
+        "final": "neutral",
+        "note": "C1降一档，C2不影响"
+      }
+    }
   }
 }
