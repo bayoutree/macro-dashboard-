@@ -84,11 +84,17 @@ const CycleV3Module = (() => {
   }
   function createChart(id, option) {
     const el = document.getElementById(id);
-    if (!el) return null;
-    const chart = echarts.init(el, null, {renderer:'canvas'});
-    chart.setOption(option);
-    chartInstances.push(chart);
-    return chart;
+    if (!el) { console.warn('[Chart] Container not found:', id); return null; }
+    try {
+      if (!el.offsetWidth || !el.offsetHeight) el.style.height = el.style.height || '200px';
+      const chart = echarts.init(el, null, {renderer:'canvas'});
+      chart.setOption(option, true);
+      chartInstances.push(chart);
+      return chart;
+    } catch(e) {
+      console.error('[Chart] Error rendering', id, ':', e.message);
+      return null;
+    }
   }
   function fmtNum(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals); }
   function fmtPct(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals) + '%'; }
@@ -396,9 +402,12 @@ const CycleV3Module = (() => {
         }
       });
     });
-    // Also add from high_rate_tracker if present
+    // Also add from high_rate_tracker if present (inherit parent last_updated as fallback)
     if (highRateTracker?.indicators) {
-      highRateTracker.indicators.forEach(ind => { allIndicators.push({...ind, layer_group: ind.layer}); });
+      const hrtDate = highRateTracker.last_updated || null;
+      highRateTracker.indicators.forEach(ind => {
+        allIndicators.push({...ind, layer_group: ind.layer, last_updated: ind.last_updated || hrtDate});
+      });
     }
 
     const groupLabels = { structural:'🏗️ 结构性因素', forward_looking:'🔭 前瞻指标', market_based:'📊 市场指标' };
@@ -1378,10 +1387,14 @@ const CycleV3Module = (() => {
 
   // ========== Chart Rendering ==========
   function renderCharts(data) {
+    console.log('[Charts] renderCharts called. chartInstances:', chartInstances.length);
     // TFP chart (Kondratieff)
     const cnTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.cn;
     const usTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.us;
+    console.log('[Charts] cnTfp history:', cnTfp?.history?.length, 'usTfp history:', usTfp?.history?.length);
     if (cnTfp?.history?.length) {
+      const chartEl = document.getElementById('chart-kondratieff-tfp');
+      console.log('[Charts] TFP chart container:', chartEl ? 'found ('+chartEl.offsetWidth+'x'+chartEl.offsetHeight+')' : 'NOT FOUND');
       // Helper: convert year-only strings to "YYYY-01-01" for ECharts time axis
       const toDateStr = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
       const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
@@ -1415,7 +1428,10 @@ const CycleV3Module = (() => {
 
     // Perez key_ratio chart
     const kr = data.cycle_layers?.narrative_perez?.key_ratio;
+    console.log('[Charts] Perez key_ratio history:', kr?.history?.length);
     if (kr?.history?.length) {
+      const perezEl = document.getElementById('chart-perez-ratio');
+      console.log('[Charts] Perez chart container:', perezEl ? 'found ('+perezEl.offsetWidth+'x'+perezEl.offsetHeight+')' : 'NOT FOUND');
       const tp = kr.threshold_params || {};
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
       const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];

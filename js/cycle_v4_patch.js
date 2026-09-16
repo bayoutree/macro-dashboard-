@@ -689,40 +689,33 @@
       container.insertAdjacentHTML('afterbegin', contraHtml);
     }
 
-    // 2. Insert Hero section after meta-header (before old consensus)
-    var heroHtml = renderHeroSection(data);
-    var metaHeader = container.querySelector('.meta-header');
-    if (metaHeader) {
-      metaHeader.insertAdjacentHTML('afterend', heroHtml);
-    } else {
-      container.insertAdjacentHTML('afterbegin', heroHtml);
-    }
-
-    // 3. Insert Asset Ranking after hero
+    // 2. Insert Asset Ranking after meta-header
     var rankingHtml = renderAssetRankingSection(data);
-    var heroSection = document.getElementById('v4-hero');
-    if (heroSection && rankingHtml) {
-      heroSection.insertAdjacentHTML('afterend', rankingHtml);
+    var metaHeader = container.querySelector('.meta-header');
+    if (metaHeader && rankingHtml) {
+      metaHeader.insertAdjacentHTML('afterend', rankingHtml);
+    } else if (rankingHtml) {
+      container.insertAdjacentHTML('afterbegin', rankingHtml);
     }
 
-    // 4. Insert Falsification after asset ranking (or hero if no ranking)
+    // 3. Insert Falsification after asset ranking
     var falsHtml = renderFalsificationSection(data);
     var rankingSection = document.getElementById('v4-asset-ranking');
     if (rankingSection && falsHtml) {
       rankingSection.insertAdjacentHTML('afterend', falsHtml);
-    } else if (heroSection && falsHtml) {
-      heroSection.insertAdjacentHTML('afterend', falsHtml);
+    } else if (metaHeader && falsHtml) {
+      metaHeader.insertAdjacentHTML('afterend', falsHtml);
     }
 
-    // 5. Insert Cycle Panorama after falsification (before cycle layers)
+    // 4. Insert Cycle Panorama after falsification
     var panoHtml = renderCyclePanorama(data);
     var falsSection = document.getElementById('v4-falsification');
     if (falsSection && panoHtml) {
       falsSection.insertAdjacentHTML('afterend', panoHtml);
     } else if (rankingSection && panoHtml) {
       rankingSection.insertAdjacentHTML('afterend', panoHtml);
-    } else if (heroSection && panoHtml) {
-      heroSection.insertAdjacentHTML('afterend', panoHtml);
+    } else if (metaHeader && panoHtml) {
+      metaHeader.insertAdjacentHTML('afterend', panoHtml);
     }
 
     // 6. Insert Data Quality at bottom
