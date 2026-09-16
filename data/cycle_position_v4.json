@@ -15364,36 +15364,28 @@
   },
   "cycle_consensus": {
     "last_updated": "2026-09-16",
-    "formula": {
-      "description": "三维度共识度公式（v3.0）",
-      "weights": {
-        "P1_juglar": 0.3,
-        "P2_kitchin": 0.4,
-        "P3_merrill": 0.3
-      },
-      "raw_calculation": "P1×0.3 + P2×0.4 + P3×0.3",
-      "score_calculation": "(raw + 2) / 4 × 100",
-      "score_range": "0-100, 50=中性, >60偏多, <40偏空"
-    },
+    "formula": "raw_score = P1×0.3 + P2×0.4 + P3×0.3, consensus_score = (raw_score + 2) / 4 × 100",
     "united_states": {
-      "scores": {
-        "P1": 2,
-        "P2": 2,
-        "P3": -0.33
-      },
+      "p1_score": 2,
+      "p2_score": 1,
+      "p3_score": 1,
+      "p1_label": "朱格拉设备周期-扩张早期",
+      "p2_label": "基钦库存周期-被动补库",
+      "p3_label": "美林时钟-复苏前期",
       "raw_score": 1.3,
       "consensus_score": 82.5,
-      "interpretation": "偏多（>60）"
+      "signal": "强烈看多"
     },
     "china": {
-      "scores": {
-        "P1": 1,
-        "P2": 2,
-        "P3": 1.67
-      },
+      "p1_score": 2,
+      "p2_score": 1,
+      "p3_score": 2,
+      "p1_label": "朱格拉设备周期-扩张早期",
+      "p2_label": "基钦库存周期-被动去库→主动补库过渡",
+      "p3_label": "美林时钟-复苏前期",
       "raw_score": 1.6,
       "consensus_score": 90.0,
-      "interpretation": "偏多（>60）"
+      "signal": "强烈看多"
     }
   },
   "commodity_framework": {
@@ -16466,124 +16458,75 @@
     "version": "3.0",
     "last_updated": "2026-09-16",
     "description": "8资产相对强弱排序（v3.0要求）",
-    "calculation_method": "基于transmission_table当前组合+constraint_degradation降级+data_quality调整",
-    "current_ranking": {
-      "united_states": {
-        "current_combination": {
-          "P1": 2,
-          "P2": 2
-        },
-        "rankings": [
-          {
-            "asset": "gold",
-            "rank": 1,
-            "direction": "up",
-            "reason": "避险+利率下行预期"
-          },
-          {
-            "asset": "us_bond_long",
-            "rank": 2,
-            "direction": "down",
-            "reason": "C2降级，但方向明确"
-          },
-          {
-            "asset": "us_equity",
-            "rank": 3,
-            "direction": "neutral",
-            "reason": "C1降级，方向不明"
-          },
-          {
-            "asset": "commodities",
-            "rank": 4,
-            "direction": "neutral",
-            "reason": "C1降级"
-          },
-          {
-            "asset": "usd",
-            "rank": 5,
-            "direction": "neutral",
-            "reason": "中性"
-          },
-          {
-            "asset": "china_equity",
-            "rank": 6,
-            "direction": "neutral",
-            "reason": "全球信号混合"
-          },
-          {
-            "asset": "china_bond",
-            "rank": 7,
-            "direction": "neutral",
-            "reason": "中性"
-          },
-          {
-            "asset": "china_realestate",
-            "rank": 8,
-            "direction": "neutral",
-            "reason": "中性"
-          }
-        ]
+    "calculation_method": "transmission_table(P1=2,P2=1) + constraint_degradation(C1+C2)",
+    "base_scenario": "扩张早期+被动补库(P1=2,P2=1)",
+    "constraint_active": true,
+    "ranking": [
+      {
+        "asset": "china_equity",
+        "rank": 1,
+        "signal": "超配",
+        "adjusted_direction": "up",
+        "base_direction": "up",
+        "adjustment": 0
       },
-      "china": {
-        "current_combination": {
-          "P1": 1,
-          "P2": 2
-        },
-        "rankings": [
-          {
-            "asset": "china_bond",
-            "rank": 1,
-            "direction": "up",
-            "reason": "利率下行预期"
-          },
-          {
-            "asset": "gold",
-            "rank": 2,
-            "direction": "up",
-            "reason": "避险需求"
-          },
-          {
-            "asset": "china_realestate",
-            "rank": 3,
-            "direction": "down",
-            "reason": "需求恶化"
-          },
-          {
-            "asset": "china_equity",
-            "rank": 4,
-            "direction": "down",
-            "reason": "全球需求恶化"
-          },
-          {
-            "asset": "us_bond_long",
-            "rank": 5,
-            "direction": "down",
-            "reason": "利率下行"
-          },
-          {
-            "asset": "commodities",
-            "rank": 6,
-            "direction": "down",
-            "reason": "需求萎缩"
-          },
-          {
-            "asset": "us_equity",
-            "rank": 7,
-            "direction": "neutral",
-            "reason": "方向不明"
-          },
-          {
-            "asset": "usd",
-            "rank": 8,
-            "direction": "neutral",
-            "reason": "中性"
-          }
-        ]
+      {
+        "asset": "china_bond",
+        "rank": 2,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
+        "adjustment": 0
+      },
+      {
+        "asset": "china_realestate",
+        "rank": 3,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
+        "adjustment": 0
+      },
+      {
+        "asset": "commodities",
+        "rank": 4,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "up",
+        "adjustment": -1
+      },
+      {
+        "asset": "gold",
+        "rank": 5,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
+        "adjustment": 0
+      },
+      {
+        "asset": "us_equity",
+        "rank": 6,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "up",
+        "adjustment": -1
+      },
+      {
+        "asset": "usd",
+        "rank": 7,
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
+        "adjustment": 0
+      },
+      {
+        "asset": "us_bond",
+        "rank": 8,
+        "signal": "低配",
+        "adjusted_direction": "down",
+        "base_direction": "neutral",
+        "adjustment": -1
       }
-    },
-    "display_rules": {
-      "order": "按rank从1到8显示",
-      "highlight": "direction=up的用绿色，down的用红色，neutral用灰色"
-    }
+    ],
+    "note": "降级后仅us_bond进入看空(C2长久期降级)，china_equity是唯一超配资产，us_equity/commodities因C1降级从up→neutral"
   }
 }
