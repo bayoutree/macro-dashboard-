@@ -82,27 +82,61 @@ const CycleV3Module = (() => {
   function gridConfig(extra={}) {
     return Object.assign({top:36,right:16,bottom:28,left:16,containLabel:true}, extra);
   }
-  function createChart(id, option, skipSizeCheck) {
+  // Chart rendering with ResizeObserver: wait for container to have real dimensions
+  let _pendingCharts = {}; // id -> {option, attempts}
+
+  function createChart(id, option) {
     const el = document.getElementById(id);
-    if (!el) { console.warn('[Chart] Container not found:', id); return null; }
+    if (!el) { console.warn('[Chart] Container not found:', id); return false; }
     // Dispose existing instance if re-rendering
-    try { var _ei = echarts.getInstanceByDom(el); if (_ei) _ei.dispose(); } catch(e){}
+    try { var _ei = echarts.getInstanceByDom(el); if (_ei) { _ei.dispose(); /* remove from chartInstances */ var _idx = chartInstances.indexOf(_ei); if(_idx>=0) chartInstances.splice(_idx,1); } } catch(e){}
+    // Check dimensions
+    if (!el.offsetWidth || !el.offsetHeight) {
+      console.warn('[Chart] Container zero-size, queuing for ResizeObserver:', id);
+      _pendingCharts[id] = { option: option, attempts: 0 };
+      _observeChartContainer(el, id);
+      return false;
+    }
     try {
-      if (!el.offsetHeight) { el.style.height = el.style.height || '200px'; }
-      void el.offsetHeight;
-      if (!skipSizeCheck && (!el.offsetWidth || !el.offsetHeight)) {
-        console.warn('[Chart] Container zero-size:', id, el.offsetWidth+'x'+el.offsetHeight);
-        return null;
-      }
       const chart = echarts.init(el, null, {renderer:'svg'});
       chart.setOption(option, true);
       chartInstances.push(chart);
-      console.log('[Chart] ✓ Rendered', id, el.offsetWidth+'x'+el.offsetHeight, skipSizeCheck?'(forced)':'');
-      return chart;
+      console.log('[Chart] ✓ Rendered', id, el.offsetWidth+'x'+el.offsetHeight);
+      return true;
     } catch(e) {
       console.error('[Chart] Error rendering', id, ':', e.message, e.stack);
-      return null;
+      return false;
     }
+  }
+
+  function _observeChartContainer(el, id) {
+    if (!window.ResizeObserver) {
+      // Fallback: try once more after 2s
+      console.warn('[Chart] No ResizeObserver, fallback setTimeout for', id);
+      setTimeout(function() { createChart(id, _pendingCharts[id].option); }, 2000);
+      return;
+    }
+    var observer = new ResizeObserver(function(entries) {
+      var entry = entries[0];
+      if (!entry) return;
+      var w = entry.contentRect.width;
+      var h = entry.contentRect.height;
+      var pending = _pendingCharts[id];
+      if (!pending) { observer.disconnect(); return; }
+      pending.attempts++;
+      if (w > 0 && h > 0) {
+        console.log('[Chart] ResizeObserver: container ready', id, w+'x'+h, '(after', pending.attempts, 'observations)');
+        observer.disconnect();
+        delete _pendingCharts[id];
+        createChart(id, pending.option);
+      } else if (pending.attempts >= 15) {
+        // 15 observations × ~100ms = ~1.5s, give up
+        console.warn('[Chart] ResizeObserver giving up on', id, 'after', pending.attempts, 'attempts');
+        observer.disconnect();
+        delete _pendingCharts[id];
+      }
+    });
+    observer.observe(el);
   }
   function fmtNum(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals); }
   function fmtPct(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals) + '%'; }
@@ -1398,10 +1432,8 @@ const CycleV3Module = (() => {
   let _chartRetryCount = 0;
   const MAX_CHART_RETRIES = 3;
 
-  function renderCharts(data, _skipSizeCheck, _failedCharts) {
-    _skipSizeCheck = _skipSizeCheck || false;
-    _failedCharts = _failedCharts || new Set();
-    console.log('[Charts] renderCharts called. skipSizeCheck:', _skipSizeCheck, 'Instances:', chartInstances.length);
+  function renderCharts(data) {
+    console.log('[Charts] renderCharts called. Instances:', chartInstances.length);
     const _echartsAvailable = typeof echarts !== 'undefined';
     console.log('[Charts] echarts available:', _echartsAvailable);
 
@@ -1431,7 +1463,7 @@ const CycleV3Module = (() => {
         if (p.p50!=null) markLines.push({lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'},data:[{yAxis:p.p50}]});
         if (p.p75!=null) markLines.push({lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'},data:[{yAxis:p.p75}]});
       }
-      const tfpResult = createChart('chart-kondratieff-tfp', {
+      createChart('chart-kondratieff-tfp', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         legend:{textStyle:{color:COLORS.textSecondary}, top:0},
         grid: gridConfig({top:30}),
@@ -1441,9 +1473,7 @@ const CycleV3Module = (() => {
           axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
         series
-      }, _skipSizeCheck);
-      if (!tfpResult) _failedCharts.add('chart-kondratieff-tfp');
-      else _failedCharts.delete('chart-kondratieff-tfp');
+      });
     } else {
       console.warn('[Charts] No TFP data to render');
     }
@@ -1461,7 +1491,7 @@ const CycleV3Module = (() => {
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
       const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];
       const toDateStr2 = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
-      const perezResult = createChart('chart-perez-ratio', {
+      createChart('chart-perez-ratio', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         grid: gridConfig({top:20}),
         xAxis:{type:'time', axisLine:{lineStyle:{color:COLORS.borderSubtle}},
@@ -1471,9 +1501,7 @@ const CycleV3Module = (() => {
         series:[{type:'line',data:kr.history.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
           lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
           markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
-      }, _skipSizeCheck);
-      if (!perezResult) _failedCharts.add('chart-perez-ratio');
-      else _failedCharts.delete('chart-perez-ratio');
+      });
     } else {
       console.warn('[Charts] No Perez data to render');
     }
@@ -1663,27 +1691,21 @@ const CycleV3Module = (() => {
     };
     initMerrillDetailPanel();
 
-    // Render ECharts after DOM update — per-chart retry tracking
-    let _failedCharts = new Set();
-    let _retryAttempt = 0;
-
-    function tryRenderCharts(skipSizeCheck) {
-      _failedCharts.clear();
-      renderCharts(data, skipSizeCheck, _failedCharts);
-    }
-
+    // Render ECharts: ResizeObserver handles timing automatically
     requestAnimationFrame(() => {
-      tryRenderCharts(false);
-      if (_failedCharts.size > 0) {
-        console.log('[Charts]', _failedCharts.size, 'chart(s) failed, retry 1 in 500ms:', [..._failedCharts]);
-        setTimeout(() => {
-          tryRenderCharts(false);
-          if (_failedCharts.size > 0) {
-            console.log('[Charts] Still failing, retry 2 in 1500ms (force):', [..._failedCharts]);
-            setTimeout(() => tryRenderCharts(true), 1500);
+      renderCharts(data);
+      // Force-resize all charts after a delay to catch any that rendered at zero size
+      setTimeout(() => {
+        chartInstances.forEach(c => { try { c.resize(); } catch(e){} });
+        // Also try any pending charts that ResizeObserver hasn't caught
+        Object.keys(_pendingCharts).forEach(id => {
+          var el = document.getElementById(id);
+          if (el && el.offsetWidth && el.offsetHeight) {
+            console.log('[Chart] Delayed fallback render:', id);
+            createChart(id, _pendingCharts[id].option);
           }
-        }, 500);
-      }
+        });
+      }, 2000);
     });
 
     // Debounced resize handler for ECharts
