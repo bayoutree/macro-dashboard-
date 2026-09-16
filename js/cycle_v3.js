@@ -94,41 +94,42 @@ const CycleV3Module = (() => {
   function fmtPct(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals) + '%'; }
   function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // Frequency-aware thresholds
+  // Frequency-aware thresholds: cycleDays = normal publication lag + period length
+  // e.g. monthly: data for month M published ~15-30 days after M ends, so cycleDays=60 is safe
   const FREQ_THRESHOLDS = {
-    daily:    { fresh: 7, stale: 30, label: '日频' },
-    weekly:   { fresh: 14, stale: 60, label: '周频' },
-    monthly:  { fresh: 45, stale: 120, label: '月频' },
-    quarterly:{ fresh: 120, stale: 270, label: '季频' },
-    annual:   { fresh: 400, stale: 730, label: '年频' },
-    event_driven: { fresh: 365, stale: 730, label: '事件驱动' }
+    daily:    { cycleDays: 3, maxAge: 30, label: '日频' },
+    weekly:   { cycleDays: 14, maxAge: 45, label: '周频' },
+    monthly:  { cycleDays: 60, maxAge: 120, label: '月频' },
+    quarterly:{ cycleDays: 150, maxAge: 300, label: '季频' },
+    annual:   { cycleDays: 450, maxAge: 730, label: '年频' },
+    event_driven: { cycleDays: 365, maxAge: 730, label: '事件驱动' }
   };
 
   function getFreshness(lastUpdated, frequency, assessmentDate) {
     // Use _assessmentDate (set during render) or explicit param, fallback to Date.now()
     const refDate = (assessmentDate || _assessmentDate) ? new Date(assessmentDate || _assessmentDate) : new Date();
-    // If no last_updated but we have a current value, data is available
-    // Show frequency label without staleness warning
-    if (!lastUpdated) {
-      const freqLabel = (FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly).label;
-      return { cls:'no-date', label:`数据待更新 (${freqLabel})`, days:0, freqLabel };
-    }
-    const days = Math.floor((refDate - new Date(lastUpdated)) / 86400000);
     const thresh = FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly;
     const freqLabel = thresh.label;
-    if (days <= thresh.fresh) return { cls:'fresh', label:`最新${freqLabel}: ${lastUpdated}`, days, freqLabel };
-    if (days <= thresh.stale) return { cls:'stale', label:`⚠️ ${freqLabel}数据滞后${days}天`, days, freqLabel };
-    return { cls:'expired', label:`️ ${freqLabel}数据过期${days}天`, days, freqLabel };
+    // If no last_updated but we have a current value, data is available
+    if (!lastUpdated) {
+      return { cls:'no-date', label:`${freqLabel}`, days:0, freqLabel, date:'' };
+    }
+    const days = Math.floor((refDate - new Date(lastUpdated)) / 86400000);
+    // Within normal publication cycle → this is the latest period
+    if (days <= thresh.cycleDays) return { cls:'fresh', label:`${lastUpdated} | ${freqLabel} | ✅最新`, days, freqLabel, date:lastUpdated };
+    // Beyond cycle but within maxAge → likely a gap
+    if (days <= thresh.maxAge) return { cls:'stale', label:`${lastUpdated} | ${freqLabel} | ⏳等待更新`, days, freqLabel, date:lastUpdated };
+    // Way beyond → something is wrong
+    return { cls:'expired', label:`${lastUpdated} | ${freqLabel} | ⚠️数据断更`, days, freqLabel, date:lastUpdated };
   }
 
   function freshnessBadge(lastUpdated, frequency, assessmentDate) {
     const f = getFreshness(lastUpdated, frequency, assessmentDate);
-    const freqTag = f.freqLabel ? ` <span style="font-size:9px;opacity:0.7">${f.freqLabel}</span>` : '';
     if (f.cls === 'no-date') {
-      // No last_updated date: just show frequency tag, don't show alarming "数据待更新"
-      return `<span class="freshness-badge fresh" title="${f.label}">${freqTag}</span>`;
+      // No last_updated: show frequency tag only, no scary warning
+      return `<span class="freshness-badge fresh" title="${f.freqLabel}"><span style="font-size:9px;opacity:0.7">${f.freqLabel}</span></span>`;
     }
-    return `<span class="freshness-badge ${f.cls}" title="${f.label}">${f.cls==='fresh'?freqTag:f.label}${freqTag}</span>`;
+    return `<span class="freshness-badge ${f.cls}" title="${f.label}">${f.label}</span>`;
   }
 
   function signalColor(signal) {
@@ -297,9 +298,7 @@ const CycleV3Module = (() => {
     ).join('');
     return `
     <section class="v3-section" id="section-kondratieff">
-      <h2 class="section-title">🌊 康波（康德拉季耶夫长波）<span class="section-subtitle">第1层</span>
-        <span class="freshness-badge">${freshnessBadge(layer.last_updated)}</span>
-      </h2>
+      <h2 class="section-title">🌊 康波（康德拉季耶夫长波）<span class="section-subtitle">第1层</span></h2>
       <div class="phase-banner" style="border-left:4px solid ${COLORS.bullish}">
         <span class="phase-text">${escapeHtml(layer.current_phase||'')}</span>
         <span class="signal-weight-badge" style="color:${COLORS.bullish}">${layer.signal_weight>0?'+':''}${layer.signal_weight}</span>
@@ -353,9 +352,7 @@ const CycleV3Module = (() => {
     }
     return `
     <section class="v3-section" id="section-perez">
-      <h2 class="section-title">🔬 佩雷斯（技术革命周期）<span class="section-subtitle">第2层</span>
-        ${freshnessBadge(layer.last_updated)}
-      </h2>
+      <h2 class="section-title">🔬 佩雷斯（技术革命周期）<span class="section-subtitle">第2层</span></h2>
       <div class="phase-banner" style="border-left:4px solid ${COLORS.cautious}">
         <span class="phase-text">${escapeHtml(layer.current_phase||'')}</span>
         <span class="signal-weight-badge" style="color:${COLORS.cautious}">${layer.signal_weight}</span>
