@@ -660,3 +660,23 @@
 @media (max-width: 640px) {
   .consensus-v4-grid { grid-template-columns: 1fr; }
 }
+
+/* Merrill full layout: matrix top, regions side-by-side below */
+.merrill-full-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.merrill-matrix-wrap {
+  width: 100%;
+}
+.merrill-regions-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .merrill-regions-wrap {
+    grid-template-columns: 1fr;
+  }
+}

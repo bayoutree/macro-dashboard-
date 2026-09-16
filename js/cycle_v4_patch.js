@@ -106,6 +106,7 @@
       return '<span class="v4-delta v4-delta-down">↓-' + abs + '</span>';
     }
 
+    // Hero shows formula + delta only; detailed US/CN cards are in renderConsensusSummary (cycle_v3.js)
     var formula = cc.formula || 'raw_score = P1×0.3 + P2×0.4 + P3×0.3';
 
     return '<section class="v4-section v4-hero-section" id="v4-hero">' +
@@ -114,10 +115,6 @@
         '<span class="v4-hero-date">📅 ' + esc(cc.last_updated || '') + '</span>' +
       '</div>' +
       '<div class="v4-hero-formula">' + esc(formula) + '</div>' +
-      '<div class="v4-hero-grid">' +
-        renderRegionBlock('美国', '🇺🇸', us) +
-        renderRegionBlock('中国', '🇨🇳', cn) +
-      '</div>' +
       '<div class="v4-hero-deltas">' +
         '<span class="v4-delta-label">vs 上期:</span>' +
         '<span>🇺🇸 ' + renderDelta(usDelta) + '</span>' +
@@ -740,8 +737,8 @@
     // 8. Add freshness timestamps
     addFreshnessTimestamps(data);
 
-    // 9. Add indicator update timestamps to each layer section
-    addIndicatorTimestamps(data);
+    // 9. Per-indicator timestamps already handled by freshnessBadge in cycle_v3.js
+    // addIndicatorTimestamps(data); // Removed: redundant with per-indicator badges
 
     // 10. Update comparison tracking
     updateComparison(data);

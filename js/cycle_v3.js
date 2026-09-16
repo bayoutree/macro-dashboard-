@@ -70,6 +70,9 @@ const CycleV3Module = (() => {
   };
   const ASSET_LABELS = {stocks:'股票', bonds:'债券', commodities:'商品', gold:'黄金', cash:'现金', re:'房地产', credit:'信用债', fx_domestic:'本币'};
 
+  // Set during render() — used by getFreshness/freshnessBadge as reference date
+  let _assessmentDate = null;
+
 
   // ========== Utilities ==========
   function tooltipConfig() {
@@ -101,20 +104,30 @@ const CycleV3Module = (() => {
     event_driven: { fresh: 365, stale: 730, label: '事件驱动' }
   };
 
-  function getFreshness(lastUpdated, frequency) {
-    if (!lastUpdated) return { cls:'expired', label:'数据待更新', days:999 };
-    const days = Math.floor((Date.now() - new Date(lastUpdated)) / 86400000);
+  function getFreshness(lastUpdated, frequency, assessmentDate) {
+    // Use _assessmentDate (set during render) or explicit param, fallback to Date.now()
+    const refDate = (assessmentDate || _assessmentDate) ? new Date(assessmentDate || _assessmentDate) : new Date();
+    // If no last_updated but we have a current value, data is available
+    // Show frequency label without staleness warning
+    if (!lastUpdated) {
+      const freqLabel = (FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly).label;
+      return { cls:'no-date', label:`数据待更新 (${freqLabel})`, days:0, freqLabel };
+    }
+    const days = Math.floor((refDate - new Date(lastUpdated)) / 86400000);
     const thresh = FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly;
     const freqLabel = thresh.label;
-    if (days <= thresh.fresh) return { cls:'fresh', label:`${days}天前`, days };
-    if (days <= thresh.stale) return { cls:'stale', label:`⚠️ ${days}天未更新`, days };
-    return { cls:'expired', label:`${days}天未更新`, days };
+    if (days <= thresh.fresh) return { cls:'fresh', label:`最新${freqLabel}: ${lastUpdated}`, days, freqLabel };
+    if (days <= thresh.stale) return { cls:'stale', label:`⚠️ ${freqLabel}数据滞后${days}天`, days, freqLabel };
+    return { cls:'expired', label:`️ ${freqLabel}数据过期${days}天`, days, freqLabel };
   }
 
-  function freshnessBadge(lastUpdated, frequency) {
-    const f = getFreshness(lastUpdated, frequency);
-    const freqTag = frequency && frequency !== 'daily' && frequency !== 'weekly'
-      ? ` <span style="font-size:9px;opacity:0.7">${FREQ_THRESHOLDS[frequency]?.label||''}</span>` : '';
+  function freshnessBadge(lastUpdated, frequency, assessmentDate) {
+    const f = getFreshness(lastUpdated, frequency, assessmentDate);
+    const freqTag = f.freqLabel ? ` <span style="font-size:9px;opacity:0.7">${f.freqLabel}</span>` : '';
+    if (f.cls === 'no-date') {
+      // No last_updated date: just show frequency tag, don't show alarming "数据待更新"
+      return `<span class="freshness-badge fresh" title="${f.label}">${freqTag}</span>`;
+    }
     return `<span class="freshness-badge ${f.cls}" title="${f.label}">${f.cls==='fresh'?freqTag:f.label}${freqTag}</span>`;
   }
 
@@ -1084,7 +1097,10 @@ const CycleV3Module = (() => {
       }
     }, 100);
     
-    return matrixHtml + regionHtml;
+    return '<div class="merrill-full-layout">' +
+      '<div class="merrill-matrix-wrap">' + matrixHtml + '</div>' +
+      '<div class="merrill-regions-wrap">' + regionHtml + '</div>' +
+    '</div>';
   }
 
   // Phase 3: ECharts trajectory ring chart
@@ -1369,12 +1385,14 @@ const CycleV3Module = (() => {
     const cnTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.cn;
     const usTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.us;
     if (cnTfp?.history?.length) {
-      const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[h.date, h.value]), type:'line', smooth:true,
+      // Helper: convert year-only strings to "YYYY-01-01" for ECharts time axis
+      const toDateStr = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
+      const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
         lineStyle:{width:2}, itemStyle:{color:'#3b82f6'},
         areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(59,130,246,0.3)'},{offset:1,color:'rgba(59,130,246,0.02)'}]}}
       }];
       if (usTfp?.history?.length) {
-        series.push({ name:'美国TFP', data:usTfp.history.map(h=>[h.date, h.value]), type:'line', smooth:true,
+        series.push({ name:'美国TFP', data:usTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
           lineStyle:{width:2}, itemStyle:{color:'#8b5cf6'} });
       }
       // Percentile bands
@@ -1389,8 +1407,8 @@ const CycleV3Module = (() => {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         legend:{textStyle:{color:COLORS.textSecondary}, top:0},
         grid: gridConfig({top:30}),
-        xAxis:{type:'category', data:cnTfp.history.map(h=>h.date), axisLine:{lineStyle:{color:COLORS.borderSubtle}},
-          axisLabel:{color:COLORS.textMuted, fontSize:10, rotate:cnTfp.history.length>8?30:0}},
+        xAxis:{type:'time', axisLine:{lineStyle:{color:COLORS.borderSubtle}},
+          axisLabel:{color:COLORS.textMuted, fontSize:10, formatter:function(v){return new Date(v).getFullYear()}}},
         yAxis:{type:'value', name:'%', nameTextStyle:{color:COLORS.textMuted},
           axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
@@ -1404,15 +1422,16 @@ const CycleV3Module = (() => {
       const tp = kr.threshold_params || {};
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
       const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];
+      const toDateStr2 = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
       createChart('chart-perez-ratio', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         grid: gridConfig({top:20}),
-        xAxis:{type:'category', data:kr.history.map(h=>h.date), axisLine:{lineStyle:{color:COLORS.borderSubtle}},
-          axisLabel:{color:COLORS.textMuted, fontSize:10}},
+        xAxis:{type:'time', axisLine:{lineStyle:{color:COLORS.borderSubtle}},
+          axisLabel:{color:COLORS.textMuted, fontSize:10, formatter:function(v){return new Date(v).getFullYear()}}},
         yAxis:{type:'value', axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-        series:[{type:'line',data:kr.history.map(h=>[h.date,h.value]),smooth:true,
-          lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},
+        series:[{type:'line',data:kr.history.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
+          lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
           markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
       });
     }
@@ -1535,6 +1554,9 @@ const CycleV3Module = (() => {
   // ========== Main Render Entry ==========
   function render(data) {
     if (!data) return;
+    // Set assessment date for freshness calculations
+    _assessmentDate = data._meta?.assessment_date || null;
+
     const container = document.getElementById('cycle-content');
     if (!container) return;
 
