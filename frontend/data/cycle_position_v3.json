@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "update_time": "2026-09-01T00:00:00+08:00",
-    "data_freshness_score": 78,
+    "update_time": "2026-09-17T13:17:17+08:00",
+    "data_freshness_score": 83,
     "assessment_date": "2026-09-01",
-    "version": "4.0",
+    "version": "3.0",
     "next_assessment_date": "2026-10-01",
     "data_sources": [
       {
@@ -34,7 +34,7 @@
     ]
   },
   "cycle_layers": {
-    "constraint_debt_cycle": {
+    "layer_0_debt_cycle": {
       "name": "达里奥·大债务周期",
       "description": "约束其他所有周期判断的'第0层'，决定利率敏感资产的有效性边界",
       "last_updated": "2026-08-15",
@@ -389,7 +389,13 @@
               }
             ],
             "frequency": "quarterly",
-            "source_url": "https://fred.stlouisfed.org/series/GFDEGDQ188S"
+            "source_url": "https://fred.stlouisfed.org/series/GFDEGDQ188S",
+            "percentile": {
+              "p25": 91.61,
+              "p50": 102.35,
+              "p75": 117.44,
+              "current_rank": "p50"
+            }
           },
           "interest_to_revenue": {
             "name": "利息支出/财政收入",
@@ -428,7 +434,13 @@
               }
             ],
             "frequency": "monthly",
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "percentile": {
+              "p25": 10,
+              "p50": 16,
+              "p75": 20,
+              "current_rank": "p50"
+            }
           },
           "fiscal_deficit_gdp": {
             "name": "财政赤字/GDP",
@@ -679,7 +691,13 @@
               }
             ],
             "frequency": "quarterly",
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "percentile": {
+              "p25": -4.45,
+              "p50": -2.96,
+              "p75": -1.55,
+              "current_rank": "p50"
+            }
           }
         }
       },
@@ -753,7 +771,13 @@
               }
             ],
             "frequency": "quarterly",
-            "source_url": "https://www.imf.org/en/Data"
+            "source_url": "https://www.imf.org/en/Data",
+            "percentile": {
+              "p25": 49.1,
+              "p50": 61.5,
+              "p75": 71.5,
+              "current_rank": "p50"
+            }
           },
           "structural_reform_progress": {
             "name": "结构性改革进度",
@@ -812,7 +836,13 @@
                 "value": 0.6
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 0.38,
+              "p50": 0.45,
+              "p75": 0.55,
+              "current_rank": "p50"
+            }
           }
         },
         "structural_reform": {
@@ -878,7 +908,7 @@
         }
       }
     },
-    "narrative_kondratieff": {
+    "layer_1_kondratieff": {
       "name": "康波（康德拉季耶夫长波）",
       "current_phase": "第五轮萧条尾声 → 第六轮回升初期",
       "phase_code": "trough_to_recovery",
@@ -1363,19 +1393,9 @@
           }
         ]
       },
-      "frequency": "annual",
-      "commodity_forecast": {
-        "title": "康波视角下的大宗商品走势",
-        "disclaimer": "⚠️ 主观判断·仅供参考",
-        "current_phase": "第六轮康波·回升初期",
-        "commodity_phase": "触底回升阶段",
-        "outlook": "基于康波周期理论，大宗商品在康波回升期通常触底并开始回暖。当前处于早期阶段，领先指标（如铜价）已开始定价复苏预期。",
-        "medium_term_3_5year": "若康波回升逻辑成立，大宗商品中期（3-5年）有望进入主升浪前的蓄势阶段。关注供需格局变化和产能投资周期。",
-        "cross_validation": "与P2基钦被动去库阶段交叉验证：库存下降+需求上升，支持商品温和上涨。但ISM价格指数71.1偏高，短期存在回调风险。",
-        "historical_reference": "周金涛2007年预判：康波回升期大宗商品先于经济触底，第三轮康波(1990s)和中国工业化推动的大宗商品超级周期(2000s)"
-      }
+      "frequency": "annual"
     },
-    "narrative_perez": {
+    "layer_2_perez": {
       "name": "佩雷斯（技术革命周期）",
       "current_phase": "Frenzy中后期 → Turning Point前兆",
       "phase_code": "frenzy_late",
@@ -1500,7 +1520,7 @@
         }
       }
     },
-    "constraint_rate_regime": {
+    "layer_3_rate_regime": {
       "name": "利率范式（高利率时代跟踪）",
       "description": "判断全球是否进入结构性高利率时代",
       "last_updated": "2026-08-06",
@@ -11565,17 +11585,9 @@
             ]
           }
         }
-      },
-      "regime_state": {
-        "current_regime": "high_rate",
-        "structural_breached": true,
-        "forward_breached": false,
-        "market_breached": true,
-        "constraint_active": true,
-        "description": "实际利率>2%持续超过6个月，期限溢价偏高。high_rate regime下债券配置自动降一档。"
       }
     },
-    "cycle_juglar": {
+    "layer_4_juglar": {
       "us": {
         "current_phase": "上升段（AI Capex驱动）",
         "phase_code": "expansion",
@@ -11599,10 +11611,10 @@
             "current": 79.5,
             "last_updated": "2026-08-06",
             "percentile": {
-              "p25": 75,
-              "p50": 78,
-              "p75": 82,
-              "current_rank": "p50-p75"
+              "p25": 75.39,
+              "p50": 75.8,
+              "p75": 76.45,
+              "current_rank": "p50"
             },
             "history": [
               {
@@ -11844,7 +11856,13 @@
                 "value": 6.2
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 3.5,
+              "p50": 5.5,
+              "p75": 7.0,
+              "current_rank": "p50"
+            }
           },
           "capex_growth": {
             "name": "资本开支增速",
@@ -11883,6 +11901,12 @@
             "threshold": {
               "warning": 0,
               "critical": -5
+            },
+            "percentile": {
+              "p25": 4,
+              "p50": 5.8,
+              "p75": 8,
+              "current_rank": "p50"
             }
           }
         },
@@ -11946,7 +11970,13 @@
               }
             ],
             "frequency": "monthly",
-            "source_url": "https://data.stats.gov.cn/"
+            "source_url": "https://data.stats.gov.cn/",
+            "percentile": {
+              "p25": 8.5,
+              "p50": 11.0,
+              "p75": 12.0,
+              "current_rank": "p50"
+            }
           },
           "fixed_asset_investment": {
             "name": "固定资产投资增速",
@@ -11982,7 +12012,13 @@
                 "value": 3.6
               }
             ],
-            "source_url": "https://data.stats.gov.cn/"
+            "source_url": "https://data.stats.gov.cn/",
+            "percentile": {
+              "p25": 3.0,
+              "p50": 3.6,
+              "p75": 4.9,
+              "current_rank": "p50"
+            }
           },
           "industrial_capacity_utilization": {
             "name": "工业产能利用率",
@@ -12007,7 +12043,7 @@
         ]
       }
     },
-    "cycle_kitchin": {
+    "layer_5_kitchner": {
       "us": {
         "current_phase": "主动补库中期",
         "phase_code": "active_restocking",
@@ -12180,7 +12216,13 @@
                 "value": 1.3
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 1.33,
+              "p50": 1.38,
+              "p75": 1.4,
+              "current_rank": "p50"
+            }
           },
           "ism_manufacturing": {
             "name": "ISM制造业PMI",
@@ -12189,10 +12231,10 @@
             "current": 52.3,
             "last_updated": "2026-08-06",
             "percentile": {
-              "p25": 48,
-              "p50": 50,
-              "p75": 53,
-              "current_rank": "p50-p75"
+              "p25": 47.4,
+              "p50": 50.6,
+              "p75": 52.3,
+              "current_rank": "p50"
             },
             "history": [
               {
@@ -12404,7 +12446,13 @@
                 "value": 339392.0
               }
             ],
-            "source_url": "https://www.census.gov/economic-indicators/"
+            "source_url": "https://www.census.gov/economic-indicators/",
+            "percentile": {
+              "p25": 286972.0,
+              "p50": 293985.0,
+              "p75": 316215.0,
+              "current_rank": "p50"
+            }
           },
           "manufacturing_inventories": {
             "name": "制造业库存总量",
@@ -12560,7 +12608,13 @@
               }
             ],
             "frequency": "monthly",
-            "source_url": "https://fred.stlouisfed.org/series/BUSINV"
+            "source_url": "https://fred.stlouisfed.org/series/BUSINV",
+            "percentile": {
+              "p25": 2599.6,
+              "p50": 2649.5,
+              "p75": 2676.6,
+              "current_rank": "p50"
+            }
           }
         }
       },
@@ -12580,10 +12634,10 @@
             "current": 50.4,
             "last_updated": "2026-08-15",
             "percentile": {
-              "p25": 49.5,
-              "p50": 50.2,
-              "p75": 51.0,
-              "current_rank": "p50-p75"
+              "p25": 49.4,
+              "p50": 50.1,
+              "p75": 50.2,
+              "current_rank": "p50"
             },
             "history": [
               {
@@ -12660,7 +12714,13 @@
                 "value": 3.2
               }
             ],
-            "source_url": "https://data.stats.gov.cn/"
+            "source_url": "https://data.stats.gov.cn/",
+            "percentile": {
+              "p25": 1.3,
+              "p50": 7.5,
+              "p75": 17.2,
+              "current_rank": "p50"
+            }
           },
           "cn_pmi_finished_goods": {
             "name": "PMI产成品库存",
@@ -12779,12 +12839,18 @@
                 "date": "2026-01",
                 "value": 46.8
               }
-            ]
+            ],
+            "percentile": {
+              "p25": 46.0,
+              "p50": 46.8,
+              "p75": 47.8,
+              "current_rank": "p50"
+            }
           }
         }
       }
     },
-    "cycle_merrill_3d": {
+    "layer_6_merrill": {
       "us": {
         "current_phase": "复苏→过热",
         "phase_code": "recovery_to_overheat",
@@ -12956,21 +13022,411 @@
                 "value": 336.789
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 309.58,
+              "p50": 319.75,
+              "p75": 329.7,
+              "current_rank": "p50"
+            }
           },
           "unemployment_rate": {
             "name": "失业率",
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-08-06",
+            "last_updated": "2026-09-17",
             "history": [
+              {
+                "date": "2015-01-01",
+                "value": 5.7
+              },
+              {
+                "date": "2015-02-01",
+                "value": 5.5
+              },
+              {
+                "date": "2015-03-01",
+                "value": 5.4
+              },
+              {
+                "date": "2015-04-01",
+                "value": 5.4
+              },
+              {
+                "date": "2015-05-01",
+                "value": 5.6
+              },
+              {
+                "date": "2015-06-01",
+                "value": 5.3
+              },
+              {
+                "date": "2015-07-01",
+                "value": 5.2
+              },
+              {
+                "date": "2015-08-01",
+                "value": 5.1
+              },
+              {
+                "date": "2015-09-01",
+                "value": 5.0
+              },
+              {
+                "date": "2015-10-01",
+                "value": 5.0
+              },
+              {
+                "date": "2015-11-01",
+                "value": 5.1
+              },
+              {
+                "date": "2015-12-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-01-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-02-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-03-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-04-01",
+                "value": 5.1
+              },
+              {
+                "date": "2016-05-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-06-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-07-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-08-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-09-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-10-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-11-01",
+                "value": 4.7
+              },
+              {
+                "date": "2016-12-01",
+                "value": 4.7
+              },
+              {
+                "date": "2017-01-01",
+                "value": 4.7
+              },
+              {
+                "date": "2017-02-01",
+                "value": 4.6
+              },
+              {
+                "date": "2017-03-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-04-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-05-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-06-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-07-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-08-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-09-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-10-01",
+                "value": 4.2
+              },
+              {
+                "date": "2017-11-01",
+                "value": 4.2
+              },
+              {
+                "date": "2017-12-01",
+                "value": 4.1
+              },
+              {
+                "date": "2018-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-02-01",
+                "value": 4.1
+              },
+              {
+                "date": "2018-03-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-04-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-05-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-06-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-07-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-08-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-09-01",
+                "value": 3.7
+              },
+              {
+                "date": "2018-10-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-11-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-12-01",
+                "value": 3.9
+              },
+              {
+                "date": "2019-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2019-02-01",
+                "value": 3.8
+              },
+              {
+                "date": "2019-03-01",
+                "value": 3.8
+              },
+              {
+                "date": "2019-04-01",
+                "value": 3.7
+              },
+              {
+                "date": "2019-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-06-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-07-01",
+                "value": 3.7
+              },
+              {
+                "date": "2019-08-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-09-01",
+                "value": 3.5
+              },
+              {
+                "date": "2019-10-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-11-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-12-01",
+                "value": 3.6
+              },
+              {
+                "date": "2020-01-01",
+                "value": 3.6
+              },
+              {
+                "date": "2020-02-01",
+                "value": 3.5
+              },
+              {
+                "date": "2020-03-01",
+                "value": 4.4
+              },
+              {
+                "date": "2020-04-01",
+                "value": 14.8
+              },
+              {
+                "date": "2020-05-01",
+                "value": 13.2
+              },
+              {
+                "date": "2020-06-01",
+                "value": 11.0
+              },
+              {
+                "date": "2020-07-01",
+                "value": 10.2
+              },
+              {
+                "date": "2020-08-01",
+                "value": 8.4
+              },
+              {
+                "date": "2020-09-01",
+                "value": 7.8
+              },
+              {
+                "date": "2020-10-01",
+                "value": 6.9
+              },
+              {
+                "date": "2020-11-01",
+                "value": 6.7
+              },
+              {
+                "date": "2020-12-01",
+                "value": 6.7
+              },
+              {
+                "date": "2021-01-01",
+                "value": 6.4
+              },
+              {
+                "date": "2021-02-01",
+                "value": 6.2
+              },
+              {
+                "date": "2021-03-01",
+                "value": 6.1
+              },
+              {
+                "date": "2021-04-01",
+                "value": 6.1
+              },
+              {
+                "date": "2021-05-01",
+                "value": 5.8
+              },
+              {
+                "date": "2021-06-01",
+                "value": 5.9
+              },
+              {
+                "date": "2021-07-01",
+                "value": 5.4
+              },
+              {
+                "date": "2021-08-01",
+                "value": 5.1
+              },
+              {
+                "date": "2021-09-01",
+                "value": 4.7
+              },
+              {
+                "date": "2021-10-01",
+                "value": 4.5
+              },
+              {
+                "date": "2021-11-01",
+                "value": 4.1
+              },
+              {
+                "date": "2021-12-01",
+                "value": 3.9
+              },
               {
                 "date": "2022-01",
                 "value": 4.0
               },
               {
+                "date": "2022-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2022-02-01",
+                "value": 3.9
+              },
+              {
+                "date": "2022-03-01",
+                "value": 3.7
+              },
+              {
+                "date": "2022-04-01",
+                "value": 3.7
+              },
+              {
+                "date": "2022-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-06-01",
+                "value": 3.6
+              },
+              {
                 "date": "2022-07",
+                "value": 3.5
+              },
+              {
+                "date": "2022-07-01",
+                "value": 3.5
+              },
+              {
+                "date": "2022-08-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-09-01",
+                "value": 3.5
+              },
+              {
+                "date": "2022-10-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-11-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-12-01",
                 "value": 3.5
               },
               {
@@ -12978,7 +13434,35 @@
                 "value": 3.4
               },
               {
+                "date": "2023-01-01",
+                "value": 3.5
+              },
+              {
+                "date": "2023-02-01",
+                "value": 3.6
+              },
+              {
+                "date": "2023-03-01",
+                "value": 3.5
+              },
+              {
+                "date": "2023-04-01",
+                "value": 3.4
+              },
+              {
+                "date": "2023-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2023-06-01",
+                "value": 3.6
+              },
+              {
                 "date": "2023-07",
+                "value": 3.5
+              },
+              {
+                "date": "2023-07-01",
                 "value": 3.5
               },
               {
@@ -12986,7 +13470,15 @@
                 "value": 3.7
               },
               {
+                "date": "2023-08-01",
+                "value": 3.7
+              },
+              {
                 "date": "2023-09",
+                "value": 3.7
+              },
+              {
+                "date": "2023-09-01",
                 "value": 3.7
               },
               {
@@ -12994,7 +13486,15 @@
                 "value": 3.9
               },
               {
+                "date": "2023-10-01",
+                "value": 3.9
+              },
+              {
                 "date": "2023-11",
+                "value": 3.7
+              },
+              {
+                "date": "2023-11-01",
                 "value": 3.7
               },
               {
@@ -13002,7 +13502,15 @@
                 "value": 3.8
               },
               {
+                "date": "2023-12-01",
+                "value": 3.8
+              },
+              {
                 "date": "2024-01",
+                "value": 3.7
+              },
+              {
+                "date": "2024-01-01",
                 "value": 3.7
               },
               {
@@ -13010,7 +13518,15 @@
                 "value": 3.9
               },
               {
+                "date": "2024-02-01",
+                "value": 3.9
+              },
+              {
                 "date": "2024-03",
+                "value": 3.9
+              },
+              {
+                "date": "2024-03-01",
                 "value": 3.9
               },
               {
@@ -13018,7 +13534,15 @@
                 "value": 3.9
               },
               {
+                "date": "2024-04-01",
+                "value": 3.9
+              },
+              {
                 "date": "2024-05",
+                "value": 3.9
+              },
+              {
+                "date": "2024-05-01",
                 "value": 3.9
               },
               {
@@ -13026,11 +13550,23 @@
                 "value": 4.1
               },
               {
+                "date": "2024-06-01",
+                "value": 4.1
+              },
+              {
                 "date": "2024-07",
                 "value": 4.3
               },
               {
+                "date": "2024-07-01",
+                "value": 4.2
+              },
+              {
                 "date": "2024-08",
+                "value": 4.2
+              },
+              {
+                "date": "2024-08-01",
                 "value": 4.2
               },
               {
@@ -13038,7 +13574,15 @@
                 "value": 4.1
               },
               {
+                "date": "2024-09-01",
+                "value": 4.1
+              },
+              {
                 "date": "2024-10",
+                "value": 4.1
+              },
+              {
+                "date": "2024-10-01",
                 "value": 4.1
               },
               {
@@ -13046,7 +13590,15 @@
                 "value": 4.2
               },
               {
+                "date": "2024-11-01",
+                "value": 4.2
+              },
+              {
                 "date": "2024-12",
+                "value": 4.1
+              },
+              {
+                "date": "2024-12-01",
                 "value": 4.1
               },
               {
@@ -13054,7 +13606,15 @@
                 "value": 4.0
               },
               {
+                "date": "2025-01-01",
+                "value": 4.0
+              },
+              {
                 "date": "2025-02",
+                "value": 4.2
+              },
+              {
+                "date": "2025-02-01",
                 "value": 4.2
               },
               {
@@ -13062,7 +13622,15 @@
                 "value": 4.2
               },
               {
+                "date": "2025-03-01",
+                "value": 4.2
+              },
+              {
                 "date": "2025-04",
+                "value": 4.2
+              },
+              {
+                "date": "2025-04-01",
                 "value": 4.2
               },
               {
@@ -13070,7 +13638,15 @@
                 "value": 4.3
               },
               {
+                "date": "2025-05-01",
+                "value": 4.3
+              },
+              {
                 "date": "2025-06",
+                "value": 4.1
+              },
+              {
+                "date": "2025-06-01",
                 "value": 4.1
               },
               {
@@ -13078,7 +13654,15 @@
                 "value": 4.2
               },
               {
+                "date": "2025-07-01",
+                "value": 4.3
+              },
+              {
                 "date": "2025-08",
+                "value": 4.3
+              },
+              {
+                "date": "2025-08-01",
                 "value": 4.3
               },
               {
@@ -13086,7 +13670,15 @@
                 "value": 4.4
               },
               {
+                "date": "2025-09-01",
+                "value": 4.4
+              },
+              {
                 "date": "2025-11",
+                "value": 4.5
+              },
+              {
+                "date": "2025-11-01",
                 "value": 4.5
               },
               {
@@ -13094,11 +13686,23 @@
                 "value": 4.4
               },
               {
+                "date": "2025-12-01",
+                "value": 4.4
+              },
+              {
                 "date": "2026-01",
                 "value": 4.1
               },
               {
+                "date": "2026-01-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-02",
+                "value": 4.4
+              },
+              {
+                "date": "2026-02-01",
                 "value": 4.4
               },
               {
@@ -13106,7 +13710,15 @@
                 "value": 4.3
               },
               {
+                "date": "2026-03-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-04",
+                "value": 4.3
+              },
+              {
+                "date": "2026-04-01",
                 "value": 4.3
               },
               {
@@ -13114,15 +13726,37 @@
                 "value": 4.3
               },
               {
+                "date": "2026-05-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-06",
+                "value": 4.2
+              },
+              {
+                "date": "2026-06-01",
                 "value": 4.2
               },
               {
                 "date": "2026-07",
                 "value": 4.1
+              },
+              {
+                "date": "2026-07-01",
+                "value": 4.1
+              },
+              {
+                "date": "2026-08-01",
+                "value": 4.1
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 3.8,
+              "p50": 4.2,
+              "p75": 4.5,
+              "current_rank": "p50"
+            }
           },
           "us_gdp_growth": {
             "name": "GDP增速(QoQ年化)",
@@ -13777,7 +14411,13 @@
                 "date": "2026Q2",
                 "value": 2.8
               }
-            ]
+            ],
+            "percentile": {
+              "p25": 1.4,
+              "p50": 2.5,
+              "p75": 3.4,
+              "current_rank": "p50"
+            }
           }
         },
         "quadrant_trajectory": [
@@ -13852,7 +14492,13 @@
                 "value": 0.6
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": 0.4,
+              "p50": 0.5,
+              "p75": 0.9,
+              "current_rank": "p50"
+            }
           },
           "cn_ppi": {
             "name": "PPI同比",
@@ -13898,7 +14544,13 @@
                 "value": -0.8
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "percentile": {
+              "p25": -2.3,
+              "p50": -0.8,
+              "p75": -0.6,
+              "current_rank": "p50"
+            }
           },
           "cn_industrial_va": {
             "name": "工业增加值同比",
@@ -14017,7 +14669,13 @@
                 "date": "2026-01",
                 "value": 5.6
               }
-            ]
+            ],
+            "percentile": {
+              "p25": 3.8,
+              "p50": 5.3,
+              "p75": 6.4,
+              "current_rank": "p50"
+            }
           }
         },
         "quadrant_trajectory": [
@@ -14045,60 +14703,92 @@
   },
   "cross_analysis": {
     "consensus": {
-      "score": {
-        "us": 82.5,
-        "cn": 90.0,
-        "us_raw": 1.3,
-        "cn_raw": 1.6
-      },
+      "score": 62,
       "scenario": "C",
       "scenario_description": "长波脆弱 + 短周期上行：上行空间受限",
       "last_updated": "2026-09-01",
       "dimension_scores": [
         {
-          "dimension": "P1 朱格拉",
-          "layer": "cycle_juglar",
-          "us_score": 2,
-          "cn_score": 2,
-          "weight": 0.3
+          "dimension": "大债务周期",
+          "layer": 0,
+          "us_score": -2,
+          "cn_score": 0,
+          "weight": 1.5,
+          "weighted_score": -3.0
         },
         {
-          "dimension": "P2 基钦",
-          "layer": "cycle_kitchin",
-          "us_score": 1,
-          "cn_score": 1,
-          "weight": 0.4
+          "dimension": "康波",
+          "layer": 1,
+          "score": 2,
+          "weight": 2.0,
+          "weighted_score": 4.0
         },
         {
-          "dimension": "P3 美林",
-          "layer": "cycle_merrill_3d",
-          "us_score": 1,
-          "cn_score": 2,
-          "weight": 0.3
+          "dimension": "佩雷斯",
+          "layer": 2,
+          "score": -1,
+          "weight": 1.5,
+          "weighted_score": -1.5
+        },
+        {
+          "dimension": "利率范式",
+          "layer": 3,
+          "score": -1,
+          "weight": 1.5,
+          "weighted_score": -1.5
+        },
+        {
+          "dimension": "朱格拉·美",
+          "layer": 4,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "朱格拉·中",
+          "layer": 4,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "基钦·美",
+          "layer": 5,
+          "score": 2,
+          "weight": 1.0,
+          "weighted_score": 2.0
+        },
+        {
+          "dimension": "基钦·中",
+          "layer": 5,
+          "score": 1,
+          "weight": 1.0,
+          "weighted_score": 1.0
+        },
+        {
+          "dimension": "美林·美",
+          "layer": 6,
+          "score": 1,
+          "weight": 0.5,
+          "weighted_score": 0.5
+        },
+        {
+          "dimension": "美林·中",
+          "layer": 6,
+          "score": 2,
+          "weight": 0.5,
+          "weighted_score": 1.0
         }
       ],
       "scoring_rules": {
-        "description": "3维度加权共识度评分（仅量化层参与）",
-        "raw_range": [
-          -2,
-          2
-        ],
-        "normalization": "consensus_score = (raw_score + 2) / 4 × 100",
-        "weights": {
-          "P1_juglar": 0.3,
-          "P2_kitchin": 0.4,
-          "P3_merrill": 0.3
-        },
+        "description": "各周期维度按phase_code打分：看多=+2，中性=0，看空=-2，加权汇总后归一化到0-100",
+        "raw_range": "理论最小值约-20，理论最大值约+20",
+        "normalization": "score = (raw_sum + 20) / 40 * 100",
         "scenario_thresholds": {
-          "80-100": "多周期共振上行",
-          "60-80": "温和复苏",
-          "40-60": "分化/中性",
-          "20-40": "温和下行",
-          "0-20": "系统性风险"
-        },
-        "constraint_override": {
-          "C1_debt_constraint": "当C1触发constraint时，final_score = min(consensus_score, 60)，bullish信号降级为cautious_bullish",
-          "C2_high_rate": "high_rate regime下，债券配置自动降一档"
+          "A": "score>=70 AND 长波好(层1>=1) AND 短周期好(层5/6>=1)",
+          "B": "score>=50 AND 长波好(层1>=1) AND 短周期下行(层5/6<=0)",
+          "C": "score>=40 AND 长波脆弱(层1<=0 OR 层2<=-1) AND 短周期上行(层5/6>=1)",
+          "D": "朱格拉(层4)和基钦(层5)方向相反"
         }
       },
       "score_interpretation": {
@@ -14107,10 +14797,6 @@
         "40-59": "中性偏谨慎（上行空间受限）",
         "20-39": "偏空（防御为主）",
         "0-19": "强烈看空（全面防御）"
-      },
-      "narrative_notes": {
-        "N1_kondratieff": "第六轮康波回升初期，AI技术革命为标志。大宗商品触底回升阶段。⚠️ 主观判断",
-        "N2_perez": "第六轮技术革命部署期，信息技术范式。⚠️ 主观判断"
       }
     },
     "us_china_matrix": {
@@ -14414,7 +15100,7 @@
   "asset_allocation": {
     "current": [
       {
-        "asset": "中国股票",
+        "asset": "A股",
         "view": "超配",
         "signal": "bullish",
         "color": "#10b981",
@@ -14475,7 +15161,7 @@
         "reasoning": "短周期支撑但长周期约束，AI主题有真实盈利支撑但估值需消化"
       },
       {
-        "asset": "中国债券",
+        "asset": "中国利率债",
         "view": "低配",
         "signal": "bearish",
         "color": "#ef4444",
@@ -14532,6 +15218,34 @@
         "reasoning": "复苏→过热过渡期，长端利率有上行压力"
       },
       {
+        "asset": "工业金属(铜)",
+        "view": "超配",
+        "signal": "bullish",
+        "color": "#10b981",
+        "confidence_level": "high",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "朱格拉上升+基钦补库",
+          "新能源转型结构性增量"
+        ],
+        "supporting_signals": 3,
+        "opposing_signals": 0,
+        "signal_detail": {
+          "supporting": [
+            "朱格拉上升(设备投资)",
+            "基钦补库",
+            "信贷脉冲回升"
+          ],
+          "opposing": []
+        },
+        "trigger_conditions": [
+          "若全球PMI连续3月<50→降为标配",
+          "若中国基建投资增速>10%→加仓"
+        ],
+        "risk_reward_score": 8.0,
+        "reasoning": "朱格拉上升+基钦补库+信贷脉冲回升=铜的三重需求支撑"
+      },
+      {
         "asset": "黄金",
         "view": "超配",
         "signal": "bullish",
@@ -14558,6 +15272,63 @@
         ],
         "risk_reward_score": 7.0,
         "reasoning": "康波交替期货币秩序重构+央行持续增持+地缘风险溢价"
+      },
+      {
+        "asset": "原油",
+        "view": "标配",
+        "signal": "neutral",
+        "color": "#fef9c3",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "补库周期支撑需求",
+          "OPEC+供给管理"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 1,
+        "signal_detail": {
+          "supporting": [
+            "补库周期需求"
+          ],
+          "opposing": [
+            "OPEC+供给管理+全球经济不确定性"
+          ]
+        },
+        "trigger_conditions": [
+          "若OPEC+大幅增产→降为标配偏空",
+          "若中东冲突升级→升为超配"
+        ],
+        "risk_reward_score": 5.0,
+        "reasoning": "需求端受益于补库周期，但供给管理和不确定性制约上行空间"
+      },
+      {
+        "asset": "比特币",
+        "view": "标配偏空",
+        "signal": "neutral_bearish",
+        "color": "#f3f4f6",
+        "confidence_level": "low",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "佩雷斯Frenzy利好风险资产",
+          "QT+监管逆风"
+        ],
+        "supporting_signals": 1,
+        "opposing_signals": 2,
+        "signal_detail": {
+          "supporting": [
+            "佩雷斯Frenzy风险偏好"
+          ],
+          "opposing": [
+            "QT收缩流动性",
+            "监管趋严"
+          ]
+        },
+        "trigger_conditions": [
+          "若联储转鸽+监管放松→升为标配",
+          "若跌破关键支撑位→降为低配"
+        ],
+        "risk_reward_score": 4.0,
+        "reasoning": "Frenzy后期利好风险资产，但QT+监管趋严构成逆风"
       },
       {
         "asset": "美元",
@@ -14589,7 +15360,36 @@
         "reasoning": "康波交替期美元信用体系面临重构压力"
       },
       {
-        "asset": "大宗商品",
+        "asset": "人民币",
+        "view": "标配偏多",
+        "signal": "neutral_bullish",
+        "color": "#fef3c7",
+        "confidence_level": "medium",
+        "last_updated": "2026-09-01",
+        "key_drivers": [
+          "信贷脉冲回升支撑经济",
+          "中美利差仍承压"
+        ],
+        "supporting_signals": 2,
+        "opposing_signals": 1,
+        "signal_detail": {
+          "supporting": [
+            "信贷脉冲回升",
+            "经济温和复苏"
+          ],
+          "opposing": [
+            "中美利差仍为负"
+          ]
+        },
+        "trigger_conditions": [
+          "若中美利差转正→加速升值",
+          "若中美利差扩大→降为标配"
+        ],
+        "risk_reward_score": 5.5,
+        "reasoning": "信贷脉冲回升+经济复苏支撑汇率"
+      },
+      {
+        "asset": "商品综合",
         "view": "超配",
         "signal": "bullish",
         "color": "#f59e0b",
@@ -14609,9 +15409,6 @@
           "全球PMI共振下行跌破50",
           "美元大幅反弹超3%"
         ]
-      },
-      {
-        "asset": "中国房地产"
       }
     ],
     "scenario_table": [
@@ -14731,8 +15528,7 @@
         "position": "美:晚期去杠杆 / 中:结构性去杠杆",
         "signal": "约束层",
         "signal_weight": -2,
-        "color": "#f59e0b",
-        "phase": "美:晚期去杠杆 / 中:结构性去杠杆"
+        "color": "#f59e0b"
       },
       {
         "cycle": "康波",
@@ -14740,8 +15536,7 @@
         "position": "萧条尾声→回升初期",
         "signal": "看多新科技",
         "signal_weight": 2,
-        "color": "#10b981",
-        "phase": "萧条尾声→回升初期"
+        "color": "#10b981"
       },
       {
         "cycle": "佩雷斯",
@@ -14749,8 +15544,7 @@
         "position": "Frenzy中后期",
         "signal": "谨慎",
         "signal_weight": -1,
-        "color": "#f59e0b",
-        "phase": "Frenzy中后期"
+        "color": "#f59e0b"
       },
       {
         "cycle": "利率范式",
@@ -14758,8 +15552,7 @@
         "position": "高利率过渡",
         "signal": "偏空",
         "signal_weight": -1,
-        "color": "#ef4444",
-        "phase": "高利率过渡"
+        "color": "#ef4444"
       },
       {
         "cycle": "朱格拉·美",
@@ -14767,8 +15560,7 @@
         "position": "上升段（AI驱动）",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981",
-        "phase": "上升段（AI驱动）"
+        "color": "#10b981"
       },
       {
         "cycle": "朱格拉·中",
@@ -14776,8 +15568,7 @@
         "position": "上升初期",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981",
-        "phase": "上升初期"
+        "color": "#10b981"
       },
       {
         "cycle": "基钦·美",
@@ -14785,8 +15576,7 @@
         "position": "主动补库中期",
         "signal": "温和看多",
         "signal_weight": 2,
-        "color": "#84cc16",
-        "phase": "主动补库中期"
+        "color": "#84cc16"
       },
       {
         "cycle": "基钦·中",
@@ -14794,8 +15584,7 @@
         "position": "K型补库",
         "signal": "温和看多",
         "signal_weight": 1,
-        "color": "#84cc16",
-        "phase": "K型补库"
+        "color": "#84cc16"
       },
       {
         "cycle": "美林·美",
@@ -14803,8 +15592,7 @@
         "position": "复苏→过热",
         "signal": "谨慎",
         "signal_weight": 1,
-        "color": "#fef3c7",
-        "phase": "复苏→过热"
+        "color": "#fef3c7"
       },
       {
         "cycle": "美林·中",
@@ -14812,8 +15600,7 @@
         "position": "复苏中期",
         "signal": "看多",
         "signal_weight": 2,
-        "color": "#10b981",
-        "phase": "复苏中期"
+        "color": "#10b981"
       }
     ],
     "asset_views": [
@@ -15352,11 +16139,11 @@
     "current_year_mark": 2026
   },
   "_aliases": {
-    "kongbo": "cycle_layers.narrative_kondratieff",
-    "perez": "cycle_layers.narrative_perez",
-    "juglar": "cycle_layers.cycle_juglar",
-    "merrill": "cycle_layers.cycle_merrill_3d",
-    "kitchin": "cycle_layers.cycle_kitchin"
+    "kongbo": "cycle_layers.layer_1_kondratieff",
+    "perez": "cycle_layers.layer_2_perez",
+    "juglar": "cycle_layers.layer_4_juglar",
+    "kitchner": "cycle_layers.layer_5_kitchner",
+    "merrill": "cycle_layers.layer_6_merrill"
   },
   "cycle_consensus": {
     "last_updated": "2026-09-01",
