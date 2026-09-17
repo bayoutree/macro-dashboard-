@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-14",
+  "update_date": "2026-09-17",
   "version": "v4.1",
   "composite_score": 48.5,
   "position_range": "40%-55%",
@@ -491,9 +491,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.3,
+          "value": 7.9,
           "unit": "%",
-          "score": 40,
+          "score": 35,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2278,8 +2278,14 @@
             {
               "date": "2026-09-13",
               "value": 8.3
+            },
+            {
+              "date": "2026-09-17",
+              "value": 7.91
             }
-          ]
+          ],
+          "data_source": "sina",
+          "collect_time": "2026-09-17T13:19:26"
         }
       }
     },
@@ -12341,9 +12347,9 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "46.89%",
+          "value": "48.95%",
           "percentile": "98.3%",
-          "score": 55,
+          "score": 70,
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
@@ -12352,13 +12358,19 @@
             {
               "date": "2026-09-07",
               "value": 46.89
+            },
+            {
+              "date": "2026-09-17",
+              "value": 48.95
             }
-          ]
+          ],
+          "data_source": "sina",
+          "collect_time": "2026-09-17T13:19:26"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "1800(91%分位·高度集中)",
-          "score": 75,
+          "value": "数据待获取",
+          "score": 50,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
           "top_threshold": "前三行业>40%",
@@ -14148,8 +14160,8 @@
         },
         "concentration_trend": {
           "name": "交易集中度趋势",
-          "value": "-189.7(14%分位·强扩散)",
-          "score": 30,
+          "value": "数据待获取(依赖HHI)",
+          "score": 50,
           "sub_weight": 25,
           "bottom_signal": "从集中到分散",
           "top_signal": "加速集中",
@@ -15855,7 +15867,9 @@
               "date": "2026-09-11",
               "value": -189.7
             }
-          ]
+          ],
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-09-17T13:19:26"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
