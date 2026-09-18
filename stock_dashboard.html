@@ -2778,8 +2778,8 @@ function applyTimingDataToMockData() {
   //         452周点 (2017-12~2026-09)，低股基金仓位+灵活配置仓位双线
   //         低分=仓位低(积极/有空间), 高分=仓位高(偏热/拥挤)
   {
-    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'fund_position_stock'));
-    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'fund_position_flexible'));
+    const fundStock = _tag(_tsInd(ts, 'capital_flow', 'equity_fund_position'));
+    const fundFlex = _tag(_tsInd(ts, 'capital_flow', 'flexible_fund_position'));
     const fs = fundStock ? _tsSeries(fundStock) : { dates: [], history: [] };
     const fl = fundFlex ? _tsSeries(fundFlex) : { dates: [], history: [] };
     if (fs.history.length >= 2 && fl.history.length >= 2) {
@@ -2943,7 +2943,7 @@ function applyTimingDataToMockData() {
   } else _setPending(R[5]);
 
   // [0] 新增开户数(月) — timing_scores.json capital_flow.new_accounts
-  const _na = _tag(_tsInd(ts, 'capital_flow', 'new_accounts'));
+  const _na = _tag(_tsInd(ts, 'sentiment', 'new_account_opening'));
   if (_na && Array.isArray(_na.history) && _na.history.length >= 2) {
     _setSnapshot(R[0], _na, Math.round(+_na.value) + '万户', '月频');
     // 开户数：高分位=市场过热→红（标准映射，_setSnapshot 已处理）
