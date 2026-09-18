@@ -1,22 +1,22 @@
 {
-  "update_date": "2026-09-17",
+  "update_date": "2026-09-18",
   "version": "v4.1",
-  "composite_score": 48.0,
+  "composite_score": 48.1,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 50.0,
+      "score": 50.4,
       "weight": 18,
-      "weighted_score": 9.0,
+      "weighted_score": 9.07,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 51.6,
+          "value": 52.7,
           "unit": "%分位",
-          "score": 52.0,
+          "score": 53.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -110,8 +110,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.24%",
-          "percentile": "48.1%",
+          "value": "6.20%",
+          "percentile": "46.9%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
@@ -289,7 +289,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "48.95%",
+          "value": "50.26%",
           "percentile": "98.3%",
           "score": 70,
           "sub_weight": 40,
@@ -317,7 +317,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.53)",
+          "value": "小盘中性(%B=0.57)",
           "score": 45,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -330,10 +330,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.53)",
+        "current_value": "小盘中性(%B=0.57)",
         "status": "大小盘均衡",
         "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.53)"
+        "detail": "小盘风格小盘中性(%B=0.57)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -354,10 +354,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.53)",
+      "current_value": "小盘中性(%B=0.57)",
       "status": "大小盘均衡",
       "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.53)"
+      "detail": "小盘风格小盘中性(%B=0.57)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
