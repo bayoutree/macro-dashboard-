@@ -25,6 +25,8 @@ SCRIPTS = [
     ("validate_json.py", "V3周期-JSON格式校验"),
     # ---- v3.4.6 第三步：微观结构+估值真采集 ----
     ("collect_microstructure.py", "v3.4.6-拥挤度/破净率/集中度真采集"),
+    # ---- 修复timing_scores历史数据 ----
+    ("sync_timing_scores_history.py", "同步timing_scores历史数据"),
 ]
 
 
