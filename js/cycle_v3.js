@@ -1505,6 +1505,7 @@ const CycleV3Module = (() => {
       const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
       const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];
       const toDateStr2 = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
+      const perezData = krHist.map(h => { const v = Number(h.value); return isNaN(v) ? [toDateStr2(h.date), 0] : [toDateStr2(h.date), v]; });
       createChart('chart-perez-ratio', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
         grid: gridConfig({top:20}),
@@ -1512,9 +1513,9 @@ const CycleV3Module = (() => {
           axisLabel:{color:COLORS.textMuted, fontSize:10, formatter:function(v){return String(new Date(v).getFullYear())}}},
         yAxis:{type:'value', axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-        series:[{type:'line',data:krHist.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
+        series:[{type:'line',data:perezData,smooth:true,
           lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
-          markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
+          markLine:{data:frenzyLine.concat(meanLine),symbol:'none'}}]
       });
     } else {
       console.warn('[Charts] No Perez data to render');
@@ -1534,7 +1535,7 @@ const CycleV3Module = (() => {
             axisLabel:{color:COLORS.textMuted,fontSize:9,rotate:30}},
           yAxis:{type:'value',axisLine:{lineStyle:{color:COLORS.borderSubtle}},axisLabel:{color:COLORS.textMuted},
             splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-          series:[{type:'bar',data:ciHist.map(h=>({value:h.value,itemStyle:{color:h.value>=0?'#10b981':'#ef4444'}})),
+          series:[{type:'bar',data:ciHist.map(h=>{const v=Number(h.value);const nv=isNaN(v)?0:v;return{value:nv,itemStyle:{color:nv>=0?'#10b981':'#ef4444'}};}),
             markLine:{data:zeroLine,symbol:'none'}}]
         });
       }
@@ -1630,7 +1631,7 @@ const CycleV3Module = (() => {
               axisLabel:{color:COLORS.textMuted,fontSize:9,rotate:indHist.length>6?30:0}},
             yAxis:{type:'value',axisLine:{lineStyle:{color:COLORS.borderSubtle}},axisLabel:{color:COLORS.textMuted},
               splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-            series:[{type:'line',data:indHist.map(h=>[h.date,h.value]),smooth:true,
+            series:[{type:'line',data:indHist.map(h=>{const v=Number(h.value);return isNaN(v)?0:v;}),smooth:true,
               lineStyle:{width:2,color:'#06b6d4'},itemStyle:{color:'#06b6d4'},
               markLine: markLines.length ? {data:markLines,symbol:'none'} : undefined}]
           });
