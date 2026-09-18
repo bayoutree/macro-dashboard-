@@ -1437,23 +1437,36 @@ const CycleV3Module = (() => {
     const _echartsAvailable = typeof echarts !== 'undefined';
     console.log('[Charts] echarts available:', _echartsAvailable);
 
+    // Sanitize history data: filter out points with null/undefined date or value
+    // This prevents ECharts "Cannot read properties of undefined (reading 'coord')" errors
+    function _cleanHist(hist) {
+      if (!hist || !Array.isArray(hist)) return [];
+      const cleaned = hist.filter(function(h) { return h != null && h.date != null && h.value != null; });
+      if (cleaned.length < hist.length) {
+        console.warn('[Charts] Dropped', hist.length - cleaned.length, 'invalid data points from history of', hist.length);
+      }
+      return cleaned;
+    }
+
     // TFP chart (Kondratieff)
     const cnTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.cn;
     const usTfp = data.cycle_layers?.narrative_kondratieff?.indicators?.tfp_growth?.us;
-    console.log('[Charts] cnTfp history:', cnTfp?.history?.length, 'usTfp history:', usTfp?.history?.length);
-    if (cnTfp?.history?.length) {
+    const cnTfpHist = _cleanHist(cnTfp?.history);
+    const usTfpHist = _cleanHist(usTfp?.history);
+    console.log('[Charts] cnTfp history:', cnTfpHist.length, 'usTfp history:', usTfpHist.length);
+    if (cnTfpHist.length) {
       const chartEl = document.getElementById('chart-kondratieff-tfp');
       console.log('[Charts] TFP container:', chartEl ? 'FOUND ('+chartEl.offsetWidth+'x'+chartEl.offsetHeight+')' : 'NOT FOUND');
       if (!chartEl) {
         console.error('[Charts] TFP container missing! Section HTML may not have been rendered.');
       }
       const toDateStr = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
-      const series = [{ name:'中国TFP', data:cnTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
+      const series = [{ name:'中国TFP', data:cnTfpHist.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
         lineStyle:{width:2}, itemStyle:{color:'#3b82f6'},
         areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(59,130,246,0.3)'},{offset:1,color:'rgba(59,130,246,0.02)'}]}}
       }];
-      if (usTfp?.history?.length) {
-        series.push({ name:'美国TFP', data:usTfp.history.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
+      if (usTfpHist.length) {
+        series.push({ name:'美国TFP', data:usTfpHist.map(h=>[toDateStr(h.date), h.value]), type:'line', smooth:true,
           lineStyle:{width:2}, itemStyle:{color:'#8b5cf6'} });
       }
       let markLines = [];
@@ -1480,8 +1493,9 @@ const CycleV3Module = (() => {
 
     // Perez key_ratio chart
     const kr = data.cycle_layers?.narrative_perez?.key_ratio;
-    console.log('[Charts] Perez key_ratio history:', kr?.history?.length);
-    if (kr?.history?.length) {
+    const krHist = _cleanHist(kr?.history);
+    console.log('[Charts] Perez key_ratio history:', krHist.length);
+    if (krHist.length) {
       const perezEl = document.getElementById('chart-perez-ratio');
       console.log('[Charts] Perez container:', perezEl ? 'FOUND ('+perezEl.offsetWidth+'x'+perezEl.offsetHeight+')' : 'NOT FOUND');
       if (!perezEl) {
@@ -1498,7 +1512,7 @@ const CycleV3Module = (() => {
           axisLabel:{color:COLORS.textMuted, fontSize:10, formatter:function(v){return String(new Date(v).getFullYear())}}},
         yAxis:{type:'value', axisLine:{lineStyle:{color:COLORS.borderSubtle}}, axisLabel:{color:COLORS.textMuted},
           splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-        series:[{type:'line',data:kr.history.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
+        series:[{type:'line',data:krHist.map(h=>[toDateStr2(h.date),h.value]),smooth:false,
           lineStyle:{width:2,color:'#8b5cf6'},itemStyle:{color:'#8b5cf6'},symbol:'circle',symbolSize:6,
           markLine:{data:[...frenzyLine,...meanLine],symbol:'none'}}]
       });
@@ -1510,16 +1524,17 @@ const CycleV3Module = (() => {
     ['global','cn','us'].forEach(key => {
       const r = data.credit_impulse?.[key];
       const chartId = `chart-credit-${key}`;
-      if (r?.history?.length) {
+      const ciHist = _cleanHist(r?.history);
+      if (ciHist.length) {
         const zeroLine = [{lineStyle:{type:'solid',color:'#6b7280'},label:{formatter:'零轴'},data:[{yAxis:0}]}];
         createChart(chartId, {
           tooltip:{...tooltipConfig(),trigger:'axis'},
           grid:gridConfig({top:10,bottom:20}),
-          xAxis:{type:'category',data:r.history.map(h=>h.date),axisLine:{lineStyle:{color:COLORS.borderSubtle}},
+          xAxis:{type:'category',data:ciHist.map(h=>h.date),axisLine:{lineStyle:{color:COLORS.borderSubtle}},
             axisLabel:{color:COLORS.textMuted,fontSize:9,rotate:30}},
           yAxis:{type:'value',axisLine:{lineStyle:{color:COLORS.borderSubtle}},axisLabel:{color:COLORS.textMuted},
             splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-          series:[{type:'bar',data:r.history.map(h=>({value:h.value,itemStyle:{color:h.value>=0?'#10b981':'#ef4444'}})),
+          series:[{type:'bar',data:ciHist.map(h=>({value:h.value,itemStyle:{color:h.value>=0?'#10b981':'#ef4444'}})),
             markLine:{data:zeroLine,symbol:'none'}}]
         });
       }
@@ -1536,8 +1551,8 @@ const CycleV3Module = (() => {
           if (ind.us || ind.cn) {
             ['us', 'cn'].forEach(rk => {
               const rData = ind[rk];
-              const hist = rData?.history || ind.history;
-              if (!hist?.length) return;
+              const hist = _cleanHist(rData?.history || ind.history);
+              if (!hist.length) return;
               const chartId = 'chart-rate-' + groupName + '-' + indKey + '_' + rk;
               const el = document.getElementById(chartId);
               if (!el) return;
@@ -1558,18 +1573,20 @@ const CycleV3Module = (() => {
                       {offset: 1, color: 'transparent'}]}}}]
               });
             });
-          } else if (ind.history?.length) {
+          } else {
+            const indHist = _cleanHist(ind.history);
+            if (!indHist.length) return;
             const chartId = 'chart-rate-' + groupName + '-' + indKey;
             const el = document.getElementById(chartId);
             if (!el) return;
             createChart(chartId, {
               tooltip: {...tooltipConfig(), trigger: 'axis'},
               grid: gridConfig({top: 8, bottom: 12, left: 30, right: 8}),
-              xAxis: {type: 'category', data: ind.history.map(h => h.date), show: false},
+              xAxis: {type: 'category', data: indHist.map(h => h.date), show: false},
               yAxis: {type: 'value', axisLabel: {color: COLORS.textMuted, fontSize: 8},
                 splitLine: {lineStyle: {color: COLORS.borderSubtle, type: 'dashed'}},
                 axisLine: {show: false}},
-              series: [{type: 'line', data: ind.history.map(h => [h.date, h.value]),
+              series: [{type: 'line', data: indHist.map(h => [h.date, h.value]),
                 smooth: true, symbol: 'none', lineStyle: {width: 2, color: '#8b5cf6'},
                 itemStyle: {color: '#8b5cf6'},
                 areaStyle: {color: {type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
@@ -1595,9 +1612,10 @@ const CycleV3Module = (() => {
         const r = layer[regionKey];
         if (!r?.indicators) return;
         Object.entries(r.indicators).forEach(([indKey, ind]) => {
+          const indHist = _cleanHist(ind.history);
           const chartId = `chart-${prefix}-${regionKey}-${indKey}`;
           const el = document.getElementById(chartId);
-          if (!el || !ind.history?.length) return;
+          if (!el || !indHist.length) return;
           const pct = ind.percentile;
           let markLines = [];
           if (pct) {
@@ -1608,11 +1626,11 @@ const CycleV3Module = (() => {
           createChart(chartId, {
             tooltip:{...tooltipConfig(),trigger:'axis'},
             grid:gridConfig({top:10,bottom:15,left:40}),
-            xAxis:{type:'category',data:ind.history.map(h=>h.date),axisLine:{lineStyle:{color:COLORS.borderSubtle}},
-              axisLabel:{color:COLORS.textMuted,fontSize:9,rotate:ind.history.length>6?30:0}},
+            xAxis:{type:'category',data:indHist.map(h=>h.date),axisLine:{lineStyle:{color:COLORS.borderSubtle}},
+              axisLabel:{color:COLORS.textMuted,fontSize:9,rotate:indHist.length>6?30:0}},
             yAxis:{type:'value',axisLine:{lineStyle:{color:COLORS.borderSubtle}},axisLabel:{color:COLORS.textMuted},
               splitLine:{lineStyle:{color:COLORS.borderSubtle,type:'dashed'}}},
-            series:[{type:'line',data:ind.history.map(h=>[h.date,h.value]),smooth:true,
+            series:[{type:'line',data:indHist.map(h=>[h.date,h.value]),smooth:true,
               lineStyle:{width:2,color:'#06b6d4'},itemStyle:{color:'#06b6d4'},
               markLine: markLines.length ? {data:markLines,symbol:'none'} : undefined}]
           });
