@@ -22,8 +22,8 @@ const TimingTab = {
   async init() {
     try {
       const [leftResp, rightResp] = await Promise.all([
-        fetch('data/timing_scores.json?v=20260914h'),
-        fetch('data/timing_right_scores.json?v=20260914h')
+        fetch('data/timing_scores.json'),
+        fetch('data/timing_right_scores.json')
       ]);
       if (!leftResp.ok) throw new Error('Failed to load timing data');
       this.data = await leftResp.json();

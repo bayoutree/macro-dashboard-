@@ -1472,9 +1472,9 @@ const CycleV3Module = (() => {
       let markLines = [];
       if (cnTfp.percentile) {
         const p = cnTfp.percentile;
-        if (p.p25!=null) markLines.push({lineStyle:{type:'dashed',color:'#d1d5db'},label:{formatter:'p25'},data:[{yAxis:p.p25}]});
-        if (p.p50!=null) markLines.push({lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'},data:[{yAxis:p.p50}]});
-        if (p.p75!=null) markLines.push({lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'},data:[{yAxis:p.p75}]});
+        if (p.p25!=null) markLines.push({yAxis:p.p25,lineStyle:{type:'dashed',color:'#d1d5db'},label:{formatter:'p25'}});
+        if (p.p50!=null) markLines.push({yAxis:p.p50,lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'}});
+        if (p.p75!=null) markLines.push({yAxis:p.p75,lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'}});
       }
       createChart('chart-kondratieff-tfp', {
         tooltip: {...tooltipConfig(), trigger:'axis'},
@@ -1502,8 +1502,8 @@ const CycleV3Module = (() => {
         console.error('[Charts] Perez container missing!');
       }
       const tp = kr.threshold_params || {};
-      const frenzyLine = tp.frenzy_threshold ? [{lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'},data:[{yAxis:tp.frenzy_threshold}]}] : [];
-      const meanLine = tp.mean!=null ? [{lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'},data:[{yAxis:tp.mean}]}] : [];
+      const frenzyLine = tp.frenzy_threshold ? [{yAxis:tp.frenzy_threshold,lineStyle:{type:'solid',color:'#ef4444'},label:{formatter:'Frenzy阈值'}}] : [];
+      const meanLine = tp.mean!=null ? [{yAxis:tp.mean,lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'均值'}}] : [];
       const toDateStr2 = (d) => /^\d{4}$/.test(String(d)) ? d + '-01-01' : d;
       const perezData = krHist.map(h => { const v = Number(h.value); return isNaN(v) ? [toDateStr2(h.date), 0] : [toDateStr2(h.date), v]; });
       createChart('chart-perez-ratio', {
@@ -1527,7 +1527,7 @@ const CycleV3Module = (() => {
       const chartId = `chart-credit-${key}`;
       const ciHist = _cleanHist(r?.history);
       if (ciHist.length) {
-        const zeroLine = [{lineStyle:{type:'solid',color:'#6b7280'},label:{formatter:'零轴'},data:[{yAxis:0}]}];
+        const zeroLine = [{yAxis:0,lineStyle:{type:'solid',color:'#6b7280'},label:{formatter:'零轴'}}];
         createChart(chartId, {
           tooltip:{...tooltipConfig(),trigger:'axis'},
           grid:gridConfig({top:10,bottom:20}),
@@ -1620,9 +1620,9 @@ const CycleV3Module = (() => {
           const pct = ind.percentile;
           let markLines = [];
           if (pct) {
-            if (pct.p25!=null) markLines.push({lineStyle:{type:'dashed',color:'#d1d5db'},label:{formatter:'p25'},data:[{yAxis:pct.p25}]});
-            if (pct.p50!=null) markLines.push({lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'},data:[{yAxis:pct.p50}]});
-            if (pct.p75!=null) markLines.push({lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'},data:[{yAxis:pct.p75}]});
+            if (pct.p25!=null) markLines.push({yAxis:pct.p25,lineStyle:{type:'dashed',color:'#d1d5db'},label:{formatter:'p25'}});
+            if (pct.p50!=null) markLines.push({yAxis:pct.p50,lineStyle:{type:'dashed',color:'#9ca3af'},label:{formatter:'p50'}});
+            if (pct.p75!=null) markLines.push({yAxis:pct.p75,lineStyle:{type:'dashed',color:'#6b7280'},label:{formatter:'p75'}});
           }
           createChart(chartId, {
             tooltip:{...tooltipConfig(),trigger:'axis'},
