@@ -651,11 +651,14 @@ const TimingTab = {
             ${Object.entries(dim.indicators).map(([iKey, ind]) => {
               const indScoreClass = this.getScoreClass(ind.score);
               const hasHistory = ind.history && ind.history.length > 0;
+              // value 若本身已带单位符号（如 "2.66%"），不再重复拼接 unit，避免 "2.66%%"
+              const rawVal = (ind.value === null || ind.value === undefined) ? '--' : String(ind.value);
+              const unitSuffix = (ind.unit && !/%|倍|x|点|亿|万/.test(rawVal)) ? ind.unit : '';
               return `
                 <div class="timing-dim-indicator ${hasHistory ? 'has-chart' : ''}">
                   <div class="timing-dim-indicator-row">
                     <span class="timing-dim-indicator-name">${ind.name}</span>
-                    <span class="timing-dim-indicator-value">${ind.value}${ind.unit ? ind.unit : ''}</span>
+                    <span class="timing-dim-indicator-value">${rawVal}${unitSuffix}</span>
                     <span class="timing-dim-indicator-score score-${indScoreClass}" style="color:${this.getScoreColor(ind.score)}">${ind.score}</span>
                   </div>
                   ${hasHistory ? `<div class="timing-mini-chart" id="mini-chart-${key}-${iKey}" data-history='${JSON.stringify(ind.history)}' data-score="${ind.score}"></div>` : ''}
@@ -897,7 +900,11 @@ const TimingTab = {
       this.miniChartObserver.observe(el);
 
       const dates = history.map(h => h.date);
-      const values = history.map(h => h.value);
+      // 数值化：字符串值（如 "2.66%"）剥离非数字，无效点用 null（ECharts 断线不崩）
+      const values = history.map(h => {
+        const n = Number(String(h.value).replace(/[^0-9.\-]/g, ''));
+        return isNaN(n) ? null : n;
+      });
 
       const hexToRgba = (hex, alpha) => {
         const r = parseInt(hex.slice(1,3), 16);

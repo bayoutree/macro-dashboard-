@@ -98,6 +98,13 @@ jobs:
       # 5. 提交数据变更
       # ----------------------------------------------------------
       # ----------------------------------------------------------
+      # 4b. 回填 timing_scores.json 真实 history（防止重建清空）
+      # ----------------------------------------------------------
+      - name: Backfill verified timing_scores history
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        run: python scripts/sync_timing_scores_history.py
+
+      # ----------------------------------------------------------
       # 5b. 同步数据到 frontend/data/ (兼容旧版前端)
       # ----------------------------------------------------------
       - name: Sync data to frontend/data

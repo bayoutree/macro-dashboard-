@@ -83,13 +83,30 @@ def save_json(data: dict, filename: str):
     logger.info(f"  💾 已保存: {filepath.name} ({size_kb:.1f} KB)")
 
 
-def merge_history_description(new_data: dict) -> dict:
-    """将旧 JSON 中的 description 字段合并到新数据中。
+# 已验证为真实数据源回填的指标白名单（sync_timing_scores_history.py 写入）
+# 这些指标的 history 允许在每日重建时继承；未列入的指标 history 一律不继承
+# （v3.4.5 整改：防止 _legacy_FAKE 假序列复活；2026-09-19 改为白名单继承）
+_VERIFIED_HISTORY_INDICATORS = {
+    ("liquidity", "social_financing_trend"),
+    ("liquidity", "m1_m2_scissors"),
+    ("valuation", "hs300_pb_percentile"),
+    ("valuation", "buffett_ratio"),
+    ("valuation", "break_net_rate"),
+    ("equity_bond", "dividend_bond_spread_hs300"),
+    ("equity_bond", "dividend_bond_spread_red"),
+    ("equity_bond", "hs300_erp"),
+}
 
-    [v3.4.5 数据真实性整改] 禁止再从旧 JSON 继承 history：
-    旧 history 系 _legacy_FAKE_add_history_data.py 用随机数生成的假序列，
-    继承会导致假数据在每次真采集后永久存活。真历史序列须由采集脚本
-    基于真实数据源计算后写入；无源指标 history 保持缺省（前端灰灯）。
+
+def merge_history_description(new_data: dict) -> dict:
+    """合并旧 JSON 的 description 字段与已验证真实 history。
+
+    [v3.4.5 数据真实性整改] 禁止从旧 JSON 盲目继承 history（旧 history 系
+    _legacy_FAKE_add_history_data.py 生成的随机数假序列）。
+    [2026-09-19 修复 pipeline 清空根因] 对白名单内、且带
+    _history_meta.source 标记的真实采集 history 予以继承，避免每日
+    update_data.py 重建 timing_scores.json 时反复清空人工/脚本回补的真历史。
+    白名单外的指标 history 保持缺省（前端灰灯）。
     """
     import json
     try:
@@ -106,9 +123,19 @@ def merge_history_description(new_data: dict) -> dict:
         old_dim = old.get("dimensions", {}).get(dim_key, {})
         for ind_key, ind in dim.get("indicators", {}).items():
             old_ind = old_dim.get("indicators", {}).get(ind_key, {})
-            # v3.4.5: 仅合并 description；history 一律不继承（假数据清零）
             if "description" in old_ind and "description" not in ind:
                 ind["description"] = old_ind["description"]
+            # 仅继承白名单指标、带真实来源标记、且新数据自身无 history 的真历史
+            if (
+                (dim_key, ind_key) in _VERIFIED_HISTORY_INDICATORS
+                and not ind.get("history")
+                and isinstance(old_ind.get("history"), list)
+                and len(old_ind["history"]) >= 2
+                and isinstance(old_ind.get("_history_meta"), dict)
+                and old_ind["_history_meta"].get("source")
+            ):
+                ind["history"] = old_ind["history"]
+                ind["_history_meta"] = old_ind["_history_meta"]
     return new_data
 
 
@@ -1000,14 +1027,18 @@ class TimingScoreEngine:
 
         # --- 两融/流通市值 ---
         margin_score, margin_val = self._calc_margin_ratio()
-        # margin_val 是数字 (百分比)，如 2.66
+        # margin_val 是数字 (百分比)，如 2.66；value 保留展示串，value_numeric 供前端数值运算
         if isinstance(margin_val, (int, float)):
             margin_display = f"{margin_val:.2f}%"
+            margin_numeric = round(float(margin_val), 4)
         else:
             margin_display = margin_val or "数据待更新"
+            margin_numeric = None
         indicators["margin_ratio"] = {
             "name": "两融/流通市值",
             "value": margin_display,
+            "value_numeric": margin_numeric,
+            "unit": "%",
             "score": margin_score,
             "sub_weight": 0,
             "note": "【参考】两融/流通市值仅作辅助参考",

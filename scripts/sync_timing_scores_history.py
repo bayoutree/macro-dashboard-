@@ -482,6 +482,27 @@ def main():
     logger.info("\n[7/7] 沪深300 ERP (hs300_erp)")
     results["hs300_erp"] = fix_erp(timing, cn_macro)
 
+    # 统一给回填的真 history 打来源标记（供 update_data.py 白名单继承识别，
+    # 防止每日重建 timing_scores.json 时被清空；同时隔离 _legacy_FAKE 假序列）
+    _VERIFIED_KEYS = {
+        ("liquidity", "social_financing_trend"),
+        ("liquidity", "m1_m2_scissors"),
+        ("valuation", "hs300_pb_percentile"),
+        ("valuation", "buffett_ratio"),
+        ("valuation", "break_net_rate"),
+        ("equity_bond", "dividend_bond_spread_hs300"),
+        ("equity_bond", "dividend_bond_spread_red"),
+        ("equity_bond", "hs300_erp"),
+    }
+    for _dk, _dim in timing.get("dimensions", {}).items():
+        for _ik, _ind in _dim.get("indicators", {}).items():
+            if (_dk, _ik) in _VERIFIED_KEYS and isinstance(_ind.get("history"), list) and len(_ind["history"]) >= 2:
+                _ind["_history_meta"] = {
+                    "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
+                    "synced_at": datetime.now().strftime("%Y-%m-%d"),
+                }
+    logger.info("已为 %d 个白名单指标的 history 打来源标记", len(_VERIFIED_KEYS))
+
     # 保存
     save_json(TIMING_PATH, timing)
 
