@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-19",
+  "update_date": "2026-09-20",
   "version": "v4.1",
   "composite_score": 48.1,
   "position_range": "40%-55%",
@@ -1000,7 +1000,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "buffett_ratio": {
@@ -1496,7 +1496,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "break_net_rate": {
@@ -1992,10 +1992,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           },
           "data_source": "sina",
-          "collect_time": "2026-09-19T12:18:04"
+          "collect_time": "2026-09-20T12:53:19"
         }
       }
     },
@@ -2162,7 +2162,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "interest_rate": {
@@ -2283,7 +2283,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "fed_policy": {
@@ -3318,7 +3318,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "dividend_bond_spread_red": {
@@ -4333,7 +4333,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -4828,7 +4828,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-19"
+            "synced_at": "2026-09-20"
           }
         },
         "cn_us_spread": {
@@ -4993,10 +4993,10 @@
           "top_threshold": ">48%",
           "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
           "data_source": "sina",
-          "collect_time": "2026-09-19T12:18:04",
+          "collect_time": "2026-09-20T12:53:19",
           "history": [
             {
-              "date": "2026-09-19",
+              "date": "2026-09-20",
               "value": 48.52
             }
           ]
@@ -5019,7 +5019,7 @@
           "top_signal": "加速集中",
           "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。",
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-19T12:18:04"
+          "collect_time": "2026-09-20T12:53:19"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-09-19",
+  "update_time": "2026-09-20",
   "us_stock": {
     "shiller_pe": {
       "value": null,
@@ -6684,7 +6684,7 @@
   },
   "commodity": {
     "copper": {
-      "price": 6.615,
+      "price": 6.6915,
       "inventory": null,
       "history": [
         {
@@ -6925,7 +6925,7 @@
         },
         {
           "date": "2026-09-18",
-          "value": 6.615
+          "value": 6.6915
         }
       ]
     },
