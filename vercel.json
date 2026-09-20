@@ -1,19 +1,14 @@
 {
-  "builds": [
-    {
-      "src": "**/*",
-      "use": "@vercel/static"
+  "functions": {
+    "api/fetch_data.py": {
+      "memory": 1024,
+      "maxDuration": 60
     }
-  ],
-  "routes": [
+  },
+  "crons": [
     {
-      "src": "/index_v2.html",
-      "status": 301,
-      "headers": { "Location": "/" }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "path": "/api/fetch_data",
+      "schedule": "0 8 * * *"
     }
   ]
 }
