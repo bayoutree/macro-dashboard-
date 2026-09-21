@@ -22,6 +22,7 @@ if _HERE not in sys.path:
 from fetch_china import get_china_groups
 from fetch_us import get_us_groups
 from build_five_layer import build_five_layer_payload
+from normalize import make_indicator
 
 PROJECT_ROOT = os.path.dirname(_HERE)
 
