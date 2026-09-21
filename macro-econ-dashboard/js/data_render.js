@@ -58,11 +58,13 @@ function renderMiniChart(domId, history, change) {
   }
   // Fallback: ensure container has height (prevents Tailwind CDN timing issue)
   if (dom.offsetHeight < 10) { dom.style.height = '50px'; }
-  // CRITICAL: Always force explicit pixel width BEFORE echarts.init
-  // Tailwind CDN w-full may cause ECharts to read full page width instead of container width
-  const _cr = dom.getBoundingClientRect();
-  if (_cr.width > 50 && _cr.width < 2000) dom.style.width = Math.round(_cr.width) + 'px';
-  if (_cr.height < 10) dom.style.height = '50px';
+  // Force chart to use parent metric-card's width, not full page width
+  const card = dom.closest('.metric-card');
+  if (card) {
+    const cw = card.offsetWidth || card.getBoundingClientRect().width;
+    if (cw > 50 && cw < 2000) dom.style.width = cw + 'px';
+  }
+  if (dom.offsetHeight < 10) dom.style.height = '50px';
   const chart = echarts.init(dom, null, { renderer: 'canvas' });
   const values = history.map(h => h.value);
   const dates = history.map(h => h.date);
@@ -90,10 +92,13 @@ function renderLargeChart(domId, series, opts = {}) {
   if (!dom) return;
   // Fallback: ensure container has dimensions
   if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; }
-  // CRITICAL: Always force explicit pixel dimensions BEFORE echarts.init
-  const _cr = dom.getBoundingClientRect();
-  if (_cr.width > 50 && _cr.width < 2000) dom.style.width = Math.round(_cr.width) + 'px';
-  if (_cr.height < 10) dom.style.height = '200px';
+  // Force chart to use parent container's width
+  const parent = dom.parentElement;
+  if (parent) {
+    const pw = parent.offsetWidth || parent.getBoundingClientRect().width;
+    if (pw > 50 && pw < 2000) dom.style.width = pw + 'px';
+  }
+  if (dom.offsetHeight < 10) dom.style.minHeight = '200px';
   const chart = echarts.init(dom, null, { renderer: 'canvas' });
   chart.setOption({
     grid: { top: 30, bottom: 30, left: 60, right: 30 },
