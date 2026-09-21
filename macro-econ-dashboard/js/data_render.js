@@ -56,20 +56,23 @@ function renderMiniChart(domId, history, change) {
     dom.innerHTML = '<div class="no-data text-center py-2 text-xs text-gray-600">无历史数据</div>';
     return;
   }
-  // Fallback: ensure container has height (prevents Tailwind CDN timing issue)
-  if (dom.offsetHeight < 10) { dom.style.height = '50px'; }
-  // Force chart to use parent metric-card's width, not full page width
-  const card = dom.closest('.metric-card');
-  if (card) {
-    const cw = card.offsetWidth || card.getBoundingClientRect().width;
-    if (cw > 50 && cw < 2000) dom.style.width = cw + 'px';
-  }
-  if (dom.offsetHeight < 10) dom.style.height = '50px';
-  const chart = echarts.init(dom, null, { renderer: 'canvas' });
+  // CRITICAL: use rAF to ensure DOM layout + Tailwind grid CSS are applied before reading dimensions
+  requestAnimationFrame(() => {
+    if (dom.offsetHeight < 10) { dom.style.height = '50px'; }
+    const rect = dom.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.max(Math.round(rect.height), 50);
+    if (w > 20 && w < 2000) { dom.style.width = w + 'px'; }
+    const chart = echarts.init(dom, null, { renderer: 'canvas', width: w > 20 ? w : 200, height: h });
+    _initMiniChartContent(chart, history, change);
+    chartInstances.push(chart);
+  });
+}
+
+function _initMiniChartContent(chart, history, change) {
   const values = history.map(h => h.value);
   const dates = history.map(h => h.date);
   const lineColor = change > 0 ? '#ef4444' : change < 0 ? '#10b981' : '#6b7280';
-
   chart.setOption({
     grid: { top: 5, bottom: 15, left: 5, right: 5 },
     xAxis: { type: 'category', data: dates, show: false },
@@ -84,35 +87,32 @@ function renderMiniChart(domId, history, change) {
     tooltip: { trigger: 'axis', formatter: p => `${p[0].axisValue}<br/>${fmtNum(p[0].value)}`,
       backgroundColor: 'rgba(17,24,39,0.95)', borderColor: '#1e2d3d', textStyle: { color: '#e5e7eb', fontSize: 11 } },
   });
-  chartInstances.push(chart);
 }
 
 function renderLargeChart(domId, series, opts = {}) {
   const dom = document.getElementById(domId);
   if (!dom) return;
-  // Fallback: ensure container has dimensions
-  if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; }
-  // Force chart to use parent container's width
-  const parent = dom.parentElement;
-  if (parent) {
-    const pw = parent.offsetWidth || parent.getBoundingClientRect().width;
-    if (pw > 50 && pw < 2000) dom.style.width = pw + 'px';
-  }
-  if (dom.offsetHeight < 10) dom.style.minHeight = '200px';
-  const chart = echarts.init(dom, null, { renderer: 'canvas' });
-  chart.setOption({
-    grid: { top: 30, bottom: 30, left: 60, right: 30 },
-    tooltip: { trigger: 'axis', backgroundColor: 'rgba(17,24,39,0.95)', borderColor: '#1e2d3d', textStyle: { color: '#e5e7eb', fontSize: 12 } },
-    xAxis: { type: 'category', data: series.dates || [], axisLine: { lineStyle: { color: '#1e2d3d' } }, axisLabel: { color: '#6b7280', fontSize: 11 } },
-    yAxis: { type: 'value', scale: true, axisLine: { lineStyle: { color: '#1e2d3d' } }, axisLabel: { color: '#6b7280', fontSize: 11 }, splitLine: { lineStyle: { color: '#1e2d3d', type: 'dashed' } } },
-    series: [{ name: series.name || '', type: 'line', data: series.values || [], smooth: true, symbol: 'circle', symbolSize: 4,
-      lineStyle: { color: opts.color || '#3b82f6', width: 2 },
-      areaStyle: opts.area ? { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: (opts.color || '#3b82f6') + '30' }, { offset: 1, color: (opts.color || '#3b82f6') + '05' }
-      ])} : undefined,
-    }],
+  requestAnimationFrame(() => {
+    if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; }
+    const rect = dom.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.max(Math.round(rect.height), 200);
+    if (w > 50 && w < 4000) { dom.style.width = w + 'px'; }
+    const chart = echarts.init(dom, null, { renderer: 'canvas', width: w > 50 ? w : 800, height: h });
+    chart.setOption({
+      grid: { top: 30, bottom: 30, left: 60, right: 30 },
+      tooltip: { trigger: 'axis', backgroundColor: 'rgba(17,24,39,0.95)', borderColor: '#1e2d3d', textStyle: { color: '#e5e7eb', fontSize: 12 } },
+      xAxis: { type: 'category', data: series.dates || [], axisLine: { lineStyle: { color: '#1e2d3d' } }, axisLabel: { color: '#6b7280', fontSize: 11 } },
+      yAxis: { type: 'value', scale: true, axisLine: { lineStyle: { color: '#1e2d3d' } }, axisLabel: { color: '#6b7280', fontSize: 11 }, splitLine: { lineStyle: { color: '#1e2d3d', type: 'dashed' } } },
+      series: [{ name: series.name || '', type: 'line', data: series.values || [], smooth: true, symbol: 'circle', symbolSize: 4,
+        lineStyle: { color: opts.color || '#3b82f6', width: 2 },
+        areaStyle: opts.area ? { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: (opts.color || '#3b82f6') + '30' }, { offset: 1, color: (opts.color || '#3b82f6') + '05' }
+        ])} : undefined,
+      }],
+    });
+    chartInstances.push(chart);
   });
-  chartInstances.push(chart);
 }
 
 // ==================== 第一层：宏观象限 ====================
@@ -388,7 +388,7 @@ function renderMiniMetricCard(name, metric, prefix) {
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>
-      <div id="${chartId}" class="w-full" style="height:50px"></div>
+      <div id="${chartId}" class="w-full" style="height:50px;max-width:100%;overflow:hidden"></div>
     </div>
   `;
 }
@@ -478,11 +478,11 @@ function renderPolicy(policyData) {
   const fiscal = policyData.fiscal || {};
 
   const monetaryCards = Object.entries(monetary).map(([key, metric]) => {
-    return renderMetricCard(key, metric, `pol-m-${key}`);
+    return renderMetricCard(key, metric, `pol-monetary-${key}`);
   }).join('');
 
   const fiscalCards = Object.entries(fiscal).map(([key, metric]) => {
-    return renderMetricCard(key, metric, `pol-f-${key}`);
+    return renderMetricCard(key, metric, `pol-fiscal-${key}`);
   }).join('');
 
   // 政策姿态判断
@@ -876,7 +876,7 @@ function renderMetricCard(key, metric, prefix) {
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>
-      <div id="${chartId}" class="w-full" style="height:50px"></div>
+      <div id="${chartId}" class="w-full" style="height:50px;max-width:100%;overflow:hidden"></div>
     </div>
   `;
 }
