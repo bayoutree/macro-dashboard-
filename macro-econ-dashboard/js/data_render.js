@@ -56,6 +56,8 @@ function renderMiniChart(domId, history, change) {
     dom.innerHTML = '<div class="no-data text-center py-2 text-xs text-gray-600">无历史数据</div>';
     return;
   }
+  // Fallback: ensure container has height (prevents Tailwind CDN timing issue)
+  if (dom.offsetHeight < 10) { dom.style.height = '50px'; dom.style.width = '100%'; }
   const chart = echarts.init(dom, null, { renderer: 'svg' });
   const values = history.map(h => h.value);
   const dates = history.map(h => h.date);
@@ -81,6 +83,8 @@ function renderMiniChart(domId, history, change) {
 function renderLargeChart(domId, series, opts = {}) {
   const dom = document.getElementById(domId);
   if (!dom) return;
+  // Fallback: ensure container has dimensions
+  if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; dom.style.width = '100%'; }
   const chart = echarts.init(dom, null, { renderer: 'canvas' });
   chart.setOption({
     grid: { top: 30, bottom: 30, left: 60, right: 30 },
@@ -370,7 +374,7 @@ function renderMiniMetricCard(name, metric, prefix) {
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>
-      <div id="${chartId}" class="w-full h-[50px]"></div>
+      <div id="${chartId}" class="w-full" style="height:50px"></div>
     </div>
   `;
 }
@@ -812,11 +816,11 @@ function renderCrossSection(crossData) {
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div class="bg-dash-card rounded-xl p-5 border border-dash-border">
           <h3 class="text-sm font-semibold text-gray-300 mb-3">中美10Y国债利差</h3>
-          <div id="chart-spread" class="w-full h-[300px]"></div>
+          <div id="chart-spread" class="w-full" style="height:300px"></div>
         </div>
         <div class="bg-dash-card rounded-xl p-5 border border-dash-border">
           <h3 class="text-sm font-semibold text-gray-300 mb-3">美元/人民币汇率</h3>
-          <div id="chart-usdcny" class="w-full h-[300px]"></div>
+          <div id="chart-usdcny" class="w-full" style="height:300px"></div>
         </div>
       </div>
       
@@ -858,7 +862,7 @@ function renderMetricCard(key, metric, prefix) {
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>
-      <div id="${chartId}" class="w-full h-[50px]"></div>
+      <div id="${chartId}" class="w-full" style="height:50px"></div>
     </div>
   `;
 }
