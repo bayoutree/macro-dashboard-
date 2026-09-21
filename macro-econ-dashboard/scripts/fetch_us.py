@@ -216,6 +216,7 @@ def get_us_groups():
     groups = {
         "leading": {}, "coincident": {}, "lagging": {},
         "financial": {}, "market": {}, "valuation": {},
+        "household": {}, "government": {}, "fiscal": {}, "external": {},
     }
     raw = {}
     ok, fail = [], []
@@ -310,6 +311,57 @@ def get_us_groups():
     if commodity_pts:
         add("market", "commodity", commodity_pts, unit="")
         raw["commodity"] = commodity_pts
+
+    # ---- 居民部门（household）----
+    # PCE 个人消费支出同比
+    pce_series = get_series(fred, "PCEC96")
+    add("household", "pce", yoy(pce_series, periods=12), unit="%")
+
+    # 零售销售同比
+    retail_series = get_series(fred, "RSAFS")
+    add("household", "retail_sales", yoy(retail_series, periods=12), unit="%")
+
+    # 消费者信心指数
+    add("household", "consumer_conf", _to_points(get_series(fred, "UMCSENT")), unit="")
+
+    # ---- 政府部门（government）----
+    # 联邦财政收支差（月度，MTSDS133FMS，负值=赤字）
+    deficit_series = _to_points(get_series(fred, "MTSDS133FMS"))
+    if deficit_series:
+        add("government", "federal_deficit", deficit_series, unit="百万美元")
+
+    # 联邦债务
+    debt_series = _to_points(get_series(fred, "GFDEBTN"))
+    if debt_series:
+        add("government", "federal_debt", debt_series, unit="百万美元")
+
+    # ---- 对外部门（external）----
+    # 贸易差额
+    trade_series = _to_points(get_series(fred, "BOPGSTB"))
+    if trade_series:
+        add("external", "trade_balance", trade_series, unit="百万美元")
+
+    # 经常账户余额（季度，IEABC）
+    ca_series = _to_points(get_series(fred, "IEABC"))
+    if ca_series:
+        add("external", "current_account", ca_series, unit="百万美元")
+
+    # ---- 财政政策（fiscal）----
+    # 联邦财政收入（季度，W006RC1Q027SBEA）
+    receipts_series = _to_points(get_series(fred, "W006RC1Q027SBEA"))
+    if receipts_series:
+        add("fiscal", "receipts", receipts_series, unit="百万美元")
+
+    # 联邦支出 = 收入 + 赤字（因为收入是正，赤字是负）
+    if receipts_series and deficit_series:
+        # 用收入和赤字计算支出：支出 = 收入 - 赤字（赤字为负）
+        spending = []
+        receipt_map = {d: v for d, v in receipts_series}
+        deficit_map = {d: v for d, v in deficit_series}
+        for d in sorted(set(receipt_map) & set(deficit_map)):
+            spending.append((d, receipt_map[d] - deficit_map[d]))
+        if spending:
+            add("fiscal", "spending", spending, unit="百万美元")
 
     # ---- 估值 ----
     sp500_pts = _to_points(get_series(fred, "SP500"))

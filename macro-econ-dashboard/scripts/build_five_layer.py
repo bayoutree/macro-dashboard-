@@ -76,6 +76,15 @@ NAME_MAP = {
     "oecd_cli": "OECD综合领先",
     "yield_curve_10y2y": "10Y-2Y利差",
     "lei": "美国LEI",
+    "tax_revenue": "税收收入",
+    "pce": "个人消费支出",
+    "retail_sales": "零售销售",
+    "consumer_conf": "消费者信心",
+    "federal_deficit": "联邦赤字",
+    "federal_debt": "联邦债务",
+    "current_account": "经常账户",
+    "spending": "联邦支出",
+    "receipts": "联邦收入",
 }
 
 ASSET_NAMES = {
@@ -486,7 +495,13 @@ def _build_cn_sectors(g):
     if tb:
         external["trade_balance"] = _named(tb, "trade_balance")
 
-    return {"household": household, "corporate": corporate, "government": {}, "external": external}
+    # 政府部门
+    government = {}
+    frg = g.get("government", {}).get("fiscal_revenue_growth")
+    if frg:
+        government["fiscal_revenue_growth"] = _named(frg, "fiscal_revenue_growth")
+
+    return {"household": household, "corporate": corporate, "government": government, "external": external}
 
 
 def _build_cn_policy(g):
@@ -495,7 +510,11 @@ def _build_cn_policy(g):
         monetary["dr007"] = _named(g["financial"]["dr007"], "dr007")
     if g.get("lagging", {}).get("m2"):
         monetary["m2"] = _named(g["lagging"]["m2"], "m2")
-    return {"monetary": monetary, "fiscal": {}}
+    fiscal = {}
+    frg = g.get("government", {}).get("fiscal_revenue_growth")
+    if frg:
+        fiscal["fiscal_revenue_growth"] = _named(frg, "fiscal_revenue_growth")
+    return {"monetary": monetary, "fiscal": fiscal}
 
 
 def _build_china(g, evo_tmpl):
@@ -628,6 +647,17 @@ def _us_asset_desc(q_state, liq_state, phase, gdp, cpi, fed):
 
 
 def _build_us_sectors(g):
+    household = {}
+    pce = g.get("household", {}).get("pce")
+    if pce:
+        household["pce"] = _named(pce, "pce")
+    retail = g.get("household", {}).get("retail_sales")
+    if retail:
+        household["retail_sales"] = _named(retail, "retail_sales")
+    conf = g.get("household", {}).get("consumer_conf")
+    if conf:
+        household["consumer_conf"] = _named(conf, "consumer_conf")
+
     corporate = {}
     pmi = g.get("leading", {}).get("ism_pmi")
     if pmi:
@@ -638,7 +668,24 @@ def _build_us_sectors(g):
     nf = g.get("coincident", {}).get("nonfarm")
     if nf:
         corporate["nonfarm"] = _named(nf, "nonfarm")
-    return {"household": {}, "corporate": corporate, "government": {}, "external": {}}
+
+    government = {}
+    deficit = g.get("government", {}).get("federal_deficit")
+    if deficit:
+        government["federal_deficit"] = _named(deficit, "federal_deficit")
+    debt = g.get("government", {}).get("federal_debt")
+    if debt:
+        government["federal_debt"] = _named(debt, "federal_debt")
+
+    external = {}
+    tb = g.get("external", {}).get("trade_balance")
+    if tb:
+        external["trade_balance"] = _named(tb, "trade_balance")
+    ca = g.get("external", {}).get("current_account")
+    if ca:
+        external["current_account"] = _named(ca, "current_account")
+
+    return {"household": household, "corporate": corporate, "government": government, "external": external}
 
 
 def _build_us_policy(g):
@@ -647,7 +694,14 @@ def _build_us_policy(g):
         monetary["ust_2y"] = _named(g["financial"]["ust_2y"], "ust_2y")
     if g.get("financial", {}).get("dxy"):
         monetary["dxy"] = _named(g["financial"]["dxy"], "dxy")
-    return {"monetary": monetary, "fiscal": {}}
+    fiscal = {}
+    spending = g.get("fiscal", {}).get("spending")
+    if spending:
+        fiscal["spending"] = _named(spending, "spending")
+    receipts = g.get("fiscal", {}).get("receipts")
+    if receipts:
+        fiscal["receipts"] = _named(receipts, "receipts")
+    return {"monetary": monetary, "fiscal": fiscal}
 
 
 def _build_us(g, evo_tmpl):

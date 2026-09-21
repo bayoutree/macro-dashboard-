@@ -121,6 +121,7 @@ def get_china_groups():
     groups = {
         "leading": {}, "coincident": {}, "lagging": {},
         "financial": {}, "sectors": {}, "external": {}, "valuation": {},
+        "government": {}, "fiscal": {},
     }
     raw = {}
     ok, fail = [], []
@@ -287,6 +288,18 @@ def get_china_groups():
     tb_series = extract_series(df, ["月份"], ["今值", "贸易差额", "差额", "净值"])
     if tb_series:
         add("external", "trade_balance", tb_series, unit="亿美元")
+
+    # ---- 政府部门（government）----
+    # 财政收入同比增速：使用 macro_china_czsr（数据到最新月份）
+    df = grab(ak.macro_china_czsr)
+    if df is not None and len(df) > 0:
+        # 列名: 月份, 当月, 当月-同比增长, 当月-环比增长, 累计, 累计-同比增长
+        fiscal_rev = extract_series(df, ["月份"], ["当月-同比增长"])
+        if fiscal_rev:
+            add("government", "fiscal_revenue_growth", fiscal_rev, unit="%")
+
+    # ---- 财政政策（fiscal）----
+    # 暂无独立数据源，财政相关指标从 government 部门映射
 
     # ---- 估值 ----
     df = grab(ak.stock_index_pe_lg)
