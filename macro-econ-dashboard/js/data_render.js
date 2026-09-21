@@ -58,7 +58,10 @@ function renderMiniChart(domId, history, change) {
   }
   // Fallback: ensure container has height (prevents Tailwind CDN timing issue)
   if (dom.offsetHeight < 10) { dom.style.height = '50px'; dom.style.width = '100%'; }
-  const chart = echarts.init(dom, null, { renderer: 'svg' });
+  const chart = echarts.init(dom, null, { renderer: 'canvas' });
+  // Force correct dimensions (fix: ECharts may read wrong container size on init)
+  const rect = dom.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) { chart.resize({ width: rect.width, height: rect.height }); }
   const values = history.map(h => h.value);
   const dates = history.map(h => h.date);
   const lineColor = change > 0 ? '#ef4444' : change < 0 ? '#10b981' : '#6b7280';
@@ -86,6 +89,9 @@ function renderLargeChart(domId, series, opts = {}) {
   // Fallback: ensure container has dimensions
   if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; dom.style.width = '100%'; }
   const chart = echarts.init(dom, null, { renderer: 'canvas' });
+  // Force correct dimensions
+  const rect = dom.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) { chart.resize({ width: rect.width, height: rect.height }); }
   chart.setOption({
     grid: { top: 30, bottom: 30, left: 60, right: 30 },
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(17,24,39,0.95)', borderColor: '#1e2d3d', textStyle: { color: '#e5e7eb', fontSize: 12 } },
