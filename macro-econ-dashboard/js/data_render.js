@@ -57,12 +57,13 @@ function renderMiniChart(domId, history, change) {
     return;
   }
   // Fallback: ensure container has height (prevents Tailwind CDN timing issue)
-  if (dom.offsetHeight < 10) { dom.style.height = '50px'; dom.style.width = '100%'; }
-  // Force explicit dimensions to avoid Tailwind CDN timing issues
-  const rect = dom.getBoundingClientRect();
-  const w = Math.max(100, Math.round(rect.width));
-  const h = Math.max(30, Math.round(rect.height));
-  const chart = echarts.init(dom, null, { renderer: 'canvas', width: w, height: h });
+  if (dom.offsetHeight < 10) { dom.style.height = '50px'; }
+  // CRITICAL: Always force explicit pixel width BEFORE echarts.init
+  // Tailwind CDN w-full may cause ECharts to read full page width instead of container width
+  const _cr = dom.getBoundingClientRect();
+  if (_cr.width > 50 && _cr.width < 2000) dom.style.width = Math.round(_cr.width) + 'px';
+  if (_cr.height < 10) dom.style.height = '50px';
+  const chart = echarts.init(dom, null, { renderer: 'canvas' });
   const values = history.map(h => h.value);
   const dates = history.map(h => h.date);
   const lineColor = change > 0 ? '#ef4444' : change < 0 ? '#10b981' : '#6b7280';
@@ -88,12 +89,12 @@ function renderLargeChart(domId, series, opts = {}) {
   const dom = document.getElementById(domId);
   if (!dom) return;
   // Fallback: ensure container has dimensions
-  if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; dom.style.width = '100%'; }
-  // Force explicit dimensions
-  const rect = dom.getBoundingClientRect();
-  const w = Math.max(200, Math.round(rect.width));
-  const h = Math.max(200, Math.round(rect.height));
-  const chart = echarts.init(dom, null, { renderer: 'canvas', width: w, height: h });
+  if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; }
+  // CRITICAL: Always force explicit pixel dimensions BEFORE echarts.init
+  const _cr = dom.getBoundingClientRect();
+  if (_cr.width > 50 && _cr.width < 2000) dom.style.width = Math.round(_cr.width) + 'px';
+  if (_cr.height < 10) dom.style.height = '200px';
+  const chart = echarts.init(dom, null, { renderer: 'canvas' });
   chart.setOption({
     grid: { top: 30, bottom: 30, left: 60, right: 30 },
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(17,24,39,0.95)', borderColor: '#1e2d3d', textStyle: { color: '#e5e7eb', fontSize: 12 } },
