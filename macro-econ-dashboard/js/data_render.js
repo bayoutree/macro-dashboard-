@@ -905,23 +905,23 @@ function renderCountry(countryData, country) {
     const ec = countryData.economic_cycle;
     ['dr007', 'm2'].forEach(k => {
       const m = ec.monetary_indicators?.[k];
-      if (m) renderMiniChart(`cn-m-${k === 'dr007' ? 'd' : 'm2'}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-cn-m-${k === 'dr007' ? 'd' : 'm2'}`, m.history, m.change);
     });
     ['m1'].forEach(k => {
       const m = ec.credit_indicators?.[k];
-      if (m) renderMiniChart(`cn-c-m1`, m.history, m.change);
+      if (m) renderMiniChart(`mini-cn-c-m1`, m.history, m.change);
     });
     const sf = ec.credit_indicators?.shrzgm;
-    if (sf) renderMiniChart('cn-c-sf', sf.history, sf.change);
+    if (sf) renderMiniChart('mini-cn-c-sf', sf.history, sf.change);
   } else if (country === 'us' && countryData.economic_cycle) {
     const ec = countryData.economic_cycle;
     ['gdp', 'cpi', 'ppi'].forEach((k, i) => {
       const m = ec.quadrant_indicators?.[k];
-      if (m) renderMiniChart(`us-q-${k[0]}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-us-q-${k[0]}`, m.history, m.change);
     });
     [['fed_funds', 'ff'], ['ust_10y', 'u10'], ['tips_10y', 'tips'], ['hy_spread', 'hy']].forEach(([k, suf]) => {
       const m = ec.liquidity_indicators?.[k];
-      if (m) renderMiniChart(`us-l-${suf}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-us-l-${suf}`, m.history, m.change);
     });
   } else if (countryData.quadrant) {
     // 兼容旧数据
