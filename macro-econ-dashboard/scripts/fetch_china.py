@@ -205,9 +205,35 @@ def get_china_groups():
         dr_series = extract_series(df, ["日期"], ["1W-定价"])
     add("financial", "dr007", dr_series, unit="%")
 
-    # 10Y 国债收益率（中债）
-    df = grab(ak.bond_china_yield)
-    cn10 = extract_series(df, ["日期"], ["10年", "10Y"])
+    # 10Y 国债收益率（东方财富 - 数据到最新，覆盖 2002 至今）
+    # 替代 bond_china_yield（只到 2021-01，无法与 US 10Y 计算利差）
+    cn10 = None
+    df_bond = grab(ak.bond_zh_us_rate)
+    if df_bond is not None and len(df_bond) > 0:
+        # 列名: 日期, 中国国债收益率10年, 美国国债收益率10年, ...
+        date_col = None
+        val_col = None
+        for c in df_bond.columns:
+            cs = str(c).lower()
+            if "日期" in cs or "date" in cs:
+                date_col = c
+            if "中国国债收益率10年" in cs or ("中国" in cs and "10" in cs):
+                val_col = c
+        if date_col and val_col:
+            cn10 = []
+            for _, row in df_bond.iterrows():
+                try:
+                    d = str(row[date_col]).strip()
+                    v = float(row[val_col])
+                    if math.isnan(v):
+                        continue
+                    # 保留完整 YYYY-MM-DD 日期
+                    m = re.search(r"(\d{4}-\d{2}-\d{2})", d)
+                    if m:
+                        cn10.append((m.group(1), v))
+                except Exception:
+                    continue
+            cn10 = cn10 or None
     if cn10:
         raw["cn_10y"] = cn10
         add("financial", "cn_10y", cn10, unit="%")
