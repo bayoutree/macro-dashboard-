@@ -52,7 +52,7 @@ def cn_date(s):
         return f"{m.group(1)}-{int(m.group(2)):02d}"
     m = re.search(r"(\d{4}-\d{2}-\d{2})", s)
     if m:
-        return m.group(1)[:7]
+        return m.group(1)  # 保留完整 YYYY-MM-DD（日频数据如 DR007）
     m = re.search(r"(\d{4}-\d{2})", s)
     if m:
         return m.group(1)
