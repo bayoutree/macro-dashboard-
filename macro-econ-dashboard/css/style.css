@@ -1,0 +1,258 @@
+/* ==================== 宏观经济看板 自定义样式 ==================== */
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a1628; }
+::-webkit-scrollbar-thumb { background: #1e2d3d; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2d3d4d; }
+
+/* Tab 按钮 */
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover {
+  color: #9ca3af;
+}
+.tab-btn.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+/* Tab 内容 */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.tab-content.active {
+  display: block;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 指标卡片 */
+.metric-card {
+  background: #111827;
+  border: 1px solid #1e2d3d;
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.metric-card:hover {
+  border-color: #2a3d4d;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* 分组标题 */
+.group-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 16px;
+  padding-left: 12px;
+  border-left: 3px solid #3b82f6;
+}
+
+/* 信号灯 */
+.signal-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.signal-light .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.signal-green { background: rgba(16,185,129,0.12); color: #34d399; }
+.signal-green .dot { background: #10b981; box-shadow: 0 0 6px #10b981; }
+.signal-yellow { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.signal-yellow .dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.signal-red { background: rgba(239,68,68,0.12); color: #f87171; }
+.signal-red .dot { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+.signal-gray { background: rgba(107,114,128,0.12); color: #9ca3af; }
+.signal-gray .dot { background: #6b7280; }
+
+/* 分位数标签 */
+.pct-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+.pct-low { background: rgba(16,185,129,0.15); color: #34d399; }
+.pct-mid { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.pct-high { background: rgba(239,68,68,0.15); color: #f87171; }
+.pct-na { background: rgba(107,114,128,0.15); color: #9ca3af; }
+
+/* 变化箭头 */
+.change-up { color: #ef4444; }
+.change-down { color: #10b981; }
+.change-flat { color: #6b7280; }
+
+/* 资产影响标签 */
+.asset-impact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.asset-bull { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.asset-bear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+/* 骨架图视图按钮 */
+.skel-view-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: 1px solid #1e2d3d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.skel-view-btn:hover { color: #9ca3af; border-color: #2a3d4d; }
+.skel-view-btn.active { color: #3b82f6; border-color: #3b82f6; background: rgba(59,130,246,0.08); }
+
+/* 跨境传导链路 */
+.chain-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: #0a1628;
+  border-radius: 8px;
+  border: 1px solid #1e2d3d;
+}
+.chain-arrow {
+  color: #3b82f6;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* vis-network 容器 */
+#skeleton-network {
+  position: relative;
+}
+.vis-network {
+  outline: none !important;
+}
+
+/* 加载动画 */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1e2d3d;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 空数据占位 */
+.no-data {
+  color: #4b5563;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* 部门卡片 */
+.dept-card {
+  background: #111827;
+  border: 1px solid #1e2d3d;
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.dept-card:hover { border-color: #2a3d4d; }
+.dept-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dept-icon { font-size: 18px; }
+.dept-diagnosis {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(59,130,246,0.06);
+  border-left: 2px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* 象限徽章 */
+.quadrant-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 情景卡片 */
+.scenario-card {
+  background: #0a1628;
+  border: 1px solid #1e2d3d;
+  border-radius: 10px;
+  padding: 14px;
+}
+.scenario-prob {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: auto;
+}
+
+/* 中美联动高亮 section（金色边框+光晕，明显区别于普通卡片） */
+.cross-highlight {
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.35), inset 0 0 0 1px rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.10), rgba(10, 22, 40, 0.4));
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+}
+.cross-highlight::before {
+  content: '🌐 中美联动 · 跨境传导链';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #0a1628;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .tab-btn { padding: 8px 12px; font-size: 13px; }
+  #skeleton-detail { width: 100% !important; max-height: 300px; }
+}

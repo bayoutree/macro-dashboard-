@@ -1,0 +1,6 @@
+# Vercel Python Serverless 运行依赖
+# 通过 requirements.txt 自动安装（见 vercel.json）
+akshare>=1.13.0
+fredapi>=0.5.0
+pandas>=2.2.0
+requests>=2.31.0
