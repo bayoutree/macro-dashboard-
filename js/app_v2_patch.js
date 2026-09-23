@@ -127,6 +127,8 @@
       this.data.cyclePositionV2?.update_time,
     ].filter(Boolean);
     if (updateTimes.length > 0) {
+      // Sort descending to pick the latest update time
+      updateTimes.sort((a, b) => String(b).localeCompare(String(a)));
       const timeEl = document.getElementById('update-time');
       if (timeEl) timeEl.textContent = '更新于 ' + updateTimes[0];
     }
