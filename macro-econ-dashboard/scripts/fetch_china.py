@@ -275,12 +275,12 @@ def get_china_groups():
     # ---- 对外（external）----
     # Bug 7 修复：确保对外部门数据正确填充
     df = grab(ak.macro_china_exports_yoy)
-    export_series = extract_series(df, ["月份"], ["今值", "同比增长", "出口"])
+    export_series = extract_series(df, ["日期"], ["今值", "同比增长", "出口"])
     if export_series:
         add("external", "export", export_series, unit="%")
 
     df = grab(ak.macro_china_imports_yoy)
-    import_series = extract_series(df, ["月份"], ["今值", "同比增长", "进口"])
+    import_series = extract_series(df, ["日期"], ["今值", "同比增长", "进口"])
     if import_series:
         add("external", "import", import_series, unit="%")
 

@@ -270,14 +270,16 @@ def get_us_groups():
 
     # ---- 领先 ----
     add("leading", "ism_pmi", get_ism_pmi(), unit="")
-    cli = _to_points(get_series(fred, "USALOLITONOSTSAM"))
+    cli = _to_points(get_series(fred, "USALOLITOAASTSAM"))
     if cli is None:
-        cli = _to_points(get_series(fred, "USACLORSGPNOSTSAM"))
+        cli = _to_points(get_series(fred, "USACLOORAASTSAM"))
     add("leading", "oecd_cli", cli, unit="")
     dgs10 = get_series(fred, "DGS10")
     dgs2 = get_series(fred, "DGS2")
     add("leading", "yield_curve_10y2y", spread_series(dgs10, dgs2, as_bps=True), unit="bps")
-    add("leading", "lei", _to_points(get_series(fred, "USSLIND")), unit="")
+    # LEI (USSLIND) dead since 2020-02, use OECD CLI as proxy
+    lei_data = _to_points(get_series(fred, "USALOLITOAASTSAM"))
+    add("leading", "lei", lei_data, unit="")
 
     # ---- 同步 ----
     gdp_series = get_series(fred, "GDP", start="2016-01-01", timeout=90)
