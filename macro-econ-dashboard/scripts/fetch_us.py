@@ -269,7 +269,9 @@ def get_us_groups():
         ok.append(f"{cat}.{key}")
 
     # ---- 领先 ----
-    add("leading", "ism_pmi", get_ism_pmi(), unit="")
+    # ISM PMI: akshare dead since 2025-09, use DGORDER (Durable Goods New Orders) YoY as proxy
+    dg_order = get_series(fred, "DGORDER")
+    add("leading", "ism_pmi", yoy(dg_order, periods=12), unit="%")
     cli = _to_points(get_series(fred, "USALOLITOAASTSAM"))
     if cli is None:
         cli = _to_points(get_series(fred, "USACLOORAASTSAM"))
