@@ -11,17 +11,25 @@ p1/p2/p3_score、p1/p2/p3_label、signal、raw_score、consensus_score、formula
 而前端 js/cycle_v4_patch.js、js/cycle_v3.js 仍按旧契约取值，导致证伪清单
 6 处 undefined、排序副标题 "?" 值、两套评分并存。
 
+09-24 二次修正：朱格拉维度新旧刻度不一致（见 P1 映射注释），直接采用新分值
+会让 transmission_table 查表/矛盾组合检测把「扩张早期」误判为「扩张晚期」；
+并新增 asset_ranking 重算逻辑，保证排序表与 transmission_table、
+asset_allocation 配置卡口径一致。
+
 本脚本职责
 ----------
 输入: data/cycle_position_v3.json   —— 每日流水线唯一权威产物（新 schema）
 输出: data/cycle_position_v4.json   —— 前端契约文件（新 schema + 旧契约兼容层）
 
 1. 以 v3 为底座，保留 v4-only 增强板块（transmission_table、
-   constraint_degradation、data_quality、asset_ranking、contradiction_status）；
+   constraint_degradation、data_quality、contradiction_status；
+   asset_ranking 不再原样保留，改为本脚本重算）；
 2. 重建 cycle_consensus：保留新 schema 全部字段，并补回 united_states /
    china 分键（p1/p2/p3 兼容字段），映射规则见下方常量区注释；
 3. 强制口径一致：synthesis 文本中的「共识度评分 NN/100」与
-   cycle_consensus.overall_score 不一致时，以 overall_score 为准改写文本。
+   cycle_consensus.overall_score 口径不一致时，以 overall_score 为准改写；
+4. 重算 asset_ranking：按 transmission_table entries（US/CN 各自现态）取基线
+   方向与置信度，叠加 constraint_degradation 的 C1/C2 降级，确定性排序。
 
 注意：输出文件本身由本脚本整体重写，任何手工编辑都会在下次流水线运行时
 被覆盖——请把变更需求落到本脚本或上游，不要直接改 data/cycle_position_v4.json。
@@ -43,12 +51,13 @@ V4_FILE = DATA_DIR / "cycle_position_v4.json"
 DIM_JUGLAR = "朱格拉设备周期"
 DIM_KITCHIN = "基钦库存周期"
 
-# v4-only 增强板块：v3 中不存在、需要从上一版 v4 保留的顶层 key
+# v4-only 增强板块：v3 中不存在、需要从上一版 v4 保留的顶层 key。
+# 注意 asset_ranking 不在其中——09-16 旧版基于 (P1=2,P2=1) 手工编码且与
+# asset_allocation_summary 矛盾，必须每次重算。
 V4_PRESERVE_KEYS = [
     "transmission_table",
     "constraint_degradation",
     "data_quality",
-    "asset_ranking",
     "contradiction_status",
 ]
 
@@ -56,7 +65,7 @@ V4_PRESERVE_KEYS = [
 # 旧契约公式（前端 cycle_v4_patch.js / cycle_v3.js 的既定口径，不可改）
 #   raw_score       = P1*0.3 + P2*0.4 + P3*0.3
 #   consensus_score = (raw_score + 2) / 4 * 100
-# P1=朱格拉设备周期, P2=基钦库存周期, P3=美林时钟；分值域 -2..2
+# P1=朱格拉设备周期, P2=基钦库存周期, P3=美林时钟；旧刻度域 -2..2
 # ------------------------------------------------------------------
 FORMULA_TEXT = (
     "raw_score = P1×0.3 + P2×0.4 + P3×0.3, "
@@ -64,18 +73,121 @@ FORMULA_TEXT = (
 )
 
 # ------------------------------------------------------------------
-# P1/P2 取值规则：从 dimension_scores 映射
-#   朱格拉: us_score / cn_score   （事故基线 us=1, cn=1）
-#   基  钦: us_score / cn_score   （事故基线 us=2, cn=1）
-# dimension_scores 中对应条目或分国分值缺失时记 0（中性），不猜测。
-#
-# P3 美林时钟取值规则（dimension_scores 中美林只有定性描述、无数值，
-# 必须在生成器侧定死，禁止人工判断）：
-#   读取 v4 cycle_layers.cycle_merrill_3d.{us,cn}.signal_weight。
-#   该字段由美林三维矩阵的象限位置产出，取值 -2..2，与 P1/P2 同尺度，
-#   可直接作为 P3；缺失时记 0（中性）并在 label 中体现。
+# 【层名映射 v3 → v4】v3 沿用 09-03 的 layer_* 命名，前端 v4 契约用新命名。
+# 生成器必须在输出中用新命名，否则：① 二次运行时美林 signal_weight 从
+# cycle_merrill_3d 取不到（P3 静默归零，非幂等）；② 前端渲染不到层。
+# 规则：以 v3 层内容为权威底座（流水线更新的历史/current 都在其中），
+# 仅做改名；v4 侧新增的子结构（如 rate regime 的 regime_state）从上一版
+# v4 同层深合并补回，v3 同名字段不被覆盖。
 # ------------------------------------------------------------------
-SCORE_MISSING = 0
+LAYER_V3_TO_V4 = {
+    "layer_0_debt_cycle": "constraint_debt_cycle",
+    "layer_1_kondratieff": "narrative_kondratieff",
+    "layer_2_perez": "narrative_perez",
+    "layer_3_rate_regime": "constraint_rate_regime",
+    "layer_4_juglar": "cycle_juglar",
+    "layer_5_kitchner": "cycle_kitchin",
+    "layer_6_merrill": "cycle_merrill_3d",
+}
+
+
+def _deep_merge(base, extra):
+    """extra 的键补充进 base；dict 递归；base 已有值（含非空）一律不覆盖。"""
+    if not isinstance(extra, dict):
+        return base
+    for k, v in extra.items():
+        if k not in base:
+            base[k] = v
+        elif isinstance(base[k], dict) and isinstance(v, dict):
+            _deep_merge(base[k], v)
+    return base
+
+
+def build_cycle_layers(v3_layers, prev_v4_layers):
+    """改名 + v4-only 子结构补回。输出只含 v4 新命名。"""
+    out = {}
+    for old_key, new_key in LAYER_V3_TO_V4.items():
+        layer = v3_layers.get(old_key)
+        if layer is None:
+            # v3 缺该层时退回上一版 v4 同层，保证前端结构完整
+            if new_key in prev_v4_layers:
+                out[new_key] = prev_v4_layers[new_key]
+            continue
+        merged = json.loads(json.dumps(layer))  # 深拷贝
+        if new_key in prev_v4_layers:
+            _deep_merge(merged, prev_v4_layers[new_key])
+        out[new_key] = merged
+    return out
+
+# ------------------------------------------------------------------
+# 【P1 朱格拉：新旧刻度差异 +1】
+#
+# 旧契约刻度（从 transmission_table 全部 16 个 entries 的 scenario 编码还原）：
+#   P1= 2 扩张早期；P1= 1 扩张晚期；
+#   P1=-1 收缩早期；P1=-2 收缩晚期。
+# 新数据包 dimension_scores 的朱格拉刻度是围绕 0 对称的 -2..2 强度分，
+# 与周期阶段位置错位一格。证据（同一现实状态）：
+#   旧 v4 (09-16, 722f616) US p1=2 label「扩张早期」；
+#   新 dimension_scores 朱格拉 us_score=1 assessment「中美均处于扩张早期」。
+# 故映射规则：旧 P1 = 新 us_score/cn_score + 1，超出 [-2,2] 则截断。
+# （新 -2→旧 -1, 新 -1→旧 0, 新 0→旧 1, 新 1→旧 2, 新 2→旧 2 截断）
+# 分国分值缺失时先按 0（中性）代入，映射后为旧刻度 1，不凭空编造。
+# ------------------------------------------------------------------
+JUGLAR_OLD_PHASE = {2: "扩张早期", 1: "扩张晚期", 0: "中性", -1: "收缩早期", -2: "收缩晚期"}
+
+# ------------------------------------------------------------------
+# 【P2 基钦：两刻度一致，不平移】
+#
+# 证据：旧 US p2=1 label「被动补库」，新 us_score=2 assessment「主动补库存」
+# ——数值随库存阶段进展而增大（-2 主动去库/-1 被动去库/1 被动补库/2 主动补库），
+# 新旧同名同值。旧刻度中没有 0，新分值缺失/为 0 时记 0 中性。
+# ------------------------------------------------------------------
+KITCHIN_OLD_PHASE = {2: "主动补库", 1: "被动补库", 0: "中性", -1: "被动去库", -2: "主动去库"}
+
+# ------------------------------------------------------------------
+# 【P3 美林时钟】dimension_scores 中美林只有 us_assessment/cn_assessment
+# 定性文字、无数值。规则定死：取 v4 美林三维层
+# cycle_layers.cycle_merrill_3d.{us,cn}.signal_weight（-2..2，三维矩阵象限
+# 位置直接产出），label 取同层 current_phase；缺失记 0 中性，不人工判断。
+# ------------------------------------------------------------------
+
+# ------------------------------------------------------------------
+# asset_ranking 重算规则
+#
+# 区域归属（entries 是美国视角编码，同表对称适用于中国）：
+#   US entry 决定: us_equity, us_bond, usd, gold, commodities
+#                   （黄金/商品为全球资产，以美元体系/美国周期为基准）
+#   CN entry 决定: china_equity, china_bond, china_realestate
+#
+# 约束降级（从 constraint_degradation 读取，按其 currently_triggered 执行）：
+#   C1: 8 资产同名键直接给 adjustment（us_equity/commodities -1，gold +1…）；
+#   C2: 键名为语义别名，映射如下：
+#       us_equity_valuation_sensitive → us_equity
+#       us_bond_long_duration         → us_bond
+#       gold/commodities 同名；others/短久期 → 无操作。
+#   C1 与 C2 顺序叠加，方向封底下限 down，不重复降级。
+#
+# 排序键（完全确定性）：
+#   最终方向数值 desc → entry 置信度 desc → ASSET_TIE_PRIORITY 固定顺序。
+# 信号文本：up=超配 / neutral=标配 / down=低配。
+# ------------------------------------------------------------------
+RANK_REGION_OF_ASSET = {
+    "us_equity": "us", "us_bond": "us", "usd": "us",
+    "gold": "us", "commodities": "us",
+    "china_equity": "cn", "china_bond": "cn", "china_realestate": "cn",
+}
+# 仅作稳定排序的常量（非观点）：同方向同置信度时按此先后，不随行情变化。
+ASSET_TIE_PRIORITY = [
+    "china_equity", "usd", "us_equity", "commodities", "gold",
+    "china_bond", "china_realestate", "us_bond",
+]
+C2_ALIAS = {
+    "us_equity_valuation_sensitive": "us_equity",
+    "us_bond_long_duration": "us_bond",
+}
+DIR_NUM = {"up": 1, "neutral": 0, "down": -1}
+NUM_DIR = {1: "up", 0: "neutral", -1: "down"}
+DIR_CN = {"up": "超配", "neutral": "标配", "down": "低配"}
 
 
 def load_json(path):
@@ -95,36 +207,28 @@ def _dim_index(dimensions, name):
     return -1
 
 
-def _country_score(entry, country_key):
-    """分国分值优先；共享维度（康波/佩雷斯）只有 score 时回落 score。"""
+def _raw_country_score(entry, country_key):
+    """新刻度分国分值；共享维度（康波/佩雷斯）只有 score 时回落 score；缺失 0。"""
     if entry is None:
-        return SCORE_MISSING
+        return 0
     v = entry.get(f"{country_key}_score")
     if v is None:
-        v = entry.get("score", SCORE_MISSING)
-    return v if v is not None else SCORE_MISSING
+        v = entry.get("score", 0)
+    return v if v is not None else 0
+
+
+def map_p1_juglar(new_score):
+    """旧 P1 = 新刻度 + 1，截断到 [-2,2]。"""
+    return max(-2, min(2, new_score + 1))
 
 
 def _merrill_p3(prev_v4, country_key):
-    """
-    P3 规则：美林层 signal_weight（-2..2）。
-    country_key: 'us' / 'cn'
-    """
     merrill = (
         prev_v4.get("cycle_layers", {})
         .get("cycle_merrill_3d", {})
         .get(country_key, {})
     )
-    w = merrill.get("signal_weight")
-    if w is None:
-        return SCORE_MISSING, merrill.get("current_phase")
-    return w, merrill.get("current_phase")
-
-
-def _p_label(prefix, phase):
-    if not phase:
-        return f"{prefix}-未获取（中性计分）"
-    return f"{prefix}-{phase}"
+    return merrill.get("signal_weight", 0), merrill.get("current_phase")
 
 
 def _signal(raw_score):
@@ -146,12 +250,9 @@ def build_region_contract(country_key, dimensions, jug_idx, kit_idx, prev_v4):
     jug_entry = dimensions[jug_idx] if jug_idx >= 0 else None
     kit_entry = dimensions[kit_idx] if kit_idx >= 0 else None
 
-    p1 = _country_score(jug_entry, country_key)
-    p2 = _country_score(kit_entry, country_key)
+    p1 = map_p1_juglar(_raw_country_score(jug_entry, country_key))
+    p2 = _raw_country_score(kit_entry, country_key)   # 基钦两刻度一致，不平移
     p3, merrill_phase = _merrill_p3(prev_v4, country_key)
-
-    jug_phase = jug_entry.get("assessment") if jug_entry is not None else None
-    kit_phase = kit_entry.get("assessment") if kit_entry is not None else None
 
     raw = round(p1 * 0.3 + p2 * 0.4 + p3 * 0.3, 2)
     consensus = round((raw + 2) / 4 * 100, 1)
@@ -160,9 +261,9 @@ def build_region_contract(country_key, dimensions, jug_idx, kit_idx, prev_v4):
         "p1_score": p1,
         "p2_score": p2,
         "p3_score": p3,
-        "p1_label": _p_label("朱格拉设备周期", jug_phase),
-        "p2_label": _p_label("基钦库存周期", kit_phase),
-        "p3_label": _p_label("美林时钟", merrill_phase),
+        "p1_label": f"朱格拉设备周期-{JUGLAR_OLD_PHASE.get(p1, p1)}",
+        "p2_label": f"基钦库存周期-{KITCHIN_OLD_PHASE.get(p2, p2)}",
+        "p3_label": f"美林时钟-{merrill_phase}" if merrill_phase else "美林时钟-未获取（中性计分）",
         "raw_score": raw,
         "consensus_score": consensus,
         "signal": _signal(raw),
@@ -170,12 +271,7 @@ def build_region_contract(country_key, dimensions, jug_idx, kit_idx, prev_v4):
 
 
 def align_synthesis_score(v3_data, overall_score):
-    """
-    口径一致性强制修复：
-    synthesis.overall_assessment 中「共识度评分 NN/100」必须等于
-    cycle_consensus.overall_score；不一致则以 overall_score 为准就地改写。
-    返回 (新v3_data, 是否发生改写, 旧值)。
-    """
+    """synthesis 文本「共识度评分 NN/100」强制对齐 overall_score。"""
     synthesis = v3_data.get("synthesis")
     if not isinstance(synthesis, dict):
         return v3_data, False, None
@@ -192,6 +288,126 @@ def align_synthesis_score(v3_data, overall_score):
         text,
     )
     return v3_data, True, old
+
+
+def _entry_lookup(entries, p1, p2):
+    """
+    精确查 (p1,p2)；旧条目网格为 p1∈{2,1,-1,-2} × p2∈{2,1,-1,-2}。
+    出现 0（中性）无精确条目时：同 p1（p1 同理就近，同向优先取更大值），
+    取网格上最近的组合。该规则仅影响定性排序，确定性、可追溯。
+    返回 (entry, 实际使用的(p1,p2))。
+    """
+    grid_p1 = [2, 1, -1, -2]
+    grid_p2 = [2, 1, -1, -2]
+    for e in entries:
+        if e["p1_score"] == p1 and e["p2_score"] == p2:
+            return e, (p1, p2)
+    # 最近网格点：距离相同优先更高（更扩张）值
+    eff_p1 = min(grid_p1, key=lambda x: (abs(x - p1), -x))
+    eff_p2 = min(grid_p2, key=lambda x: (abs(x - p2), -x))
+    for e in entries:
+        if e["p1_score"] == eff_p1 and e["p2_score"] == eff_p2:
+            return e, (eff_p1, eff_p2)
+    return None, (eff_p1, eff_p2)
+
+
+def _apply_degradations(base_dir, asset, constraint):
+    """返回 (最终方向, 总adjustment)。C1→C2 顺序叠加，封底下限。"""
+    cur = DIR_NUM[base_dir]
+    total_adj = 0
+    c1 = constraint.get("C1_debt_cycle", {})
+    c2 = constraint.get("C2_rate_regime", {})
+
+    if c1.get("currently_triggered"):
+        adj = c1.get("degradation_rules", {}).get(asset, {}).get("adjustment", 0)
+        cur = max(-1, cur + adj)
+        total_adj += adj
+
+    if c2.get("currently_triggered"):
+        rules = c2.get("degradation_rules", {})
+        key = asset
+        if key not in rules:
+            key = next((k for k, v in C2_ALIAS.items() if v == asset), None)
+        adj = rules.get(key, {}).get("adjustment", 0) if key else 0
+        cur = max(-1, cur + adj)
+        total_adj += adj
+
+    return NUM_DIR[cur], total_adj
+
+
+def recompute_asset_ranking(prev_v4, us, cn):
+    """
+    us/cn: 已构建的旧契约分键（含 p1/p2）。
+    依据 transmission_table entries + constraint_degradation 重算 8 资产排序。
+    """
+    tt = prev_v4.get("transmission_table")
+    if not isinstance(tt, dict) or "entries" not in tt:
+        print("✗ 上一版 v4 缺少 transmission_table.entries，无法重算 ranking", file=sys.stderr)
+        sys.exit(1)
+    entries = tt["entries"]
+    constraint = prev_v4.get("constraint_degradation", {})
+
+    us_entry, us_eff = _entry_lookup(entries, us["p1_score"], us["p2_score"])
+    cn_entry, cn_eff = _entry_lookup(entries, cn["p1_score"], cn["p2_score"])
+    if us_entry is None or cn_entry is None:
+        print("✗ transmission_table 中查不到 US/CN 现态条目", file=sys.stderr)
+        sys.exit(1)
+
+    region_entry = {"us": us_entry, "cn": cn_entry}
+    rows = []
+    for asset, region in RANK_REGION_OF_ASSET.items():
+        a = region_entry[region]["assets"][asset]
+        base_dir, confidence = a["direction"], a["confidence"]
+        final_dir, adjustment = _apply_degradations(base_dir, asset, constraint)
+        rows.append({
+            "asset": asset,
+            "signal": DIR_CN[final_dir],
+            "adjusted_direction": final_dir,
+            "base_direction": base_dir,
+            "adjustment": adjustment,
+            "_confidence": confidence,
+        })
+
+    priority = {a: i for i, a in enumerate(ASSET_TIE_PRIORITY)}
+    rows.sort(key=lambda r: (-DIR_NUM[r["adjusted_direction"]], -r["_confidence"], priority[r["asset"]]))
+    ranking = []
+    for i, r in enumerate(rows, start=1):
+        r.pop("_confidence")
+        r = {"rank": i, **r}
+        ranking.append(r)
+
+    c1_on = constraint.get("C1_debt_cycle", {}).get("currently_triggered", False)
+    c2_on = constraint.get("C2_rate_regime", {}).get("currently_triggered", False)
+    active = [c for c, on in (("C1", c1_on), ("C2", c2_on)) if on]
+
+    note_parts = []
+    downgraded = [r["asset"] for r in ranking if r["adjustment"] < 0]
+    upgraded = [r["asset"] for r in ranking if r["adjustment"] > 0]
+    if downgraded:
+        note_parts.append(f"降级资产: {', '.join(downgraded)}")
+    if upgraded:
+        note_parts.append(f"升级资产: {', '.join(upgraded)}")
+    if not note_parts:
+        note_parts.append("约束层未改变任何资产方向")
+    note_parts.append("排序由 build_cycle_position_v4.py 按 US/CN 现态确定性重算，勿手工编辑")
+
+    return {
+        "version": "3.1",
+        "last_updated": datetime.now().strftime("%Y-%m-%d"),
+        "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
+        "calculation_method": (
+            f"transmission_table(US P1={us['p1_score']},P2={us['p2_score']} / "
+            f"CN P1={cn['p1_score']},P2={cn['p2_score']}) + "
+            f"constraint_degradation({'+'.join(active) if active else 'none'})"
+        ),
+        "base_scenario": (
+            f"US:{us_entry['scenario']}(P1={us_eff[0]},P2={us_eff[1]}); "
+            f"CN:{cn_entry['scenario'].replace('（当前美国）','')}(P1={cn_eff[0]},P2={cn_eff[1]})"
+        ),
+        "constraint_active": bool(active),
+        "ranking": ranking,
+        "note": "；".join(note_parts),
+    }
 
 
 def build():
@@ -228,25 +444,35 @@ def build():
         print(f"⚠ synthesis 文本评分 {old_score} → {overall_score}（以 overall_score 为准）")
 
     # ---- 2. 以 v3 为底座组装 v4 ----
+    # 增强板块权威内容不在 v3；既从上一版 v4（或人工热修版）继承，也从
+    # 上一次的*自身输出*继承，保证流水线幂等、热修内容不丢。
     out = dict(v3)
-
-    # 保留 v4-only 增强板块（原样不动）
     for key in V4_PRESERVE_KEYS:
         if key in prev_v4:
             out[key] = prev_v4[key]
 
+    # ---- 2b. cycle_layers 改名 v3→v4（权威内容来自 v3，v4 子结构补回） ----
+    out["cycle_layers"] = build_cycle_layers(
+        v3.get("cycle_layers", {}),
+        prev_v4.get("cycle_layers", {}),
+    )
+
     # ---- 3. cycle_consensus：新 schema + 旧契约兼容分键 ----
+    us = build_region_contract("us", dimensions, jug_idx, kit_idx, prev_v4)
+    cn = build_region_contract("cn", dimensions, jug_idx, kit_idx, prev_v4)
     out_consensus = dict(consensus)
-    out_consensus["united_states"] = build_region_contract(
-        "us", dimensions, jug_idx, kit_idx, prev_v4
-    )
-    out_consensus["china"] = build_region_contract(
-        "cn", dimensions, jug_idx, kit_idx, prev_v4
-    )
+    out_consensus["united_states"] = us
+    out_consensus["china"] = cn
     out_consensus["formula"] = FORMULA_TEXT
     out["cycle_consensus"] = out_consensus
 
-    # ---- 4. _meta 标记生成方式，便于线上排障 ----
+    # ---- 4. asset_ranking 重算（不再保留旧版） ----
+    if "transmission_table" in out:
+        out["asset_ranking"] = recompute_asset_ranking(out, us, cn)
+    else:
+        print("⚠ 无 transmission_table，本次不输出 asset_ranking")
+
+    # ---- 5. _meta 标记生成方式 ----
     meta = dict(out.get("_meta", {}))
     meta["v4_builder"] = "scripts/build_cycle_position_v4.py"
     meta["v4_built_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
@@ -254,8 +480,6 @@ def build():
 
     save_json(V4_FILE, out)
 
-    us = out_consensus["united_states"]
-    cn = out_consensus["china"]
     print("✅ data/cycle_position_v4.json 生成完成")
     print(
         f"  US: P1={us['p1_score']} P2={us['p2_score']} P3={us['p3_score']} "
@@ -265,8 +489,9 @@ def build():
         f"  CN: P1={cn['p1_score']} P2={cn['p2_score']} P3={cn['p3_score']} "
         f"raw={cn['raw_score']} consensus={cn['consensus_score']} signal={cn['signal']}"
     )
-    print(f"  overall_score={overall_score}; 增强板块保留: "
-          f"{[k for k in V4_PRESERVE_KEYS if k in prev_v4]}")
+    if "asset_ranking" in out:
+        rk = out["asset_ranking"]["ranking"]
+        print("  ranking: " + " > ".join(f"{r['rank']}.{r['asset']}({r['signal']})" for r in rk))
 
 
 if __name__ == "__main__":
