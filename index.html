@@ -123,5 +123,34 @@
   <script src="js/data_normalize.js?v=20260918a"></script>
   <script src="js/app_v2_patch.js?v=20260918a"></script>
   <script src="js/timing_v2.js?v=20260919a"></script>
+
+  <!-- iframe auto-resize listener -->
+  <script>
+  (function() {
+    var macroIframe = document.getElementById('macro-iframe');
+    if (!macroIframe) return;
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'macro-resize' && e.data.height > 0) {
+        macroIframe.style.height = e.data.height + 'px';
+      }
+    });
+    // Also handle tab switch: re-show iframe when macro tab is active
+    var origSwitch = window.app && window.app.switchTab;
+    if (origSwitch) {
+      window.app.switchTab = function(tab) {
+        origSwitch.call(window.app, tab);
+        if (tab === 'macro') {
+          setTimeout(function() {
+            try {
+              var h = macroIframe.contentDocument.documentElement.scrollHeight;
+              if (h > 0) macroIframe.style.height = h + 'px';
+            } catch(e) {}
+          }, 500);
+        }
+      };
+    }
+  })();
+  </script>
+
 </body>
 </html>

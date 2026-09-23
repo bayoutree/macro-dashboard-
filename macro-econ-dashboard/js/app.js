@@ -117,3 +117,30 @@ document.getElementById('refresh-btn').addEventListener('click', function() {
 
 document.addEventListener('DOMContentLoaded', loadData);
   setTimeout(() => { const tab = new URLSearchParams(location.search).get('tab'); if (tab) switchTab(tab); }, 500);
+
+// ==================== iframe auto-resize ====================
+function notifyParentResize() {
+  if (window.parent !== window) {
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({ type: 'macro-resize', height: h }, '*');
+  }
+}
+
+// Notify on load
+window.addEventListener('load', function() { setTimeout(notifyParentResize, 500); });
+window.addEventListener('resize', notifyParentResize);
+
+// Observe content changes
+if (typeof MutationObserver !== 'undefined') {
+  var _mo = new MutationObserver(function() { notifyParentResize(); });
+  _mo.observe(document.body, { childList: true, subtree: true, attributes: true });
+}
+
+// Notify after tab switch (hook into existing switchTab)
+if (typeof switchTab === 'function') {
+  var _origSwitch = switchTab;
+  switchTab = function(tab) {
+    _origSwitch(tab);
+    setTimeout(notifyParentResize, 300);
+  };
+}
