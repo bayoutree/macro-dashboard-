@@ -31,10 +31,16 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
+      - name: Bump static asset versions
+        run: python scripts/bump_asset_versions.py
+
+      - name: Verify asset versions are consistent
+        run: python scripts/bump_asset_versions.py --check
+
       - name: Commit and push data changes
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/
+          git add data/ index.html
           git diff --cached --quiet || git commit -m "📊 Daily data update $(date +%Y-%m-%d)"
           git push

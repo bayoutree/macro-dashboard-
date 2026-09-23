@@ -23,6 +23,8 @@ SCRIPTS = [
     ("update_json.py", "V3周期-更新v3 JSON"),
     ("calculate_indicators.py", "V3周期-衍生指标计算"),
     ("validate_json.py", "V3周期-JSON格式校验"),
+    # v4 前端契约文件：以 v3 为底座生成，补回 united_states/china 兼容分键
+    ("build_cycle_position_v4.py", "V4周期-生成v4前端契约JSON"),
     # ---- v3.4.6 第三步：微观结构+估值真采集 ----
     ("collect_microstructure.py", "v3.4.6-拥挤度/破净率/集中度真采集"),
     # ---- 修复timing_scores历史数据 ----
@@ -101,7 +103,8 @@ def main():
     expected_files = [
         "us_macro.json", "cn_macro.json", "asset_prices.json",
         "asset_valuation.json", "dashboard_summary.json",
-        "cycle_position_v3.json"
+        "cycle_position_v3.json",
+        "cycle_position_v4.json"
     ]
     logger.info(f"\n数据文件检查:")
     for f in expected_files:
