@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-09-01T00:00:00+08:00",
-    "data_freshness_score": 78,
+    "update_time": "2026-09-23T15:08:35+08:00",
+    "data_freshness_score": 98,
     "assessment_date": "2026-09-01",
     "version": "4.0",
     "next_assessment_date": "2026-10-01",
@@ -51,7 +51,7 @@
           "debt_to_gdp": {
             "name": "联邦债务/GDP",
             "source": "FRED (GFDEGDQ188S)",
-            "current": 132,
+            "current": 122.59387,
             "unit": "%",
             "threshold": {
               "warning": 100,
@@ -433,7 +433,7 @@
           "fiscal_deficit_gdp": {
             "name": "财政赤字/GDP",
             "source": "FRED",
-            "current": 6.5,
+            "current": -5.76906,
             "unit": "%",
             "last_updated": "2026-08-15",
             "history": [
@@ -695,7 +695,7 @@
           "debt_to_gdp": {
             "name": "政府债务/GDP",
             "source": "IMF",
-            "current": 77,
+            "current": 77.0,
             "unit": "%",
             "threshold": {
               "warning": 60,
@@ -1237,7 +1237,8 @@
               "date": "2025",
               "value": 108.441
             }
-          ]
+          ],
+          "current": 108.441
         },
         "gdp_10y_avg": {
           "name": "GDP 10年移动平均增速",
@@ -1373,7 +1374,8 @@
         "medium_term_3_5year": "若康波回升逻辑成立，大宗商品中期（3-5年）有望进入主升浪前的蓄势阶段。关注供需格局变化和产能投资周期。",
         "cross_validation": "与P2基钦被动去库阶段交叉验证：库存下降+需求上升，支持商品温和上涨。但ISM价格指数71.1偏高，短期存在回调风险。",
         "historical_reference": "周金涛2007年预判：康波回升期大宗商品先于经济触底，第三轮康波(1990s)和中国工业化推动的大宗商品超级周期(2000s)"
-      }
+      },
+      "current": null
     },
     "narrative_perez": {
       "name": "佩雷斯（技术革命周期）",
@@ -1471,7 +1473,8 @@
             "value": 2.8
           }
         ],
-        "frequency": "annual"
+        "frequency": "annual",
+        "current": 2.8
       },
       "indicators": {
         "vc_pe_funding": {
@@ -1595,7 +1598,8 @@
                 "value": 1.2
               }
             ],
-            "source_url": "https://data.stats.gov.cn/"
+            "source_url": "https://data.stats.gov.cn/",
+            "current": 1.2
           },
           "income_inequality": {
             "name": "基尼系数",
@@ -1701,7 +1705,8 @@
                 "date": "2026",
                 "value": -3.2
               }
-            ]
+            ],
+            "current": -3.2
           }
         }
       },
@@ -1712,7 +1717,7 @@
             "name": "盈亏平衡通胀率(10Y)",
             "source": "FRED",
             "us": {
-              "current": 2.3,
+              "current": 2.34,
               "unit": "%",
               "history": [
                 {
@@ -3304,13 +3309,14 @@
                 "value": 2.34
               }
             ],
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "current": 2.34
           },
           "real_rate_forward": {
             "name": "远期实际利率(1Y5Y)",
             "source": "FRED",
             "us": {
-              "current": 1.8,
+              "current": 2.44,
               "unit": "%",
               "history": [
                 {
@@ -4897,13 +4903,14 @@
                 "value": 2.44
               }
             ],
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "current": 2.44
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
             "source": "ACM模型/FRED",
             "us": {
-              "current": 0.6,
+              "current": 0.8751,
               "unit": "%",
               "history": [
                 {
@@ -6490,7 +6497,8 @@
                 "value": 0.8751
               }
             ],
-            "source_url": "https://fred.stlouisfed.org/series/TSYOREA01"
+            "source_url": "https://fred.stlouisfed.org/series/TSYOREA01",
+            "current": 0.8751
           },
           "cn_tfp_trend": {
             "name": "TFP增速",
@@ -6578,7 +6586,8 @@
                 "date": "2026",
                 "value": 3.8
               }
-            ]
+            ],
+            "current": 3.8
           }
         }
       },
@@ -6589,7 +6598,7 @@
             "name": "收益率曲线(2s10s)",
             "source": "FRED",
             "us": {
-              "current": 0.3,
+              "current": 0.4,
               "unit": "%",
               "history": [
                 {
@@ -8176,13 +8185,14 @@
                 "value": 0.4
               }
             ],
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "current": 0.4
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
             "source": "FRED/Bloomberg",
             "us": {
-              "current": 0.85,
+              "current": 3572.23,
               "unit": "%",
               "history": [
                 {
@@ -9817,13 +9827,14 @@
                 "value": 3572.23
               }
             ],
-            "source_url": "https://fred.stlouisfed.org/"
+            "source_url": "https://fred.stlouisfed.org/",
+            "current": 3572.23
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
             "source": "CBOE",
             "us": {
-              "current": 18,
+              "current": 15.2,
               "unit": "",
               "history": [
                 {
@@ -11450,7 +11461,8 @@
                 "value": 15.2
               }
             ],
-            "source_url": "https://www.cboe.com/"
+            "source_url": "https://www.cboe.com/",
+            "current": 15.2
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -11562,7 +11574,8 @@
                 "date": "2026-01",
                 "value": 0.5
               }
-            ]
+            ],
+            "current": 0.5
           }
         }
       },
@@ -11596,7 +11609,7 @@
             "name": "制造业产能利用率",
             "source": "美联储",
             "unit": "%",
-            "current": 79.5,
+            "current": 75.9621,
             "last_updated": "2026-08-06",
             "percentile": {
               "p25": 75,
@@ -12020,7 +12033,7 @@
             "name": "库存/销售比",
             "source": "美国人口普查局",
             "unit": "倍",
-            "current": 1.32,
+            "current": 1.3,
             "last_updated": "2026-08-06",
             "history": [
               {
@@ -12237,7 +12250,7 @@
           "new_orders": {
             "name": "耐用品新订单",
             "source": "Census Bureau",
-            "current": 285,
+            "current": 339392.0,
             "unit": "十亿美元",
             "description": "领先于生产的先行指标，订单回升→补库存启动",
             "last_updated": "2026-08-15",
@@ -12779,7 +12792,8 @@
                 "date": "2026-01",
                 "value": 46.8
               }
-            ]
+            ],
+            "current": 46.8
           }
         }
       }
@@ -12796,7 +12810,7 @@
             "name": "核心CPI同比",
             "source": "BLS/FRED",
             "unit": "%",
-            "current": 2.9,
+            "current": 336.789,
             "last_updated": "2026-08-06",
             "history": [
               {
@@ -12963,14 +12977,398 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-08-06",
+            "last_updated": "2026-09-20",
             "history": [
+              {
+                "date": "2015-01-01",
+                "value": 5.7
+              },
+              {
+                "date": "2015-02-01",
+                "value": 5.5
+              },
+              {
+                "date": "2015-03-01",
+                "value": 5.4
+              },
+              {
+                "date": "2015-04-01",
+                "value": 5.4
+              },
+              {
+                "date": "2015-05-01",
+                "value": 5.6
+              },
+              {
+                "date": "2015-06-01",
+                "value": 5.3
+              },
+              {
+                "date": "2015-07-01",
+                "value": 5.2
+              },
+              {
+                "date": "2015-08-01",
+                "value": 5.1
+              },
+              {
+                "date": "2015-09-01",
+                "value": 5.0
+              },
+              {
+                "date": "2015-10-01",
+                "value": 5.0
+              },
+              {
+                "date": "2015-11-01",
+                "value": 5.1
+              },
+              {
+                "date": "2015-12-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-01-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-02-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-03-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-04-01",
+                "value": 5.1
+              },
+              {
+                "date": "2016-05-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-06-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-07-01",
+                "value": 4.8
+              },
+              {
+                "date": "2016-08-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-09-01",
+                "value": 5.0
+              },
+              {
+                "date": "2016-10-01",
+                "value": 4.9
+              },
+              {
+                "date": "2016-11-01",
+                "value": 4.7
+              },
+              {
+                "date": "2016-12-01",
+                "value": 4.7
+              },
+              {
+                "date": "2017-01-01",
+                "value": 4.7
+              },
+              {
+                "date": "2017-02-01",
+                "value": 4.6
+              },
+              {
+                "date": "2017-03-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-04-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-05-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-06-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-07-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-08-01",
+                "value": 4.4
+              },
+              {
+                "date": "2017-09-01",
+                "value": 4.3
+              },
+              {
+                "date": "2017-10-01",
+                "value": 4.2
+              },
+              {
+                "date": "2017-11-01",
+                "value": 4.2
+              },
+              {
+                "date": "2017-12-01",
+                "value": 4.1
+              },
+              {
+                "date": "2018-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-02-01",
+                "value": 4.1
+              },
+              {
+                "date": "2018-03-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-04-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-05-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-06-01",
+                "value": 4.0
+              },
+              {
+                "date": "2018-07-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-08-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-09-01",
+                "value": 3.7
+              },
+              {
+                "date": "2018-10-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-11-01",
+                "value": 3.8
+              },
+              {
+                "date": "2018-12-01",
+                "value": 3.9
+              },
+              {
+                "date": "2019-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2019-02-01",
+                "value": 3.8
+              },
+              {
+                "date": "2019-03-01",
+                "value": 3.8
+              },
+              {
+                "date": "2019-04-01",
+                "value": 3.7
+              },
+              {
+                "date": "2019-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-06-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-07-01",
+                "value": 3.7
+              },
+              {
+                "date": "2019-08-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-09-01",
+                "value": 3.5
+              },
+              {
+                "date": "2019-10-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-11-01",
+                "value": 3.6
+              },
+              {
+                "date": "2019-12-01",
+                "value": 3.6
+              },
+              {
+                "date": "2020-01-01",
+                "value": 3.6
+              },
+              {
+                "date": "2020-02-01",
+                "value": 3.5
+              },
+              {
+                "date": "2020-03-01",
+                "value": 4.4
+              },
+              {
+                "date": "2020-04-01",
+                "value": 14.8
+              },
+              {
+                "date": "2020-05-01",
+                "value": 13.2
+              },
+              {
+                "date": "2020-06-01",
+                "value": 11.0
+              },
+              {
+                "date": "2020-07-01",
+                "value": 10.2
+              },
+              {
+                "date": "2020-08-01",
+                "value": 8.4
+              },
+              {
+                "date": "2020-09-01",
+                "value": 7.8
+              },
+              {
+                "date": "2020-10-01",
+                "value": 6.9
+              },
+              {
+                "date": "2020-11-01",
+                "value": 6.7
+              },
+              {
+                "date": "2020-12-01",
+                "value": 6.7
+              },
+              {
+                "date": "2021-01-01",
+                "value": 6.4
+              },
+              {
+                "date": "2021-02-01",
+                "value": 6.2
+              },
+              {
+                "date": "2021-03-01",
+                "value": 6.1
+              },
+              {
+                "date": "2021-04-01",
+                "value": 6.1
+              },
+              {
+                "date": "2021-05-01",
+                "value": 5.8
+              },
+              {
+                "date": "2021-06-01",
+                "value": 5.9
+              },
+              {
+                "date": "2021-07-01",
+                "value": 5.4
+              },
+              {
+                "date": "2021-08-01",
+                "value": 5.1
+              },
+              {
+                "date": "2021-09-01",
+                "value": 4.7
+              },
+              {
+                "date": "2021-10-01",
+                "value": 4.5
+              },
+              {
+                "date": "2021-11-01",
+                "value": 4.1
+              },
+              {
+                "date": "2021-12-01",
+                "value": 3.9
+              },
               {
                 "date": "2022-01",
                 "value": 4.0
               },
               {
+                "date": "2022-01-01",
+                "value": 4.0
+              },
+              {
+                "date": "2022-02-01",
+                "value": 3.9
+              },
+              {
+                "date": "2022-03-01",
+                "value": 3.7
+              },
+              {
+                "date": "2022-04-01",
+                "value": 3.7
+              },
+              {
+                "date": "2022-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-06-01",
+                "value": 3.6
+              },
+              {
                 "date": "2022-07",
+                "value": 3.5
+              },
+              {
+                "date": "2022-07-01",
+                "value": 3.5
+              },
+              {
+                "date": "2022-08-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-09-01",
+                "value": 3.5
+              },
+              {
+                "date": "2022-10-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-11-01",
+                "value": 3.6
+              },
+              {
+                "date": "2022-12-01",
                 "value": 3.5
               },
               {
@@ -12978,7 +13376,35 @@
                 "value": 3.4
               },
               {
+                "date": "2023-01-01",
+                "value": 3.5
+              },
+              {
+                "date": "2023-02-01",
+                "value": 3.6
+              },
+              {
+                "date": "2023-03-01",
+                "value": 3.5
+              },
+              {
+                "date": "2023-04-01",
+                "value": 3.4
+              },
+              {
+                "date": "2023-05-01",
+                "value": 3.6
+              },
+              {
+                "date": "2023-06-01",
+                "value": 3.6
+              },
+              {
                 "date": "2023-07",
+                "value": 3.5
+              },
+              {
+                "date": "2023-07-01",
                 "value": 3.5
               },
               {
@@ -12986,7 +13412,15 @@
                 "value": 3.7
               },
               {
+                "date": "2023-08-01",
+                "value": 3.7
+              },
+              {
                 "date": "2023-09",
+                "value": 3.7
+              },
+              {
+                "date": "2023-09-01",
                 "value": 3.7
               },
               {
@@ -12994,7 +13428,15 @@
                 "value": 3.9
               },
               {
+                "date": "2023-10-01",
+                "value": 3.9
+              },
+              {
                 "date": "2023-11",
+                "value": 3.7
+              },
+              {
+                "date": "2023-11-01",
                 "value": 3.7
               },
               {
@@ -13002,7 +13444,15 @@
                 "value": 3.8
               },
               {
+                "date": "2023-12-01",
+                "value": 3.8
+              },
+              {
                 "date": "2024-01",
+                "value": 3.7
+              },
+              {
+                "date": "2024-01-01",
                 "value": 3.7
               },
               {
@@ -13010,7 +13460,15 @@
                 "value": 3.9
               },
               {
+                "date": "2024-02-01",
+                "value": 3.9
+              },
+              {
                 "date": "2024-03",
+                "value": 3.9
+              },
+              {
+                "date": "2024-03-01",
                 "value": 3.9
               },
               {
@@ -13018,7 +13476,15 @@
                 "value": 3.9
               },
               {
+                "date": "2024-04-01",
+                "value": 3.9
+              },
+              {
                 "date": "2024-05",
+                "value": 3.9
+              },
+              {
+                "date": "2024-05-01",
                 "value": 3.9
               },
               {
@@ -13026,11 +13492,23 @@
                 "value": 4.1
               },
               {
+                "date": "2024-06-01",
+                "value": 4.1
+              },
+              {
                 "date": "2024-07",
                 "value": 4.3
               },
               {
+                "date": "2024-07-01",
+                "value": 4.2
+              },
+              {
                 "date": "2024-08",
+                "value": 4.2
+              },
+              {
+                "date": "2024-08-01",
                 "value": 4.2
               },
               {
@@ -13038,7 +13516,15 @@
                 "value": 4.1
               },
               {
+                "date": "2024-09-01",
+                "value": 4.1
+              },
+              {
                 "date": "2024-10",
+                "value": 4.1
+              },
+              {
+                "date": "2024-10-01",
                 "value": 4.1
               },
               {
@@ -13046,7 +13532,15 @@
                 "value": 4.2
               },
               {
+                "date": "2024-11-01",
+                "value": 4.2
+              },
+              {
                 "date": "2024-12",
+                "value": 4.1
+              },
+              {
+                "date": "2024-12-01",
                 "value": 4.1
               },
               {
@@ -13054,7 +13548,15 @@
                 "value": 4.0
               },
               {
+                "date": "2025-01-01",
+                "value": 4.0
+              },
+              {
                 "date": "2025-02",
+                "value": 4.2
+              },
+              {
+                "date": "2025-02-01",
                 "value": 4.2
               },
               {
@@ -13062,7 +13564,15 @@
                 "value": 4.2
               },
               {
+                "date": "2025-03-01",
+                "value": 4.2
+              },
+              {
                 "date": "2025-04",
+                "value": 4.2
+              },
+              {
+                "date": "2025-04-01",
                 "value": 4.2
               },
               {
@@ -13070,7 +13580,15 @@
                 "value": 4.3
               },
               {
+                "date": "2025-05-01",
+                "value": 4.3
+              },
+              {
                 "date": "2025-06",
+                "value": 4.1
+              },
+              {
+                "date": "2025-06-01",
                 "value": 4.1
               },
               {
@@ -13078,7 +13596,15 @@
                 "value": 4.2
               },
               {
+                "date": "2025-07-01",
+                "value": 4.3
+              },
+              {
                 "date": "2025-08",
+                "value": 4.3
+              },
+              {
+                "date": "2025-08-01",
                 "value": 4.3
               },
               {
@@ -13086,7 +13612,15 @@
                 "value": 4.4
               },
               {
+                "date": "2025-09-01",
+                "value": 4.4
+              },
+              {
                 "date": "2025-11",
+                "value": 4.5
+              },
+              {
+                "date": "2025-11-01",
                 "value": 4.5
               },
               {
@@ -13094,11 +13628,23 @@
                 "value": 4.4
               },
               {
+                "date": "2025-12-01",
+                "value": 4.4
+              },
+              {
                 "date": "2026-01",
                 "value": 4.1
               },
               {
+                "date": "2026-01-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-02",
+                "value": 4.4
+              },
+              {
+                "date": "2026-02-01",
                 "value": 4.4
               },
               {
@@ -13106,7 +13652,15 @@
                 "value": 4.3
               },
               {
+                "date": "2026-03-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-04",
+                "value": 4.3
+              },
+              {
+                "date": "2026-04-01",
                 "value": 4.3
               },
               {
@@ -13114,11 +13668,27 @@
                 "value": 4.3
               },
               {
+                "date": "2026-05-01",
+                "value": 4.3
+              },
+              {
                 "date": "2026-06",
                 "value": 4.2
               },
               {
+                "date": "2026-06-01",
+                "value": 4.2
+              },
+              {
                 "date": "2026-07",
+                "value": 4.1
+              },
+              {
+                "date": "2026-07-01",
+                "value": 4.1
+              },
+              {
+                "date": "2026-08-01",
                 "value": 4.1
               }
             ],
@@ -13777,7 +14347,8 @@
                 "date": "2026Q2",
                 "value": 2.8
               }
-            ]
+            ],
+            "current": 2.8
           }
         },
         "quadrant_trajectory": [
@@ -14017,7 +14588,8 @@
                 "date": "2026-01",
                 "value": 5.6
               }
-            ]
+            ],
+            "current": 5.6
           }
         },
         "quadrant_trajectory": [
