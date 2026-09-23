@@ -69,16 +69,13 @@
   <nav class="sticky top-14 z-40 bg-bg-primary/95 backdrop-blur-md border-b border-border-subtle">
     <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex gap-1 py-2 overflow-x-auto scrollbar-hide">
-        <button class="tab-btn" data-tab="china" onclick="app.switchTab('china')">
-          <span class="mr-1.5">🇨🇳</span>中国宏观
-        </button>
-        <button class="tab-btn" data-tab="us" onclick="app.switchTab('us')">
-          <span class="mr-1.5">🇺🇸</span>美国宏观
+        <button class="tab-btn active" data-tab="macro" onclick="app.switchTab('macro')">
+          <span class="mr-1.5">🌏</span>中美宏观
         </button>
         <button class="tab-btn" data-tab="cycle" onclick="app.switchTab('cycle')">
           <span class="mr-1.5">🌐</span>全球周期
         </button>
-        <button class="tab-btn active" data-tab="stock" onclick="app.switchTab('stock')"><span class="mr-1.5">📈</span>股票看板</button>
+        <button class="tab-btn" data-tab="stock" onclick="app.switchTab('stock')"><span class="mr-1.5">📈</span>股票看板</button>
       </div>
     </div>
   </nav>
@@ -86,27 +83,9 @@
   <!-- Main Content -->
   <main class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- China Tab -->
-    <div id="tab-china" class="tab-content hidden">
-      <!-- Investment Advice Banner -->
-      <div id="china-advice-banner" class="mb-6"></div>
-      <!-- Leading Indicators -->
-      <div id="china-leading" class="mb-8"></div>
-      <!-- Coincident Indicators -->
-      <div id="china-coincident" class="mb-8"></div>
-      <!-- Lagging Indicators -->
-      <div id="china-lagging" class="mb-8"></div>
-      <!-- A-Share Valuation -->
-      <div id="china-valuation" class="mb-8"></div>
-    </div>
-
-    <!-- US Tab -->
-    <div id="tab-us" class="tab-content hidden">
-      <div id="us-advice-banner" class="mb-6"></div>
-      <div id="us-leading" class="mb-8"></div>
-      <div id="us-coincident" class="mb-8"></div>
-      <div id="us-lagging" class="mb-8"></div>
-      <div id="us-rates" class="mb-8"></div>
+    <!-- Macro Tab (New 5-layer CN+US Dashboard) -->
+    <div id="tab-macro" class="tab-content active">
+      <iframe id="macro-iframe" src="macro-econ-dashboard/index.html" style="width:100%;height:calc(100vh - 140px);border:none;border-radius:8px;" title="中美宏观五层看板"></iframe>
     </div>
 
     <!-- Cycle Tab -->

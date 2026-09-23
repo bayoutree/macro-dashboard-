@@ -1431,7 +1431,7 @@ const app = {
     assetPrices: null,
     dashboardSummary: null,
   },
-  currentTab: 'china',
+  currentTab: 'macro',
 
   async init() {
     try {
@@ -1491,11 +1491,8 @@ const app = {
 
   renderTab(tab) {
     switch (tab) {
-      case 'china':
-        TabRenderers.renderChina(this.data.cnMacro, this.data.dashboardSummary);
-        break;
-      case 'us':
-        TabRenderers.renderUS(this.data.usMacro, this.data.dashboardSummary);
+      case 'macro':
+        // 5-layer dashboard loads via iframe
         break;
       case 'cycle':
         TabRenderers.renderCycle(this.data.cyclePosition);
