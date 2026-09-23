@@ -38,7 +38,7 @@
     "cn_stock": {
       "name": "A股(沪深300)",
       "pct_5y": 77,
-      "pct_10y": 67,
+      "pct_10y": 64,
       "note": "近5年分位77%，处相对高位"
     },
     "cn_bond": {
@@ -73,9 +73,9 @@
     },
     "gold": {
       "name": "黄金",
-      "pct_5y": 88,
-      "pct_10y": 93,
-      "note": "近5年分位88%，处相对高位"
+      "pct_5y": null,
+      "pct_10y": null,
+      "note": "数据缺失，估值待更新"
     },
     "commodity": {
       "name": "大宗商品(CRB)",
