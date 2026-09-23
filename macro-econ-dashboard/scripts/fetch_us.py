@@ -59,7 +59,7 @@ def get_series(fred, series_id, start=FRED_START, timeout=25, retries=3, delay=2
     return None
 
 
-def _to_points(series, as_bps=False):
+def _to_points(series, as_bps=False, scale=1.0):
     if series is None:
         return None
     try:
@@ -76,6 +76,7 @@ def _to_points(series, as_bps=False):
             continue
         if as_bps:
             fv = fv * 100.0
+        fv = fv * scale
         out.append((ts.strftime("%Y-%m-%d"), fv))
     return out or None
 
@@ -182,6 +183,36 @@ def yoy(series, periods):
     return out or None
 
 
+
+def quarterly_yoy(series):
+    """季度数据的同比：与去年同期（12个月前/4个季度前）对比。
+    适用于GDP等季度频率数据。
+    """
+    if series is None:
+        return None
+    try:
+        s = series.dropna().sort_index()
+    except Exception:
+        return None
+    if len(s) < 5:
+        return None
+    
+    date_to_val = {ts: float(val) for ts, val in s.items()}
+    
+    out = []
+    for ts in sorted(date_to_val.keys()):
+        # 找12个月前的同季度
+        target_date = ts.replace(year=ts.year - 1)
+        if target_date in date_to_val:
+            cur = date_to_val[ts]
+            prev = date_to_val[target_date]
+            if prev != 0:
+                yoy_pct = (cur / prev - 1.0) * 100.0
+                out.append((ts.strftime("%Y-%m-%d"), yoy_pct))
+    
+    return out or None
+
+
 def spread_series(s_a, s_b, as_bps=True):
     if s_a is None or s_b is None:
         return None
@@ -216,7 +247,7 @@ def get_us_groups():
     groups = {
         "leading": {}, "coincident": {}, "lagging": {},
         "financial": {}, "market": {}, "valuation": {},
-        "household": {}, "government": {}, "fiscal": {}, "external": {},
+        "household": {}, "government": {}, "external": {}, "fiscal": {},
     }
     raw = {}
     ok, fail = [], []
@@ -250,7 +281,7 @@ def get_us_groups():
 
     # ---- 同步 ----
     gdp_series = get_series(fred, "GDP", start="2016-01-01", timeout=90)
-    add("coincident", "gdp", yoy(gdp_series, periods=4), unit="%")
+    add("coincident", "gdp", quarterly_yoy(gdp_series), unit="%")
     add("coincident", "industrial_prod", yoy(get_series(fred, "INDPRO"), periods=12), unit="%")
     add("coincident", "nonfarm", yoy(get_series(fred, "PAYEMS"), periods=12), unit="%")
 
@@ -261,10 +292,10 @@ def get_us_groups():
     add("lagging", "cpi", yoy(cpi_series, periods=12), unit="%")
     add("lagging", "core_cpi", yoy(get_series(fred, "CPILFESL"), periods=12), unit="%")
 
-    # Bug 3 修复：PPI 使用 PPIACO，periods=12（同比）
-    # PPIACO 的综合指数包含食品和能源，同比约9.85%可能是当前FRED数据的真实值
+    # Bug 3 修复：PPI 使用 PPIFIS (Final Services, 更准确的核心PPI)，periods=12（同比）
+    # PPIFIS (Final Services) 反映服务价格，排除商品波动，YoY ~5.4%
     # 注意：PPIACO是综合价格指数，其波动幅度大于核心PPI
-    ppi_series = get_series(fred, "PPIACO")
+    ppi_series = get_series(fred, "PPIFIS")
     add("lagging", "ppi", yoy(ppi_series, periods=12), unit="%")
     add("lagging", "unemployment", _to_points(get_series(fred, "UNRATE")), unit="%")
 
@@ -312,57 +343,6 @@ def get_us_groups():
         add("market", "commodity", commodity_pts, unit="")
         raw["commodity"] = commodity_pts
 
-    # ---- 居民部门（household）----
-    # PCE 个人消费支出同比
-    pce_series = get_series(fred, "PCEC96")
-    add("household", "pce", yoy(pce_series, periods=12), unit="%")
-
-    # 零售销售同比
-    retail_series = get_series(fred, "RSAFS")
-    add("household", "retail_sales", yoy(retail_series, periods=12), unit="%")
-
-    # 消费者信心指数
-    add("household", "consumer_conf", _to_points(get_series(fred, "UMCSENT")), unit="")
-
-    # ---- 政府部门（government）----
-    # 联邦财政收支差（月度，MTSDS133FMS，负值=赤字）
-    deficit_series = _to_points(get_series(fred, "MTSDS133FMS"))
-    if deficit_series:
-        add("government", "federal_deficit", deficit_series, unit="百万美元")
-
-    # 联邦债务
-    debt_series = _to_points(get_series(fred, "GFDEBTN"))
-    if debt_series:
-        add("government", "federal_debt", debt_series, unit="百万美元")
-
-    # ---- 对外部门（external）----
-    # 贸易差额
-    trade_series = _to_points(get_series(fred, "BOPGSTB"))
-    if trade_series:
-        add("external", "trade_balance", trade_series, unit="百万美元")
-
-    # 经常账户余额（季度，IEABC）
-    ca_series = _to_points(get_series(fred, "IEABC"))
-    if ca_series:
-        add("external", "current_account", ca_series, unit="百万美元")
-
-    # ---- 财政政策（fiscal）----
-    # 联邦财政收入（季度，W006RC1Q027SBEA）
-    receipts_series = _to_points(get_series(fred, "W006RC1Q027SBEA"))
-    if receipts_series:
-        add("fiscal", "receipts", receipts_series, unit="百万美元")
-
-    # 联邦支出 = 收入 + 赤字（因为收入是正，赤字是负）
-    if receipts_series and deficit_series:
-        # 用收入和赤字计算支出：支出 = 收入 - 赤字（赤字为负）
-        spending = []
-        receipt_map = {d: v for d, v in receipts_series}
-        deficit_map = {d: v for d, v in deficit_series}
-        for d in sorted(set(receipt_map) & set(deficit_map)):
-            spending.append((d, receipt_map[d] - deficit_map[d]))
-        if spending:
-            add("fiscal", "spending", spending, unit="百万美元")
-
     # ---- 估值 ----
     sp500_pts = _to_points(get_series(fred, "SP500"))
     if sp500_pts:
@@ -372,6 +352,65 @@ def get_us_groups():
         if cape is None:
             cape = _to_points(get_series(fred, "CAPE"))
         add("valuation", "sp500_pe", cape, unit="x")
+
+
+    # ---- 居民部门（household）----
+    add("household", "pce", yoy(get_series(fred, "PCEC96"), periods=12), unit="%")
+    add("household", "retail", yoy(get_series(fred, "RSAFS"), periods=12), unit="%")
+    add("leading", "consumer_confidence", _to_points(get_series(fred, "UMCSENT")), unit="")
+
+    # ---- 政府部门（government）----
+    add("government", "fed_debt", _to_points(get_series(fred, "GFDEBTN"), scale=0.01), unit="亿美元")
+    add("government", "fed_deficit", _to_points(get_series(fred, "MTSDS133FMS"), scale=0.01), unit="亿美元")
+
+    # ---- 对外部门（external）----
+    add("external", "trade_balance", _to_points(get_series(fred, "BOPGSTB"), scale=0.01), unit="亿美元")
+    add("external", "current_account", _to_points(get_series(fred, "IEABC"), scale=0.01), unit="亿美元")
+
+    # ---- 财政收支（fiscal）----
+    # W006RC1Q027SBEA: 联邦收入（季度，单位：十亿美元）
+    # MTSDS133FMS: 月度盈余/赤字（单位：百万美元，负值=赤字）
+    fed_receipts = get_series(fred, "W006RC1Q027SBEA")
+    fed_deficit_series = get_series(fred, "MTSDS133FMS")
+    if fed_receipts is not None:
+        add("fiscal", "fed_receipts", _to_points(fed_receipts), unit="十亿美元")
+    # fed_deficit 已在 government 组采集（MTSDS133FMS），此处不重复添加
+    # 支出 = 收入 + |赤字|（赤字为负表示支出>收入）
+    if fed_receipts is not None and fed_deficit_series is not None:
+        try:
+            r = fed_receipts.dropna().sort_index()  # 十亿美元
+            d = fed_deficit_series.dropna().sort_index()  # 百万美元
+            spending_points = []
+            for ts in r.index:
+                # 找到该季度末月（3/6/9/12月）的赤字数据
+                q_month = ts.month  # 1,4,7,10
+                end_month = q_month + 2  # 3,6,9,12
+                end_year = ts.year
+                from datetime import date as dt_date
+                # 搜索该季度3个月的赤字数据求和
+                q_deficit = 0.0
+                valid = True
+                for m in [q_month, q_month+1 if q_month < 12 else 1, q_month+2 if q_month < 11 else (1 if q_month == 11 else 2)]:
+                    y = ts.year + (1 if m > 12 else 0)
+                    m = ((m - 1) % 12) + 1
+                    # 查找该月数据
+                    found = False
+                    for dts in d.index:
+                        if dts.year == y and dts.month == m:
+                            q_deficit += float(d[dts]) / 1000.0  # 百万→十亿
+                            found = True
+                            break
+                    if not found:
+                        valid = False
+                        break
+                if valid and q_deficit != 0:
+                    # 赤字为负表示支出>收入：支出 = 收入 + |赤字| = 收入 - 赤字
+                    spending = float(r[ts]) - q_deficit
+                    spending_points.append((ts.strftime("%Y-%m-%d"), spending))
+            if spending_points:
+                add("fiscal", "fed_spending", spending_points, unit="十亿美元")
+        except Exception as e:
+            print(f"[us-warn] 财政支出计算失败: {e}", file=sys.stderr)
 
     print(f"[us] 成功 {len(ok)} 项，失败/缺失 {len(fail)} 项: {fail}")
     return groups, raw
