@@ -263,3 +263,36 @@ adj = 0: 不变
 | US/CN 各有独立 description | ✅ |
 | 整体结构完整（consensus/ranking/preserve keys） | ✅ |
 | 幂等性 | ✅ |
+
+---
+
+## 十一、数据修复：三个指标单位混入（new_orders / credit_spread / core_cpi）
+
+### 11.1 Bug: 三个指标 history 中混入不同量纲的值
+
+| 指标 | 路径 | 正常值 | 异常值 | 修复 |
+|------|------|--------|--------|------|
+| new_orders.us | cycle_kitchin.us.indicators.new_orders | 220-285 十亿美元 | 280,000-347,000 百万美元 | ÷1000→十亿美元 |
+| credit_spread_ig.us | constraint_rate_regime.market_based.indicators.credit_spread_ig | 0.9-2.5% | 3500-3645 (0.1bp单位) | ÷1000→% |
+| core_cpi.us | cycle_merrill_3d.us.indicators.core_cpi | 2.8-6.4% YoY | 309-336 CPI指数 | 计算YoY增速；无法计算的移除 |
+
+### 11.2 修复函数
+
+- `_fix_new_orders_units()`: 检测 >1000 的值 ÷ 1000
+- `_fix_credit_spread_units()`: 检测 >100 的值 ÷ 1000（us + top-level）
+- `_fix_core_cpi_index()`: 从指数序列计算 YoY 增速，无 12 月前数据的条目移除（不伪造）
+
+### 11.3 修复后验证
+
+| 指标 | 条目数 | 范围 | 合理性 |
+|------|--------|------|--------|
+| new_orders.us | 40 | 220.0 ~ 347.8 十亿美元 | ✅ |
+| credit_spread_ig.us | 203 | 0.900 ~ 3.646% | ✅ |
+| core_cpi.us | 28 | 2.47 ~ 6.40% | ✅ 通胀下降趋势 6.4→2.47 |
+
+### 11.4 幂等性 & 结构完整性
+
+- run1==run2==run3 ✅
+- consensus US=92.5 / CN=90.0 不变
+- ranking 8 项不变
+- preserve keys 全部存在

@@ -559,6 +559,141 @@ def _fix_productivity_descriptions(layers):
     return layers, changed
 
 
+
+def _fix_new_orders_units(layers):
+    """修复 Kitchin us.new_orders 单位混入。
+    
+    根因：us.history 交替混入 十亿美元（220-285）和 百万美元（280,000-347,000）。
+    修复：大值 ÷ 1000 转为 十亿美元。
+    """
+    kitchin = layers.get("cycle_kitchin", {})
+    us_data = kitchin.get("us", {})
+    new_orders = us_data.get("indicators", {}).get("new_orders", {})
+    if not new_orders:
+        return layers, False
+    
+    hist = new_orders.get("history", [])
+    if not hist:
+        return layers, False
+    
+    # 检测混合：同时存在 <1000 和 >=1000 的值
+    has_small = any(item.get("value", 0) < 1000 for item in hist)
+    has_large = any(item.get("value", 0) >= 1000 for item in hist)
+    
+    if not (has_small and has_large):
+        return layers, False
+    
+    # 转换大值
+    fixed = 0
+    for item in hist:
+        if item.get("value", 0) >= 1000:
+            item["value"] = round(item["value"] / 1000, 1)
+            fixed += 1
+    
+    return layers, fixed > 0
+
+
+def _fix_credit_spread_units(layers):
+    """修复 Rate Regime credit_spread_ig 单位混入。
+    
+    根因：us.history 混入 0.1bp 单位值（3500-3645）与 % 值（0.9-2.5）。
+    修复：大值 ÷ 1000 转为 %。
+    """
+    crr = layers.get("constraint_rate_regime", {})
+    mb = crr.get("market_based", {})
+    indicators = mb.get("indicators", {})
+    csi = indicators.get("credit_spread_ig", {})
+    if not csi:
+        return layers, False
+    
+    us_hist = csi.get("us", {}).get("history", [])
+    top_hist = csi.get("history", [])
+    
+    if not us_hist and not top_hist:
+        return layers, False
+    
+    fixed = False
+    
+    # Fix US history
+    if us_hist:
+        has_small = any(item.get("value", 0) < 100 for item in us_hist)
+        has_large = any(item.get("value", 0) >= 100 for item in us_hist)
+        
+        if has_small and has_large:
+            for item in us_hist:
+                if item.get("value", 0) >= 100:
+                    item["value"] = round(item["value"] / 1000, 3)
+            fixed = True
+    
+    # Fix top-level history
+    if top_hist:
+        has_small = any(item.get("value", 0) < 100 for item in top_hist)
+        has_large = any(item.get("value", 0) >= 100 for item in top_hist)
+        
+        if has_small and has_large:
+            for item in top_hist:
+                if item.get("value", 0) >= 100:
+                    item["value"] = round(item["value"] / 1000, 3)
+            fixed = True
+    
+    return layers, fixed
+
+
+def _fix_core_cpi_index(layers):
+    """修复 Merrill us.core_cpi 混入 CPI 指数。
+    
+    根因：us.history 混入 CPI 指数值（309-336）与增速值（2.8-6.4%）。
+    修复：从指数序列计算 YoY 增速，无法计算的条目移除（不伪造数据）。
+    """
+    merrill = layers.get("cycle_merrill_3d", {})
+    us_data = merrill.get("us", {})
+    indicators = us_data.get("indicators", {})
+    core_cpi = indicators.get("core_cpi", {})
+    if not core_cpi:
+        return layers, False
+    
+    hist = core_cpi.get("history", [])
+    if not hist:
+        return layers, False
+    
+    # 分离增速值和指数值
+    growth_items = [item for item in hist if item.get("value", 0) < 10]
+    index_items = [item for item in hist if item.get("value", 0) >= 10]
+    
+    if not index_items:
+        return layers, False  # 无指数值，无需修复
+    
+    # 构建指数日期映射
+    index_by_date = {item["date"]: item["value"] for item in index_items}
+    
+    # 从指数计算 YoY，只保留可计算的
+    converted = []
+    removed = 0
+    for item in index_items:
+        dt = item["date"]
+        year, month = dt.split("-")
+        target_year = str(int(year) - 1)
+        target_date = f"{target_year}-{month}"
+        
+        if target_date in index_by_date:
+            prev_val = index_by_date[target_date]
+            curr_val = index_by_date[dt]
+            yoy = round((curr_val - prev_val) / prev_val * 100, 2)
+            converted.append({"date": dt, "value": yoy})
+        else:
+            removed += 1
+    
+    # 合并：保留原增速 + 转换后的增速，按日期排序
+    new_hist = growth_items + converted
+    new_hist.sort(key=lambda x: x["date"])
+    core_cpi["history"] = new_hist
+    
+    if removed > 0:
+        print(f"  ⚠ core_cpi: {removed} 条指数无法计算YoY，已移除（不伪造数据）")
+    
+    return layers, True
+
+
 def build():
     if not V3_FILE.exists():
         print(f"✗ 缺少上游文件 {V3_FILE}", file=sys.stderr)
@@ -613,6 +748,15 @@ def build():
     out["cycle_layers"], pg_fixed = _fix_productivity_descriptions(out["cycle_layers"])
     if pg_fixed:
         print("⚠ productivity_growth 修复: 添加 us/cn per-region description")
+    out["cycle_layers"], no_fixed = _fix_new_orders_units(out["cycle_layers"])
+    if no_fixed:
+        print("⚠ new_orders 修复: 百万美元→十亿美元")
+    out["cycle_layers"], cs_fixed = _fix_credit_spread_units(out["cycle_layers"])
+    if cs_fixed:
+        print("⚠ credit_spread_ig 修复: 0.1bp→%")
+    out["cycle_layers"], cpi_fixed = _fix_core_cpi_index(out["cycle_layers"])
+    if cpi_fixed:
+        print("⚠ core_cpi 修复: CPI指数→YoY增速")
 
     # ---- 3. cycle_consensus：新 schema + 旧契约兼容分键 ----
     us = build_region_contract("us", dimensions, jug_idx, kit_idx, prev_v4)
