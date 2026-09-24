@@ -159,3 +159,70 @@ $ python scripts/build_cycle_position_v4.py
 3. 线上 JSON：`$.cycle_consensus.united_states.consensus_score` 与
    `$.asset_ranking.ranking[0].asset` 均可取到；
 4. 16:00 前可 workflow_dispatch 手动演练。
+
+---
+
+## 九、v3 修复：d308d65→当前（_apply_degradations 方向语义 + _merrill_p3 v3回落）
+
+### 9.1 根因
+
+`_apply_degradations` 将 C1/C2 adjustment 当**数值惩罚**叠加（`cur = max(-1, cur + adj)`），
+导致 us_equity 被 C1(-1) 降到 neutral 后，C2 再 -1 穿透到 down。而
+`constraint_degradation.current_effective_degradations` 叙述是「已在 neutral 不再降」——
+**叙述是对的，代码错了**。正确语义是「方向档位修正」，neutral 是地板/天花板，不允许穿透。
+
+### 9.2 修复内容
+
+#### `_clamp_direction(cur, adj)`（新函数）
+```
+adj < 0: 已 down(-1) 保持 down；否则 max(0, cur+adj)，neutral 封底不穿到 down
+adj > 0: 已 up(+1) 保持 up；否则 min(1, cur+adj)，neutral 封顶不穿到 up
+adj = 0: 不变
+```
+
+#### `_apply_degradations` total_adj 语义变更
+- 旧：`total_adj = C1_adj + C2_adj`（名义叠加）
+- 新：`total_adj = cur_final - cur_base`（实际净改变）
+
+#### `_merrill_p3` v3 层名回落
+首次运行时 prev_v4 可能只有 v3 命名（`layer_6_merrill`），`_merrill_p3` 增加回落链：
+`cycle_merrill_3d → layer_6_merrill`，防止 P3 静默归零（非幂等缺陷）。
+
+### 9.3 修复后 ranking 验证
+
+| # | asset | base | final | adj | signal |
+|---|-------|------|-------|-----|--------|
+| 1 | china_equity | up | up | 0 | 超配 |
+| 2 | usd | up | up | 0 | 超配 |
+| 3 | us_equity | up | neutral | -1 | 标配 |
+| 4 | commodities | up | neutral | -1 | 标配 |
+| 5 | gold | neutral | neutral | 0 | 标配 |
+| 6 | china_bond | neutral | neutral | 0 | 标配 |
+| 7 | china_realestate | neutral | neutral | 0 | 标配 |
+| 8 | us_bond | down | down | 0 | 低配 |
+
+- us_equity: base up → C1-1 → neutral → C2-1 封底 neutral → adj = 0-1 = -1 ✅
+- us_bond: base down(基线即down) → C2-1 保持 down → adj = -1-(-1) = 0 ✅
+- gold: base neutral → C1+1 → up → C2-1 → neutral → adj = 0-0 = 0 ✅
+- 与 `current_effective_degradations` 叙述完全一致 ✅
+
+### 9.4 边界测试结果（修复后）
+
+| # | 测试项 | 结果 |
+|---|--------|------|
+| 1 | 事故现场复现 US=92.5/CN=90.0 | ✅ |
+| 2 | 层名全部v4化(7新/0旧) | ✅ |
+| 3 | ranking方向语义+adj数值(9项) | ✅ |
+| 4 | 幂等性(run2==run3) | ✅ |
+| 5 | synthesis文本评分对齐 | ✅ |
+| 6 | 约束降级叙述一致性 | ✅ |
+| 7 | **★首次prev_v4仅有v3层名时P3仍正确** | ✅ |
+| 8 | 无transmission_table拒绝输出 | ✅ |
+| 9 | 刻度截断边界(6项) | ✅ |
+
+**48/48 PASS**（较d308d65版本+4项：v3回落×4 + ranking语义×3 + 叙述一致×2）
+
+### 9.5 口径冲突解决
+
+**第七节冲突①已解决**：us_equity 叙述「已 neutral 不再降」→代码现在也封底在 neutral，
+叙述与代码一致。冲突②（配置卡超配 vs ranking标配）不在生成器职责，维持原结论。

@@ -165,7 +165,9 @@ KITCHIN_OLD_PHASE = {2: "主动补库", 1: "被动补库", 0: "中性", -1: "被
 #       us_equity_valuation_sensitive → us_equity
 #       us_bond_long_duration         → us_bond
 #       gold/commodities 同名；others/短久期 → 无操作。
-#   C1 与 C2 顺序叠加，方向封底下限 down，不重复降级。
+#   C1→C2 顺序叠加。语义：方向档位修正（非数值惩罚），neutral 是地板/天花板，
+#   不允许穿透：adj<0 时 neutral 封底不穿到 down，adj>0 时 neutral 封顶不穿到 up；
+#   仅基线已是 down/up 的资产保持原位。total_adj = 实际净改变 = final - base。
 #
 # 排序键（完全确定性）：
 #   最终方向数值 desc → entry 置信度 desc → ASSET_TIE_PRIORITY 固定顺序。
@@ -223,11 +225,13 @@ def map_p1_juglar(new_score):
 
 
 def _merrill_p3(prev_v4, country_key):
-    merrill = (
-        prev_v4.get("cycle_layers", {})
-        .get("cycle_merrill_3d", {})
-        .get(country_key, {})
-    )
+    """取美林三维 signal_weight / current_phase。
+    回落链：v4 命名 cycle_merrill_3d → v3 命名 layer_6_merrill（首次运行
+    prev_v4 可能还保留 v3 层名，不做回落则 P3 静默归零→非幂等）。
+    """
+    layers = prev_v4.get("cycle_layers", {})
+    merrill_layer = layers.get("cycle_merrill_3d") or layers.get("layer_6_merrill") or {}
+    merrill = merrill_layer.get(country_key, {})
     return merrill.get("signal_weight", 0), merrill.get("current_phase")
 
 
@@ -311,17 +315,34 @@ def _entry_lookup(entries, p1, p2):
     return None, (eff_p1, eff_p2)
 
 
+def _clamp_direction(cur, adj):
+    """方向档位修正：每次 adj 修正一档，neutral 是地板/天花板，不穿透。
+    adj<0: 已是 down(-1) 保持 down；否则 neutral(0) 封底不穿透到 down。
+    adj>0: 已是 up(+1) 保持 up；否则 neutral(0) 封顶不穿透到 up。
+    adj=0: 不变。
+    """
+    if adj < 0:
+        return -1 if cur == -1 else max(0, cur + adj)
+    elif adj > 0:
+        return 1 if cur == 1 else min(1, cur + adj)
+    return cur
+
+
 def _apply_degradations(base_dir, asset, constraint):
-    """返回 (最终方向, 总adjustment)。C1→C2 顺序叠加，封底下限。"""
-    cur = DIR_NUM[base_dir]
-    total_adj = 0
+    """返回 (最终方向, 实际净 adjustment)。
+    语义：方向档位修正，不是数值惩罚。
+    - C1/C2 的 -1 作用于基线方向，neutral 被封底不允许穿透到 down；
+    - 仅基线已是 down 的资产保持 down；升级同理 neutral 封顶不穿透到 up。
+    - total_adj = cur_final - cur_base（实际净改变），不叠加名义值。
+    """
+    base_num = DIR_NUM[base_dir]
+    cur = base_num
     c1 = constraint.get("C1_debt_cycle", {})
     c2 = constraint.get("C2_rate_regime", {})
 
     if c1.get("currently_triggered"):
         adj = c1.get("degradation_rules", {}).get(asset, {}).get("adjustment", 0)
-        cur = max(-1, cur + adj)
-        total_adj += adj
+        cur = _clamp_direction(cur, adj)
 
     if c2.get("currently_triggered"):
         rules = c2.get("degradation_rules", {})
@@ -329,10 +350,9 @@ def _apply_degradations(base_dir, asset, constraint):
         if key not in rules:
             key = next((k for k, v in C2_ALIAS.items() if v == asset), None)
         adj = rules.get(key, {}).get("adjustment", 0) if key else 0
-        cur = max(-1, cur + adj)
-        total_adj += adj
+        cur = _clamp_direction(cur, adj)
 
-    return NUM_DIR[cur], total_adj
+    return NUM_DIR[cur], cur - base_num
 
 
 def recompute_asset_ranking(prev_v4, us, cn):
