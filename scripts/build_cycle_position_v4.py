@@ -430,6 +430,135 @@ def recompute_asset_ranking(prev_v4, us, cn):
     }
 
 
+
+# ------------------------------------------------------------------
+# 数据修复：v3 静态数据中已知的质量问题，在 v4 生成时修正
+# ------------------------------------------------------------------
+
+def _fix_tfp_history(layers):
+    """修复 US TFP history 混入指数值的 bug。
+    
+    根因：v3 narrative_kondratieff.indicators.tfp_growth.us.history 交替混入了
+    FRED TFP 指数（82~108, base 100@2017）和增速值（0.3~1.5%），导致图表 US 线
+    在 0.3~108 之间剧烈震荡。
+    
+    修复：从顶层 tfp.history（完整年度指数 1996-2025）计算 YoY 增速，
+    替换 us.history 和顶层 history。CN 不受影响（已是增速值）。
+    """
+    nk = layers.get("narrative_kondratieff", {})
+    tfp = nk.get("indicators", {}).get("tfp_growth", {})
+    if not tfp:
+        return layers, False
+    
+    us_hist = tfp.get("us", {}).get("history", [])
+    top_hist = tfp.get("history", [])
+    
+    # 检测是否存在混合：US history 中同时有 >10 和 <10 的值
+    has_index = any(item.get("value", 0) > 10 for item in us_hist)
+    has_growth = any(0 < item.get("value", 0) < 10 for item in us_hist)
+    
+    if not (has_index and has_growth):
+        return layers, False  # 没有混合问题，不修复
+    
+    # 从顶层 index 构建增速序列
+    if not top_hist:
+        return layers, False  # 无顶层 index，无法修复
+    
+    index_by_year = {}
+    for item in top_hist:
+        try:
+            index_by_year[str(item["date"])] = float(item["value"])
+        except (ValueError, TypeError):
+            continue
+    
+    if len(index_by_year) < 2:
+        return layers, False
+    
+    years = sorted(index_by_year.keys(), key=lambda y: int(y))
+    
+    # 获取 us.history 中已有的增速值年份（非指数值）
+    existing_growth = {}
+    for item in us_hist:
+        v = item.get("value", 0)
+        if 0 < v < 10:
+            existing_growth[str(item["date"])] = v
+    
+    # 构建新的 US TFP 增速序列
+    new_us_history = []
+    
+    # 保留 index 范围之前的已有增速值（如 1995）
+    min_idx_year = int(years[0])
+    for yr_str, val in sorted(existing_growth.items(), key=lambda x: int(x[0])):
+        if int(yr_str) < min_idx_year:
+            new_us_history.append({"date": yr_str, "value": val})
+    
+    # 从 index 计算 YoY 增速
+    for i in range(len(years)):
+        yr = years[i]
+        if i == 0:
+            # 第一年：用最早的已有增速值反推前一年 index
+            first_growth = existing_growth.get(str(int(yr) - 1), 1.0)
+            prev_idx = index_by_year[yr] / (1 + first_growth / 100)
+            growth = round((index_by_year[yr] - prev_idx) / prev_idx * 100, 2)
+        else:
+            prev_yr = years[i - 1]
+            growth = round((index_by_year[yr] - index_by_year[prev_yr]) / index_by_year[prev_yr] * 100, 2)
+        new_us_history.append({"date": yr, "value": growth})
+    
+    # 保留 index 范围之后的已有增速值（如 2026）
+    max_idx_year = int(years[-1])
+    for yr_str, val in sorted(existing_growth.items(), key=lambda x: int(x[0])):
+        if int(yr_str) > max_idx_year:
+            new_us_history.append({"date": yr_str, "value": val})
+    
+    # 按年份排序
+    new_us_history.sort(key=lambda x: int(x["date"]))
+    
+    # 应用修复
+    tfp["us"]["history"] = new_us_history
+    
+    # 顶层 history 也转为增速（保持一致性）
+    new_top_history = []
+    for i in range(1, len(years)):
+        prev_yr = years[i - 1]
+        curr_yr = years[i]
+        growth = round((index_by_year[curr_yr] - index_by_year[prev_yr]) / index_by_year[prev_yr] * 100, 2)
+        new_top_history.append({"date": curr_yr, "value": growth})
+    tfp["history"] = new_top_history
+    
+    return layers, True
+
+
+def _fix_productivity_descriptions(layers):
+    """为 productivity_growth 添加 per-region description。
+    
+    根因：v3 constraint_rate_regime.structural.indicators.productivity_growth
+    只有顶层 description="TFP+资本深化的综合效率指标"，us/cn 没有各自的
+    description，导致渲染时两国显示完全相同的文字。
+    """
+    crr = layers.get("constraint_rate_regime", {})
+    structural = crr.get("structural", {})
+    indicators = structural.get("indicators", {})
+    pg = indicators.get("productivity_growth", {})
+    
+    if not pg:
+        return layers, False
+    
+    changed = False
+    
+    us = pg.get("us", {})
+    if us and "description" not in us:
+        us["description"] = "US nonfarm business sector labor productivity growth (BLS)"
+        changed = True
+    
+    cn = pg.get("cn", {})
+    if cn and "description" not in cn:
+        cn["description"] = "China labor productivity growth (GDP/employment, NBS)"
+        changed = True
+    
+    return layers, changed
+
+
 def build():
     if not V3_FILE.exists():
         print(f"✗ 缺少上游文件 {V3_FILE}", file=sys.stderr)
@@ -476,6 +605,14 @@ def build():
         v3.get("cycle_layers", {}),
         prev_v4.get("cycle_layers", {}),
     )
+
+    # ---- 2c. 数据修复：v3 静态数据质量问题 ----
+    out["cycle_layers"], tfp_fixed = _fix_tfp_history(out["cycle_layers"])
+    if tfp_fixed:
+        print("⚠ TFP history 修复: US 指数→增速转换")
+    out["cycle_layers"], pg_fixed = _fix_productivity_descriptions(out["cycle_layers"])
+    if pg_fixed:
+        print("⚠ productivity_growth 修复: 添加 us/cn per-region description")
 
     # ---- 3. cycle_consensus：新 schema + 旧契约兼容分键 ----
     us = build_region_contract("us", dimensions, jug_idx, kit_idx, prev_v4)

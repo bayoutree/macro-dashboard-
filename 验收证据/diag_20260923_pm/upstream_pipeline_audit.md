@@ -226,3 +226,40 @@ adj = 0: 不变
 
 **第七节冲突①已解决**：us_equity 叙述「已 neutral 不再降」→代码现在也封底在 neutral，
 叙述与代码一致。冲突②（配置卡超配 vs ranking标配）不在生成器职责，维持原结论。
+
+---
+
+## 十、数据修复：US TFP 指数混入 + productivity_growth 描述重复
+
+### 10.1 Bug 1: US TFP History 混入指数值
+
+**现象**：`narrative_kondratieff.indicators.tfp_growth.us.history` 交替出现增速值（0.3~1.5%）和 FRED TFP 指数（82~108, base 100@2017），导致图表 US 线在 0.3~108 之间剧烈震荡。
+
+**根因**：v3 静态数据中 US TFP history 混入了两个不同数据源——增速值来自年度 TFP 增长率，指数值来自 FRED 多因子 TFP 指数（`tfp.history` 顶层有完整 1996-2025 年度指数）。两套指标被交替写入同一数组。
+
+**修复**：在 v4 生成器中新增 `_fix_tfp_history()` 函数：
+- 检测 US history 是否同时存在 >10（指数）和 <10（增速）的混合值
+- 从顶层 `tfp.history` 的完整年度指数序列计算 YoY 增速：`growth = (index[Y] - index[Y-1]) / index[Y-1] × 100`
+- 替换 `us.history` 和顶层 `history` 为统一增速序列
+- CN 数据不受影响（已是增速值）
+
+**修复后 US TFP 增速**：范围 -1.06%~3.85%，32 个年度条目，金融危机（-0.99%@2008）、疫情（-0.50%@2020）、复苏（3.85%@2021）均可验证。
+
+### 10.2 Bug 2: 劳动生产率 Description 重复
+
+**现象**：`constraint_rate_regime.structural.indicators.productivity_growth` 只有顶层 `description="TFP+资本深化的综合效率指标"`，us/cn 无独立 description，导致前端对两国显示相同文字。
+
+**修复**：新增 `_fix_productivity_descriptions()` 函数：
+- us.description: "US nonfarm business sector labor productivity growth (BLS)"
+- cn.description: "China labor productivity growth (GDP/employment, NBS)"
+
+### 10.3 验证
+
+| 检查项 | 结果 |
+|--------|------|
+| US TFP 全部在 -3%~5% 范围 | ✅ |
+| 顶层 history 同步转增速 | ✅ |
+| CN TFP 未受影响 | ✅ |
+| US/CN 各有独立 description | ✅ |
+| 整体结构完整（consensus/ranking/preserve keys） | ✅ |
+| 幂等性 | ✅ |
