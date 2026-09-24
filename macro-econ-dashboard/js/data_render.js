@@ -57,8 +57,11 @@ function safeRAF(cb) {
   setTimeout(() => { if (!called) { cancelAnimationFrame(id); cb(); } }, 100);
 }
 
-function renderMiniChart(domId, history, change) {
-  const dom = document.getElementById(domId);
+function renderMiniChart(domId, history, change, scope) {
+  // scope 限定在本国 Tab 容器内：getElementById 只存在于 document（DOM 规范），
+  // 故用容器内 querySelector，规避中美同 ID 时总是拿到第一个的问题。
+  const root = scope || document;
+  const dom = root.querySelector('#' + domId);
   if (!dom) return;
   if (!history || history.length < 2) {
     dom.innerHTML = '<div class="no-data text-center py-2 text-xs text-gray-600">无历史数据</div>';
@@ -924,6 +927,7 @@ function renderCountry(countryData, country) {
   }
 
   container.innerHTML = html;
+  const scope = container;  // 限定在本国 Tab 容器内查询，避免中美同 ID 冲突
 
   // 渲染所有迷你图
   // 第一层迷你图（中国：货币+信用；美国：象限+流动性）
@@ -931,29 +935,29 @@ function renderCountry(countryData, country) {
     const ec = countryData.economic_cycle;
     ['dr007', 'm2'].forEach(k => {
       const m = ec.monetary_indicators?.[k];
-      if (m) renderMiniChart(`mini-cn-m-${k === 'dr007' ? 'd' : 'm2'}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-cn-m-${k === 'dr007' ? 'd' : 'm2'}`, m.history, m.change, scope);
     });
     ['m1'].forEach(k => {
       const m = ec.credit_indicators?.[k];
-      if (m) renderMiniChart(`mini-cn-c-m1`, m.history, m.change);
+      if (m) renderMiniChart(`mini-cn-c-m1`, m.history, m.change, scope);
     });
     const sf = ec.credit_indicators?.shrzgm;
-    if (sf) renderMiniChart('mini-cn-c-sf', sf.history, sf.change);
+    if (sf) renderMiniChart('mini-cn-c-sf', sf.history, sf.change, scope);
   } else if (country === 'us' && countryData.economic_cycle) {
     const ec = countryData.economic_cycle;
     ['gdp', 'cpi', 'ppi'].forEach((k, i) => {
       const m = ec.quadrant_indicators?.[k];
-      if (m) renderMiniChart(`mini-us-q-${k[0]}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-us-q-${k[0]}`, m.history, m.change, scope);
     });
     [['fed_funds', 'ff'], ['ust_10y', 'u10'], ['tips_10y', 'tips'], ['hy_spread', 'hy']].forEach(([k, suf]) => {
       const m = ec.liquidity_indicators?.[k];
-      if (m) renderMiniChart(`mini-us-l-${suf}`, m.history, m.change);
+      if (m) renderMiniChart(`mini-us-l-${suf}`, m.history, m.change, scope);
     });
   } else if (countryData.quadrant) {
     // 兼容旧数据
     ['gdp', 'cpi', 'ppi'].forEach((k, i) => {
       if (countryData.quadrant[k]) {
-        renderMiniChart(`mini-q-${i}`, countryData.quadrant[k].history, countryData.quadrant[k].change);
+        renderMiniChart(`mini-q-${i}`, countryData.quadrant[k].history, countryData.quadrant[k].change, scope);
       }
     });
   }
@@ -963,7 +967,7 @@ function renderCountry(countryData, country) {
     Object.entries(countryData.sectors).forEach(([deptKey, deptData]) => {
       if (typeof deptData === 'object') {
         Object.entries(deptData).forEach(([key, metric]) => {
-          renderMiniChart(`chart-sect-${deptKey}-${key}`, metric?.history, metric?.change);
+          renderMiniChart(`chart-sect-${deptKey}-${key}`, metric?.history, metric?.change, scope);
         });
       }
     });
@@ -974,7 +978,7 @@ function renderCountry(countryData, country) {
     ['monetary', 'fiscal'].forEach(pk => {
       if (countryData.policy[pk]) {
         Object.entries(countryData.policy[pk]).forEach(([key, metric]) => {
-          renderMiniChart(`chart-pol-${pk}-${key}`, metric?.history, metric?.change);
+          renderMiniChart(`chart-pol-${pk}-${key}`, metric?.history, metric?.change, scope);
         });
       }
     });
@@ -985,7 +989,7 @@ function renderCountry(countryData, country) {
     ['leading', 'coincident', 'lagging'].forEach(vk => {
       if (countryData.validation[vk]) {
         Object.entries(countryData.validation[vk]).forEach(([key, metric]) => {
-          renderMiniChart(`chart-val-${vk}-${key}`, metric?.history, metric?.change);
+          renderMiniChart(`chart-val-${vk}-${key}`, metric?.history, metric?.change, scope);
         });
       }
     });
