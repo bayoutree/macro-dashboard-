@@ -694,6 +694,60 @@ def _fix_core_cpi_index(layers):
     return layers, True
 
 
+def _fix_high_rate_tracker_history(v4_data):
+    """把 constraint_rate_regime 中已有的历史数据映射到 high_rate_tracker。
+
+    根因：cross_analysis.high_rate_tracker 的 9 个指标全部无 history，
+    其中 4 个在 constraint_rate_regime 中已有 197-203 条完整数据，
+    但 v3 与旧 v4 均未建立映射，前端趋势图因此为空。
+
+    映射（2026-09-24 已逐字段验证）：
+      forward_looking.breakeven_inflation → 30Y盈亏平衡通胀
+      forward_looking.term_premium        → ACM期限溢价
+      forward_looking.real_rate_forward   → 5Y-5Y远期实际利率
+      market_based.credit_spread_ig       → 高收益债利差
+    """
+    crr = v4_data.get("cycle_layers", {}).get("constraint_rate_regime", {})
+    hrt_indicators = (
+        v4_data.get("cross_analysis", {})
+        .get("high_rate_tracker", {})
+        .get("indicators", [])
+    )
+    if not isinstance(hrt_indicators, list):
+        return False
+
+    mapping = {
+        "30Y盈亏平衡通胀": ("forward_looking", "breakeven_inflation"),
+        "ACM期限溢价": ("forward_looking", "term_premium"),
+        "5Y-5Y远期实际利率": ("forward_looking", "real_rate_forward"),
+        "高收益债利差": ("market_based", "credit_spread_ig"),
+    }
+
+    fixed = False
+    for ind in hrt_indicators:
+        if not isinstance(ind, dict):
+            continue
+        name = ind.get("name", "")
+        if name not in mapping:
+            continue
+        # 仅在确实缺 history 时复制，保证幂等
+        if ind.get("history"):
+            continue
+        group_key, ind_key = mapping[name]
+        source = (
+            crr.get(group_key, {})
+            .get("indicators", {})
+            .get(ind_key, {})
+        )
+        history = source.get("history", [])
+        if history:
+            ind["history"] = history
+            fixed = True
+            print(f"  [fix] {name}: 复制 {len(history)} 条 history <- {group_key}.{ind_key}")
+
+    return fixed
+
+
 def build():
     if not V3_FILE.exists():
         print(f"✗ 缺少上游文件 {V3_FILE}", file=sys.stderr)
@@ -778,6 +832,10 @@ def build():
     meta["v4_builder"] = "scripts/build_cycle_position_v4.py"
     meta["v4_built_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
     out["_meta"] = meta
+
+    # ---- 5b. high_rate_tracker history 映射（constraint_rate_regime → 交叉分析） ----
+    if _fix_high_rate_tracker_history(out):
+        print("⚠ high_rate_tracker 修复: 已从 constraint_rate_regime 映射 history")
 
     save_json(V4_FILE, out)
 

@@ -49,6 +49,14 @@ function pctLabel(pct) {
 // ==================== ECharts 实例管理 ====================
 const chartInstances = [];
 
+// rAF with setTimeout fallback: in headless/throttled environments rAF callbacks
+// may never fire (observed 2026-09-24: 52 chart containers, 0 rendered, rAF never invoked).
+function safeRAF(cb) {
+  let called = false;
+  const id = requestAnimationFrame(() => { called = true; cb(); });
+  setTimeout(() => { if (!called) { cancelAnimationFrame(id); cb(); } }, 100);
+}
+
 function renderMiniChart(domId, history, change) {
   const dom = document.getElementById(domId);
   if (!dom) return;
@@ -57,7 +65,7 @@ function renderMiniChart(domId, history, change) {
     return;
   }
   // CRITICAL: use rAF to ensure DOM layout + Tailwind grid CSS are applied before reading dimensions
-  requestAnimationFrame(() => {
+  safeRAF(() => {
     if (dom.offsetHeight < 10) { dom.style.height = '50px'; }
     const rect = dom.getBoundingClientRect();
     const w = Math.round(rect.width);
@@ -92,7 +100,7 @@ function _initMiniChartContent(chart, history, change) {
 function renderLargeChart(domId, series, opts = {}) {
   const dom = document.getElementById(domId);
   if (!dom) return;
-  requestAnimationFrame(() => {
+  safeRAF(() => {
     if (dom.offsetHeight < 10) { dom.style.minHeight = '200px'; }
     const rect = dom.getBoundingClientRect();
     const w = Math.round(rect.width);

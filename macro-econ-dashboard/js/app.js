@@ -56,7 +56,7 @@ async function loadData() {
   statusEl.innerHTML = '<span class="loading-spinner inline-block"></span> 数据加载中...';
 
   try {
-    const response = await fetch('data/indicators.json');
+    const response = await fetch('data/indicators.json?v=20260924e');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     macroData = await response.json();
     window.macroData = macroData;

@@ -447,8 +447,8 @@ const CycleV3Module = (() => {
     // Also add from high_rate_tracker if present (inherit parent last_updated as fallback)
     if (highRateTracker?.indicators) {
       const hrtDate = highRateTracker.last_updated || null;
-      highRateTracker.indicators.forEach(ind => {
-        allIndicators.push({...ind, layer_group: ind.layer, last_updated: ind.last_updated || hrtDate});
+      highRateTracker.indicators.forEach((ind, idx) => {
+        allIndicators.push({...ind, layer_group: ind.layer, last_updated: ind.last_updated || hrtDate, _hrt_idx: idx});
       });
     }
 
@@ -467,7 +467,7 @@ const CycleV3Module = (() => {
         const f = freshnessBadge(ind.last_updated, ind.frequency);
         const val = ind.current_value ?? ind.current ?? '--';
         const descHtml = ind.description ? `<div class="ri-desc">${escapeHtml(ind.description)}</div>` : '';
-        const chartId = 'chart-rate-'+g+'-'+(ind.ind_key||'');
+        const chartId = 'chart-rate-'+g+'-'+(ind.ind_key !== undefined ? ind.ind_key : ('hrt'+ind._hrt_idx));
         const sourceUrlHtml = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
         return `
         <div class="rate-indicator-card" style="border-left:3px solid ${color}">
@@ -1595,6 +1595,35 @@ const CycleV3Module = (() => {
                     {offset: 1, color: 'transparent'}]}}}]
             });
           }
+        });
+      });
+    }
+
+    // High-rate tracker sparkline charts (P0 fix 2026-09-24: previously the
+    // renderConstraintRate card builder created these containers, but the drawing
+    // loop above only iterates constraint_rate_regime and silently skipped them).
+    const hrt = data.cross_analysis?.high_rate_tracker;
+    if (hrt?.indicators) {
+      hrt.indicators.forEach((ind, idx) => {
+        const hist = _cleanHist(ind.history);
+        if (!hist.length) return;
+        const g = ind.layer || 'other';
+        const chartId = 'chart-rate-' + g + '-hrt' + idx;
+        const el = document.getElementById(chartId);
+        if (!el) return;
+        createChart(chartId, {
+          tooltip: {...tooltipConfig(), trigger: 'axis'},
+          grid: gridConfig({top: 8, bottom: 12, left: 30, right: 8}),
+          xAxis: {type: 'category', data: hist.map(h => h.date), show: false},
+          yAxis: {type: 'value', axisLabel: {color: COLORS.textMuted, fontSize: 8},
+            splitLine: {lineStyle: {color: COLORS.borderSubtle, type: 'dashed'}},
+            axisLine: {show: false}},
+          series: [{type: 'line', data: hist.map(h => [h.date, h.value]),
+            smooth: true, symbol: 'none', lineStyle: {width: 2, color: '#f59e0b'},
+            itemStyle: {color: '#f59e0b'},
+            areaStyle: {color: {type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [{offset: 0, color: 'rgba(245,158,11,0.25)'},
+                {offset: 1, color: 'transparent'}]}}}]
         });
       });
     }

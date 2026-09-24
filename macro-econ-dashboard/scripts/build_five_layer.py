@@ -80,11 +80,11 @@ NAME_MAP = {
     "pce": "个人消费支出",
     "retail_sales": "零售销售",
     "consumer_conf": "消费者信心",
-    "federal_deficit": "联邦赤字",
-    "federal_debt": "联邦债务",
+    "fed_deficit": "联邦赤字",
+    "fed_debt": "联邦债务",
     "current_account": "经常账户",
-    "spending": "联邦支出",
-    "receipts": "联邦收入",
+    "fed_spending": "联邦支出",
+    "fed_receipts": "联邦收入",
 }
 
 ASSET_NAMES = {
@@ -670,12 +670,12 @@ def _build_us_sectors(g):
         corporate["nonfarm"] = _named(nf, "nonfarm")
 
     government = {}
-    deficit = g.get("government", {}).get("federal_deficit")
+    deficit = g.get("government", {}).get("fed_deficit")
     if deficit:
-        government["federal_deficit"] = _named(deficit, "federal_deficit")
-    debt = g.get("government", {}).get("federal_debt")
+        government["fed_deficit"] = _named(deficit, "fed_deficit")
+    debt = g.get("government", {}).get("fed_debt")
     if debt:
-        government["federal_debt"] = _named(debt, "federal_debt")
+        government["fed_debt"] = _named(debt, "fed_debt")
 
     external = {}
     tb = g.get("external", {}).get("trade_balance")
@@ -695,12 +695,12 @@ def _build_us_policy(g):
     if g.get("financial", {}).get("dxy"):
         monetary["dxy"] = _named(g["financial"]["dxy"], "dxy")
     fiscal = {}
-    spending = g.get("fiscal", {}).get("spending")
+    spending = g.get("fiscal", {}).get("fed_spending")
     if spending:
-        fiscal["spending"] = _named(spending, "spending")
-    receipts = g.get("fiscal", {}).get("receipts")
+        fiscal["fed_spending"] = _named(spending, "fed_spending")
+    receipts = g.get("fiscal", {}).get("fed_receipts")
     if receipts:
-        fiscal["receipts"] = _named(receipts, "receipts")
+        fiscal["fed_receipts"] = _named(receipts, "fed_receipts")
     return {"monetary": monetary, "fiscal": fiscal}
 
 
