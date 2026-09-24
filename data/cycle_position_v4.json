@@ -919,19 +919,19 @@
               },
               {
                 "date": "1996",
-                "value": 82.272
+                "value": 1.91
               },
               {
                 "date": "1997",
-                "value": 82.969
+                "value": 0.85
               },
               {
                 "date": "1998",
-                "value": 84.41
+                "value": 1.74
               },
               {
                 "date": "1999",
-                "value": 86.221
+                "value": 2.15
               },
               {
                 "date": "2000",
@@ -939,19 +939,19 @@
               },
               {
                 "date": "2001",
-                "value": 87.515
+                "value": 1.5
               },
               {
                 "date": "2002",
-                "value": 89.254
+                "value": 1.99
               },
               {
                 "date": "2003",
-                "value": 91.225
+                "value": 2.21
               },
               {
                 "date": "2004",
-                "value": 93.325
+                "value": 2.3
               },
               {
                 "date": "2005",
@@ -959,19 +959,19 @@
               },
               {
                 "date": "2006",
-                "value": 95.016
+                "value": 1.81
               },
               {
                 "date": "2007",
-                "value": 95.319
+                "value": 0.32
               },
               {
                 "date": "2008",
-                "value": 94.379
+                "value": -0.99
               },
               {
                 "date": "2009",
-                "value": 94.622
+                "value": 0.26
               },
               {
                 "date": "2010",
@@ -979,19 +979,19 @@
               },
               {
                 "date": "2011",
-                "value": 96.725
+                "value": 2.22
               },
               {
                 "date": "2012",
-                "value": 97.513
+                "value": 0.81
               },
               {
                 "date": "2013",
-                "value": 97.859
+                "value": 0.35
               },
               {
                 "date": "2014",
-                "value": 98.541
+                "value": 0.7
               },
               {
                 "date": "2015",
@@ -999,19 +999,19 @@
               },
               {
                 "date": "2016",
-                "value": 99.34
+                "value": 0.81
               },
               {
                 "date": "2017",
-                "value": 100.0
+                "value": 0.66
               },
               {
                 "date": "2018",
-                "value": 100.639
+                "value": 0.64
               },
               {
                 "date": "2019",
-                "value": 101.94
+                "value": 1.29
               },
               {
                 "date": "2020",
@@ -1019,7 +1019,7 @@
               },
               {
                 "date": "2021",
-                "value": 105.343
+                "value": 3.34
               },
               {
                 "date": "2022",
@@ -1027,7 +1027,7 @@
               },
               {
                 "date": "2023",
-                "value": 105.93
+                "value": 0.56
               },
               {
                 "date": "2024",
@@ -1035,7 +1035,7 @@
               },
               {
                 "date": "2025",
-                "value": 108.441
+                "value": 2.37
               },
               {
                 "date": "2026",
@@ -1118,124 +1118,120 @@
           "source_url": "https://www.rug.nl/ggdc/productivity/pwt/",
           "history": [
             {
-              "date": "1996",
-              "value": 82.272
-            },
-            {
               "date": "1997",
-              "value": 82.969
+              "value": 0.85
             },
             {
               "date": "1998",
-              "value": 84.41
+              "value": 1.74
             },
             {
               "date": "1999",
-              "value": 86.221
+              "value": 2.15
             },
             {
               "date": "2000",
-              "value": 87.19
+              "value": 1.12
             },
             {
               "date": "2001",
-              "value": 87.515
+              "value": 0.37
             },
             {
               "date": "2002",
-              "value": 89.254
+              "value": 1.99
             },
             {
               "date": "2003",
-              "value": 91.225
+              "value": 2.21
             },
             {
               "date": "2004",
-              "value": 93.325
+              "value": 2.3
             },
             {
               "date": "2005",
-              "value": 94.685
+              "value": 1.46
             },
             {
               "date": "2006",
-              "value": 95.016
+              "value": 0.35
             },
             {
               "date": "2007",
-              "value": 95.319
+              "value": 0.32
             },
             {
               "date": "2008",
-              "value": 94.379
+              "value": -0.99
             },
             {
               "date": "2009",
-              "value": 94.622
+              "value": 0.26
             },
             {
               "date": "2010",
-              "value": 97.036
+              "value": 2.55
             },
             {
               "date": "2011",
-              "value": 96.725
+              "value": -0.32
             },
             {
               "date": "2012",
-              "value": 97.513
+              "value": 0.81
             },
             {
               "date": "2013",
-              "value": 97.859
+              "value": 0.35
             },
             {
               "date": "2014",
-              "value": 98.541
+              "value": 0.7
             },
             {
               "date": "2015",
-              "value": 99.394
+              "value": 0.87
             },
             {
               "date": "2016",
-              "value": 99.34
+              "value": -0.05
             },
             {
               "date": "2017",
-              "value": 100.0
+              "value": 0.66
             },
             {
               "date": "2018",
-              "value": 100.639
+              "value": 0.64
             },
             {
               "date": "2019",
-              "value": 101.94
+              "value": 1.29
             },
             {
               "date": "2020",
-              "value": 101.433
+              "value": -0.5
             },
             {
               "date": "2021",
-              "value": 105.343
+              "value": 3.85
             },
             {
               "date": "2022",
-              "value": 104.23
+              "value": -1.06
             },
             {
               "date": "2023",
-              "value": 105.93
+              "value": 1.63
             },
             {
               "date": "2024",
-              "value": 107.546
+              "value": 1.53
             },
             {
               "date": "2025",
-              "value": 108.441
+              "value": 0.83
             }
           ],
           "current": 108.441
@@ -1570,12 +1566,14 @@
                   "value": 1.2
                 }
               ],
-              "frequency": "quarterly"
+              "frequency": "quarterly",
+              "description": "US nonfarm business sector labor productivity growth (BLS)"
             },
             "cn": {
               "current": 5.5,
               "unit": "%",
-              "frequency": "quarterly"
+              "frequency": "quarterly",
+              "description": "China labor productivity growth (GDP/employment, NBS)"
             },
             "description": "TFP+资本深化的综合效率指标",
             "last_updated": "2026-06-15",
@@ -12831,23 +12829,23 @@
               },
               {
                 "date": "2023-08",
-                "value": 309.58
+                "value": 4.7
               },
               {
                 "date": "2023-09",
-                "value": 310.539
+                "value": 4.7
               },
               {
                 "date": "2023-10",
-                "value": 311.457
+                "value": 4.7
               },
               {
                 "date": "2023-11",
-                "value": 312.392
+                "value": 3.9
               },
               {
                 "date": "2023-12",
-                "value": 313.195
+                "value": 3.9
               },
               {
                 "date": "2024-01",
@@ -12855,23 +12853,23 @@
               },
               {
                 "date": "2024-02",
-                "value": 315.564
+                "value": 3.9
               },
               {
                 "date": "2024-03",
-                "value": 316.792
+                "value": 3.9
               },
               {
                 "date": "2024-04",
-                "value": 317.649
+                "value": 3.9
               },
               {
                 "date": "2024-05",
-                "value": 318.095
+                "value": 3.2
               },
               {
                 "date": "2024-06",
-                "value": 318.39
+                "value": 3.2
               },
               {
                 "date": "2024-07",
@@ -12879,23 +12877,23 @@
               },
               {
                 "date": "2024-08",
-                "value": 319.75
+                "value": 3.29
               },
               {
                 "date": "2024-09",
-                "value": 320.732
+                "value": 3.28
               },
               {
                 "date": "2024-10",
-                "value": 321.731
+                "value": 3.3
               },
               {
                 "date": "2024-11",
-                "value": 322.657
+                "value": 3.29
               },
               {
                 "date": "2024-12",
-                "value": 323.259
+                "value": 3.21
               },
               {
                 "date": "2025-01",
@@ -12903,23 +12901,23 @@
               },
               {
                 "date": "2025-02",
-                "value": 325.465
+                "value": 3.14
               },
               {
                 "date": "2025-03",
-                "value": 325.69
+                "value": 2.81
               },
               {
                 "date": "2025-04",
-                "value": 326.467
+                "value": 2.78
               },
               {
                 "date": "2025-05",
-                "value": 326.893
+                "value": 2.77
               },
               {
                 "date": "2025-06",
-                "value": 327.658
+                "value": 2.91
               },
               {
                 "date": "2025-07",
@@ -12927,19 +12925,19 @@
               },
               {
                 "date": "2025-08",
-                "value": 329.7
+                "value": 3.11
               },
               {
                 "date": "2025-09",
-                "value": 330.418
+                "value": 3.02
               },
               {
                 "date": "2025-11",
-                "value": 331.043
+                "value": 2.6
               },
               {
                 "date": "2025-12",
-                "value": 331.814
+                "value": 2.65
               },
               {
                 "date": "2026-01",
@@ -12947,27 +12945,27 @@
               },
               {
                 "date": "2026-02",
-                "value": 333.512
+                "value": 2.47
               },
               {
                 "date": "2026-03",
-                "value": 334.165
+                "value": 2.6
               },
               {
                 "date": "2026-04",
-                "value": 335.423
+                "value": 2.74
               },
               {
                 "date": "2026-05",
-                "value": 336.121
+                "value": 2.82
               },
               {
                 "date": "2026-06",
-                "value": 336.065
+                "value": 2.57
               },
               {
                 "date": "2026-07",
-                "value": 336.789
+                "value": 2.57
               }
             ],
             "frequency": "monthly"
