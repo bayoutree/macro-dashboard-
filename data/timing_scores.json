@@ -1501,9 +1501,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.6,
+          "value": 8.1,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -1993,9 +1993,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-09-25"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-09-25T13:31:31"
+          }
         }
       }
     },
@@ -4991,15 +4989,7 @@
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
-          "data_source": "sina",
-          "collect_time": "2026-09-25T13:31:31",
-          "history": [
-            {
-              "date": "2026-09-25",
-              "value": 42.74
-            }
-          ]
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -5017,9 +5007,7 @@
           "sub_weight": 25,
           "bottom_signal": "从集中到分散",
           "top_signal": "加速集中",
-          "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。",
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-25T13:31:31"
+          "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

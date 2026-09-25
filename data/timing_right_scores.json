@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-24",
+  "update_date": "2026-09-25",
   "version": "v4.1",
   "signal_light": "orange",
   "signal_direction": "bear",
@@ -14,7 +14,7 @@
         "score": 12,
         "current_value": "未站稳60日线, MA60走平/下行",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "周线MACD金叉",
@@ -22,7 +22,7 @@
         "score": 10,
         "current_value": "DIFF=-46.55, DEA=-8.94",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "两融余额回升",
@@ -30,7 +30,7 @@
         "score": 10,
         "current_value": "近周两融余额: 13614亿",
         "data_source": "交易所两融数据",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "成交放量",
@@ -38,7 +38,7 @@
         "score": 8,
         "current_value": "20日均量/60日均量=0.80",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "市场宽度修复",
@@ -46,7 +46,7 @@
         "score": 8,
         "current_value": "指数未站上20日线 (需全市场数据确认)",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "产业资本转增持",
@@ -54,7 +54,7 @@
         "score": 7,
         "current_value": "数据获取异常: module 'akshare' has no attribute 'stock_share_change'",
         "data_source": "交易所公告汇总",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "北向配置型资金持续净流入",
@@ -62,7 +62,7 @@
         "score": 10,
         "current_value": "数据获取异常: module 'akshare' has no attribute 'stock_hsgt_north_net_flow_in_em'",
         "data_source": "沪深港通数据",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "量价配合",
@@ -70,7 +70,7 @@
         "score": 5,
         "current_value": "5日量价配合度: 2/4天",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ],
     "confirm_bull": [
@@ -80,7 +80,7 @@
         "score": 15,
         "current_value": "未站稳250日线, 当前4439 vs MA250=4674",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "月线MACD金叉",
@@ -88,7 +88,7 @@
         "score": 10,
         "current_value": "月DIFF=199.73, DEA=211.74",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "全A中位数同步上涨",
@@ -96,7 +96,7 @@
         "score": 10,
         "current_value": "数据待获取",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ],
     "strong_confirm_bull": [
@@ -106,7 +106,7 @@
         "score": 15,
         "current_value": "数据待获取(需季度财报)",
         "data_source": "上市公司财报",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ],
     "early_bear": [
@@ -116,7 +116,7 @@
         "score": 12,
         "current_value": "跌破60日线下方",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "周线MACD死叉",
@@ -124,7 +124,7 @@
         "score": 10,
         "current_value": "DIFF=-46.55, DEA=-8.94",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "两融余额回落",
@@ -132,7 +132,7 @@
         "score": 10,
         "current_value": "近周两融余额: 13614亿",
         "data_source": "交易所两融数据",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "成交萎缩",
@@ -140,7 +140,7 @@
         "score": 8,
         "current_value": "近5日成交量均低于60日均量",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "宽度恶化",
@@ -148,7 +148,7 @@
         "score": 8,
         "current_value": "需全市场数据确认",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "产业资本减持放大",
@@ -156,7 +156,7 @@
         "score": 7,
         "current_value": "近2周净变动额: 0.00亿, 0.04亿",
         "data_source": "交易所公告汇总",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "北向配置型资金持续净流出",
@@ -164,7 +164,7 @@
         "score": 10,
         "current_value": "数据获取异常: module 'akshare' has no attribute 'stock_hsgt_north_net_flow_in_em'",
         "data_source": "沪深港通数据",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "量价背离",
@@ -172,7 +172,7 @@
         "score": 5,
         "current_value": "无量价背离",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ],
     "confirm_bear": [
@@ -182,7 +182,7 @@
         "score": 15,
         "current_value": "跌破年线且反抽失败",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "月线MACD死叉",
@@ -190,7 +190,7 @@
         "score": 10,
         "current_value": "月DIFF=199.73, DEA=211.74",
         "data_source": "交易所行情",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       },
       {
         "name": "全A中位数背离下跌",
@@ -198,7 +198,7 @@
         "score": 10,
         "current_value": "数据待获取",
         "data_source": "交易所全市场统计",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ],
     "strong_confirm_bear": [
@@ -208,7 +208,7 @@
         "score": 15,
         "current_value": "数据待获取(需季度财报)",
         "data_source": "上市公司财报",
-        "update_time": "2026-09-24"
+        "update_time": "2026-09-25"
       }
     ]
   },
