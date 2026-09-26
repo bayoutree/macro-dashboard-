@@ -228,19 +228,20 @@ const CycleV3Module = (() => {
           const c = ind.threshold.critical || '';
           threshHtml = `<div class="ind-threshold">阈值: 警告=${w} 临界=${c}</div>`;
         }
-        let historyMini = '';
-        if (ind.history && ind.history.length > 0) {
-          const pts = ind.history.map(h => `${h.date}:${h.value}`).join(',');
-          historyMini = `<div class="ind-history" data-points="${escapeHtml(pts)}"></div>`;
-        }
+        // 修复(2026-09-26): 此前只生成 display:none 的 .ind-history，全仓零消费，
+        // 达里奥 4 个指标（联邦债务/GDP、利息/财政收入、财政赤字/GDP🇺🇸、政府债务/GDP🇨🇳）
+        // 永远没有趋势图。现追加真实 ECharts 容器，绘制块见 renderCharts 末尾。
+        const debtChart = (ind.history && ind.history.length > 0)
+          ? `<div id="chart-debt-${key}-${k}" class="chart-container" style="width:100%;height:100px;margin-top:8px;"></div>`
+          : '';
         return `
         <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           ${threshHtml}
           <div class="ind-source" title="${escapeHtml(ind.source||'')}">来源: ${escapeHtml((ind.source||'').split('(')[0])}</div>
+          ${debtChart}
           ${ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : ''}
-          ${historyMini}
         </div>`;
       }).join('');
       return `
@@ -1667,6 +1668,37 @@ const CycleV3Module = (() => {
         });
       });
     });
+
+    // 大债务周期 Layer 0 趋势图（修复 2026-09-26：容器见 renderConstraintDebt）。
+    const debtLayer = data.cycle_layers?.constraint_debt_cycle;
+    if (debtLayer) {
+      ['us','cn'].forEach(rk => {
+        const r = debtLayer[rk];
+        if (!r?.indicators) return;
+        const rColor = rk === 'us' ? '#3b82f6' : '#ef4444';
+        const rName = rk === 'us' ? '美国' : '中国';
+        Object.entries(r.indicators).forEach(([indKey, ind]) => {
+          const hist = _cleanHist(ind.history);
+          const chartId = 'chart-debt-' + rk + '-' + indKey;
+          const el = document.getElementById(chartId);
+          if (!el || !hist.length) return;
+          createChart(chartId, {
+            tooltip: {...tooltipConfig(), trigger: 'axis'},
+            grid: gridConfig({top: 10, bottom: 15, left: 40, right: 8}),
+            xAxis: {type: 'category', data: hist.map(h => h.date),
+              axisLine: {lineStyle: {color: COLORS.borderSubtle}},
+              axisLabel: {color: COLORS.textMuted, fontSize: 9, rotate: hist.length > 8 ? 30 : 0}},
+            yAxis: {type: 'value', axisLine: {show: false},
+              axisLabel: {color: COLORS.textMuted, fontSize: 9},
+              splitLine: {lineStyle: {color: COLORS.borderSubtle, type: 'dashed'}}},
+            series: [{name: rName, type: 'line',
+              data: hist.map(h => {const v = Number(h.value); return isNaN(v) ? 0 : v;}),
+              smooth: true, symbol: 'none',
+              lineStyle: {width: 2, color: rColor}, itemStyle: {color: rColor}}]
+          });
+        });
+      });
+    }
   }
 
   // ========== Main Render Entry ==========

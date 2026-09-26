@@ -23,6 +23,10 @@ SCRIPTS = [
     ("update_json.py", "V3周期-更新v3 JSON"),
     ("calculate_indicators.py", "V3周期-衍生指标计算"),
     ("validate_json.py", "V3周期-JSON格式校验"),
+    # QVIX 恐贪指针日频更新（2026-09-26 批准恢复）
+    ("collect_qvix.py", "QVIX恐贪指针-日频更新"),
+    # 12 个无趋势图指标的真源历史采集（达里奥/HRT/基尼/产能利用率）
+    ("collect_structural_indicators.py", "结构性指标-真源历史采集"),
     # v4 前端契约文件：以 v3 为底座生成，补回 united_states/china 兼容分键
     ("build_cycle_position_v4.py", "V4周期-生成v4前端契约JSON"),
     # ---- v3.4.6 第三步：微观结构+估值真采集 ----
