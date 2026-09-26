@@ -1995,7 +1995,7 @@
             "synced_at": "2026-09-26"
           },
           "data_source": "sina",
-          "collect_time": "2026-09-26T02:54:54"
+          "collect_time": "2026-09-26T12:41:58"
         }
       }
     },
@@ -4993,7 +4993,7 @@
           "top_threshold": ">48%",
           "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
           "data_source": "sina",
-          "collect_time": "2026-09-26T02:54:54",
+          "collect_time": "2026-09-26T12:41:58",
           "history": [
             {
               "date": "2026-09-26",
@@ -5019,7 +5019,7 @@
           "top_signal": "加速集中",
           "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。",
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-26T02:54:54"
+          "collect_time": "2026-09-26T12:41:58"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
