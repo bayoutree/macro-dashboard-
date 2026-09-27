@@ -71,11 +71,50 @@ def safe_float(val, default=None):
         return default
 
 
+# 关键 history 指标：保存前断言不得为空（空则中止，防止提交把真历史抹掉）
+# 2026-09-27 股票看板 16 项 history 被抹事故后新增
+_CRITICAL_HISTORY_INDICATORS = {
+    ("capital_flow", "equity_fund_position"),
+    ("capital_flow", "flexible_fund_position"),
+    ("capital_flow", "margin_ratio"),
+    ("capital_flow", "new_fund"),
+    ("capital_flow", "industrial_capital"),
+    ("capital_flow", "fiscal_expenditure"),
+    ("sentiment", "fund_3y_annual"),
+    ("sentiment", "new_account_opening"),
+    ("sentiment", "margin_buying_ratio"),
+    ("micro_structure", "industry_concentration"),
+    ("micro_structure", "concentration_trend"),
+    ("micro_structure", "csi1000_hs300_ratio"),
+    ("liquidity", "fed_policy"),
+    ("liquidity", "interest_rate"),
+    ("valuation", "hs300_pe_percentile"),
+    ("equity_bond", "cn_us_spread"),
+}
+
+
+def assert_critical_histories(data: dict):
+    """关键 history 被清空时直接抛错，中止本次写入与后续提交。"""
+    missing = []
+    for dim_key, dim in data.get("dimensions", {}).items():
+        for ind_key, ind in dim.get("indicators", {}).items():
+            if (dim_key, ind_key) in _CRITICAL_HISTORY_INDICATORS:
+                h = ind.get("history")
+                if not isinstance(h, list) or len(h) < 2:
+                    missing.append(f"{dim_key}.{ind_key}")
+    if missing:
+        raise RuntimeError(
+            "关键 history 指标为空，已中止保存，防止真历史被抹: "
+            + ", ".join(missing)
+        )
+
+
 def save_json(data: dict, filename: str):
     import json
     # 对 timing_scores.json 合并历史数据和说明字段
     if filename == "timing_scores.json":
         data = merge_history_description(data)
+        assert_critical_histories(data)
     filepath = DATA_DIR / filename
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
@@ -103,10 +142,13 @@ def merge_history_description(new_data: dict) -> dict:
 
     [v3.4.5 数据真实性整改] 禁止从旧 JSON 盲目继承 history（旧 history 系
     _legacy_FAKE_add_history_data.py 生成的随机数假序列）。
-    [2026-09-19 修复 pipeline 清空根因] 对白名单内、且带
-    _history_meta.source 标记的真实采集 history 予以继承，避免每日
-    update_data.py 重建 timing_scores.json 时反复清空人工/脚本回补的真历史。
-    白名单外的指标 history 保持缺省（前端灰灯）。
+    [2026-09-19 修复 pipeline 清空根因] 对带 _history_meta.source 标记的
+    真实采集 history 予以继承，避免每日 update_data.py 重建
+    timing_scores.json 时反复清空人工/脚本回补的真历史。
+    [2026-09-27 修复股票看板清空事故] 白名单机制过窄，导致 capital_flow /
+    micro_structure 等 16 项真 history 在 9/24 被抹。_history_meta.source
+    本身就是真源凭证，继承判断改为只认该标记、不再受白名单限制；
+    无 _history_meta 的 history（如 _legacy_FAKE 假序列）仍然不继承。
     """
     import json
     try:
@@ -125,10 +167,10 @@ def merge_history_description(new_data: dict) -> dict:
             old_ind = old_dim.get("indicators", {}).get(ind_key, {})
             if "description" in old_ind and "description" not in ind:
                 ind["description"] = old_ind["description"]
-            # 仅继承白名单指标、带真实来源标记、且新数据自身无 history 的真历史
+            # 新数据自身无 history、旧版带真源标记且点数>=2 时继承
+            # （2026-09-27: 白名单 -> 只认 _history_meta.source 真源凭证）
             if (
-                (dim_key, ind_key) in _VERIFIED_HISTORY_INDICATORS
-                and not ind.get("history")
+                not ind.get("history")
                 and isinstance(old_ind.get("history"), list)
                 and len(old_ind["history"]) >= 2
                 and isinstance(old_ind.get("_history_meta"), dict)
