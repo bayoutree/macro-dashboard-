@@ -651,7 +651,7 @@ body::before {
         </div>
         <div class="sparkline-dates" id="buffett-dates"></div>
         <div class="indicator-note" id="buffett-note" style="font-size:10px;color:var(--text-muted);margin-top:4px;"></div>
-        <div class="update-time" id="buffett-updatetime">数据待获取</div>
+        <div class="update-time" id="buffett-update">数据待获取</div>
       </div>
 
       <!-- E2: Earnings growth (upgraded to anchor) -->
@@ -3038,7 +3038,8 @@ function applyTimingDataToMockData() {
   // 社融存量TTM同比 — liquidity.social_financing_trend（25月点）
   const sf = _tag(_tsInd(ts, 'liquidity', 'social_financing_trend'));
   _fillAnchorCard({card:'sf-card',  data:sfAnchorData,  freq:'月频', valSuffix:'%',
-    sigText: sf ? _scoreText(sf.score, '社融') : ''}, sf, sf ? sf.value : null);
+    sigText: sf ? _scoreText(sf.score, '社融') : ''}, sf,
+    (sf && sf.value !== null && sf.value !== undefined) ? (sf.value + '%') : null);
   // M1-M2剪刀差 — liquidity.m1_m2_scissors（59月点）
   const m12 = _tag(_tsInd(ts, 'liquidity', 'm1_m2_scissors'));
   _fillAnchorCard({card:'m12-card', data:m12AnchorData, freq:'月频', valSuffix:'%',
