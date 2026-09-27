@@ -33,6 +33,8 @@ SCRIPTS = [
     ("collect_microstructure.py", "v3.4.6-拥挤度/破净率/集中度真采集"),
     # ---- 修复timing_scores历史数据 ----
     ("sync_timing_scores_history.py", "同步timing_scores历史数据"),
+    # 股票看板基金仓位锚点卡 —— 乐咕乐股真源周频续采（2026-09-27）
+    ("collect_stock_anchor_history.py", "股票基金仓位-真源周频续采"),
 ]
 
 
