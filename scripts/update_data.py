@@ -484,9 +484,12 @@ class TimingScoreEngine:
 
         # --- 社融增速趋势 ---
         sf_score, sf_value = self._calc_social_financing()
+        # value 为 TTM 同比数值，由 sync_timing_scores_history 从真源 history 末点写入；
+        # 此处拿不到则保持 None，严禁伪造。结论文本独立放 value_label。
         indicators["social_financing_trend"] = {
             "name": "社融增速趋势",
-            "value": sf_value or "数据待更新",
+            "value": None,
+            "value_label": sf_value or None,
             "score": sf_score,
             "sub_weight": 40,
             "bottom_signal": "触底回升",
@@ -1817,8 +1820,8 @@ class TimingScoreEngine:
         check_bottom(val.get("buffett_ratio", {}).get("value") and val.get("buffett_ratio", {}).get("value", 100) < 70, "估值", "巴菲特指标<70%", 3)
 
         # 流动性
-        sf_val = liq.get("social_financing_trend", {}).get("value", "")
-        check_bottom("回升" in sf_val or "触底" in sf_val, "宏观流动性", "社融增速触底回升", 5)
+        sf_label = liq.get("social_financing_trend", {}).get("value_label", "") or ""
+        check_bottom("回升" in sf_label or "触底" in sf_label, "宏观流动性", "社融增速触底回升", 5)
         rate_val = liq.get("interest_rate", {}).get("value", "")
         check_bottom("降息" in rate_val, "宏观流动性", "降息降准周期开启", 4)
 
@@ -1891,8 +1894,8 @@ class TimingScoreEngine:
         micro = dimensions.get("micro_structure", {}).get("indicators", {})
 
         # 加仓条件
-        sf_val = liq.get("social_financing_trend", {}).get("value", "")
-        add_triggers.append({"condition": "社融增速触底回升(连续3个月环比改善)", "met": "回升" in sf_val})
+        sf_label = liq.get("social_financing_trend", {}).get("value_label", "") or ""
+        add_triggers.append({"condition": "社融增速触底回升(连续3个月环比改善)", "met": "回升" in sf_label or "触底" in sf_label})
 
         fg_val = sent.get("fear_greed_index", {}).get("value", 50)
         if isinstance(fg_val, str):
