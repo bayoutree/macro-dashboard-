@@ -74,6 +74,23 @@ def rolling_percentile_series(values, window=250):
 # ================================================================
 # 1. 社融增速趋势 (social_financing_trend)
 # ================================================================
+def _social_financing_label(yoy: float, delta: float) -> str:
+    """社融 TTM 同比档位判定（独立于 value，供信号/触发器消费）。
+
+    - 触底回升：同比仍在收缩区间（<0），但环比改善（delta>0）
+    - 强宽松 / 宽松加速 / 宽松见顶 / 紧缩：沿同比水位 + 动量分档
+    """
+    if yoy < 0:
+        if delta > 0:
+            return "触底回升"
+        return "紧缩"
+    if yoy >= 10 and delta > 0:
+        return "强宽松"
+    if delta > 0:
+        return "宽松加速"
+    return "宽松见顶"
+
+
 def fix_social_financing_trend(timing: dict, cn_macro: dict):
     """用 cn_macro.history.social_financing 的月度数据计算同比增速。"""
     key_path = ("dimensions", "liquidity", "indicators", "social_financing_trend")
@@ -100,7 +117,17 @@ def fix_social_financing_trend(timing: dict, cn_macro: dict):
         return False
 
     indicator["history"] = yoy_series
-    logger.info(f"  ✅ social_financing_trend: 回填 {len(yoy_series)} 个月度同比增速点")
+
+    # value 只存数值（TTM 同比 %，与 history 末点一致）；结论文本独立放 value_label
+    last_yoy = yoy_series[-1]["value"]
+    prev_yoy = yoy_series[-2]["value"] if len(yoy_series) >= 2 else last_yoy
+    delta = round(last_yoy - prev_yoy, 2)
+    indicator["value"] = last_yoy
+    indicator["value_label"] = _social_financing_label(last_yoy, delta)
+    logger.info(
+        f"  ✅ social_financing_trend: 回填 {len(yoy_series)} 个月度同比增速点，"
+        f"value={last_yoy} label={indicator['value_label']}"
+    )
     return True
 
 
