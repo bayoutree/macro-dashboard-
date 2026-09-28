@@ -1,22 +1,22 @@
 {
   "update_date": "2026-09-28",
   "version": "v4.1",
-  "composite_score": 47.1,
+  "composite_score": 46.9,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 49.6,
+      "score": 48.4,
       "weight": 18,
-      "weighted_score": 8.93,
+      "weighted_score": 8.71,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 50.8,
+          "value": 47.7,
           "unit": "%分位",
-          "score": 51.0,
+          "score": 48.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -83,9 +83,9 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 22.9,
+          "value": 21.3,
           "unit": "%分位",
-          "score": 23.0,
+          "score": 21.0,
           "sub_weight": 0,
           "note": "【参考】PB分位仅作辅助参考",
           "bottom_threshold": "<10%",
@@ -1560,9 +1560,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.9,
+          "value": 8.4,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2052,9 +2052,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-09-28"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-09-28T16:40:42"
+          }
         }
       }
     },
@@ -2068,6 +2066,7 @@
         "social_financing_trend": {
           "name": "社融增速趋势",
           "value": -46.16,
+          "value_label": "紧缩",
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -2222,8 +2221,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-09-28"
-          },
-          "value_label": "紧缩"
+          }
         },
         "interest_rate": {
           "name": "利率水平",
@@ -10690,16 +10688,12 @@
         },
         "turnover_rate": {
           "name": "全A换手率",
-          "value": "1.5%",
+          "value": "1.4%",
           "score": 30,
           "sub_weight": 25,
           "bottom_threshold": "<1.5%",
           "top_threshold": ">5%",
-          "description": "全A换手率。高换手率意味着交投活跃但可能过热，低换手率常对应底部区域。",
-          "_history_meta": {
-            "source": "SSE stock_sse_deal_daily + SZSE stock_szse_summary 2026-09-24: merged float turnover = (SH 7845.11 + SZ 4927.46)亿 / (SH float 610105.68 + SZ float 220516.9)亿 = 1.54%",
-            "synced_at": "2026-09-27"
-          }
+          "description": "全A换手率。高换手率意味着交投活跃但可能过热，低换手率常对应底部区域。"
         },
         "margin_buying_ratio": {
           "name": "融资买入占比",
@@ -11452,19 +11446,7 @@
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
-          "data_source": "sina",
-          "collect_time": "2026-09-28T16:40:42",
-          "history": [
-            {
-              "date": "2026-09-27",
-              "value": 42.74
-            },
-            {
-              "date": "2026-09-28",
-              "value": 43.86
-            }
-          ]
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -13270,8 +13252,6 @@
           "bottom_signal": "从集中到分散",
           "top_signal": "加速集中",
           "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。",
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-28T16:40:42",
           "history": [
             {
               "date": "2018-05-25",
@@ -14982,7 +14962,7 @@
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.57)",
+          "value": "小盘中性(%B=0.48)",
           "score": 45,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -15422,10 +15402,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.57)",
+        "current_value": "小盘中性(%B=0.48)",
         "status": "大小盘均衡",
         "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.57)"
+        "detail": "小盘风格小盘中性(%B=0.48)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -15446,10 +15426,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.57)",
+      "current_value": "小盘中性(%B=0.48)",
       "status": "大小盘均衡",
       "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.57)"
+      "detail": "小盘风格小盘中性(%B=0.48)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
@@ -15520,7 +15500,7 @@
         "dimension": "市场情绪",
         "signal": "换手率<1.5%(地量)",
         "stars": 2,
-        "active": false
+        "active": true
       },
       {
         "dimension": "资金面",
