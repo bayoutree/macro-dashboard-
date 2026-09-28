@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-27",
+  "update_date": "2026-09-28",
   "version": "v4.1",
   "composite_score": 47.1,
   "position_range": "40%-55%",
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "buffett_ratio": {
@@ -1555,7 +1555,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "break_net_rate": {
@@ -2051,10 +2051,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           },
           "data_source": "sina",
-          "collect_time": "2026-09-27T13:35:16"
+          "collect_time": "2026-09-28T00:10:24"
         }
       }
     },
@@ -2067,7 +2067,7 @@
       "indicators": {
         "social_financing_trend": {
           "name": "社融增速趋势",
-          "value": "紧缩(Δ-12288.0)",
+          "value": -46.16,
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -2221,8 +2221,9 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
-          }
+            "synced_at": "2026-09-28"
+          },
+          "value_label": "紧缩"
         },
         "interest_rate": {
           "name": "利率水平",
@@ -2553,7 +2554,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "fed_policy": {
@@ -3739,7 +3740,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "dividend_bond_spread_red": {
@@ -4754,7 +4755,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -5249,7 +5250,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-27"
+            "synced_at": "2026-09-28"
           }
         },
         "cn_us_spread": {
@@ -11457,10 +11458,14 @@
           "top_threshold": ">48%",
           "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
           "data_source": "sina",
-          "collect_time": "2026-09-27T13:35:16",
+          "collect_time": "2026-09-28T00:10:24",
           "history": [
             {
               "date": "2026-09-27",
+              "value": 42.74
+            },
+            {
+              "date": "2026-09-28",
               "value": 42.74
             }
           ]
@@ -13270,7 +13275,7 @@
           "top_signal": "加速集中",
           "description": "HHI的20周变化。动量为负=集中度扩散、资金外溢、广度修复(积极);为正且高分位=快速抱团、警惕拥挤。",
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-27T13:35:16",
+          "collect_time": "2026-09-28T00:10:24",
           "history": [
             {
               "date": "2018-05-25",
