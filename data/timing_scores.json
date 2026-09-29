@@ -1560,9 +1560,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.7,
+          "value": 8.2,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2052,9 +2052,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-09-29"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-09-29T14:48:47"
+          }
         }
       }
     },
@@ -2227,7 +2225,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.67%)",
+          "value": "极低/偏热(1.69%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -3745,7 +3743,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.93%",
+          "value": "2.91%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -4760,7 +4758,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.14%",
+          "value": "1.12%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -11448,15 +11446,7 @@
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
-          "data_source": "sina",
-          "collect_time": "2026-09-29T14:48:47",
-          "history": [
-            {
-              "date": "2026-09-29",
-              "value": 43.02
-            }
-          ]
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -14968,13 +14958,11 @@
             "source": "HHI 20-week change (Eastmoney industry caliber); continuation blocked",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-09-29T14:48:47"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.48)",
+          "value": "小盘中性(%B=0.50)",
           "score": 45,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -15414,10 +15402,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.48)",
+        "current_value": "小盘中性(%B=0.50)",
         "status": "大小盘均衡",
         "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.48)"
+        "detail": "小盘风格小盘中性(%B=0.50)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -15438,10 +15426,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.48)",
+      "current_value": "小盘中性(%B=0.50)",
       "status": "大小盘均衡",
       "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.48)"
+      "detail": "小盘风格小盘中性(%B=0.50)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
