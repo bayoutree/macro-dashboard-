@@ -42,6 +42,9 @@ def run_with_timeout(fn, timeout=25, default=None):
 
 def cn_date(s):
     s = str(s).strip()
+    # 守卫：纯数字（如 pandas 行号 560）不是日期，禁止被下游解析成"0560年"坏点
+    if re.fullmatch(r"\d+", s):
+        return None
     m = re.search(r"(\d{4})年.*?第(\d+)(?:-(\d+))?季度", s)
     if m:
         y, q = m.group(1), (m.group(3) or m.group(2))
@@ -99,7 +102,10 @@ def extract_series(df, date_kws, value_kws, date_fn=cn_date, index_as_date=False
             continue
         if math.isnan(fv):
             continue
-        out.append((date_fn(d) if date_fn else str(d), fv))
+        ds = date_fn(d) if date_fn else str(d)
+        if ds is None:
+            continue
+        out.append((ds, fv))
     return out or None
 
 
@@ -285,7 +291,8 @@ def get_china_groups():
         add("external", "import", import_series, unit="%")
 
     df = grab(ak.macro_china_trade_balance)
-    tb_series = extract_series(df, ["月份"], ["今值", "贸易差额", "差额", "净值"])
+    # akshare 该接口日期列名为「日期」（YYYY-MM-DD）；旧代码误写「月份」导致回退行号
+    tb_series = extract_series(df, ["日期"], ["今值", "贸易差额", "差额", "净值"])
     if tb_series:
         add("external", "trade_balance", tb_series, unit="亿美元")
 
