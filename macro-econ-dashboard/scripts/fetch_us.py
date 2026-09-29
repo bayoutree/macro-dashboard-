@@ -269,9 +269,11 @@ def get_us_groups():
         ok.append(f"{cat}.{key}")
 
     # ---- 领先 ----
-    # ISM PMI: akshare dead since 2025-09, use DGORDER (Durable Goods New Orders) YoY as proxy
+    # 口径纠正(2026-09 P0)：akshare ISM PMI 自 2025-09 断更，此前以 DGORDER
+    # (耐用品新订单) 同比替代却挂在 ism_pmi 名下，8.48 会被误读为 PMI 极端收缩。
+    # 现按真实口径命名：dgorder_yoy = 制造商耐用品新订单同比（非扩散指数）。
     dg_order = get_series(fred, "DGORDER")
-    add("leading", "ism_pmi", yoy(dg_order, periods=12), unit="%")
+    add("leading", "dgorder_yoy", yoy(dg_order, periods=12), unit="%")
     cli = _to_points(get_series(fred, "USALOLITOAASTSAM"))
     if cli is None:
         cli = _to_points(get_series(fred, "USACLOORAASTSAM"))

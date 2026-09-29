@@ -48,7 +48,7 @@ NAME_MAP = {
     "ppi": "PPI同比",
     "gdp": "GDP同比",
     "pmi": "制造业PMI",
-    "ism_pmi": "ISM制造业PMI",
+    "dgorder_yoy": "制造商新订单同比(DGORDER)",
     "retail": "社零同比",
     "retail_sales": "社零同比",
     "house_price": "70城房价同比",
@@ -107,7 +107,7 @@ FREQUENCY_POLICY = {
     "weekly": ["bill_rate", "eia_crude", "mba_mortgage", "nfib"],
     "monthly": [
         "pmi", "cpi", "ppi", "m1", "m2", "social_financing", "gdp", "nonfarm",
-        "ism_pmi", "industrial_production", "fiscal_balance", "trade_balance",
+        "dgorder_yoy", "industrial_production", "fiscal_balance", "trade_balance",
         "credit_impulse", "fci",
     ],
 }
@@ -659,9 +659,10 @@ def _build_us_sectors(g):
         household["consumer_conf"] = _named(conf, "consumer_conf")
 
     corporate = {}
-    pmi = g.get("leading", {}).get("ism_pmi")
-    if pmi:
-        corporate["pmi"] = _named(pmi, "pmi")
+    # 口径纠正：该位置为 DGORDER 同比，不是 ISM PMI（真实 ISM PMI 源已断更）
+    dgorder = g.get("leading", {}).get("dgorder_yoy")
+    if dgorder:
+        corporate["dgorder_yoy"] = _named(dgorder, "dgorder_yoy")
     ip = g.get("coincident", {}).get("industrial_prod")
     if ip:
         corporate["industrial_prod"] = _named(ip, "industrial_prod")
