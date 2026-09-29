@@ -247,8 +247,11 @@ def get_china_groups():
         groups["financial"]["cgb_10y"] = groups["financial"]["cn_10y"]
 
     df = grab(ak.currency_boc_safe)
-    add("financial", "usdcny",
-        extract_series(df, ["日期"], ["美元", "USDCNY", "美元兑人民币"]), unit="")
+    # 口径纠正(2026-09 P0)：外管局「美元」列为人民币元/百美元(如 674.89)，
+    # 统一换算为直盘汇率 USDCNY(6.7489)，与 us_market 口径及国际行情一致
+    _usdcny_raw = extract_series(df, ["日期"], ["美元", "USDCNY", "美元兑人民币"])
+    _usdcny = [(d, round(v / 100.0, 4)) for d, v in _usdcny_raw] if _usdcny_raw else None
+    add("financial", "usdcny", _usdcny, unit="")
 
     # ---- 居民 / 企业（sectors）----
     if "retail" in groups["coincident"]:
