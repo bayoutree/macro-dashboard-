@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-09-29T00:38:57+08:00",
+    "update_time": "2026-09-29T22:46:30+08:00",
     "data_freshness_score": 100,
     "assessment_date": "2026-09-01",
     "version": "3.0",
@@ -14790,7 +14790,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-09-28",
+            "last_updated": "2026-09-29",
             "history": [
               {
                 "date": "2015-01-01",
