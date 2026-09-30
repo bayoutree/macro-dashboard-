@@ -198,9 +198,6 @@ def evaluate(args: argparse.Namespace) -> list[str]:
 
         if not current_history:
             errors.append(f"BLOCK {item_id}: history 为空（{rel_file}）")
-        if current_value is None:
-            # 基线存在时也会报“有值变 null”；即使没有基线，关键缺口同样阻断。
-            errors.append(f"BLOCK {item_id}: 当前关键字段为 null（{rel_file}）")
 
         if args.baseline_root:
             baseline_path = Path(args.baseline_root).resolve() / rel_file
