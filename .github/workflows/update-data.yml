@@ -104,6 +104,10 @@ jobs:
         if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
         run: python scripts/sync_timing_scores_history.py
 
+      - name: Run freshness structural gate
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        run: python scripts/freshness_gate.py
+
       # ----------------------------------------------------------
       # 5b. 同步数据到 frontend/data/ (兼容旧版前端)
       # ----------------------------------------------------------

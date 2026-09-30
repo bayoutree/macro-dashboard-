@@ -28,6 +28,9 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
+      - name: Run freshness structural gate
+        run: python scripts/freshness_gate.py
+
       - name: Commit data
         run: |
           git config user.name "GitHub Actions Bot"

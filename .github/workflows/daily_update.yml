@@ -31,6 +31,9 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
+      - name: Run freshness structural gate
+        run: python scripts/freshness_gate.py
+
       - name: Bump static asset versions
         run: python scripts/bump_asset_versions.py
 
