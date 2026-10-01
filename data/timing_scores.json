@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-09-30",
+  "update_date": "2026-10-01",
   "version": "v4.1",
   "composite_score": 47.0,
   "position_range": "40%-55%",
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "buffett_ratio": {
@@ -1555,14 +1555,14 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "break_net_rate": {
           "name": "破净率",
           "value": 7.6,
           "unit": "%",
-          "score": 40,
+          "score": 35,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2051,8 +2051,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
-          }
+            "synced_at": "2026-10-01"
+          },
+          "data_source": "sina",
+          "collect_time": "2026-10-01T15:20:37"
         }
       }
     },
@@ -2220,7 +2222,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "interest_rate": {
@@ -2552,7 +2554,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "fed_policy": {
@@ -2726,8 +2728,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.35%",
-          "percentile": "70.4%",
+          "value": "6.33%",
+          "percentile": "69.1%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
@@ -3733,12 +3735,12 @@
             },
             {
               "date": "2026-09-30",
-              "value": 6.35
+              "value": 6.33
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "dividend_bond_spread_red": {
@@ -3750,10 +3752,6 @@
           "top_threshold": "<0.5%",
           "description": "全A股息率 - 10Y国债收益率，日频",
           "history": [
-            {
-              "date": "2025-10-15",
-              "value": 2.84
-            },
             {
               "date": "2025-10-16",
               "value": 2.84
@@ -4749,11 +4747,15 @@
             {
               "date": "2026-09-29",
               "value": 2.95
+            },
+            {
+              "date": "2026-09-30",
+              "value": 2.92
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -5240,11 +5242,15 @@
             {
               "date": "2026-09-29",
               "value": 1.15
+            },
+            {
+              "date": "2026-09-30",
+              "value": 1.13
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "cn_us_spread": {
@@ -11446,7 +11452,15 @@
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
+          "data_source": "sina",
+          "collect_time": "2026-10-01T15:20:37",
+          "history": [
+            {
+              "date": "2026-10-01",
+              "value": 42.9
+            }
+          ]
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -14958,7 +14972,9 @@
             "source": "HHI 20-week change (Eastmoney industry caliber); continuation blocked",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-10-01T15:20:37"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
