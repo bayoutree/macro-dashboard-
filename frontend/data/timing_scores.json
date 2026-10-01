@@ -1,22 +1,22 @@
 {
-  "update_date": "2026-09-30",
+  "update_date": "2026-10-01",
   "version": "v4.1",
-  "composite_score": 47.0,
+  "composite_score": 46.9,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 49.2,
+      "score": 48.8,
       "weight": 18,
-      "weighted_score": 8.86,
+      "weighted_score": 8.78,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": null,
+          "value": 49.2,
           "unit": "%分位",
-          "score": 50,
+          "score": 49.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -83,9 +83,9 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": null,
+          "value": 21.3,
           "unit": "%分位",
-          "score": 50,
+          "score": 21.0,
           "sub_weight": 0,
           "note": "【参考】PB分位仅作辅助参考",
           "bottom_threshold": "<10%",
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "buffett_ratio": {
@@ -1555,12 +1555,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.6,
+          "value": 8.0,
           "unit": "%",
           "score": 40,
           "sub_weight": 25,
@@ -2051,7 +2051,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         }
       }
@@ -2220,12 +2220,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.67%)",
+          "value": "极低/偏热(1.68%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -2552,7 +2552,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "fed_policy": {
@@ -2726,8 +2726,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.35%",
-          "percentile": "70.4%",
+          "value": "6.33%",
+          "percentile": "69.1%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
@@ -3733,27 +3733,23 @@
             },
             {
               "date": "2026-09-30",
-              "value": 6.35
+              "value": 6.33
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.93%",
+          "value": "2.92%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
           "top_threshold": "<0.5%",
           "description": "全A股息率 - 10Y国债收益率，日频",
           "history": [
-            {
-              "date": "2025-10-15",
-              "value": 2.84
-            },
             {
               "date": "2025-10-16",
               "value": 2.84
@@ -4749,16 +4745,20 @@
             {
               "date": "2026-09-29",
               "value": 2.95
+            },
+            {
+              "date": "2026-09-30",
+              "value": 2.92
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.14%",
+          "value": "1.13%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -5240,11 +5240,15 @@
             {
               "date": "2026-09-29",
               "value": 1.15
+            },
+            {
+              "date": "2026-09-30",
+              "value": 1.13
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-09-30"
+            "synced_at": "2026-10-01"
           }
         },
         "cn_us_spread": {

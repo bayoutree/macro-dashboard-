@@ -1,0 +1,227 @@
+{
+  "version": "1.0",
+  "updated": "2026-10-01",
+  "calendar": "CN",
+  "items": [
+    {
+      "id": "feargreed_qvix",
+      "file": "data/feargreed_pointer.json",
+      "freq": "daily",
+      "lag_days": 1,
+      "date_path": "as_of",
+      "critical": true,
+      "severity_on_gap": "block",
+      "value_path": "score",
+      "fresh_max_trading_days": 2
+    },
+    {
+      "id": "equity_fund_position",
+      "file": "data/timing_scores.json",
+      "freq": "daily",
+      "lag_days": 3,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.equity_fund_position",
+      "fresh_max_trading_days": 4
+    },
+    {
+      "id": "flexible_fund_position",
+      "file": "data/timing_scores.json",
+      "freq": "daily",
+      "lag_days": 3,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.flexible_fund_position",
+      "fresh_max_trading_days": 4
+    },
+    {
+      "id": "capital_flow_margin_ratio",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 10,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.margin_ratio",
+      "expected_publish_day": 10
+    },
+    {
+      "id": "new_fund",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 20,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.new_fund",
+      "expected_publish_day": 20
+    },
+    {
+      "id": "industrial_capital",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 20,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.industrial_capital",
+      "expected_publish_day": 20
+    },
+    {
+      "id": "fiscal_expenditure",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 20,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.capital_flow.indicators.fiscal_expenditure",
+      "expected_publish_day": 20
+    },
+    {
+      "id": "fund_3y_annual",
+      "file": "data/timing_scores.json",
+      "freq": "special",
+      "lag_days": 10,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.sentiment.indicators.fund_3y_annual",
+      "fresh_max_days": 16
+    },
+    {
+      "id": "new_account_opening",
+      "file": "data/timing_scores.json",
+      "freq": "weekly",
+      "lag_days": 7,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.sentiment.indicators.new_account_opening",
+      "fresh_max_days": 9
+    },
+    {
+      "id": "sentiment_margin_buying_ratio",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 10,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.sentiment.indicators.margin_buying_ratio",
+      "expected_publish_day": 10
+    },
+    {
+      "id": "industry_concentration",
+      "file": "data/timing_scores.json",
+      "freq": "special",
+      "lag_days": 14,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.micro_structure.indicators.industry_concentration",
+      "fresh_max_days": 21
+    },
+    {
+      "id": "concentration_trend",
+      "file": "data/timing_scores.json",
+      "freq": "special",
+      "lag_days": 14,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.micro_structure.indicators.concentration_trend",
+      "fresh_max_days": 21
+    },
+    {
+      "id": "csi1000_hs300_ratio",
+      "file": "data/timing_scores.json",
+      "freq": "special",
+      "lag_days": 14,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.micro_structure.indicators.csi1000_hs300_ratio",
+      "fresh_max_days": 21
+    },
+    {
+      "id": "fed_policy",
+      "file": "data/timing_scores.json",
+      "freq": "monthly",
+      "lag_days": 5,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.liquidity.indicators.fed_policy",
+      "expected_publish_day": 5
+    },
+    {
+      "id": "interest_rate",
+      "file": "data/timing_scores.json",
+      "freq": "daily",
+      "lag_days": 1,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.liquidity.indicators.interest_rate",
+      "fresh_max_trading_days": 2
+    },
+    {
+      "id": "hs300_pe_percentile",
+      "file": "data/timing_scores.json",
+      "freq": "daily",
+      "lag_days": 1,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.valuation.indicators.hs300_pe_percentile",
+      "fresh_max_trading_days": 2
+    },
+    {
+      "id": "cn_us_spread",
+      "file": "data/timing_scores.json",
+      "freq": "daily",
+      "lag_days": 1,
+      "date_path": "history.last.date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "dimensions.equity_bond.indicators.cn_us_spread",
+      "fresh_max_trading_days": 2
+    },
+    {
+      "id": "china_trade_balance",
+      "file": "macro-econ-dashboard/data/indicators.json",
+      "freq": "monthly",
+      "lag_days": 7,
+      "date_path": "date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "china.sectors.external.trade_balance",
+      "expected_publish_day": 7
+    },
+    {
+      "id": "us_dgorder_yoy",
+      "file": "macro-econ-dashboard/data/indicators.json",
+      "freq": "monthly",
+      "lag_days": 28,
+      "date_path": "date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "us.validation.leading.dgorder_yoy",
+      "expected_publish_day": 28
+    },
+    {
+      "id": "cross_usdcny",
+      "file": "macro-econ-dashboard/data/indicators.json",
+      "freq": "daily",
+      "lag_days": 1,
+      "date_path": "date",
+      "critical": true,
+      "severity_on_gap": "block",
+      "node_path": "cross.usdcny",
+      "fresh_max_trading_days": 2
+    }
+  ]
+}
