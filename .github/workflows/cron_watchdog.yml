@@ -30,6 +30,9 @@ jobs:
   detect:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Check today's scheduled runs (on-time / late / dead)
         id: check
         env:
@@ -101,12 +104,19 @@ jobs:
             echo ""
             echo "> 由 Cron Watchdog 自动创建（标题搜 \`[cron-alert]\`；如关闭告警可禁用 cron_watchdog.yml）。"
           } > /tmp/body.md
-          gh issue create --title "$TITLE" --body-file /tmp/body.md \
-            || echo "::warning::issue 创建失败，但 cron $STATE 事实成立"
+          if gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/body.md; then
+            echo "::notice::已创建 cron 告警 issue"
+          else
+            echo "::error::cron $STATE 且告警 issue 创建失败，请人工介入"
+            exit 1
+          fi
 
   keepalive:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Weekly empty-commit keepalive
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
