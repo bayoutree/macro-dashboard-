@@ -18,7 +18,7 @@ fail() { echo "  ❌ $1"; FAIL=1; }
 echo "================ 推送前门禁检查 ================"
 
 # ---------- 1. JS 语法检查（10 秒即可拦住解析级事故）----------
-echo "[1/3] JavaScript 语法检查 (node --check)"
+echo "[1/4] JavaScript 语法检查 (node --check)"
 if ! command -v node >/dev/null 2>&1; then
   echo "  ⚠️  node 不可用，跳过 JS 检查（请确保本地有 node 再推送前端改动）"
 else
@@ -34,7 +34,7 @@ else
 fi
 
 # ---------- 2. JSON 数据文件可解析 ----------
-echo "[2/3] JSON 数据文件有效性检查"
+echo "[2/4] JSON 数据文件有效性检查"
 if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PYCHECK'
 import json, glob, sys
@@ -56,7 +56,7 @@ fi
 
 # ---------- 3. timing_scores.json history 存活检查 ----------
 # 防止 pipeline 清空根因复发（2026-09-16、09-18 复发过两次）
-echo "[3/3] timing_scores.json 已验证 history 存活检查"
+echo "[3/4] timing_scores.json 已验证 history 存活检查"
 if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PYHIST'
 import json, sys
@@ -89,6 +89,22 @@ if missing:
 else:
     print("  ✅ 8 个已验证指标 history 均存活")
 PYHIST
+fi
+
+# ---------- 4. 数据新鲜度门禁 ----------
+echo "[4/4] 数据新鲜度门禁 (freshness_gate.py)"
+if command -v python3 >/dev/null 2>&1; then
+  # 本地 pre-push：用 API 基线（origin/main）对比
+  python3 scripts/freshness_gate.py --baseline-api 2>/tmp/freshness_err
+  RC=$?
+  if [ $RC -eq 0 ]; then
+    pass "新鲜度门禁通过"
+  else
+    fail "新鲜度门禁未通过："
+    cat /tmp/freshness_err
+  fi
+else
+  echo "  ⚠️  python3 不可用，跳过新鲜度门禁"
 fi
 
 echo "================================================"
