@@ -1,0 +1,137 @@
+name: Cron Watchdog & Keepalive
+
+# cron 存活监控 + 保活（N22 工单，2026-10-03）
+#
+# 背景修正：10-02 复查发现 cron 并非被禁用，而是三个流水线全部延迟 6~8 小时触发
+#   （预期 UTC 08:00，实际 14:12 / 14:35 / 16:07）。GitHub 不保证 cron 准时，
+#   高负载时会延迟甚至丢弃。因此监控必须同时识别「漏触发」和「严重延迟」。
+#
+# 分层机制：
+#   detect    —— 工作日 23:00 UTC（CST 次日 07:00）回看当天，统计在「准点窗口」
+#                UTC 08:00~12:00（给 4h 平台延迟宽限）内触发的 scheduled run：
+#                  · 窗口内有触发 → 健康
+#                  · 窗口内无触发但全天有 → 严重延迟（late）告警
+#                  · 全天零触发       → 死亡（dead）告警
+#                告警开 GitHub issue（标题带 [cron-alert]）
+#   keepalive —— 每周一 UTC 22:30（CST 06:30）若最近 6 天无 commit 则补空 commit，
+#                规避 GitHub「60 天无活动自动禁用 scheduled workflows」
+
+on:
+  schedule:
+    - cron: '0 23 * * 1-5'    # 工作日 23:00 UTC 回看检测
+    - cron: '30 22 * * 1'     # 每周一 22:30 UTC 保活
+  workflow_dispatch:          # 手动触发验证
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check today's scheduled runs (on-time / late / dead)
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          DOW=$(date -u +%u)
+          if [ "$DOW" -gt 5 ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::周末不做存活检测"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+          curl -sS \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs?event=schedule&per_page=50" \
+            -o /tmp/runs.json
+
+          # state: healthy（窗口内触发）/ late（仅延迟触发）/ dead（全天无触发）
+          STATE=$(TODAY="$TODAY" python3 -c "
+          import json, os
+          today = os.environ['TODAY']
+          d = json.load(open('/tmp/runs.json'))
+          runs = [r for r in d.get('workflow_runs', []) if r.get('created_at','').startswith(today)]
+          # 准点窗口 UTC 08:00~12:00（含 4h 宽限）
+          ontime = [r for r in runs if 'T08:' <= r['created_at'][10:16] < 'T12:']
+          if ontime:
+              print('healthy')
+          elif runs:
+              print('late')
+          else:
+              print('dead')
+          ")
+          echo "今日 ($TODAY) cron 状态 = $STATE"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+
+          case "$STATE" in
+            healthy) echo "::notice::cron 准点触发正常" ;;
+            late)    echo "::warning::cron 仅在延迟窗口外触发（晚于 UTC 12:00），数据时效性受损" ;;
+            dead)    echo "::warning::今日全天无 scheduled run，cron 可能已失效" ;;
+          esac
+
+      - name: Open alert issue (late or dead)
+        if: steps.check.outputs.skip == 'false' && (steps.check.outputs.state == 'late' || steps.check.outputs.state == 'dead')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          STATE="${{ steps.check.outputs.state }}"
+          if [ "$STATE" = "dead" ]; then
+            TITLE="[cron-alert] $TODAY 定时流水线全天未触发（dead）"
+            PHEN="全天未检测到任何 \`event=schedule\` 的 Actions run，定时流水线可能已被 GitHub 静默停用/丢弃。"
+          else
+            TITLE="[cron-alert] $TODAY 定时流水线严重延迟（late）"
+            PHEN="UTC 08:00 的定时任务未在 4h 宽限窗口（08:00~12:00）内触发，当日数据时效性受损。"
+          fi
+          {
+            echo "## ⚠️ Cron 存活告警（$STATE）"
+            echo ""
+            echo "**日期**：$TODAY (UTC)"
+            echo "**现象**：$PHEN"
+            echo ""
+            echo "### 处置"
+            echo "1. 手动触发 \`Daily Data Update\`（workflow_dispatch）补齐/更新当日数据"
+            echo "2. 若为 dead：推送空 commit 重新激活调度器（\`git commit --allow-empty -m 'chore: re-activate cron' && git push\`）"
+            echo "3. 检查 Settings → Actions 是否出现 workflows disabled 提示"
+            echo ""
+            echo "> 由 Cron Watchdog 自动创建（标题搜 \`[cron-alert]\`；如关闭告警可禁用 cron_watchdog.yml）。"
+          } > /tmp/body.md
+          gh issue create --title "$TITLE" --body-file /tmp/body.md \
+            || echo "::warning::issue 创建失败，但 cron $STATE 事实成立"
+
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Weekly empty-commit keepalive
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DOW=$(date -u +%u)
+          if [ "$DOW" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "::notice::非周一，跳过保活"
+            exit 0
+          fi
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch origin "$GITHUB_REF_NAME"
+
+          LAST_EPOCH=$(git log -1 --format=%ct "origin/$GITHUB_REF_NAME")
+          NOW_EPOCH=$(date -u +%s)
+          SIX_DAYS=$((6*24*3600))
+
+          if [ $((NOW_EPOCH - LAST_EPOCH)) -ge "$SIX_DAYS" ]; then
+            git checkout "$GITHUB_REF_NAME"
+            git pull --ff-only origin "$GITHUB_REF_NAME"
+            git commit --allow-empty -m "chore: weekly cron keepalive (auto)"
+            git push origin "$GITHUB_REF_NAME"
+            echo "::notice::已补空 commit 保活"
+          else
+            echo "::notice::最近 6 天内有活动，无需保活"
+          fi
