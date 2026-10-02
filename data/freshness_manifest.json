@@ -105,7 +105,11 @@
       "status": "active",
       "note": "资金面：股基/灵基仓位daily(4/7)、融资余额monthly、新基金/产业资本/财政月频；northbound已deprecated；margin_buying_ratio(capital_flow)无history跳过",
       "fresh_max_trading_days": 2,
-      "watch_max_trading_days": 5
+      "watch_max_trading_days": 5,
+      "expected_publish_day": 15,
+      "publish_tolerance_days": 5,
+      "watch_publish_delay_days": 15,
+      "stale_max_missing_periods": 2
     },
     {
       "id": "timing_sentiment",

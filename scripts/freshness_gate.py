@@ -376,8 +376,9 @@ def period_end_date(key: tuple) -> tuple:
 
 def subseq_status(item_id, history: list, eval_key: tuple, cal: str,
                   group_freq: str, seg_name: str = "",
-                  explicit_freq: str | None = None) -> str:
-    """单个子序列：按自身频率 + 阈值判定。"""
+                  explicit_freq: str | None = None,
+                  calendar_item: dict | None = None) -> str:
+    """单个子序列：按自身频率 + 阈值判定。月/季频 + 日历参数 → 走日历模式。"""
     seg_freq = explicit_freq or SUBSEQ_FREQ.get(item_id, {}).get(seg_name)
     if seg_freq is None:
         # 未登记真实频率的子序列：按分组条目 freq 判定（不从数据自动推断，
@@ -386,7 +387,7 @@ def subseq_status(item_id, history: list, eval_key: tuple, cal: str,
     last_el = history[-1]
     as_of = date_key(last_el.get("date") if isinstance(last_el, dict) else last_el)
 
-    special = _group_special(item_id, "")
+    special = _group_special(item_id, seg_name)
     if seg_freq in ("daily", "weekly"):
         if special:
             f, td_d, td_w = special
@@ -403,7 +404,9 @@ def subseq_status(item_id, history: list, eval_key: tuple, cal: str,
             return "WATCH"
         return "STALE"
 
-    # 月/季：自然日兜底（锚点周期末日）
+    # 月/季频：有日历参数 → 走日历模式；否则自然日兜底
+    if calendar_item and "expected_publish_day" in calendar_item:
+        return _calendar_mode_status(calendar_item, as_of, eval_key)
     anchor = period_end_date(as_of)
     import datetime as dt
     d0 = dt.date(anchor[0], anchor[1], anchor[2])
@@ -459,7 +462,8 @@ def compute_status(item: dict, doc: Any, eval_key: tuple, default_cal: str) -> s
         found = True
         seg_name = p.split(".")[-2] if p.endswith(".history") else p.split(".")[-1]
         st = subseq_status(item["id"], h, eval_key, cal, item["freq"],
-                           seg_name=seg_name)
+                           seg_name=seg_name,
+                           calendar_item=item)
         if worst is None or order[st] > order[worst]:
             worst = st
     if not found:
