@@ -1,15 +1,22 @@
 name: Update Macro Econ Dashboard
 
+# 入库策略（2026-10-03 主人拍板）：先 commit/push 入库，再跑门禁（非阻断），BLOCK 开 issue 告警。
+
 on:
   schedule:
     - cron: '0 8 * * *'   # UTC 08:00 = 北京时间 16:00
   workflow_dispatch:       # 支持手动触发
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,13 +35,58 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
-      - name: Run freshness structural gate
-        run: python scripts/freshness_gate.py
-
+      # ---- 1) 先 commit/push 入库 ----
       - name: Commit data
+        id: commit
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add macro-econ-dashboard/data/
-          git diff --cached --quiet || git commit -m "📊 Macro econ daily update $(date +%Y-%m-%d)"
-          git push
+          if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            echo "📋 数据无变更，跳过提交"
+          else
+            git commit -m "📊 Macro econ daily update $(date +%Y-%m-%d)"
+            git push
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+            echo "✅ 数据已推送入库"
+          fi
+
+      # ---- 2) 再跑门禁（非阻断）----
+      - name: Run freshness gate (non-blocking)
+        id: gate
+        run: |
+          set +e
+          python scripts/freshness_gate.py --baseline-git 2>&1 | tee /tmp/gate.log
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          [ "$rc" -eq 0 ] && echo "::notice::freshness 门禁通过" \
+                         || echo "::warning::freshness 门禁有 BLOCK（数据已正常入库）"
+          exit 0
+
+      # ---- 3) BLOCK 开 issue（去重）----
+      - name: Open BLOCK alert issue
+        if: steps.gate.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          TITLE="[freshness-block] $TODAY 数据新鲜度门禁 BLOCK"
+          {
+            echo "## 🚫 Freshness 门禁 BLOCK（数据已正常入库）"
+            echo ""
+            echo "**评估日 (UTC)**：$TODAY"
+            echo "**来源 workflow**：Update Macro Econ Dashboard"
+            echo ""
+            echo '```'
+            grep -E '🚫|BLOCK|FAIL：' /tmp/gate.log | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+          } > /tmp/block_body.md
+          EXISTING=$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" -R "$GITHUB_REPOSITORY" \
+              --body "macro-econ 流水线再次确认 BLOCK（$TODAY），详见本次 run 日志。"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/block_body.md
+          fi

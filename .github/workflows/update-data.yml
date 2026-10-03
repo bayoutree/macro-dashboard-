@@ -12,6 +12,9 @@
 #   - 工作日 UTC 10:00 (北京时间 18:00) 自动执行
 #   - 支持手动触发 (workflow_dispatch)
 #
+# 入库策略（2026-10-03 主人拍板）：先 commit/push 入库，再跑 freshness 门禁（非阻断），
+# BLOCK 开 GitHub issue 告警；门禁逻辑与严格度不变。
+#
 # 前置条件:
 #   - 在 GitHub repo Settings > Secrets 中设置:
 #     - FRED_API_KEY: FRED API 密钥 (https://fred.stlouisfed.org/docs/api/api_key.html)
@@ -35,11 +38,16 @@ on:
           - timing
           - dry-run
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
 
     steps:
       # ----------------------------------------------------------
@@ -95,18 +103,11 @@ jobs:
           PYTHONUNBUFFERED: '1'
 
       # ----------------------------------------------------------
-      # 5. 提交数据变更
-      # ----------------------------------------------------------
-      # ----------------------------------------------------------
       # 4b. 回填 timing_scores.json 真实 history（防止重建清空）
       # ----------------------------------------------------------
       - name: Backfill verified timing_scores history
         if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
         run: python scripts/sync_timing_scores_history.py
-
-      - name: Run freshness structural gate
-        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
-        run: python scripts/freshness_gate.py
 
       # ----------------------------------------------------------
       # 5b. 同步数据到 frontend/data/ (兼容旧版前端)
@@ -117,41 +118,72 @@ jobs:
           echo "✅ Data synced to frontend/data/"
 
       # ----------------------------------------------------------
-      # 6. 提交数据变更
+      # 5. commit/push 数据变更（先入库）
       # ----------------------------------------------------------
       - name: Commit and push data changes
+        id: commit
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add data/ frontend/data/
-          
-          # 检查是否有变更
+
           if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
             echo "📋 数据无变更, 跳过提交"
           else
-            # 生成提交信息
             DATE=$(date +%Y-%m-%d)
             TIME=$(date +%H:%M)
-            
-            # 统计变更文件
             CHANGED_FILES=$(git diff --cached --name-only | wc -l)
             echo "📊 变更文件数: ${CHANGED_FILES}"
             git diff --cached --stat
-            
             git commit -m "📊 自动数据更新 ${DATE} ${TIME} CST" \
                         -m "更新文件: $(git diff --cached --name-only | tr '\n' ', ')" \
                         -m "运行环境: GitHub Actions"
             git push
-            echo "✅ 数据已推送"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+            echo "✅ 数据已推送入库"
           fi
 
       # ----------------------------------------------------------
-      # 7. 失败通知 (可选)
+      # 6. freshness 门禁（非阻断，入库后再跑；dry-run 不评估）
       # ----------------------------------------------------------
-      - name: Notify on failure
-        if: failure()
+      - name: Run freshness gate (non-blocking)
+        id: gate
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
         run: |
-          echo "❌ 数据更新失败，请检查 GitHub Actions 日志"
-          echo "失败步骤: ${{ job.status }}"
-          # 如果有飞书/钉钉 webhook，可以在这里发送通知
-          # curl -X POST "${{ secrets.WEBHOOK_URL }}" -d '{"msg_type":"text","content":{"text":"宏观看板数据更新失败"}}'
+          set +e
+          python scripts/freshness_gate.py --baseline-git 2>&1 | tee /tmp/gate.log
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          [ "$rc" -eq 0 ] && echo "::notice::freshness 门禁通过" \
+                         || echo "::warning::freshness 门禁有 BLOCK（数据已正常入库）"
+          exit 0
+
+      # ----------------------------------------------------------
+      # 7. BLOCK 开 issue 告警（去重）
+      # ----------------------------------------------------------
+      - name: Open BLOCK alert issue
+        if: (github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing') && steps.gate.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          TITLE="[freshness-block] $TODAY 数据新鲜度门禁 BLOCK"
+          {
+            echo "## 🚫 Freshness 门禁 BLOCK（数据已正常入库）"
+            echo ""
+            echo "**评估日 (UTC)**：$TODAY"
+            echo "**来源 workflow**：Daily Data Update (update-data)"
+            echo ""
+            echo '```'
+            grep -E '🚫|BLOCK|FAIL：' /tmp/gate.log | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+          } > /tmp/block_body.md
+          EXISTING=$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" -R "$GITHUB_REPOSITORY" \
+              --body "update-data 流水线再次确认 BLOCK（$TODAY），详见本次 run 日志。"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/block_body.md
+          fi

@@ -1,16 +1,25 @@
 name: Daily Data Update
 
+# 入库策略（2026-10-03 主人拍板）：数据采集成功后【先 commit/push 入库，再跑 freshness 门禁】。
+# 门禁改为非阻断：FAIL 不再阻止数据入库，BLOCK 项在日志标红并开 GitHub issue 告警。
+# 门禁本身的检查逻辑与严格度保持不变，仅调整它与入库的先后关系。
+
 on:
   schedule:
     - cron: '0 8 * * 1-5'   # UTC 08:00 = CST 16:00, 工作日
     - cron: '0 8 * * 0,6'   # 周末也运行
   workflow_dispatch:           # 支持手动触发
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
 
     steps:
       - name: Checkout repository
@@ -31,19 +40,74 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
-      - name: Run freshness structural gate
-        run: python scripts/freshness_gate.py
-
+      # ---- 入库前置：版本号随数据一起提交 ----
       - name: Bump static asset versions
         run: python scripts/bump_asset_versions.py
 
       - name: Verify asset versions are consistent
         run: python scripts/bump_asset_versions.py --check
 
+      # ---- 1) 先 commit/push 入库 ----
       - name: Commit and push data changes
+        id: commit
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add data/ index.html
-          git diff --cached --quiet || git commit -m "📊 Daily data update $(date +%Y-%m-%d)"
-          git push
+          if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            echo "📋 数据无变更，跳过提交"
+          else
+            git commit -m "📊 Daily data update $(date +%Y-%m-%d)"
+            git push
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+            echo "✅ 数据已推送入库"
+          fi
+
+      # ---- 2) 再跑门禁（非阻断，不 fail job）----
+      - name: Run freshness gate (non-blocking)
+        id: gate
+        run: |
+          set +e
+          # 用 git 基线：刚 push 后 origin/main 已更新，结构检查确定无传播延迟误报
+          python scripts/freshness_gate.py --baseline-git 2>&1 | tee /tmp/gate.log
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 0 ]; then
+            echo "::notice::freshness 门禁通过（0 BLOCK）"
+          else
+            echo "::warning::freshness 门禁报告 $rc（有 BLOCK，详见日志与告警 issue；数据已正常入库）"
+          fi
+          exit 0
+
+      # ---- 3) 有 BLOCK 则开 issue 告警（去重：已有 open 同日期 issue 则追加评论）----
+      - name: Open BLOCK alert issue
+        if: steps.gate.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          TITLE="[freshness-block] $TODAY 数据新鲜度门禁 BLOCK"
+          {
+            echo "## 🚫 Freshness 门禁 BLOCK（数据已正常入库）"
+            echo ""
+            echo "**评估日 (UTC)**：$TODAY"
+            echo "**说明**：入库策略已改为先 commit 再跑门禁，本次采集的数据**未被阻断、已推送**。以下 BLOCK 为真实数据缺口，须按排期修复："
+            echo ""
+            echo '```'
+            grep -E '🚫|BLOCK|FAIL：' /tmp/gate.log | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+            echo ""
+            echo "> 由 daily_update 自动创建（搜 \`[freshness-block]\`）。"
+          } > /tmp/block_body.md
+
+          EXISTING=$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" -R "$GITHUB_REPOSITORY" \
+            --body "流水线再次确认 BLOCK（$TODAY）：$(grep -c '🚫' /tmp/gate.log || echo 0) 项，详见本次 run 日志。"
+            echo "::notice::已在 open issue #$EXISTING 追加评论（去重）"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/block_body.md
+            echo "::notice::已创建 BLOCK 告警 issue"
+          fi
