@@ -29,6 +29,41 @@ def safe_call(func, *args, **kwargs):
         return pd.DataFrame()
 
 
+# ---------- 中国 GDP / M2 采集辅助（2026-10-04 投分裁决修复） ----------
+_CN_QUARTER_MAP = {"一": 1, "二": 2, "三": 3, "四": 4}
+
+
+def _cn_quarter_label(s):
+    """'2026年第二季度' -> '2026Q2'；无法解析返回 None。"""
+    m = re.search(r"(\d{4})\s*年\s*第\s*([一二三四1-4])\s*季度", str(s))
+    if not m:
+        return None
+    y = m.group(1)
+    q = _CN_QUARTER_MAP.get(m.group(2))
+    if q is None:
+        try:
+            q = int(m.group(2))
+        except Exception:
+            return None
+    return f"{y}Q{q}"
+
+
+def _cn_quarter_sort_key(label):
+    m = re.match(r"(\d{4})Q([1-4])", str(label))
+    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+
+
+def _fetch_cn_gdp_index():
+    """国家统计局季度数据：国内生产总值指数(上年同期=100)当季值 → 单季同比。"""
+    import akshare as ak
+    return ak.macro_china_nbs_nation(
+        kind="季度数据",
+        path="国民经济核算>国内生产总值指数",
+        period="2010-",
+    )
+
+
+
 def main():
     logger.info("=" * 60)
     logger.info("开始获取中国宏观数据 (AKShare)")
@@ -58,13 +93,17 @@ def main():
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/6] 同步指标: GDP...")
-    gdp_df = safe_call(ak.macro_china_gdp)
+    # GDP: 改用国家统计局季度"国内生产总值指数(上年同期=100)当季值"（单季同比）。
+    # 原 macro_china_gdp 为累计同比（第1/第1-2/第1-3/第1-4季度），且旧解析只认第1季度。
+    gdp_idx_df = safe_call(_fetch_cn_gdp_index)
 
     # ---------- 滞后指标 ----------
     logger.info("\n[3/6] 滞后指标: CPI, PPI, M2...")
     cpi_df = safe_call(ak.macro_china_cpi)
     ppi_df = safe_call(ak.macro_china_ppi)
-    m2_df = safe_call(ak.macro_china_m2_yearly)
+    # M2: 改用 macro_china_money_supply（国家统计局/央行口径，含同比列，更新至最新）。
+    # 原 macro_china_m2_yearly（金十源）自 2025-08 停更，已弃用。
+    m2_df = safe_call(ak.macro_china_money_supply)
 
     # ---------- A股指数 ----------
     logger.info("\n[4/6] A股指数: 上证, 沪深300...")
@@ -104,21 +143,29 @@ def main():
         except Exception as e:
             logger.warning(f"  解析PMI失败: {e}")
 
-    # --- GDP (数据按时间降序) ---
+    # --- GDP 单季同比 (国家统计局季度指数: 上年同期=100, 当季值; 单季同比 = 指数 - 100) ---
     gdp_val, gdp_date = None, None
-    if not gdp_df.empty:
+    gdp_history = []
+    if not gdp_idx_df.empty:
         try:
-            # 列: 季度, 国内生产总值-绝对值, 国内生产总值-同比增长, ...
-            # 优先取单季度数据(第1季度/第1-4季度)
-            for idx in range(len(gdp_df)):
-                quarter_str = str(gdp_df['季度'].iloc[idx])
-                if '第1季度' in quarter_str and '第1-' not in quarter_str:
-                    gdp_val = safe_float(gdp_df['国内生产总值-同比增长'].iloc[idx])
-                    gdp_date = quarter_str
+            row_key = None
+            for ix in gdp_idx_df.index:
+                s = str(ix)
+                if "国内生产总值指数" in s and "当季值" in s:
+                    row_key = ix
                     break
-            if gdp_val is None:
-                gdp_val = safe_float(gdp_df['国内生产总值-同比增长'].iloc[0])
-                gdp_date = str(gdp_df['季度'].iloc[0])
+            if row_key is not None:
+                for col in gdp_idx_df.columns:
+                    label = _cn_quarter_label(col)
+                    v = safe_float(gdp_idx_df.loc[row_key, col])
+                    if label is None or v is None:
+                        continue
+                    gdp_history.append({"date": label, "value": round(v - 100.0, 1)})
+                gdp_history.sort(key=lambda x: _cn_quarter_sort_key(x["date"]))
+                gdp_history = gdp_history[-48:] if len(gdp_history) > 48 else gdp_history
+                if gdp_history:
+                    gdp_val = gdp_history[-1]["value"]
+                    gdp_date = gdp_history[-1]["date"]
             logger.info(f"  GDP: {gdp_val}%, 日期: {gdp_date}")
         except Exception as e:
             logger.warning(f"  解析GDP失败: {e}")
@@ -151,16 +198,22 @@ def main():
         except Exception as e:
             logger.warning(f"  解析PPI失败: {e}")
 
-    # --- M2 (列: 商品, 日期, 今值, 预测值, 前值; 按时间升序) ---
+    # --- M2 (源: macro_china_money_supply; 列: 月份 '2026年08月份', '货币和准货币(M2)-同比增长'; 按时间降序) ---
     m2_val, m2_date = None, None
-    if not m2_df.empty:
+    m2_history = []
+    if not m2_df.empty and '货币和准货币(M2)-同比增长' in m2_df.columns:
         try:
-            # 找最新有值的记录
-            m2_sorted = m2_df.dropna(subset=['今值'])
-            if not m2_sorted.empty:
-                last_row = m2_sorted.iloc[-1]
-                m2_val = safe_float(last_row['今值'])
-                m2_date = str(last_row['日期'])[:7]
+            for _, row in m2_df.iterrows():
+                raw = str(row.get('月份', ''))
+                m = re.search(r'(\d{4})年(\d{1,2})月', raw)
+                v = safe_float(row['货币和准货币(M2)-同比增长'])
+                if m and v is not None:
+                    m2_history.append({"date": f"{m.group(1)}-{m.group(2).zfill(2)}", "value": v})
+            m2_history.sort(key=lambda x: x["date"])
+            m2_history = m2_history[-48:] if len(m2_history) > 48 else m2_history
+            if m2_history:
+                m2_val = m2_history[-1]["value"]
+                m2_date = m2_history[-1]["date"]
             logger.info(f"  M2: {m2_val}%, 日期: {m2_date}")
         except Exception as e:
             logger.warning(f"  解析M2失败: {e}")
@@ -340,27 +393,15 @@ def main():
         except Exception as e:
             logger.warning(f"  构建社融存量历史失败: {e}")
 
-    # --- GDP 历史 (从 gdp_df 的 "国内生产总值-同比增长" 列，季度数据) ---
-    if not gdp_df.empty and '国内生产总值-同比增长' in gdp_df.columns:
-        try:
-            # gdp_df 按时间降序，需反转
-            gdp_hist_df = gdp_df.copy().iloc[::-1]
-            gdp_history = []
-            for _, row in gdp_hist_df.iterrows():
-                quarter_raw = str(row.get('季度', ''))
-                v = safe_float(row['国内生产总值-同比增长'])
-                if v is not None and quarter_raw:
-                    # 尝试解析季度: "2026年第1季度" → "2026Q1"
-                    import re as _re
-                    m = _re.search(r'(\d{4}).*?第(\d)季度', quarter_raw)
-                    if m:
-                        date_label = f"{m.group(1)}Q{m.group(2)}"
-                        gdp_history.append({"date": date_label, "value": v})
-            gdp_history = gdp_history[-48:] if len(gdp_history) > 48 else gdp_history
-            history["gdp_growth"] = gdp_history
-            logger.info(f"  GDP 历史: {len(gdp_history)} 条")
-        except Exception as e:
-            logger.warning(f"  构建GDP历史失败: {e}")
+    # --- GDP 历史（单季同比，来自国家统计局季度指数，见上） ---
+    if gdp_history:
+        history["gdp_growth"] = gdp_history
+        logger.info(f"  GDP 历史: {len(gdp_history)} 条")
+
+    # --- M2 历史（同比，来自 macro_china_money_supply） ---
+    if m2_history:
+        history["m2_yoy"] = m2_history
+        logger.info(f"  M2 历史: {len(m2_history)} 条")
 
     # --- CPI 历史 (从 cpi_df 的 "全国-同比增长" 列) ---
     if not cpi_df.empty and '全国-同比增长' in cpi_df.columns:

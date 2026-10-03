@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-10-01",
+  "updated": "2026-10-04",
   "calendar": "CN",
   "items": [
     {
@@ -518,6 +518,44 @@
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
+    },
+    {
+      "id": "cn_m2",
+      "file": "data/cn_macro.json",
+      "date_path": "lagging.m2_yoy.date",
+      "freq": "monthly",
+      "calendar": "CN",
+      "lag_days": 12,
+      "expected_publish_day": 12,
+      "publish_tolerance_days": 3,
+      "watch_publish_delay_days": 15,
+      "stale_max_missing_periods": 2,
+      "history_path": "history.m2_yoy",
+      "value_path": "lagging.m2_yoy.value",
+      "history_count_tolerance": 0.05,
+      "critical": true,
+      "severity_on_gap": "block",
+      "status": "active",
+      "note": "M2同比(央行口径); 采集源=akshare macro_china_money_supply(含同比列,更新至最新); 央行约10-15日发布金融统计数据。旧源macro_china_m2_yearly(金十)自2025-08停更,已弃用(2026-10-04修复)"
+    },
+    {
+      "id": "cn_gdp",
+      "file": "data/cn_macro.json",
+      "date_path": "coincident.gdp_growth.date",
+      "freq": "quarterly",
+      "calendar": "CN",
+      "lag_days": 17,
+      "expected_publish_day": 17,
+      "publish_tolerance_days": 5,
+      "watch_publish_delay_days": 20,
+      "stale_max_missing_periods": 2,
+      "history_path": "history.gdp_growth",
+      "value_path": "coincident.gdp_growth.value",
+      "history_count_tolerance": 0.05,
+      "critical": true,
+      "severity_on_gap": "block",
+      "status": "active",
+      "note": "中国GDP单季同比(不变价,上年同期=100); 采集源=国家统计局季度数据'国内生产总值指数当季值',单季同比=指数-100; NBS约季后15-18日发布。日期格式2026Q2。旧口径(累计同比+只取第1季度)已弃用(2026-10-04修复)"
     },
     {
       "id": "legulegu_gxl_spread",
