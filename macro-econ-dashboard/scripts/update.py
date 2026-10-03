@@ -98,17 +98,29 @@ def _restore_lost_series(new, old, path, restored):
     采集源瞬时失败时，add() 会直接丢弃该序列，导致全量重建把既有历史静默抹掉。
     此守卫把「整键消失」的序列用上一版回填，并记录告警；仅处理含 history 的
     真实序列，不动派生字段（派生块键始终存在，不受影响）。
+    回填后按旧文件的键序重排，避免「追加到末尾」产生幻影 diff。
     """
     if not isinstance(new, dict) or not isinstance(old, dict):
         return
     for key, old_val in old.items():
-        child = path + [str(key)]
-        if key not in new:
-            if _contains_series(old_val):
-                new[key] = old_val
-                restored.append("/".join(child))
-        else:
-            _restore_lost_series(new[key], old_val, child, restored)
+        if key in new:
+            _restore_lost_series(new[key], old_val, path + [str(key)], restored)
+    missing = [k for k in old if k not in new and _contains_series(old[k])]
+    if not missing:
+        return
+    for k in missing:
+        new[k] = old[k]
+        restored.append("/".join(path + [str(k)]))
+    # 按旧键序重建本层（旧有键在前，仅新有键追加到末尾）
+    rebuilt = {}
+    for k in old:
+        if k in new:
+            rebuilt[k] = new[k]
+    for k in new:
+        if k not in rebuilt:
+            rebuilt[k] = new[k]
+    new.clear()
+    new.update(rebuilt)
 
 
 def _apply_no_delete_guard(payload, out_path):
