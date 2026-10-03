@@ -2054,7 +2054,7 @@
             "synced_at": "2026-10-03"
           },
           "data_source": "sina",
-          "collect_time": "2026-10-03T01:45:02"
+          "collect_time": "2026-10-03T10:55:21"
         }
       }
     },
@@ -2067,8 +2067,8 @@
       "indicators": {
         "social_financing_trend": {
           "name": "社融增速趋势",
-          "value": -46.16,
-          "value_label": "紧缩",
+          "value": 7.18,
+          "value_label": "宽松见顶",
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -2076,148 +2076,132 @@
           "description": "社融存量同比增速趋势。社融是经济领先指标，增速回升利好股市盈利预期。",
           "history": [
             {
-              "date": "2023-05",
-              "value": -45.24
-            },
-            {
-              "date": "2023-06",
-              "value": -18.61
-            },
-            {
-              "date": "2023-07",
-              "value": -31.07
-            },
-            {
-              "date": "2023-08",
-              "value": 26.57
-            },
-            {
-              "date": "2023-09",
-              "value": 16.7
-            },
-            {
-              "date": "2023-10",
-              "value": 101.89
-            },
-            {
-              "date": "2023-11",
-              "value": 23.78
-            },
-            {
-              "date": "2023-12",
-              "value": 48.58
-            },
-            {
               "date": "2024-01",
-              "value": 7.97
+              "value": 9.51
             },
             {
               "date": "2024-02",
-              "value": -52.68
+              "value": 8.97
             },
             {
               "date": "2024-03",
-              "value": -10.27
+              "value": 8.72
             },
             {
               "date": "2024-04",
-              "value": -105.37
+              "value": 8.33
             },
             {
               "date": "2024-05",
-              "value": 32.54
+              "value": 8.44
             },
             {
               "date": "2024-06",
-              "value": -21.96
+              "value": 8.11
             },
             {
               "date": "2024-07",
-              "value": 43.63
+              "value": 8.19
             },
             {
               "date": "2024-08",
-              "value": -3.06
+              "value": 8.13
             },
             {
               "date": "2024-09",
-              "value": -8.93
+              "value": 7.97
             },
             {
               "date": "2024-10",
-              "value": -23.43
+              "value": 7.83
             },
             {
               "date": "2024-11",
-              "value": -5.16
+              "value": 7.76
             },
             {
               "date": "2024-12",
-              "value": 46.94
+              "value": 8.0
             },
             {
               "date": "2025-01",
-              "value": 8.98
+              "value": 8.03
             },
             {
               "date": "2025-02",
-              "value": 49.28
+              "value": 8.19
             },
             {
               "date": "2025-03",
-              "value": 21.98
+              "value": 8.36
             },
             {
               "date": "2025-04",
-              "value": -1862.77
+              "value": 8.74
             },
             {
               "date": "2025-05",
-              "value": 11.04
+              "value": 8.73
             },
             {
               "date": "2025-06",
-              "value": 28.09
+              "value": 8.89
             },
             {
               "date": "2025-07",
-              "value": 46.71
+              "value": 8.98
             },
             {
               "date": "2025-08",
-              "value": -15.38
+              "value": 8.8
             },
             {
               "date": "2025-09",
-              "value": -6.21
+              "value": 8.68
             },
             {
               "date": "2025-10",
-              "value": -42.08
+              "value": 8.49
             },
             {
               "date": "2025-11",
-              "value": 7.03
+              "value": 8.5
             },
             {
               "date": "2025-12",
-              "value": -22.56
+              "value": 8.27
             },
             {
               "date": "2026-01",
-              "value": 2.32
+              "value": 8.17
             },
             {
               "date": "2026-02",
-              "value": 6.74
+              "value": 8.17
             },
             {
               "date": "2026-03",
-              "value": -11.4
+              "value": 7.92
             },
             {
               "date": "2026-04",
-              "value": -46.16
+              "value": 7.75
+            },
+            {
+              "date": "2026-05",
+              "value": 7.66
+            },
+            {
+              "date": "2026-06",
+              "value": 7.4
+            },
+            {
+              "date": "2026-07",
+              "value": 7.43
+            },
+            {
+              "date": "2026-08",
+              "value": 7.18
             }
           ],
           "_history_meta": {
@@ -11462,7 +11446,7 @@
           "top_threshold": ">48%",
           "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
           "data_source": "sina",
-          "collect_time": "2026-10-03T01:45:02",
+          "collect_time": "2026-10-03T10:55:21",
           "history": [
             {
               "date": "2026-10-03",
@@ -14982,7 +14966,7 @@
             "restored_at": "2026-09-26"
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-03T01:45:02"
+          "collect_time": "2026-10-03T10:55:21"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
