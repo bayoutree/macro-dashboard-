@@ -2054,7 +2054,7 @@
             "synced_at": "2026-10-03"
           },
           "data_source": "sina",
-          "collect_time": "2026-10-03T10:55:21"
+          "collect_time": "2026-10-03T13:04:48"
         }
       }
     },
@@ -11446,7 +11446,7 @@
           "top_threshold": ">48%",
           "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
           "data_source": "sina",
-          "collect_time": "2026-10-03T10:55:21",
+          "collect_time": "2026-10-03T13:04:48",
           "history": [
             {
               "date": "2026-10-03",
@@ -14966,7 +14966,7 @@
             "restored_at": "2026-09-26"
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-03T10:55:21"
+          "collect_time": "2026-10-03T13:04:48"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
