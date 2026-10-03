@@ -92,18 +92,29 @@ def _social_financing_label(yoy: float, delta: float) -> str:
 
 
 def fix_social_financing_trend(timing: dict, cn_macro: dict):
-    """用 cn_macro.history.social_financing 的月度数据计算同比增速。"""
+    """用社融**存量**月度数据计算同比增速（市场标准口径）。
+
+    历史教训: 早期误用"月度增量"算同比，增量月间波动极大（1月7万亿 vs 4月6千亿），
+    同比数字在 -46%~+7% 之间乱跳，无经济意义。社融增速的标准定义是**存量同比**，
+    与央行新闻稿口径一致（如 2026-08 存量同比 7.2%）。
+
+    数据源: cn_macro.history.social_financing_stock（万亿元）；缺省时回退旧增量序列。
+    """
     key_path = ("dimensions", "liquidity", "indicators", "social_financing_trend")
     indicator = timing
     for k in key_path:
         indicator = indicator.get(k, {})
 
-    sf_history = cn_macro.get("history", {}).get("social_financing", [])
+    sf_history = cn_macro.get("history", {}).get("social_financing_stock", [])
+    if not sf_history:
+        # 回退：旧快照只有增量序列时保持可运行（不作为正确口径，仅避免空指标）
+        sf_history = cn_macro.get("history", {}).get("social_financing", [])
+        logger.warning("  social_financing_stock 缺失，回退到增量序列（口径非标准，请确认采集侧）")
     if len(sf_history) < 13:
-        logger.warning("  social_financing 数据不足13个月，无法计算同比")
+        logger.warning("  社融序列不足13个月，无法计算同比")
         return False
 
-    # 计算 YoY 增速 (需要12个月前的数据)
+    # 计算 YoY 增速（存量同比，%）
     yoy_series = []
     for i in range(12, len(sf_history)):
         cur = sf_history[i]

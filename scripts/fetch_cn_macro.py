@@ -43,23 +43,18 @@ def main():
     # ---------- 领先指标 ----------
     logger.info("\n[1/6] 领先指标: PMI, 社融...")
     pmi_df = safe_call(ak.macro_china_pmi)
-    shrzgm_df = safe_call(ak.macro_china_shrzgm)
-    # Fallback: if SSL error, try with verify=False
-    if shrzgm_df.empty:
-        try:
-            import requests as _req
-            _sess = _req.Session()
-            _sess.verify = False
-            import urllib3
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            # Try alternative AKShare call for social financing
-            shrzgm_df = safe_call(ak.macro_china_shrzgm)
-            if shrzgm_df.empty:
-                logger.warning("  社融数据获取失败，尝试备用接口...")
-                # Try macro_china_bond_issue as proxy (信用扩张指标)
-                shrzgm_df = safe_call(ak.macro_china_bond_issue)
-        except Exception as _e:
-            logger.warning(f"  社融备用接口也失败: {_e}")
+
+    # 社融: 央行官方源（调查统计司 -> 统计数据 -> 社会融资规模）
+    # 原商务部 data.mofcom.gov.cn 源自 2026-04 起停更，切换至央行官方 xlsx。
+    pbc_sf = {"stock": [], "flow": []}
+    try:
+        from fetch_pbc_social_financing import fetch_social_financing as _fetch_pbc_sf
+        pbc_sf = _fetch_pbc_sf()
+        logger.info(
+            f"  ✓ 央行社融: 存量 {len(pbc_sf['stock'])} 点 / 增量 {len(pbc_sf['flow'])} 点"
+        )
+    except Exception as _e:
+        logger.warning(f"  ✗ 央行社融采集失败: {_e}")
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/6] 同步指标: GDP...")
@@ -172,16 +167,21 @@ def main():
 
     # --- 社融 (数据按时间升序，最后一行最新) ---
     shrzgm_val, shrzgm_date = None, None
-    if not shrzgm_df.empty:
+    shrzgm_stock_val, shrzgm_stock_date = None, None
+    if pbc_sf.get('flow'):
         try:
-            # 列: 月份, 社会融资规模增量, ...
-            shrzgm_val = safe_float(shrzgm_df['社会融资规模增量'].iloc[-1])
-            raw_month = str(shrzgm_df['月份'].iloc[-1])  # e.g. "202604"
-            if len(raw_month) >= 6:
-                shrzgm_date = f"{raw_month[:4]}-{raw_month[4:6]}"
-            logger.info(f"  社融: {shrzgm_val} 亿元, 日期: {shrzgm_date}")
+            last = pbc_sf['flow'][-1]
+            shrzgm_val, shrzgm_date = float(last['value']), last['date']
+            logger.info(f"  社融增量: {shrzgm_val} 亿元, 日期: {shrzgm_date}")
         except Exception as e:
-            logger.warning(f"  解析社融失败: {e}")
+            logger.warning(f"  解析社融增量失败: {e}")
+    if pbc_sf.get('stock'):
+        try:
+            last = pbc_sf['stock'][-1]
+            shrzgm_stock_val, shrzgm_stock_date = float(last['value']), last['date']
+            logger.info(f"  社融存量: {shrzgm_stock_val} 万亿元, 日期: {shrzgm_stock_date}")
+        except Exception as e:
+            logger.warning(f"  解析社融存量失败: {e}")
 
     # --- A股指数 (stock_zh_index_daily 返回 date/open/high/low/close/volume) ---
     sse_val, sse_date = None, None
@@ -317,23 +317,28 @@ def main():
         except Exception as e:
             logger.warning(f"  构建PMI历史失败: {e}")
 
-    # --- 社融增量历史 (从 shrzgm_df 的 "社会融资规模增量" 列) ---
-    if not shrzgm_df.empty and '社会融资规模增量' in shrzgm_df.columns:
+    # --- 社融历史（央行官方源）---
+    # social_financing        : 月度增量（亿元），前端"社融增量"卡片契约
+    # social_financing_stock  : 月度存量（万亿元），供 social_financing_trend 计算存量同比
+    if pbc_sf.get('flow'):
         try:
-            # shrzgm_df 按时间升序，最后一行最新
-            shrzgm_history = []
-            for _, row in shrzgm_df.iterrows():
-                raw_month = str(row.get('月份', ''))
-                if len(raw_month) >= 6:
-                    date_label = f"{raw_month[:4]}-{raw_month[4:6]}"
-                    v = safe_float(row['社会融资规模增量'])
-                    if v is not None:
-                        shrzgm_history.append({"date": date_label, "value": v})
+            shrzgm_history = [
+                {"date": d["date"], "value": float(d["value"])} for d in pbc_sf['flow']
+            ]
             shrzgm_history = shrzgm_history[-48:] if len(shrzgm_history) > 48 else shrzgm_history
             history["social_financing"] = shrzgm_history
             logger.info(f"  社融增量历史: {len(shrzgm_history)} 条")
         except Exception as e:
             logger.warning(f"  构建社融增量历史失败: {e}")
+    if pbc_sf.get('stock'):
+        try:
+            sf_stock_history = [
+                {"date": d["date"], "value": float(d["value"])} for d in pbc_sf['stock']
+            ]
+            history["social_financing_stock"] = sf_stock_history
+            logger.info(f"  社融存量历史: {len(sf_stock_history)} 条")
+        except Exception as e:
+            logger.warning(f"  构建社融存量历史失败: {e}")
 
     # --- GDP 历史 (从 gdp_df 的 "国内生产总值-同比增长" 列，季度数据) ---
     if not gdp_df.empty and '国内生产总值-同比增长' in gdp_df.columns:
@@ -412,6 +417,11 @@ def main():
                 "value": shrzgm_val,
                 "date": shrzgm_date,
                 "unit": "亿元"
+            },
+            "social_financing_stock": {
+                "value": shrzgm_stock_val,
+                "date": shrzgm_stock_date,
+                "unit": "万亿元"
             }
         },
         "coincident": {

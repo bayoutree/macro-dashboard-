@@ -67,7 +67,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "流动性维度：社融monthly、利率monthly、M1M2月频、fed_policy月频；freq取最严格=monthly，发布日历模式（社融约10-12日，fed约月初）",
+      "note": "流动性维度：社融monthly(存量同比,央行官方源)、利率monthly、M1M2月频、fed_policy月频；freq取最严格=monthly，发布日历模式（社融约10-12日，fed约月初）",
       "expected_publish_day": 10,
       "publish_tolerance_days": 3,
       "watch_publish_delay_days": 15,
@@ -514,7 +514,7 @@
       "stale_max_missing_periods": 2,
       "history_path": "history.social_financing",
       "value_path": "leading.social_financing.value",
-      "note": "社融(宏观口径)；央行约10-12日发布，当前末点2026-04",
+      "note": "社融(宏观口径,央行官方); 央行约10-12日发布; 采集源=中国人民银行调查统计司统计数据(存量xlsx)。增量序列见 history.social_financing(亿元), 存量序列见 history.social_financing_stock(万亿元)",
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
