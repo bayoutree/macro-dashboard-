@@ -146,43 +146,31 @@ def fix_social_financing_trend(timing: dict, cn_macro: dict):
 # 2. M1-M2 剪刀差 (m1_m2_scissors)
 # ================================================================
 def fix_m1_m2_scissors(timing: dict):
-    """无直接M1/M2数据源，用当前值构造合理历史序列。"""
+    """M1-M2剪刀差：用 akshare macro_china_money_supply 的真实 M1/M2 同比计算。
+
+    剪刀差 = M1同比 − M2同比（月频真值）。旧版为硬编码合成轨迹，已弃用。
+    """
     key_path = ("dimensions", "liquidity", "indicators", "m1_m2_scissors")
     indicator = timing
     for k in key_path:
         indicator = indicator.get(k, {})
 
-    # 当前值 "-3.7%(2026-07)" => 提取 -3.7
-    cur_val = -3.7
-    cur_date = "2026-07"
+    try:
+        sys.path.insert(0, str(SCRIPT_DIR))
+        from cn_money_supply import fetch_m1_m2_scissors
+        series = fetch_m1_m2_scissors(max_points=60)
+    except Exception as e:
+        logger.warning(f"  ✗ m1_m2_scissors 采集失败: {e}")
+        return False
 
-    # 构造24个月的合理历史序列 (M1-M2从-8%逐步回升到-3.7%)
-    # 反映2024下半年以来的修复趋势
-    history = []
-    n_points = 24
-    # 从-8%逐步修复到-3.7%，中间有波动
-    trajectory = [
-        -8.0, -7.8, -7.5, -7.2, -6.8, -6.5,
-        -6.3, -5.9, -5.5, -5.2, -5.0, -4.8,
-        -4.7, -4.5, -4.3, -4.2, -4.0, -3.9,
-        -3.9, -3.8, -3.7, -3.7, -3.7, -3.7
-    ]
-    # 从 cur_date 往前推 n_points 个月
-    from datetime import datetime
-    base = datetime.strptime(cur_date + "-01", "%Y-%m-%d")
-    for i in range(n_points):
-        months_back = n_points - 1 - i
-        m = base.month - months_back
-        y = base.year
-        while m <= 0:
-            m += 12
-            y -= 1
-        date_str = f"{y:04d}-{m:02d}"
-        history.append({"date": date_str, "value": trajectory[i]})
+    if not series:
+        logger.warning("  ✗ m1_m2_scissors 无数据，跳过")
+        return False
 
-    indicator["history"] = history
-    indicator["value"] = f"{cur_val}%(2026-07)"
-    logger.info(f"  ✅ m1_m2_scissors: 构造 {len(history)} 个月度合成序列 (基于当前值 {cur_val}% 反推)")
+    indicator["history"] = series
+    latest = series[-1]
+    indicator["value"] = f"{latest['value']}%({latest['date']})"
+    logger.info(f"  ✅ m1_m2_scissors: {len(series)} 个月度真值序列 (M1-M2), 最新 {indicator['value']}")
     return True
 
 

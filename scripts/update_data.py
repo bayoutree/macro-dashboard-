@@ -629,34 +629,22 @@ class TimingScoreEngine:
                 .get("interest_rate", {}).get("score", 50), "数据待更新")
 
     def _calc_m1_m2_scissors(self):
-        """M1-M2剪刀差"""
+        """M1-M2剪刀差 = M1同比 − M2同比（月频真值）。
+
+        数据源: akshare macro_china_money_supply（央行口径，含 M1/M2 同比列）。
+        旧源 macro_china_m2_yearly（金十）已停更，弃用。
+        评分映射: 底部信号 -8% → 0 分；顶部信号 +5% → 100 分（线性）。
+        """
         try:
-            ak = self.init_akshare()
-            # M1, M2 同比
-            m2_df = safe_ak_call(ak.macro_china_m2_yearly)
-            # 尝试获取 M1
-            m1_df = safe_ak_call(ak.macro_china_m1_yearly) if hasattr(ak, 'macro_china_m1_yearly') else None
-
-            if m2_df is not None and not m2_df.empty:
-                # 从上期数据或 cn_macro 获取
-                cn = load_json("cn_macro.json")
-                m2_val = cn.get("lagging", {}).get("m2_yoy", {}).get("value")
-
-                if m2_val:
-                    # M1 数据可能不可用，使用上期值
-                    prev = load_json("timing_scores.json")
-                    prev_m1m2 = prev.get("dimensions", {}).get("liquidity", {}).get("indicators", {}).get("m1_m2_scissors", {}).get("value", "")
-                    prev_score = prev.get("dimensions", {}).get("liquidity", {}).get("indicators", {}).get("m1_m2_scissors", {}).get("score", 50)
-
-                    if "负值收窄" in str(prev_m1m2):
-                        score = max(30, prev_score - 5)
-                    elif "正值" in str(prev_m1m2):
-                        score = max(25, prev_score - 3)
-                    else:
-                        score = prev_score
-
-                    logger.info(f"      M1-M2剪刀差: {prev_m1m2} (使用上期+微调)")
-                    return score, prev_m1m2
+            from cn_money_supply import fetch_m1_m2_scissors
+            series = fetch_m1_m2_scissors()
+            if series:
+                latest = series[-1]
+                v = latest["value"]
+                score = int(max(0, min(100, round((v + 8.0) / 13.0 * 100))))
+                value = f"{v}%({latest['date']})"
+                logger.info(f"      M1-M2剪刀差: {value} (score={score})")
+                return score, value
         except Exception as e:
             logger.warning(f"      M1-M2计算异常: {e}")
 

@@ -117,6 +117,12 @@ jobs:
           cp data/*.json frontend/data/ 2>/dev/null || true
           echo "✅ Data synced to frontend/data/"
 
+      # ---- 0) 删史防线（入库前，阻断）：历史序列点数只增不减 ----
+      # 与 freshness 门禁互补：本步只判历史点数单调性，覆盖全部数据 JSON，
+      # 不判 GAP/STALE，因此可安全前置阻断；发现删史则本 workflow 失败、不提交。
+      - name: History deletion guard (pre-commit)
+        run: python scripts/history_guard.py --baseline-ref HEAD
+
       # ----------------------------------------------------------
       # 5. commit/push 数据变更（先入库）
       # ----------------------------------------------------------
