@@ -1,7 +1,7 @@
 {
-  "update_date": "2026-10-04",
+  "update_date": "2026-10-05",
   "version": "v4.1",
-  "composite_score": 46.9,
+  "composite_score": 46.7,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "buffett_ratio": {
@@ -1555,7 +1555,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "break_net_rate": {
@@ -2051,7 +2051,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         }
       }
@@ -2204,7 +2204,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "interest_rate": {
@@ -2680,7 +2680,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "fed_policy": {
@@ -3866,7 +3866,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "dividend_bond_spread_red": {
@@ -4881,7 +4881,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -5376,7 +5376,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-04"
+            "synced_at": "2026-10-05"
           }
         },
         "cn_us_spread": {
@@ -11573,16 +11573,16 @@
     },
     "micro_structure": {
       "name": "微观结构",
-      "score": 52.0,
+      "score": 50.0,
       "weight": 14,
-      "weighted_score": 7.28,
+      "weighted_score": 7.0,
       "signal": "中性",
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "42.9%",
+          "value": "数据待获取",
           "percentile": "98.3%",
-          "score": 55,
+          "score": 50,
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
@@ -13386,7 +13386,7 @@
         },
         "concentration_trend": {
           "name": "交易集中度趋势",
-          "value": "数据待获取(依赖HHI)",
+          "value": "数据待获取",
           "score": 50,
           "sub_weight": 25,
           "bottom_signal": "从集中到分散",
@@ -15690,7 +15690,7 @@
         "dimension": "微观结构",
         "signal": "交易集中度>48%",
         "stars": 4,
-        "active": false
+        "active": true
       }
     ]
   },
@@ -15744,8 +15744,8 @@
         "note": "股债性价比突出，高股息安全边际充足"
       },
       "科技成长": {
-        "range": "10%-15%",
-        "note": "拥挤度偏高，适度降低"
+        "range": "5%-10%",
+        "note": "拥挤度仍高，降低配置"
       },
       "大盘价值": {
         "range": "10%-15%",

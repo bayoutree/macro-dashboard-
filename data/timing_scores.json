@@ -1,7 +1,7 @@
 {
-  "update_date": "2026-10-04",
+  "update_date": "2026-10-05",
   "version": "v4.1",
-  "composite_score": 46.9,
+  "composite_score": 46.7,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
@@ -1560,9 +1560,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": "数据待获取",
+          "value": 8.0,
           "unit": "%",
-          "score": 50,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -11573,9 +11573,9 @@
     },
     "micro_structure": {
       "name": "微观结构",
-      "score": 52.0,
+      "score": 50.0,
       "weight": 14,
-      "weighted_score": 7.28,
+      "weighted_score": 7.0,
       "signal": "中性",
       "indicators": {
         "crowding_ratio": {
@@ -15690,7 +15690,7 @@
         "dimension": "微观结构",
         "signal": "交易集中度>48%",
         "stars": 4,
-        "active": false
+        "active": true
       }
     ]
   },
@@ -15744,8 +15744,8 @@
         "note": "股债性价比突出，高股息安全边际充足"
       },
       "科技成长": {
-        "range": "10%-15%",
-        "note": "拥挤度偏高，适度降低"
+        "range": "5%-10%",
+        "note": "拥挤度仍高，降低配置"
       },
       "大盘价值": {
         "range": "10%-15%",
