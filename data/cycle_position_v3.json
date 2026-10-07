@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-10-06T22:57:32+08:00",
+    "update_time": "2026-10-07T23:23:37+08:00",
     "data_freshness_score": 100,
     "assessment_date": "2026-09-01",
     "version": "3.0",
@@ -406,7 +406,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-10-06",
+            "last_updated": "2026-10-07",
             "history": [
               {
                 "date": "1947Q1",
@@ -3122,7 +3122,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-10-06"
+              "last_updated": "2026-10-07"
             },
             "cn": {
               "current": 0.36,
@@ -3222,7 +3222,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-10-06"
+              "last_updated": "2026-10-07"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -13621,7 +13621,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-10-06",
+            "last_updated": "2026-10-07",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
@@ -14790,7 +14790,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.2,
-            "last_updated": "2026-10-06",
+            "last_updated": "2026-10-07",
             "history": [
               {
                 "date": "2015-01-01",
