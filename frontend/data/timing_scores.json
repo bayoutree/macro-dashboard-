@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-10-06",
+  "update_date": "2026-10-07",
   "version": "v4.1",
   "composite_score": 46.9,
   "position_range": "40%-55%",
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "buffett_ratio": {
@@ -1555,7 +1555,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "break_net_rate": {
@@ -2051,7 +2051,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         }
       }
@@ -2204,7 +2204,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "interest_rate": {
@@ -2680,7 +2680,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "fed_policy": {
@@ -3866,7 +3866,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "dividend_bond_spread_red": {
@@ -3878,10 +3878,6 @@
           "top_threshold": "<0.5%",
           "description": "全A股息率 - 10Y国债收益率，日频",
           "history": [
-            {
-              "date": "2025-10-21",
-              "value": 2.84
-            },
             {
               "date": "2025-10-22",
               "value": 2.83
@@ -4877,11 +4873,15 @@
             {
               "date": "2026-10-05",
               "value": 2.92
+            },
+            {
+              "date": "2026-10-06",
+              "value": 2.92
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -5376,7 +5376,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-06"
+            "synced_at": "2026-10-07"
           }
         },
         "cn_us_spread": {
