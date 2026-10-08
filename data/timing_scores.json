@@ -14,7 +14,7 @@
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 49.2,
+          "value": 48.6,
           "unit": "%分位",
           "score": 49.0,
           "sub_weight": 40,
@@ -83,7 +83,7 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 21.3,
+          "value": 21.2,
           "unit": "%分位",
           "score": 21.0,
           "sub_weight": 0,
@@ -1560,9 +1560,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 7.6,
+          "value": 8.1,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2052,9 +2052,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-10-08"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-08T15:28:36"
+          }
         }
       }
     },
@@ -11584,15 +11582,7 @@
           "sub_weight": 40,
           "bottom_threshold": "从极端回落至40%以下",
           "top_threshold": ">48%",
-          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。",
-          "data_source": "sina",
-          "collect_time": "2026-10-08T15:28:36",
-          "history": [
-            {
-              "date": "2026-10-08",
-              "value": 43.57
-            }
-          ]
+          "description": "交易拥挤度：前5%个股成交额占全市场比例。拥挤度过高说明资金过度集中于少数热门股。"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -15104,13 +15094,11 @@
             "source": "HHI 20-week change (Eastmoney industry caliber); continuation blocked",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-08T15:28:36"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.46)",
+          "value": "小盘中性(%B=0.40)",
           "score": 45,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -15550,10 +15538,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.46)",
+        "current_value": "小盘中性(%B=0.40)",
         "status": "大小盘均衡",
         "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.46)"
+        "detail": "小盘风格小盘中性(%B=0.40)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -15574,10 +15562,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.46)",
+      "current_value": "小盘中性(%B=0.40)",
       "status": "大小盘均衡",
       "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.46)"
+      "detail": "小盘风格小盘中性(%B=0.40)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
