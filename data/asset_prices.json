@@ -2,9 +2,9 @@
   "update_time": "2026-10-09",
   "prices": {
     "sp500": {
-      "latest": 7792.5498,
-      "ma200": 7250.534,
-      "drawdown_from_high": -0.3374,
+      "latest": 7811.9302,
+      "ma200": 7250.6309,
+      "drawdown_from_high": -0.0895,
       "daily": [
         {
           "date": "2026-07-17",
@@ -244,14 +244,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 7792.5498
+          "value": 7811.9302
         }
       ]
     },
     "nasdaq": {
-      "latest": 27293.4238,
-      "ma200": 24837.3661,
-      "drawdown_from_high": -1.11,
+      "latest": 27373.6328,
+      "ma200": 24837.7672,
+      "drawdown_from_high": -0.8194,
       "daily": [
         {
           "date": "2026-07-17",
@@ -491,14 +491,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 27293.4238
+          "value": 27373.6328
         }
       ]
     },
     "gold": {
-      "latest": 4208.7998,
-      "ma200": 4547.9805,
-      "drawdown_from_high": -20.8634,
+      "latest": 4214.7998,
+      "ma200": 4548.0105,
+      "drawdown_from_high": -20.7506,
       "daily": [
         {
           "date": "2026-07-17",
@@ -738,14 +738,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 4208.7998
+          "value": 4214.7998
         }
       ]
     },
     "copper": {
-      "latest": 6.6955,
+      "latest": 6.692,
       "ma200": 6.1478,
-      "drawdown_from_high": -1.5874,
+      "drawdown_from_high": -1.6389,
       "daily": [
         {
           "date": "2026-07-17",
@@ -985,14 +985,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 6.6955
+          "value": 6.692
         }
       ]
     },
     "crude_oil": {
-      "latest": 91.79,
-      "ma200": 83.2266,
-      "drawdown_from_high": -18.734,
+      "latest": 91.16,
+      "ma200": 83.2234,
+      "drawdown_from_high": -19.2917,
       "daily": [
         {
           "date": "2026-07-17",
@@ -1232,14 +1232,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 91.79
+          "value": 91.16
         }
       ]
     },
     "usd_index": {
-      "latest": 102.297,
-      "ma200": 99.3678,
-      "drawdown_from_high": 0.0,
+      "latest": 102.316,
+      "ma200": 99.3679,
+      "drawdown_from_high": -0.0,
       "daily": [
         {
           "date": "2026-07-17",
@@ -1479,12 +1479,12 @@
         },
         {
           "date": "2026-10-09",
-          "value": 102.297
+          "value": 102.316
         }
       ]
     },
     "us_10y_bond": {
-      "latest": 5.274,
+      "latest": 5.253,
       "daily": [
         {
           "date": "2026-07-17",
@@ -1724,14 +1724,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 5.274
+          "value": 5.253
         }
       ]
     },
     "btc": {
-      "latest": 82741.0312,
-      "ma200": 71857.2685,
-      "drawdown_from_high": -4.4593,
+      "latest": 82770.0312,
+      "ma200": 71857.4135,
+      "drawdown_from_high": -4.4258,
       "daily": [
         {
           "date": "2026-08-11",
@@ -1971,14 +1971,14 @@
         },
         {
           "date": "2026-10-09",
-          "value": 82741.0312
+          "value": 82770.0312
         }
       ]
     }
   },
   "volatility": {
     "vix": {
-      "latest": 14.98,
+      "latest": 14.87,
       "history": [
         {
           "date": "2026-07-20",
@@ -2218,7 +2218,7 @@
         },
         {
           "date": "2026-10-09",
-          "value": 14.98
+          "value": 14.87
         }
       ]
     }
