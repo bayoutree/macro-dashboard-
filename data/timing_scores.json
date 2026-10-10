@@ -11587,7 +11587,7 @@
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "数据待获取",
+          "value": 1800.0,
           "score": 50,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -13379,11 +13379,12 @@
             "source": "top-10 L1 industry turnover HHI x10000 (Eastmoney industry caliber); continuation blocked",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "ssot_source": "history_last_point"
         },
         "concentration_trend": {
           "name": "交易集中度趋势",
-          "value": "数据待获取(依赖HHI)",
+          "value": -189.7,
           "score": 50,
           "sub_weight": 25,
           "bottom_signal": "从集中到分散",
@@ -15095,7 +15096,8 @@
             "source": "HHI 20-week change (Eastmoney industry caliber); continuation blocked",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "ssot_source": "history_last_point"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

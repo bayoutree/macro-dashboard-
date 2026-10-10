@@ -205,6 +205,28 @@ def safe_ak_call(func, *args, **kwargs):
         return pd.DataFrame() if hasattr(func, '__name__') and 'stock' in func.__name__ else None
 
 
+def _ak_industry_capital_df(ak):
+    """产业资本(董监高/重要股东)增减持——按可用接口顺序降级。
+
+    P2-2(2026-10-10)：旧代码调用 akshare 不存在的 `stock_share_change` 导致
+    AttributeError，产业资本信号长期缺失。此处改为可用的交易所/东财接口链。
+    """
+    for name, kwargs in (
+        ("stock_share_hold_change_szse", {"symbol": "全部"}),
+        ("stock_ggcg_em", {"symbol": "全部"}),
+    ):
+        fn = getattr(ak, name, None)
+        if fn is None:
+            continue
+        try:
+            df = fn(**kwargs)
+            if isinstance(df, pd.DataFrame) and not df.empty:
+                return df
+        except Exception as e:
+            logger.warning(f"    ✗ ak.{name}: {e}")
+    return pd.DataFrame()
+
+
 def percentile_rank(series, value):
     """计算 value 在 series 中的百分位排名"""
     valid = series.dropna()
@@ -1672,11 +1694,18 @@ class TimingScoreEngine:
         except Exception as e:
             logger.warning(f"      行业集中度异常: {e}")
 
+        # P2-1 修复(2026-10-10): akshare 失败时，回退到既有 HHI 历史的最后一点，
+        # 不再留「数据待获取」空值（该 history 由 collect_microstructure.py 真采集）。
         prev = load_json("timing_scores.json")
-        return (prev.get("dimensions", {}).get("micro_structure", {}).get("indicators", {})
-                .get("industry_concentration", {}).get("score", 65),
-                prev.get("dimensions", {}).get("micro_structure", {}).get("indicators", {})
-                .get("industry_concentration", {}).get("value", "电子通信拥挤"))
+        prev_ind = (prev.get("dimensions", {}).get("micro_structure", {})
+                    .get("indicators", {}).get("industry_concentration", {}))
+        hist = prev_ind.get("history") or []
+        if hist:
+            last = hist[-1].get("value")
+            if last is not None:
+                logger.info(f"      行业集中度(HHI): 回退历史末点 {last}")
+                return prev_ind.get("score", 65), last
+        return prev_ind.get("score", 65), prev_ind.get("value", "电子通信拥挤")
 
     def _calc_concentration_trend(self):
         """交易集中度趋势"""
@@ -2315,7 +2344,9 @@ class TimingRightEngine:
         """产业资本转增持：净增持转正且连续2周"""
         try:
             ak = self.init_akshare()
-            df = safe_ak_call(ak.stock_share_change)
+            # P2-2 修复(2026-10-10): akshare 无 stock_share_change 接口（AttributeError），
+            # 产业资本(董监高/重要股东增减持)改用可用的交易所/东财接口，带 hasattr 守卫。
+            df = safe_ak_call(_ak_industry_capital_df, ak)
             if df is not None and not df.empty:
                 # 简化处理
                 prev = load_json("timing_right_scores.json")
@@ -2330,12 +2361,18 @@ class TimingRightEngine:
         """北向配置型资金持续净流入：连续2周净流入>100亿"""
         try:
             ak = self.init_akshare()
-            df = safe_ak_call(ak.stock_hsgt_north_net_flow_in_em, symbol="北向")
+            # P2-2 修复(2026-10-10): akshare 无 stock_hsgt_north_net_flow_in_em；
+            # 改用 stock_hsgt_hist_em(symbol="北向资金")，并显式识别 2024-08 起停更。
+            df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="北向资金")
             if df is not None and not df.empty:
-                if 'value' in df.columns or '当日净流入' in df.columns:
-                    col = '当日净流入' if '当日净流入' in df.columns else 'value'
-                    df['date'] = pd.to_datetime(df.get('date', df.index))
-                    weekly_flow = df.set_index('date')[col].resample('W').sum()
+                col = '当日成交净买额' if '当日成交净买额' in df.columns else ('当日净流入' if '当日净流入' in df.columns else None)
+                if col and '日期' in df.columns:
+                    d = df[['日期', col]].dropna()
+                    if d.empty:
+                        return False, "北向资金已停更（2024-08 起无净买额数据）"
+                    d = d.copy()
+                    d['date'] = pd.to_datetime(d['日期'])
+                    weekly_flow = d.set_index('date')[col].resample('W').sum()
                     if len(weekly_flow) >= 2:
                         last2 = weekly_flow.tail(2)
                         triggered = bool((last2 > 100).all())
@@ -2515,16 +2552,22 @@ class TimingRightEngine:
         """北向配置型资金持续净流出：连续2周净流出>100亿"""
         try:
             ak = self.init_akshare()
-            df = safe_ak_call(ak.stock_hsgt_north_net_flow_in_em, symbol="北向")
+            # P2-2 修复(2026-10-10): 同 _sig_northbound_inflow，改用 stock_hsgt_hist_em。
+            df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="北向资金")
             if df is not None and not df.empty:
-                col = '当日净流入' if '当日净流入' in df.columns else 'value'
-                df['date'] = pd.to_datetime(df.get('date', df.index))
-                weekly_flow = df.set_index('date')[col].resample('W').sum()
-                if len(weekly_flow) >= 2:
-                    last2 = weekly_flow.tail(2)
-                    triggered = bool((last2 < -100).all())
-                    val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
-                    return triggered, val
+                col = '当日成交净买额' if '当日成交净买额' in df.columns else ('当日净流入' if '当日净流入' in df.columns else None)
+                if col and '日期' in df.columns:
+                    d = df[['日期', col]].dropna()
+                    if d.empty:
+                        return False, "北向资金已停更（2024-08 起无净买额数据）"
+                    d = d.copy()
+                    d['date'] = pd.to_datetime(d['日期'])
+                    weekly_flow = d.set_index('date')[col].resample('W').sum()
+                    if len(weekly_flow) >= 2:
+                        last2 = weekly_flow.tail(2)
+                        triggered = bool((last2 < -100).all())
+                        val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
+                        return triggered, val
             return False, "数据待获取"
         except Exception as e:
             return False, f"数据获取异常: {e}"

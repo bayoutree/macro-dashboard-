@@ -73,9 +73,10 @@
     },
     "gold": {
       "name": "黄金",
-      "pct_5y": null,
-      "pct_10y": null,
-      "note": "数据缺失，估值待更新"
+      "pct_5y": 92,
+      "pct_10y": 96,
+      "note": "近5年分位92%，处相对高位",
+      "source": "data/asset_prices_monthly_gold.json"
     },
     "commodity": {
       "name": "大宗商品(CRB)",

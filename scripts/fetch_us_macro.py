@@ -78,13 +78,18 @@ def main():
 
     # ---------- 同步指标 ----------
     logger.info("\n[2/4] 同步指标...")
-    gdp = fetch_series(fred, "A191RL1Q225SBEA", "2019-01-01")
+    # SSOT(T-1, 2026-10-10): 与主源 macro-econ-dashboard/scripts/fetch_us.py 对齐口径——
+    # 美国 GDP 同比改用 FRED "GDP"(实际GDP水平) 的 4 季度同比，替代 A191RL1Q225SBEA
+    # (环比折年率)，消除表3 #1 跨文件口径冲突。
+    gdp = fetch_series(fred, "GDP", "2016-01-01")
     unemployment = fetch_series(fred, "UNRATE", "2019-01-01")
 
     # ---------- 滞后指标 ----------
     logger.info("\n[3/4] 滞后指标...")
     cpi = fetch_series(fred, "CPIAUCSL", "2019-01-01")
-    ppi = fetch_series(fred, "PPIACO", "2019-01-01")
+    # SSOT(T-1, 2026-10-10): PPI 改用 PPIFIS(最终服务)同比，与主源 fetch_us.py 对齐，
+    # 消除表3 #3 跨文件冲突（PPIACO 综合口径波动更大）。
+    ppi = fetch_series(fred, "PPIFIS", "2019-01-01")
     fed_funds = fetch_series(fred, "FEDFUNDS", "2019-01-01")
 
     # ---------- 利率 & 市场 ----------
@@ -103,6 +108,13 @@ def main():
         # Fallback: DEXCNUS (same series, different FRED code)
         dexchus = fetch_series(fred, "DEXCNUS", "2019-01-01")
 
+    # ---- P2-1 补齐美国灰灯缺口：工业产出 / 非农 / 领先指标 ----
+    indpro = fetch_series(fred, "INDPRO", "2019-01-01")   # 工业产出指数
+    payems = fetch_series(fred, "PAYEMS", "2019-01-01")   # 非农就业人数
+    lei = fetch_series(fred, "USSLIND", "2019-01-01")     # 费城联储领先指数(LEI 代理)
+    if lei.empty:
+        lei = fetch_series(fred, "ICSA", "2019-01-01")    # 备用：初请失业金(反向领先)
+
     # ============================================================
     # 计算衍生指标
     # ============================================================
@@ -117,6 +129,24 @@ def main():
     if not ppi.empty and len(ppi) >= 13:
         ppi_yoy = (ppi / ppi.shift(12) - 1) * 100
         ppi_yoy = ppi_yoy.dropna()
+
+    # GDP 同比（4 季度，SSOT 口径）
+    gdp_yoy = pd.Series(dtype=float)
+    if not gdp.empty and len(gdp) >= 5:
+        gdp_yoy = (gdp / gdp.shift(4) - 1) * 100
+        gdp_yoy = gdp_yoy.dropna()
+
+    # 工业产出同比（12 月）
+    indpro_yoy = pd.Series(dtype=float)
+    if not indpro.empty and len(indpro) >= 13:
+        indpro_yoy = (indpro / indpro.shift(12) - 1) * 100
+        indpro_yoy = indpro_yoy.dropna()
+
+    # 非农就业同比（12 月）
+    payems_yoy = pd.Series(dtype=float)
+    if not payems.empty and len(payems) >= 13:
+        payems_yoy = (payems / payems.shift(12) - 1) * 100
+        payems_yoy = payems_yoy.dropna()
 
     # 10Y-2Y 利差
     yield_spread = pd.Series(dtype=float)
@@ -143,10 +173,13 @@ def main():
 
     pmi_val, pmi_date = latest_month(pmi)
     unemp_val, unemp_date = latest_month(unemployment)
-    gdp_val, gdp_date_raw = latest_val(gdp)
+    gdp_val, gdp_date_raw = latest_val(gdp_yoy if not gdp_yoy.empty else gdp)
     cpi_yoy_val, cpi_yoy_date = latest_month(cpi_yoy)
     ppi_yoy_val, ppi_yoy_date = latest_month(ppi_yoy)
     ff_val, ff_date = latest_month(fed_funds)
+    indpro_val, indpro_date = latest_month(indpro_yoy)
+    payems_val, payems_date = latest_month(payems_yoy)
+    lei_val, lei_date = latest_month(lei)
     d10_val, _ = latest_val(dgs10)
     d2_val, _ = latest_val(dgs2)
     spread_val, _ = latest_val(yield_spread)
@@ -177,10 +210,10 @@ def main():
     # ---------- 历史数据 ----------
     history = {}
 
-    # GDP 历史 (季度)
-    if not gdp.empty:
+    # GDP 历史 (季度, 4 季度同比)
+    if not gdp_yoy.empty:
         h = []
-        for dt, val in gdp.tail(16).items():
+        for dt, val in gdp_yoy.tail(16).items():
             try:
                 ts = pd.Timestamp(dt)
                 q = (ts.month - 1) // 3 + 1
@@ -197,6 +230,11 @@ def main():
 
     # 失业率历史
     history["unemployment"] = series_to_history(unemployment, freq="monthly", max_points=36)
+
+    # P2-1 补齐历史：工业产出 / 非农 / 领先指标
+    history["industrial_production"] = series_to_history(indpro_yoy, freq="monthly", max_points=36)
+    history["nonfarm_payrolls_yoy"] = series_to_history(payems_yoy, freq="monthly", max_points=36)
+    history["lei"] = series_to_history(lei, freq="monthly", max_points=36)
 
     # PMI 历史
     history["ism_pmi"] = series_to_history(pmi, freq="monthly", max_points=36)
@@ -248,13 +286,13 @@ def main():
                          "date": ts_to_date_str(oecd_cli.index[-1]) if not oecd_cli.empty else None,
                          "stale": oecd_cli_stale if not oecd_cli.empty else True},
             "yield_curve_10y_2y": {"value": safe_float(spread_val), "date": ts_to_date_str(yield_spread.index[-1]) if not yield_spread.empty else None},
-            "lei": {"value": None, "date": None}
+            "lei": {"value": lei_val, "date": lei_date}
         },
         "coincident": {
             "gdp_growth": {"value": gdp_val, "date": gdp_date_str},
             "unemployment": {"value": unemp_val, "date": unemp_date},
-            "industrial_production": {"value": None, "date": None},
-            "nonfarm_payrolls_yoy": {"value": None, "date": None}
+            "industrial_production": {"value": indpro_val, "date": indpro_date},
+            "nonfarm_payrolls_yoy": {"value": payems_val, "date": payems_date}
         },
         "lagging": {
             "cpi_yoy": {"value": cpi_yoy_val, "date": cpi_yoy_date},

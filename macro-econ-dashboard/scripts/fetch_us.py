@@ -35,6 +35,26 @@ def run_with_timeout(fn, timeout=25, default=None):
             return default
 
 
+def _load_repo_gold_monthly():
+    """P2-1: 从仓库 data/asset_prices_monthly_gold.json 读取月度金价 (date, close)。
+
+    用于 akshare 黄金接口失败时的兜底，保证 asset_valuation.gold 的 pct_5y/10y
+    可计算，消除灰灯 null。
+    """
+    import json as _json
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.join(root, "data", "asset_prices_monthly_gold.json")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            doc = _json.load(f)
+        pts = doc.get("prices", {}).get("gold", [])
+        out = [(p["date"], p["close"]) for p in pts if p.get("close") is not None]
+        return out or None
+    except Exception as e:
+        print(f"[us-warn] 读取仓库金价失败: {e}", file=sys.stderr)
+        return None
+
+
 def _fred_client():
     key = os.environ.get("FRED_API_KEY")
     if not key or Fred is None:
@@ -334,12 +354,17 @@ def get_us_groups():
     except Exception as e:
         print(f"[us-warn] 黄金数据获取失败: {e}", file=sys.stderr)
 
-    # 黄金：优先用 FRED 的 GOLDAMGBD228NOPM，失败则用 akshare
+    # 黄金：akshare macro_cons_gold 失败时，回退到仓库内月度金价序列
+    # P2-1(2026-10-10)：此前 akshare 失败直接留空 → asset_valuation.gold.pct_5y=null。
+    if not gold_pts:
+        gold_pts = _load_repo_gold_monthly()
+        if gold_pts:
+            print(f"[us-info] 黄金改用仓库月度金价序列 ({len(gold_pts)} 点)", file=sys.stderr)
+
     if gold_pts:
         add("market", "gold", gold_pts, unit="")
         raw["gold"] = gold_pts
     else:
-        # 用 SP500 / gold ratio 代理也行，暂时留空
         print("[us-warn] 黄金数据缺失，使用占位", file=sys.stderr)
 
     # Bug 5 修复：添加大宗商品数据（PPI 综合指数作为大宗商品代理）
