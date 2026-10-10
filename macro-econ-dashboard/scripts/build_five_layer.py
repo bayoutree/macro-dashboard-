@@ -333,15 +333,24 @@ def _eval_condition(desc, ctx):
     return False
 
 
-def _build_evolution_paths(tmpl, ctx):
+def _build_evolution_paths(tmpl, ctx, from_phase=None):
+    """构建情景路径。
+
+    T-2(2026-10-10) 情景基准动态化：`from` 不再沿用模板里硬编码的「深度滞胀」，
+    而是由当前定位 phase 派生（与 positioning 出自同一判定函数 _us_phase），
+    消除「定位=复苏 vs 情景基准=深度滞胀」互斥（P0-4）。
+    """
     out = []
     for p in tmpl:
         conds = []
         for c in p.get("conditions", []):
             met = _eval_condition(c.get("desc", ""), ctx)
             conds.append({"desc": c.get("desc", ""), "met": bool(met)})
+        # from 由定位派生；未传入时回退模板值（保持向后兼容）
+        from_label = from_phase or p.get("from")
         ep = {
-            "from": p.get("from"),
+            "from": from_label,
+            "from_source": "economic_cycle.phase" if from_phase else "template",
             "to": p.get("to"),
             "prob": p.get("prob"),
             "conditions": conds,
@@ -349,7 +358,7 @@ def _build_evolution_paths(tmpl, ctx):
             "fail": p.get("fail"),
             "confidence": p.get("confidence"),
             # 同时暴露为场景字段，供前端 conclusion.scenarios 渲染
-            "name": f"{p.get('from')}→{p.get('to')}",
+            "name": f"{from_label}→{p.get('to')}",
             "probability": p.get("prob"),
             "description": p.get("fail") or "",
         }
@@ -747,6 +756,7 @@ def _build_us(g, evo_tmpl):
         "evolution_paths": _build_evolution_paths(
             evo_tmpl,
             {"fed_funds": fed, "cpi": cpi, "unemployment": unemployment, "hy_spread": hy},
+            from_phase=phase,
         ),
     }
 

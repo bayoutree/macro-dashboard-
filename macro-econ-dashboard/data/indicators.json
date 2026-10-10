@@ -14567,7 +14567,7 @@
       },
       "evolution_paths": [
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "典型衰退",
           "prob": 40,
           "conditions": [
@@ -14587,12 +14587,13 @@
           "trigger": null,
           "fail": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→典型衰退",
+          "name": "复苏→典型衰退",
           "probability": 40,
-          "description": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换"
+          "description": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换",
+          "from_source": "economic_cycle.phase"
         },
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "滞胀延续",
           "prob": 35,
           "conditions": [
@@ -14612,12 +14613,13 @@
           "trigger": null,
           "fail": "若通胀回落且美联储转鸽，滞胀延续概率下降",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→滞胀延续",
+          "name": "复苏→滞胀延续",
           "probability": 35,
-          "description": "若通胀回落且美联储转鸽，滞胀延续概率下降"
+          "description": "若通胀回落且美联储转鸽，滞胀延续概率下降",
+          "from_source": "economic_cycle.phase"
         },
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "硬着陆",
           "prob": 25,
           "conditions": [
@@ -14637,9 +14639,10 @@
           "trigger": null,
           "fail": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→硬着陆",
+          "name": "复苏→硬着陆",
           "probability": 25,
-          "description": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓"
+          "description": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓",
+          "from_source": "economic_cycle.phase"
         }
       ]
     },
@@ -25072,7 +25075,7 @@
       "main_contradiction": "需求边际改善，复苏持续性仍待更多数据确认。",
       "scenarios": [
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "典型衰退",
           "prob": 40,
           "conditions": [
@@ -25092,12 +25095,13 @@
           "trigger": null,
           "fail": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→典型衰退",
+          "name": "复苏→典型衰退",
           "probability": 40,
-          "description": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换"
+          "description": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换",
+          "from_source": "economic_cycle.phase"
         },
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "滞胀延续",
           "prob": 35,
           "conditions": [
@@ -25117,12 +25121,13 @@
           "trigger": null,
           "fail": "若通胀回落且美联储转鸽，滞胀延续概率下降",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→滞胀延续",
+          "name": "复苏→滞胀延续",
           "probability": 35,
-          "description": "若通胀回落且美联储转鸽，滞胀延续概率下降"
+          "description": "若通胀回落且美联储转鸽，滞胀延续概率下降",
+          "from_source": "economic_cycle.phase"
         },
         {
-          "from": "深度滞胀",
+          "from": "复苏",
           "to": "硬着陆",
           "prob": 25,
           "conditions": [
@@ -25142,9 +25147,10 @@
           "trigger": null,
           "fail": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓",
           "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
-          "name": "深度滞胀→硬着陆",
+          "name": "复苏→硬着陆",
           "probability": 25,
-          "description": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓"
+          "description": "若就业韧性保持且信用利差稳定，硬着陆风险暂缓",
+          "from_source": "economic_cycle.phase"
         }
       ],
       "asset_signals": []
