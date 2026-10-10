@@ -1,9 +1,9 @@
 {
-  "update_date": "2026-10-09",
+  "update_date": "2026-10-10",
   "version": "v4.1",
-  "composite_score": 46.9,
-  "position_range": "40%-55%",
-  "market_status": "中性偏恐惧，正常配置",
+  "composite_score": 51.6,
+  "position_range": "25%-40%",
+  "market_status": "中性偏贪婪，逐步兑现",
   "dimensions": {
     "valuation": {
       "name": "估值",
@@ -1059,7 +1059,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "buffett_ratio": {
@@ -1555,7 +1555,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "break_net_rate": {
@@ -2051,7 +2051,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         }
       }
@@ -2204,12 +2204,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.69%)",
+          "value": "极低/偏热(1.71%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -2680,7 +2680,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "fed_policy": {
@@ -3866,12 +3866,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.91%",
+          "value": "2.89%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -4881,12 +4881,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.12%",
+          "value": "1.10%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -5372,7 +5372,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-09"
+            "synced_at": "2026-10-10"
           }
         },
         "cn_us_spread": {
@@ -10168,10 +10168,10 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 39.5,
+      "score": 68.7,
       "weight": 16,
-      "weighted_score": 6.32,
-      "signal": "偏恐惧",
+      "weighted_score": 10.99,
+      "signal": "偏贪婪",
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
@@ -10815,11 +10815,12 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 10,
-          "score": 15,
+          "value": 98.41,
+          "score": 98.41,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">80",
+          "source": "data/feargreed_pointer.json#score",
           "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。"
         },
         "turnover_rate": {
@@ -15630,7 +15631,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数<20(极度恐惧)",
         "stars": 3,
-        "active": true
+        "active": false
       },
       {
         "dimension": "市场情绪",
@@ -15656,7 +15657,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数>80(极度贪婪)",
         "stars": 4,
-        "active": false
+        "active": true
       },
       {
         "dimension": "市场情绪",
@@ -15698,7 +15699,7 @@
       },
       {
         "condition": "恐贪指数回落至20以下(极度恐惧)",
-        "met": true
+        "met": false
       },
       {
         "condition": "交易拥挤度回落至40%以下",
@@ -15716,7 +15717,7 @@
       },
       {
         "condition": "恐贪指数回到80以上",
-        "met": false
+        "met": true
       },
       {
         "condition": "社融增速进一步下行",
@@ -15733,7 +15734,7 @@
     ]
   },
   "position_advice": {
-    "equity_range": "40%-55%",
+    "equity_range": "25%-40%",
     "breakdown": {
       "红利_高股息": {
         "range": "25%-35%",
@@ -15752,7 +15753,7 @@
         "note": "大小盘均衡，中性配置"
       },
       "现金_债券": {
-        "range": "48%-63%",
+        "range": "63%-78%",
         "note": "防御配置"
       }
     }
