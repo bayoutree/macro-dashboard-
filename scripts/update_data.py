@@ -1337,16 +1337,29 @@ class TimingScoreEngine:
             "top_threshold": ">30%"
         }
 
-        # --- 恐贪指数 ---
+        # --- 恐贪指数 (P0-2: 单一真值源 feargreed_pointer.json → score) ---
         fg_score, fg_val = self._calc_fear_greed()
-        indicators["fear_greed_index"] = {
-            "name": "恐贪指数",
-            "value": fg_val if fg_val else 50,
-            "score": fg_score,
-            "sub_weight": 35,
-            "bottom_threshold": "<20",
-            "top_threshold": ">80"
-        }
+        if fg_val is None:
+            # 降级路径：主源缺失 / 字段为 null / 非法值 → 中性占位并显式标注，不留僵尸值
+            indicators["fear_greed_index"] = {
+                "name": "恐贪指数",
+                "value": "数据待获取",
+                "score": 50,
+                "sub_weight": 35,
+                "bottom_threshold": "<20",
+                "top_threshold": ">80",
+                "note": "主源 data/feargreed_pointer.json 缺 score，降级中性"
+            }
+        else:
+            indicators["fear_greed_index"] = {
+                "name": "恐贪指数",
+                "value": fg_val,
+                "score": fg_score,
+                "sub_weight": 35,
+                "bottom_threshold": "<20",
+                "top_threshold": ">80",
+                "source": "data/feargreed_pointer.json#score"
+            }
 
         # --- 全A换手率 ---
         turnover_score, turnover_val = self._calc_turnover()
@@ -1402,56 +1415,39 @@ class TimingScoreEngine:
         logger.info(f"      基金3年年化: {prev_val} (使用上期值)")
         return prev_score, prev_val
 
-    def _calc_fear_greed(self):
-        """恐贪指数 - 综合多项情绪指标"""
+    def _fear_greed_score_ssot(self):
+        """[P0-1/P0-2 单一真值源 2026-10-10] 恐贪 score 只来自 data/feargreed_pointer.json。
+
+        score = 100 - QVIX 滚动252日百分位：高=贪婪 / 低=恐惧。
+        返回 float（已钳制到 [0,100]）或 None（文件缺失 / 缺 score 字段 / 字段为 null /
+        非法值），由调用方走降级路径。
+        """
+        fg = load_json("feargreed_pointer.json")
+        if not fg:
+            return None
+        raw = fg.get("score")
+        if raw is None:
+            return None
         try:
-            # 简化版恐贪指数: 基于成交量、涨跌停比等
-            # 使用换手率 + 北向资金 + PE分位 综合估算
-            ak = self.init_akshare()
+            return max(0.0, min(100.0, float(raw)))
+        except (TypeError, ValueError):
+            return None
 
-            # 获取上证指数成交量来估算市场活跃度
-            sse_df = safe_ak_call(ak.stock_zh_index_daily, symbol="sh000001")
-            if sse_df is not None and not sse_df.empty and 'volume' in sse_df.columns:
-                vol = pd.to_numeric(sse_df['volume'], errors='coerce').dropna()
-                if len(vol) >= 60:
-                    recent_vol = vol.tail(20).mean()
-                    avg_vol = vol.tail(250).mean() if len(vol) >= 250 else vol.mean()
+    def _calc_fear_greed(self):
+        """恐贪指数 - 单一真值源: data/feargreed_pointer.json → score。
 
-                    # 量比
-                    vol_ratio = recent_vol / avg_vol if avg_vol > 0 else 1
-
-                    # 从上期获取其他数据
-                    prev = load_json("timing_scores.json")
-                    prev_fg = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("fear_greed_index", {}).get("value", 50)
-
-                    # 简易估算: 上期值 ± 量比调整
-                    if isinstance(prev_fg, str):
-                        prev_fg = 50
-                    fg = max(10, min(90, prev_fg + (vol_ratio - 1) * 15))
-
-                    if fg < 20:
-                        val = f"{fg:.0f}"
-                        score = max(15, fg)
-                    elif fg < 40:
-                        val = f"{fg:.0f}"
-                        score = fg
-                    elif fg < 60:
-                        val = f"{fg:.0f}"
-                        score = fg
-                    else:
-                        val = f"{fg:.0f}"
-                        score = min(85, fg)
-
-                    logger.info(f"      恐贪指数: {fg:.0f} (量比={vol_ratio:.2f})")
-                    return score, int(fg)
-        except Exception as e:
-            logger.warning(f"      恐贪指数异常: {e}")
-
-        prev = load_json("timing_scores.json")
-        return (prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {})
-                .get("fear_greed_index", {}).get("score", 40),
-                prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {})
-                .get("fear_greed_index", {}).get("value", 33))
+        [P0-2 修复 2026-10-10] 旧实现用上证成交量估算、并以 timing_scores.json 上期值
+        为种子，结果被钳制在 [10,90]，长期卡死在 10（僵尸值），与 feargreed_pointer.json
+        的真实恐贪值（98.41，极度贪婪）方向相反、相差近 10 倍。现统一读单一真值源。
+        返回 (score, value)；读不到时返回 (None, None) 走降级路径。
+        """
+        score = self._fear_greed_score_ssot()
+        if score is None:
+            logger.warning("      恐贪指数: 主源 data/feargreed_pointer.json 缺 score，降级为『数据待获取』")
+            return None, None
+        fg = load_json("feargreed_pointer.json")
+        logger.info(f"      恐贪指数: {score} (源=feargreed_pointer.json, as_of={fg.get('as_of')})")
+        return score, round(score, 2)
 
     def _calc_turnover(self):
         """全A换手率 - 基于SSE成交量估算"""
@@ -1885,10 +1881,11 @@ class TimingScoreEngine:
         sf_label = liq.get("social_financing_trend", {}).get("value_label", "") or ""
         add_triggers.append({"condition": "社融增速触底回升(连续3个月环比改善)", "met": "回升" in sf_label or "触底" in sf_label})
 
-        fg_val = sent.get("fear_greed_index", {}).get("value", 50)
-        if isinstance(fg_val, str):
-            try: fg_val = float(fg_val)
-            except: fg_val = 50
+        # [P0-1 修复 2026-10-10] 恐贪比较对象统一读单一真值源 feargreed_pointer.json → score，
+        # 不再取 timing_scores 内的僵尸值；缺源时保守取中性 50（两条恐贪触发均不触发）。
+        fg_val = self._fear_greed_score_ssot()
+        if fg_val is None:
+            fg_val = 50
         add_triggers.append({"condition": "恐贪指数回落至20以下(极度恐惧)", "met": fg_val < 20})
 
         crowd_str = micro.get("crowding_ratio", {}).get("value", "0%")
@@ -1918,6 +1915,19 @@ class TimingScoreEngine:
         try: div_num = float(div_str.replace('%', ''))
         except: div_num = 1
         reduce_triggers.append({"condition": "股息率-国债利差(沪深300)降至0.3%以下", "met": div_num < 0.3})
+
+        # [P0-1] 输出前断言：方向必须与单一真值一致（score>80 → 减仓项 true；score<20 → 加仓项 true）
+        _fg_add = [t for t in add_triggers if t["condition"].startswith("恐贪指数回落至20以下")]
+        _fg_red = [t for t in reduce_triggers if t["condition"].startswith("恐贪指数回到80以上")]
+        if fg_val > 80:
+            assert _fg_red and _fg_red[0]["met"] is True, \
+                f"P0-1 断言失败: 恐贪={fg_val}>80 但『恐贪指数回到80以上』未置 true"
+        elif fg_val < 20:
+            assert _fg_add and _fg_add[0]["met"] is True, \
+                f"P0-1 断言失败: 恐贪={fg_val}<20 但『恐贪指数回落至20以下』未置 true"
+        else:
+            assert not (_fg_add and _fg_add[0]["met"]) and not (_fg_red and _fg_red[0]["met"]), \
+                f"P0-1 断言失败: 恐贪={fg_val} 落在 20~80 区间但恐贪触发被置 true"
 
         return {"add_position": add_triggers, "reduce_position": reduce_triggers}
 
