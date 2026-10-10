@@ -35,6 +35,12 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
+      # ---- T-1/P0-3 单一真值：主源回写下游 + 跨文件一致性校验（阻断）----
+      - name: SSOT propagate + consistency gate (blocking)
+        run: |
+          python scripts/ssot_check.py --fix
+          python scripts/ssot_check.py
+
       # ---- 0) 删史防线（入库前，阻断）：历史序列点数只增不减 ----
       # 与 freshness 门禁互补：本步只判历史点数单调性，覆盖全部数据 JSON，
       # 不判 GAP/STALE，因此可安全前置阻断；发现删史则本 workflow 失败、不提交。
@@ -47,7 +53,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add macro-econ-dashboard/data/
+          git add macro-econ-dashboard/data/ data/
           if git diff --cached --quiet; then
             echo "committed=false" >> "$GITHUB_OUTPUT"
             echo "📋 数据无变更，跳过提交"

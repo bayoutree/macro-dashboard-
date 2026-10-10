@@ -16462,7 +16462,7 @@
   },
   "cross_analysis": {
     "consensus": {
-      "score": 62,
+      "score": 68,
       "scenario": "C",
       "scenario_description": "长波脆弱 + 短周期上行：上行空间受限",
       "last_updated": "2026-09-01",
@@ -16556,7 +16556,8 @@
         "40-59": "中性偏谨慎（上行空间受限）",
         "20-39": "偏空（防御为主）",
         "0-19": "强烈看空（全面防御）"
-      }
+      },
+      "alias_of": "cycle_consensus.overall_score"
     },
     "us_china_matrix": {
       "last_updated": "2026-09-01",

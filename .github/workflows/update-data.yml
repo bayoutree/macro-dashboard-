@@ -131,6 +131,8 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
+          python scripts/ssot_check.py --fix
+          python scripts/ssot_check.py
           git add data/ frontend/data/
 
           if git diff --cached --quiet; then

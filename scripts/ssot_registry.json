@@ -1,0 +1,156 @@
+{
+  "version": "1.0-20261010",
+  "frozen": "2026-10-10",
+  "note": "周期看板改进计划 T-1/P0-3 · 单一真值(SSOT)登记表。每个指标只允许一个主源；其余文件只引用、不各自重算。跨文件差值超容差即阻断发布。",
+  "tolerance": {
+    "relative": 0.01,
+    "absolute": 0.05
+  },
+  "indicators": [
+    {
+      "id": "us_gdp_yoy",
+      "name": "美国 GDP 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "us.economic_cycle.quadrant_indicators.gdp"
+      },
+      "secondaries": [
+        {
+          "file": "data/us_macro.json",
+          "path": "coincident.gdp_growth"
+        }
+      ]
+    },
+    {
+      "id": "us_cpi_yoy",
+      "name": "美国 CPI 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "us.validation.lagging.cpi"
+      },
+      "secondaries": [
+        {
+          "file": "data/us_macro.json",
+          "path": "lagging.cpi_yoy"
+        }
+      ]
+    },
+    {
+      "id": "us_ppi_yoy",
+      "name": "美国 PPI 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "us.validation.lagging.ppi"
+      },
+      "secondaries": [
+        {
+          "file": "data/us_macro.json",
+          "path": "lagging.ppi_yoy"
+        }
+      ]
+    },
+    {
+      "id": "cn_gdp_yoy",
+      "name": "中国 GDP 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "china.validation.coincident.gdp"
+      },
+      "secondaries": [
+        {
+          "file": "data/cn_macro.json",
+          "path": "coincident.gdp_growth"
+        }
+      ]
+    },
+    {
+      "id": "cn_m2_yoy",
+      "name": "中国 M2 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "china.validation.lagging.m2"
+      },
+      "secondaries": [
+        {
+          "file": "data/cn_macro.json",
+          "path": "lagging.m2_yoy"
+        }
+      ]
+    },
+    {
+      "id": "all_a_turnover",
+      "name": "全A换手率",
+      "unit": "%",
+      "master": {
+        "file": "data/timing_scores.json",
+        "path": "dimensions.sentiment.indicators.turnover_rate"
+      },
+      "secondaries": []
+    },
+    {
+      "id": "cycle_consensus",
+      "name": "全球周期共识度",
+      "unit": "score",
+      "master": {
+        "file": "data/cycle_position_v3.json",
+        "path": "cycle_consensus.overall_score"
+      },
+      "secondaries": [
+        {
+          "file": "data/cycle_position_v3.json",
+          "path": "cross_analysis.consensus.score"
+        },
+        {
+          "file": "data/cycle_position_v4.json",
+          "path": "cross_analysis.consensus.score"
+        }
+      ]
+    }
+  ],
+  "unit_rules": [
+    {
+      "id": "cn_us_10y_spread_unit",
+      "name": "中美 10Y 利差单位自洽",
+      "file": "macro-econ-dashboard/data/indicators.json",
+      "path": "cross.cn_us_10y_spread",
+      "unit": "bps",
+      "min_abs": 10,
+      "max_abs": 3000,
+      "hint": "两个以 % 为单位的收益率相减得到的是百分点(pp)；标 unit=bps 时必须 ×100 换算，量级须落在 [10,3000] bps。",
+      "fix": {
+        "scale": 100.0,
+        "apply_to_history": true,
+        "note": "% 口径的收益率差(pp) ×100 → bps"
+      }
+    }
+  ],
+  "frontend_refs": [
+    {
+      "indicator": "all_a_turnover",
+      "file": "stock_dashboard.html",
+      "static_value": "1.8%",
+      "runtime_ref": "R[1] ← _tsInd(timing_scores.json, 'sentiment', 'turnover_rate')",
+      "status": "运行时已引用主源；静态兜底值待前端阶段(松子)同步为 1.4%",
+      "owner": "松子"
+    },
+    {
+      "indicator": "cn_m2_yoy",
+      "file": "stock_dashboard.html",
+      "static_value": "7.2%",
+      "status": "静态快照，待前端阶段(松子)改为引用主源 7.5%",
+      "owner": "松子"
+    },
+    {
+      "indicator": "data_freshness",
+      "file": "stock_dashboard.html",
+      "static_value": 78,
+      "status": "硬编码 78，待前端阶段(松子)改为读取 cycle_position_v4._meta.data_freshness_score(100)",
+      "owner": "松子"
+    }
+  ]
+}

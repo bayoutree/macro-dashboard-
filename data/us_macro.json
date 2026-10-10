@@ -4,7 +4,9 @@
     "ism_pmi": {
       "value": null,
       "date": null,
-      "trend": "unknown"
+      "trend": "unknown",
+      "status": "数据待获取",
+      "note": "ISM制造业PMI：源接口暂不可用，显式标注（不留 null 空白）"
     },
     "oecd_cli": {
       "value": 100.4912,
@@ -17,13 +19,16 @@
     },
     "lei": {
       "value": null,
-      "date": null
+      "date": null,
+      "status": "数据待获取",
+      "note": "美国LEI：源接口暂不可用，显式标注（不留 null 空白）"
     }
   },
   "coincident": {
     "gdp_growth": {
-      "value": 2.2,
-      "date": "2026Q2"
+      "value": 6.3103,
+      "date": "2026-04-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
     },
     "unemployment": {
       "value": 4.2,
@@ -31,21 +36,27 @@
     },
     "industrial_production": {
       "value": null,
-      "date": null
+      "date": null,
+      "status": "数据待获取",
+      "note": "工业产出同比：源接口暂不可用，显式标注（不留 null 空白）"
     },
     "nonfarm_payrolls_yoy": {
       "value": null,
-      "date": null
+      "date": null,
+      "status": "数据待获取",
+      "note": "非农就业同比：源接口暂不可用，显式标注（不留 null 空白）"
     }
   },
   "lagging": {
     "cpi_yoy": {
-      "value": 3.713,
-      "date": "2026-08"
+      "value": 3.353,
+      "date": "2026-08-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.cpi"
     },
     "ppi_yoy": {
-      "value": 9.8501,
-      "date": "2026-08"
+      "value": 5.4136,
+      "date": "2026-08-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.ppi"
     },
     "fed_funds_rate": {
       "value": "3.75%",

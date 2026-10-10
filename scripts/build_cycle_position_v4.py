@@ -821,6 +821,17 @@ def build():
     out_consensus["formula"] = FORMULA_TEXT
     out["cycle_consensus"] = out_consensus
 
+    # ---- 3b. 共识度单一真值(P0-3 #9) ----
+    # 契约：全球周期共识度唯一主源 = cycle_consensus.overall_score；
+    # cross_analysis.consensus.score 仅作别名，禁止两套口径并存(62 vs 68)。
+    ca = out.get("cross_analysis")
+    if isinstance(ca, dict) and isinstance(ca.get("consensus"), dict):
+        alias = ca["consensus"]
+        if alias.get("score") != overall_score:
+            print(f"⚠ cross_analysis.consensus.score {alias.get('score')} → {overall_score}（别名对齐主源）")
+        alias["score"] = overall_score
+        alias["alias_of"] = "cycle_consensus.overall_score"
+
     # ---- 4. asset_ranking 重算（不再保留旧版） ----
     if "transmission_table" in out:
         out["asset_ranking"] = recompute_asset_ranking(out, us, cn)

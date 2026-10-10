@@ -46,12 +46,16 @@ def build_cross(china_raw, us_raw, china_groups):
     cross = {}
 
     # 中美 10Y 利差（中国10Y - 美国10Y），单位 bps
+    # SSOT 单位自洽(P0-3, 2026-10-10): cn_10y / ust_10y 均为 % 口径，
+    # 相减得到的是「百分点(pp)」；标注 unit=bps 时必须 ×100 换算，
+    # 否则会出现 value=-4.8743 却标 bps 的量级错误。
     cn10 = china_raw.get("cn_10y")
     us10 = us_raw.get("ust_10y")
     if cn10 and us10:
         diff = _diff_series(cn10, us10)
         if diff:
-            cross["cn_us_10y_spread"] = make_indicator(diff, unit="bps")
+            diff_bps = [(d, v * 100.0) for d, v in diff]
+            cross["cn_us_10y_spread"] = make_indicator(diff_bps, unit="bps")
 
     # 美元兑人民币：直接复用中国金融项
     usdcny = china_groups.get("financial", {}).get("usdcny")

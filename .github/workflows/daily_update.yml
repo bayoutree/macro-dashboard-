@@ -41,6 +41,12 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
       # ---- 入库前置：版本号随数据一起提交 ----
+      # ---- T-1/P0-3 单一真值：主源回写下游 + 跨文件一致性校验（阻断）----
+      - name: SSOT propagate + consistency gate (blocking)
+        run: |
+          python scripts/ssot_check.py --fix
+          python scripts/ssot_check.py
+
       - name: Bump static asset versions
         run: python scripts/bump_asset_versions.py
 
