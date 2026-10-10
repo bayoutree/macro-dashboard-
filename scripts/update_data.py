@@ -3050,11 +3050,16 @@ def main():
 
     # timing-only 模式
     if args.timing or args.skip_subscripts:
+        # [修复 2026-10-10] 原实现该分支 return None，导致 main() 返回 None ->
+        # sys.exit(0 if None else 1) 恒为 1，workflow 的 timing 步骤永远"失败"、
+        # 后续 commit/push 被跳过（数据算了却不入库）。改为返回真实成功标志。
+        timing_ok = False
         engine = TimingScoreEngine()
         try:
             timing_data = engine.compute_all()
             save_json(timing_data, "timing_scores.json")
             logger.info("\n✅ timing_scores.json 更新完成!")
+            timing_ok = True
         except Exception as e:
             logger.error(f"❌ timing_scores 计算失败: {e}", exc_info=True)
 
@@ -3066,7 +3071,7 @@ def main():
             logger.info("✅ timing_right_scores.json 更新完成!")
         except Exception as e:
             logger.error(f"❌ timing_right_scores 计算失败: {e}", exc_info=True)
-        return
+        return timing_ok
 
     # ============================================================
     # 完整更新模式
