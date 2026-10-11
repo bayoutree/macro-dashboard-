@@ -237,33 +237,49 @@ def fetch_em_external(em_df=None):
 def cross_check_dual_source(nbs_df, em_ext, tolerance_pp=0.2, recent=3, tol_relative=0.02):
     """A(NBS) vs B(东财) 双源交叉校验（CIO 终裁 2026-10-11：容差 ≥0.2pp）。
 
-    - 仅比对**最近 recent 个重叠月**（看板展示的即最近值；更早月份存在官方修订，
-      两源版本差会放大，不参与判定）。
-    - 同比字段（export/import）：绝对容差 tolerance_pp 个百分点。
-    - 差额（亿美元）：官方对初值有修订，用相对容差 tol_relative（2%），绝对下限 2 亿美元。
-    返回 (recent_max_diff, breaches, full_history_max_diff)。仅告警，不阻断（以 A 为准）。
+    判定范围 = **最近 recent 个重叠月**（看板展示的就是最近值；更早月份存在官方
+    初值修订，两源版本差会放大，不参与判定）。
+    容差：同比字段(export/import) 绝对 tolerance_pp 个百分点；
+          差额(trade_balance) 官方对初值有修订，用相对 tol_relative(2%)、绝对下限 2 亿美元。
+
+    返回 dict：
+      per_field    {key: {"unit", "recent_max_diff", "full_history_max_diff", "allowed", "breaches"}}
+      breaches     全部超差项（含字段名与单位），空列表 = 通过
+      recent_max_diff / full_history_max_diff
+                   **仅统计同比字段（% 口径）**，避免与「亿美元」的差额混在一个数里。
     """
+    result = {"per_field": {}, "breaches": [],
+              "recent_max_diff": 0.0, "full_history_max_diff": 0.0,
+              "tolerance_pp": tolerance_pp, "recent": recent}
     if not em_ext:
-        return None, [], None
-    breaches, recent_worst, full_worst = [], 0.0, 0.0
+        return result
     for key in NBS_EXT_UNITS:
         a = dict(_nbs_extract(nbs_df, key) or [])
         b = dict(em_ext.get(key) or [])
         common = sorted(set(a) & set(b))
+        info = {"unit": NBS_EXT_UNITS[key], "recent_max_diff": 0.0,
+                "full_history_max_diff": 0.0, "breaches": []}
         if not common:
+            result["per_field"][key] = info
             continue
         for d in common:
-            full_worst = max(full_worst, abs(a[d] - b[d]))
+            info["full_history_max_diff"] = max(info["full_history_max_diff"], abs(a[d] - b[d]))
         for d in common[-recent:]:
             diff = abs(a[d] - b[d])
-            recent_worst = max(recent_worst, diff)
-            if key == "trade_balance":
-                allowed = max(2.0, tol_relative * abs(a[d]))
-            else:
-                allowed = tolerance_pp
+            allowed = max(2.0, tol_relative * abs(a[d])) if key == "trade_balance" else tolerance_pp
+            info["allowed"] = allowed
+            if key != "trade_balance":
+                info["recent_max_diff"] = max(info["recent_max_diff"], diff)
+                result["recent_max_diff"] = max(result["recent_max_diff"], diff)
+                result["full_history_max_diff"] = max(result["full_history_max_diff"],
+                                                      info["full_history_max_diff"])
             if diff > allowed + 1e-9:
-                breaches.append(f"{key} {d}: A={a[d]} vs B={b[d]} (Δ{diff:.2f} > {allowed:.2f})")
-    return recent_worst, breaches, full_worst
+                msg = (f"{key} {d}: A={a[d]} vs B={b[d]} "
+                       f"(Δ{diff:.2f}{NBS_EXT_UNITS[key]} > {allowed:.2f})")
+                info["breaches"].append(msg)
+                result["breaches"].append(msg)
+        result["per_field"][key] = info
+    return result
 
 def _house_price_series(df):
     if df is None or len(df) == 0:
@@ -453,13 +469,12 @@ def get_china_groups():
             ext_vals[key] = em_ext[key]
             ext_src[key] = "东方财富"
     # A/B 双源交叉校验（CIO 容差 0.2pp）：仅告警不阻断，以 A 为准
-    recent_worst, breaches, full_worst = cross_check_dual_source(nbs_ext, em_ext)
-    raw["external_cross_check"] = {
-        "recent_max_diff": recent_worst, "tolerance_pp": 0.2,
-        "full_history_max_diff": full_worst, "breaches": breaches[:5]}
-    if breaches:
-        print(f"[china-warn] 进出口 A/B 双源超差(近3月 maxΔ={recent_worst:.2f}): {breaches[:3]}",
-              file=sys.stderr)
+    xchk = cross_check_dual_source(nbs_ext, em_ext)
+    xchk["breaches"] = xchk["breaches"][:5]
+    raw["external_cross_check"] = xchk
+    if xchk["breaches"]:
+        print(f"[china-warn] 进出口 A/B 双源超差(近3月同比 maxΔ="
+              f"{xchk['recent_max_diff']:.2f}pp): {xchk['breaches'][:3]}", file=sys.stderr)
     for key, unit in NBS_EXT_UNITS.items():
         add("external", key, ext_vals.get(key), unit=unit)
         if key in groups["external"]:

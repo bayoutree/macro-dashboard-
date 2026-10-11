@@ -123,12 +123,17 @@ def stage1_exim(repo, g):
         nbs = FC.grab_series(lambda: ak.macro_china_nbs_nation(
             kind="月度数据", path=FC.NBS_EXIM_PATH, period="2026-"))
         em = FC.grab_series(FC.fetch_em_external)
-        recent_worst, breaches, full_worst = FC.cross_check_dual_source(nbs, em)
+        x = FC.cross_check_dual_source(nbs, em)
         # 同比字段容差 0.2pp（CIO 终裁）；差额为官方修订量，用 fetch_china 内的相对容差，
         # 门禁只对同比字段判 FAIL，避免把「初值修订」误判为换源失败。
-        hard = [b for b in breaches if not b.startswith("trade_balance")]
+        hard = [b for b in x["breaches"] if not b.startswith("trade_balance")]
+        pf = x["per_field"]
+        detail = "; ".join(
+            f'{k} 近3月maxΔ={v["recent_max_diff"]:.2f}{v["unit"]}'
+            + (f'(容差{v["allowed"]:.2f})' if "allowed" in v else "")
+            for k, v in pf.items())
         g.check("#12 A(NBS)/B(东财) 双源近3月同比一致（容差 0.2pp）", not hard,
-                f"maxΔ={recent_worst:.2f} (full-history maxΔ={full_worst:.2f}), breaches={breaches[:2]}")
+                f'同比 maxΔ={x["recent_max_diff"]:.2f}pp | {detail}')
     except Exception as e:
         print(f"  [INFO] #12 双源在线交叉校验跳过（{type(e).__name__}: {str(e)[:60]}）")
 
