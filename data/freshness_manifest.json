@@ -634,7 +634,7 @@
       "stale_max_missing_periods": 2,
       "history_path": "china.sectors.external.trade_balance.history",
       "value_path": "china.sectors.external.trade_balance.value",
-      "note": "中国贸易差额；海关约7-9日发布。P0已修复日期坏点，末点2025-08(金十口径停更)",
+      "note": "中国贸易差额（当月，亿美元）；海关约 7-9 日发布。#12 换源 2026-10-11：jin10 系停更 → 主源 NBS「对外经济>货物进出口总额」进出口差额_当期值，东财 RPT_ECONOMY_CUSTOMS 降级；日期改自然月。",
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
@@ -652,7 +652,7 @@
       "stale_max_missing_periods": 2,
       "history_path": "china.sectors.external.export.history",
       "value_path": "china.sectors.external.export.value",
-      "note": "中国出口/进口同源；海关约7-9日。出口/进口/贸易差三序列末点2025-08-07",
+      "note": "中国出口/进口当月同比(%)；海关约 7-9 日发布。#12 换源 2026-10-11：jin10 系（date=发布日、止于 2025-07）→ NBS「出口总值/进口总值_同比增长(%)」（当月同比、自然月），东财降级；A/B 交叉校验容差 0.2pp。",
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"

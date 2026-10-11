@@ -152,5 +152,22 @@
       "status": "已闭环（第4阶段 2026-10-11）：硬编码 78 → 100，对齐 cycle_position_v4._meta.data_freshness_score",
       "owner": "松子"
     }
+  ],
+  "dual_source_checks": [
+    {
+      "id": "cn_external_exim",
+      "name": "中国出口/进口/贸易差额 双源交叉校验（#12 换源）",
+      "fields": [
+        "macro-econ-dashboard/data/indicators.json#china.sectors.external.export",
+        "macro-econ-dashboard/data/indicators.json#china.sectors.external.import",
+        "macro-econ-dashboard/data/indicators.json#china.sectors.external.trade_balance"
+      ],
+      "master_values_source": "NBS 国家统计局·对外经济>货物进出口总额（当月同比 / 差额当期值）",
+      "fallback_source": "东方财富 RPT_ECONOMY_CUSTOMS（macro_china_hgjck 同源接口）",
+      "tolerance_pp": 0.2,
+      "scope": "最近 3 个重叠月（同比字段）；差额按相对 2%/绝对 2 亿美元",
+      "enforced_by": "macro-econ-dashboard/scripts/fetch_china.py::cross_check_dual_source（告警，不阻断；以 NBS 为准）",
+      "note": "CIO 终裁 2026-10-11：旧 jin10 源 date=发布日且止于 2025-07；两源 2026-08 逐项一致，实测版本差 ≤0.1pp。"
+    }
   ]
 }
