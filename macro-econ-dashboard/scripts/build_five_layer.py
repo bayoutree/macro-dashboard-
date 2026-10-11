@@ -65,7 +65,8 @@ NAME_MAP = {
     "ust_2y": "2Y美债",
     "ust_10y": "10Y美债",
     "tips_10y": "10Y实际利率",
-    "hy_spread": "HY信用利差",
+    "hy_spread": "HY信用利差(HY OAS)",
+    "ig_spread": "投资级信用利差(BAA−AAA)",
     "fed_funds": "联邦基金(2Y代理)",
     "dxy": "美元指数",
     "vix": "VIX恐慌指数",
@@ -106,6 +107,7 @@ ASSET_NAMES = {
 # ============================================================================
 FREQUENCY_POLICY = {
     "daily": ["dr007", "cn_10y_yield", "ust_2y", "ust_10y", "usdcny", "sp500", "vix", "hy_spread"],
+    # ig_spread(BAA−AAA) 为 FRED 月频；hy_spread(HY OAS BAMLH0A0HYM2) 为日频
     "weekly": ["bill_rate", "eia_crude", "mba_mortgage", "nfib"],
     "monthly": [
         "pmi", "cpi", "ppi", "m1", "m2", "social_financing", "gdp", "nonfarm",
@@ -724,6 +726,7 @@ def _build_us(g, evo_tmpl):
     tips = g.get("financial", {}).get("tips_10y")
     ust10 = g.get("financial", {}).get("ust_10y")
     hy = g.get("financial", {}).get("hy_spread")
+    ig = g.get("financial", {}).get("ig_spread")
     unemployment = g.get("lagging", {}).get("unemployment")
 
     q_state, q_icon = _us_quadrant(gdp, cpi)
@@ -754,6 +757,7 @@ def _build_us(g, evo_tmpl):
             "tips_10y": _named(tips, "tips_10y"),
             "ust_10y": _named(ust10, "ust_10y"),
             "hy_spread": _named(hy, "hy_spread"),
+            "ig_spread": _named(ig, "ig_spread"),
         },
         "evolution_paths": _build_evolution_paths(
             evo_tmpl,
@@ -844,6 +848,97 @@ def _build_asset_valuation(cn_g, us_g, cross, av_tmpl):
 
 
 # ============================================================================
+# P2-3 · 指标级 source/caliber 四元组登记（value / source / caliber / date）
+#   CIO 实测：indicators.json 指标级节点 56 个，source/caliber 覆盖 0.0%。
+#   本表按 (region, key) 登记主源与口径；_annotate_sources() 在生成末尾统一注入，
+#   任何节点缺失即抛错（防止新增指标静默无来源）。region ∈ {china, us, cross}。
+# ============================================================================
+SOURCE_REGISTRY = {
+    # ---------------- 中国 ----------------
+    ("china", "dr007"): ("akshare：银行间质押式回购加权利率 DR007（中国货币网）", "7 天期、加权平均、%"),
+    ("china", "m2"): ("NBS 货币供应量 M2（akshare macro_china_money_supply）", "同比 %、月末"),
+    ("china", "m1"): ("NBS 货币供应量 M1（akshare macro_china_money_supply）", "同比 %、月末"),
+    ("china", "retail"): ("NBS 社会消费品零售总额（akshare macro_china_consumer_goods_retail）", "当月同比 %"),
+    ("china", "house_price"): ("NBS 70 城新建商品住宅价格指数（akshare macro_china_new_house_price）", "同比 %、70 城均值"),
+    ("china", "industrial_profit"): ("NBS 工业企业利润总额累计同比（akshare macro_china_nbs_nation 工业>工业企业主要经济指标）", "累计同比 %（非当月）"),
+    ("china", "mfg_investment"): ("NBS 固定资产投资·制造业（akshare macro_china_gdzctz）", "自年初累计同比 %"),
+    ("china", "pmi"): ("NBS 制造业 PMI（akshare macro_china_pmi）", "扩散指数、50 为荣枯线"),
+    ("china", "fiscal_revenue_growth"): ("财政部 公共财政收入（akshare macro_china_czsr）", "当月同比 %"),
+    ("china", "export"): ("海关总署·NBS 对外经济>货物进出口总额（东财 RPT_ECONOMY_CUSTOMS 降级）", "当月同比 %、自然月"),
+    ("china", "import"): ("海关总署·NBS 对外经济>货物进出口总额（东财 RPT_ECONOMY_CUSTOMS 降级）", "当月同比 %、自然月"),
+    ("china", "trade_balance"): ("海关总署·NBS 进出口差额_当期值（东财 RPT_ECONOMY_CUSTOMS 降级）", "当月差额 亿美元"),
+    ("china", "gdp"): ("NBS 国内生产总值（akshare macro_china_gdp）", "当季同比 %"),
+    ("china", "industrial_prod"): ("NBS 工业增加值（akshare macro_china_gyzjz）", "当月同比 %"),
+    ("china", "cpi"): ("NBS 居民消费价格指数（akshare macro_china_cpi_yearly）", "当月同比 %"),
+    ("china", "ppi"): ("NBS 工业生产者出厂价格指数（akshare macro_china_ppi_yearly）", "当月同比 %"),
+    ("china", "unemployment"): ("NBS 城镇调查失业率（akshare macro_china_urban_unemployment）", "%、月末"),
+    ("china", "csi300_pe"): ("乐咕乐股 沪深300 市盈率（akshare stock_index_pe_lg）", "滚动市盈率 x"),
+    # ---------------- 美国 ----------------
+    ("us", "gdp"): ("FRED GDP", "实际 GDP 同比 %、4 季滚动（消除季调噪声）"),
+    ("us", "cpi"): ("FRED CPIAUCSL", "同比 %、季调"),
+    ("us", "ppi"): ("FRED PPIFIS", "最终服务 PPI 同比 %（核心 PPI 口径）"),
+    ("us", "core_cpi"): ("FRED CPILFESL", "核心 CPI 同比 %"),
+    ("us", "unemployment"): ("FRED UNRATE", "失业率 %、季调"),
+    ("us", "fed_funds"): ("FRED DGS2", "2Y 美债收益率作政策利率代理 %"),
+    ("us", "ust_2y"): ("FRED DGS2", "2Y 美债收益率 %"),
+    ("us", "ust_10y"): ("FRED DGS10", "10Y 美债收益率 %"),
+    ("us", "tips_10y"): ("FRED DFII10", "10Y TIPS 实际利率 %"),
+    ("us", "hy_spread"): ("FRED BAMLH0A0HYM2（ICE BofA 美国高收益债 OAS）", "OAS %（非 BAA−AAA；两口径禁止对齐）"),
+    ("us", "ig_spread"): ("FRED BAA / AAA", "投资级信用利差 BAA−AAA、bps（月频）"),
+    ("us", "dxy"): ("FRED DTWEXBGS", "贸易加权美元指数（广义）"),
+    ("us", "pce"): ("FRED PCEC96", "实际个人消费支出同比 %"),
+    ("us", "dgorder_yoy"): ("FRED DGORDER", "耐用品新订单同比 %"),
+    ("us", "industrial_prod"): ("FRED INDPRO", "工业生产指数同比 %"),
+    ("us", "nonfarm"): ("FRED PAYEMS", "非农就业人数同比 %"),
+    ("us", "fed_debt"): ("FRED GFDEBTN", "联邦债务总额 亿美元"),
+    ("us", "fed_deficit"): ("FRED MTSDS133FMS", "联邦财政赤字 亿美元"),
+    ("us", "fed_receipts"): ("FRED W006RC1Q027SBEA", "联邦经常性收入 十亿美元"),
+    ("us", "fed_spending"): ("FRED W006RC1Q027SBEA + MTSDS133FMS 派生", "联邦支出 = 收入 + 赤字，十亿美元"),
+    ("us", "trade_balance"): ("FRED BOPGSTB", "货物贸易差额 亿美元"),
+    ("us", "current_account"): ("FRED IEABC", "经常账户差额 亿美元"),
+    ("us", "oecd_cli"): ("OECD 综合领先指标（FRED USALOLITOAASTSAM）", "振幅调整、100 为长期趋势"),
+    ("us", "lei"): ("OECD 综合领先指标（FRED USALOLITOAASTSAM）", "美国 LEI 代理、振幅调整"),
+    ("us", "yield_curve_10y2y"): ("FRED DGS10 − DGS2", "期限利差 bps（10Y−2Y）"),
+    ("us", "consumer_confidence"): ("FRED UMCSENT", "密歇根消费者信心指数"),
+    ("us", "sp500"): ("FRED SP500", "标普500 指数点"),
+    ("us", "vix"): ("FRED VIXCLS", "VIX 波动率指数"),
+    ("us", "sp500_pe"): ("FRED CAPE / USACAPE", "席勒周期调整市盈率 x"),
+    ("us", "gold"): ("akshare macro_cons_gold / 仓库月度金价回退", "金价序列"),
+    ("us", "commodity"): ("akshare 商品指数", "商品价格指数"),
+    ("us", "retail"): ("FRED RSAFS", "零售销售同比 %"),
+    # ---------------- 交叉 ----------------
+    ("cross", "cn_us_10y_spread"): ("中债 10Y 国债 − FRED DGS10", "利差 bps（pp ×100）"),
+    ("cross", "usdcny"): ("中国外汇交易中心 USDCNY 即期", "汇率、人民币/美元"),
+}
+SOURCE_FALLBACK = ("未登记（请补 SOURCE_REGISTRY）", "口径待补")
+
+
+def _annotate_sources(node, region="", leaf=""):
+    """递归为每个指标级节点（含 value + history）注入 source/caliber（P2-3 四元组）。
+
+    四元组 = value / source / caliber / date。缺失来源直接抛错（不静默留白），
+    以保证「新增指标必须登记来源」。返回注入的节点数。
+    """
+    n = 0
+    if isinstance(node, dict):
+        keys = set(node.keys())
+        if "value" in keys and "history" in keys:
+            src, cal = SOURCE_REGISTRY.get((region, leaf), SOURCE_FALLBACK)
+            if src == SOURCE_FALLBACK[0]:
+                raise KeyError(f"P2-3 未登记来源: region={region} key={leaf}")
+            node["source"] = src
+            node["caliber"] = cal
+            return 1
+        for k, v in node.items():
+            child_leaf = leaf if k.isdigit() else k
+            n += _annotate_sources(v, region if region else (k if k in ("china", "us", "cross") else ""),
+                                   child_leaf)
+    elif isinstance(node, list):
+        for v in node:
+            n += _annotate_sources(v, region, leaf)
+    return n
+
+# ============================================================================
 # 主入口
 # ============================================================================
 def build_five_layer_payload(china_groups, us_groups, cross, china_raw=None, us_raw=None):
@@ -862,7 +957,7 @@ def build_five_layer_payload(china_groups, us_groups, cross, china_raw=None, us_
     us = _build_us(us_groups, eus_tmpl)
     asset_valuation = _build_asset_valuation(china_groups, us_groups, cross, av_tmpl)
 
-    return {
+    payload = {
         "update_time": update_time,
         "frequency_policy": fp,
         "asset_valuation": asset_valuation,
@@ -870,6 +965,10 @@ def build_five_layer_payload(china_groups, us_groups, cross, china_raw=None, us_
         "us": us,
         "cross": cross or {},
     }
+    # P2-3：统一注入 source/caliber（四元组），未登记来源即抛错
+    n_src = _annotate_sources(payload)
+    print(f"[five-layer] P2-3 source/caliber 已注入 {n_src} 个指标级节点")
+    return payload
 
 
 if __name__ == "__main__":

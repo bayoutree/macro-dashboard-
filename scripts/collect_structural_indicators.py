@@ -209,14 +209,30 @@ def yoy_monthly(points, decimals=2):
 
 
 def percentile_bands(history):
+    """分位带 + **按当前值实算** current_rank（#14 CIO 裁决）。
+
+    旧实现把 current_rank 硬编码为 'p50'，与 p25/p50/p75 及 current 自相矛盾
+    （例：current=33.55 > p75=33.54 却标 p50）。现按最后一个有效值落带。
+    """
     vals = sorted(h['value'] for h in history if h['value'] is not None)
     if len(vals) < 3:
         return None
     n = len(vals)
-    return {'p25': round(vals[int(n * 0.25)], 2),
-            'p50': round(vals[int(n * 0.50)], 2),
-            'p75': round(vals[int(n * 0.75)], 2),
-            'current_rank': 'p50'}
+    p25 = round(vals[int(n * 0.25)], 2)
+    p50 = round(vals[int(n * 0.50)], 2)
+    p75 = round(vals[int(n * 0.75)], 2)
+    cur = next((h['value'] for h in reversed(history) if h['value'] is not None), None)
+    if cur is None:
+        rank = None
+    elif cur <= p25:
+        rank = '<=p25'
+    elif cur <= p50:
+        rank = 'p25-p50'
+    elif cur <= p75:
+        rank = 'p50-p75'
+    else:
+        rank = '>p75'
+    return {'p25': p25, 'p50': p50, 'p75': p75, 'current_rank': rank}
 
 
 def hrt_status(value, threshold_type, threshold_value):
@@ -270,7 +286,18 @@ def main():
         ind['source'] = 'FRED：联邦政府利息支出 A091RC1Q027SBEA / 经常性收入 W006RC1Q027SBEA'
         ind['source_url'] = 'https://fred.stlouisfed.org/series/A091RC1Q027SBEA'
         ind['percentile'] = percentile_bands(ind['history'])
-        print(f"  ✅ L0.interest_to_revenue 已替换为 {len(interest_ratio)} 季频真点")
+        # #14 CIO 裁决：顶层简写 interest_to_revenue 为陈旧快照(22)，改为引用主源 current，
+        # 消除同文件 22 vs 33.55 的矛盾。
+        l0_us_top = layers['layer_0_debt_cycle']['us']
+        if l0_us_top.get('interest_to_revenue') != ind['current']:
+            print(f"  ⚠ L0.us.interest_to_revenue 顶层简写 "
+                  f"{l0_us_top.get('interest_to_revenue')} → {ind['current']}（对齐 indicators 主源）")
+            l0_us_top['interest_to_revenue'] = ind['current']
+        l0_us_top['interest_to_revenue_source'] = (
+            'cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue'
+            '（FRED A091RC1Q027SBEA / W006RC1Q027SBEA）')
+        print(f"  ✅ L0.interest_to_revenue 已替换为 {len(interest_ratio)} 季频真点"
+              f"（current={ind['current']}%, rank={ind['percentile'].get('current_rank')}）")
 
     # ========== HRT[1] 美国利息/财政收入 ==========
     if interest_ratio:

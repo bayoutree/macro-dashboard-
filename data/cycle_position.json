@@ -43,7 +43,7 @@
         "phase_code": "late_deleveraging_to_smooth",
         "signal_weight": -2,
         "debt_to_gdp": 132,
-        "interest_to_revenue": 22,
+        "interest_to_revenue": 33.55,
         "fiscal_deficit_gdp": 6.5,
         "description": "债务/GDP超130%，利息支出占财政收入>20%",
         "implication": "利率敏感资产持续承压；硬资产和现金流资产修复",
@@ -681,7 +681,8 @@
             "frequency": "quarterly",
             "source_url": "https://fred.stlouisfed.org/"
           }
-        }
+        },
+        "interest_to_revenue_source": "cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue（FRED A091RC1Q027SBEA / W006RC1Q027SBEA）"
       },
       "cn": {
         "phase": "结构性去杠杆中后期",

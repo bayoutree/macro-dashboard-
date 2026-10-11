@@ -355,6 +355,39 @@ def _apply_degradations(base_dir, asset, constraint):
     return NUM_DIR[cur], cur - base_num
 
 
+def sync_c1_current_values(out, v3):
+    """#14：把 constraint_degradation.C1_debt_cycle.current_values 对齐 v3 L0 主源。
+
+    主源 = v3.cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue.current
+           + 同层 debt_to_gdp（顶层简写，仅当为数值时采用）。
+    返回 True 表示有改动。
+    """
+    l0_us = (v3.get("cycle_layers", {}).get("layer_0_debt_cycle", {}) or {}).get("us", {}) or {}
+    ind = (l0_us.get("indicators", {}) or {}).get("interest_to_revenue", {}) or {}
+    i2r = ind.get("current")
+    d2g = l0_us.get("debt_to_gdp")
+    cd = out.get("constraint_degradation")
+    if not isinstance(cd, dict):
+        return False
+    c1 = cd.get("C1_debt_cycle")
+    if not isinstance(c1, dict):
+        return False
+    cv = c1.setdefault("current_values", {})
+    changed = False
+    if isinstance(i2r, (int, float)) and cv.get("interest_to_revenue") != i2r:
+        print(f"⚠ C1.current_values.interest_to_revenue {cv.get('interest_to_revenue')} → {i2r}（对齐 v3 L0 主源）")
+        cv["interest_to_revenue"] = i2r
+        changed = True
+    if isinstance(d2g, (int, float)) and cv.get("debt_to_gdp") != d2g:
+        print(f"⚠ C1.current_values.debt_to_gdp {cv.get('debt_to_gdp')} → {d2g}")
+        cv["debt_to_gdp"] = d2g
+        changed = True
+    if changed:
+        c1["current_values_source"] = ("cycle_position_v3.json#cycle_layers.layer_0_debt_cycle.us"
+                                       ".indicators.interest_to_revenue（FRED A091RC1Q027SBEA/W006RC1Q027SBEA）")
+    return changed
+
+
 def recompute_asset_ranking(prev_v4, us, cn):
     """
     us/cn: 已构建的旧契约分键（含 p1/p2）。
@@ -811,6 +844,12 @@ def build():
     out["cycle_layers"], cpi_fixed = _fix_core_cpi_index(out["cycle_layers"])
     if cpi_fixed:
         print("⚠ core_cpi 修复: CPI指数→YoY增速")
+
+    # ---- 2d. C1 债务约束 current_values 以 v3 L0 主源刷新（#14 CIO 裁决） ----
+    # 旧行为：constraint_degradation 由 V4_PRESERVE_KEYS 从上一版 v4 原样继承，
+    # 其 current_values.interest_to_revenue 是 2021 年陈旧快照 22，与 v3
+    # indicators.interest_to_revenue.current(33.55) 矛盾。现每次生成都从 v3 主源重算。
+    c1_fixed = sync_c1_current_values(out, v3)
 
     # ---- 3. cycle_consensus：新 schema + 旧契约兼容分键 ----
     us = build_region_contract("us", dimensions, jug_idx, kit_idx, prev_v4)

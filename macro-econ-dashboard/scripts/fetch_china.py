@@ -196,6 +196,42 @@ def _nbs_extract(nbs_df, key, date_fn=cn_month_date):
         out.append((ds, fv * scale))
     return out or None
 
+# #15 工业企业利润：NBS「工业>工业企业主要经济指标」指标行（累计同比）
+NBS_PROFIT_PATH = "工业>工业企业主要经济指标"
+NBS_PROFIT_ROWS = ["利润总额累计增长(%)", "营业利润累计增长(%)"]
+
+def _nbs_profit_series(nbs_df, date_fn=cn_month_date):
+    """NBS 工业企业利润总额累计同比（%）。接口不可用/无该行返回 None。"""
+    if nbs_df is None or len(nbs_df) == 0:
+        return None
+    row = None
+    for name in NBS_PROFIT_ROWS:
+        if name in nbs_df.index:
+            row = name
+            break
+    if row is None:
+        cand = [i for i in nbs_df.index if "利润" in str(i) and "累计增长" in str(i)]
+        if not cand:
+            return None
+        row = cand[0]
+    out = []
+    for col in nbs_df.columns:
+        v = nbs_df.loc[row, col]
+        if v is None:
+            continue
+        try:
+            fv = float(v)
+        except (TypeError, ValueError):
+            continue
+        if math.isnan(fv):
+            continue
+        d = date_fn(col)
+        if d:
+            out.append((d, fv))
+    return out or None
+
+
+
 def fetch_em_external(em_df=None):
     """东财「海关进出口增减情况一览表」→ {key: [(YYYY-MM, v)]}（B 降级源）。
 
@@ -432,7 +468,11 @@ def get_china_groups():
     df = grab(ak.macro_china_new_house_price)
     add("sectors", "house_price_index", _house_price_series(df), unit="%")
 
-    s = None
+    # #15（CIO 裁决 2026-10-11）：旧代码在 akshare 无利润接口时**静默回退工业增加值**，
+    # 导致 industrial_profit ≡ industrial_prod（同为 5.2%），是数据可信度事故。
+    # 现改为：主源 = NBS 工业企业利润总额累计同比；接口缺失即置灰（灰灯），
+    # 绝不复用工业增加值冒充。旧 jin10 系 macro_china_industrial_profit* 仅作次级降级源。
+    s, s_src = None, None
     for fn_name in ("macro_china_industrial_profit", "macro_china_industrial_profit_yoy"):
         fn = getattr(ak, fn_name, None)
         if fn is None:
@@ -440,14 +480,23 @@ def get_china_groups():
         df = grab(fn)
         s = extract_series(df, ["月份", "日期"], ["同比增长", "今值", "利润"])
         if s:
+            s_src = f"akshare {fn_name}"
             break
     if s is None:
-        df = grab(ak.macro_china_gyzjz)
-        s = extract_series(df, ["月份"], ["同比增长", "今值"])
+        df = grab(lambda: ak.macro_china_nbs_nation(
+            kind="月度数据", path=NBS_PROFIT_PATH, period="2014-"))
+        s = _nbs_profit_series(df)
+        if s:
+            s_src = "NBS 工业企业利润总额累计同比"
     if s:
         add("sectors", "industrial_profit", s, unit="%")
+        groups["sectors"]["industrial_profit"]["source"] = s_src
+        groups["sectors"]["industrial_profit"]["caliber"] = "累计同比 %（非当月）"
     else:
+        # 灰灯：接口不可用 → 不写值、登记缺失，由前端按 null 降级
         fail.append("sectors.industrial_profit")
+        print("[china-warn] 工业企业利润：NBS/akshare 利润接口均不可用 → 置灰（不复用工业增加值）",
+              file=sys.stderr)
 
     df = grab(ak.macro_china_gdzctz)
     add("sectors", "mfg_investment",

@@ -334,7 +334,13 @@ def get_us_groups():
     add("financial", "tips_10y", _to_points(get_series(fred, "DFII10")), unit="%")
     baa = get_series(fred, "BAA")
     aaa = get_series(fred, "AAA")
-    add("financial", "hy_spread", spread_series(baa, aaa, as_bps=True), unit="bps")
+    # CIO 裁决 2026-10-11（表3 #7）：BAA−AAA 是**投资级**信用利差，不是 HY。
+    # 旧字段误命名 hy_spread 导致「HY信用利差 44bps」这种不成立的读数
+    # （HY OAS 历史最窄亦 >240bps）。两口径**禁止对齐**，拆为两个独立字段：
+    #   ig_spread = BAA − AAA（投资级，bps）
+    #   hy_spread = FRED BAMLH0A0HYM2（ICE BofA 美国高收益债 OAS，%）
+    add("financial", "ig_spread", spread_series(baa, aaa, as_bps=True), unit="bps")
+    add("financial", "hy_spread", _to_points(get_series(fred, "BAMLH0A0HYM2")), unit="%")
     add("financial", "dxy", _to_points(get_series(fred, "DTWEXBGS")), unit="")
 
     # ---- 市场 ----

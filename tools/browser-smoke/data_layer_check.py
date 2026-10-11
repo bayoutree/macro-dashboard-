@@ -85,6 +85,86 @@ def stage1(repo, code, g):
     except Exception as e:
         g.check("P0-1/P0-2 代码层可执行", False, f"{type(e).__name__}: {e}")
 
+def stage1_rulings(repo, g):
+    """[D] 表3 三项裁决落地门禁（#7 / #14 / #15）+ P2-3 source/caliber 覆盖。"""
+    print("[D] CIO 三项裁决 + P2-3 来源覆盖")
+    ind = load(os.path.join(repo, "macro-econ-dashboard/data/indicators.json"))
+    v3 = load(os.path.join(repo, "data/cycle_position_v3.json"))
+    v4 = load(os.path.join(repo, "data/cycle_position_v4.json"))
+
+    # ---- #7 HY OAS 与 投资级利差 两口径拆分，禁止对齐 ----
+    liq = (((ind.get("us", {}).get("economic_cycle", {}) or {}).get("liquidity_indicators", {})) or {})
+    hy, ig = liq.get("hy_spread") or {}, liq.get("ig_spread") or {}
+    g.check("#7 真 HY OAS 独立字段存在(hy_spread)", hy.get("value") is not None,
+            f"value={hy.get('value')} unit={hy.get('unit')}")
+    g.check("#7 HY OAS 单位为 %（非 bps）", hy.get("unit") == "%", f"unit={hy.get('unit')}")
+    g.check("#7 HY OAS 量级成立(≥1.5%：历史最窄亦 >240bps)",
+            isinstance(hy.get("value"), (int, float)) and hy["value"] >= 1.5, f"value={hy.get('value')}")
+    g.check("#7 HY OAS 来源为 FRED BAMLH0A0HYM2",
+            "BAMLH0A0HYM2" in str(hy.get("source", "")), str(hy.get("source"))[:48])
+    g.check("#7 投资级利差独立字段存在(ig_spread)", ig.get("value") is not None,
+            f"value={ig.get('value')} unit={ig.get('unit')}")
+    g.check("#7 ig_spread 单位为 bps 且注明 BAA−AAA",
+            ig.get("unit") == "bps" and ("BAA" in str(ig.get("name", "")) or "BAA" in str(ig.get("source", ""))),
+            f"unit={ig.get('unit')} name={ig.get('name')}")
+    g.check("#7 两口径数值不得相等（禁止对齐）",
+            not (isinstance(hy.get("value"), (int, float)) and isinstance(ig.get("value"), (int, float))
+                 and abs(hy["value"] - ig["value"]) < 1e-9),
+            f"hy={hy.get('value')} ig={ig.get('value')}")
+
+    # ---- #14 利息/财政收入 主源 33.55 ----
+    l0 = ((v3.get("cycle_layers", {}) or {}).get("layer_0_debt_cycle", {}) or {}).get("us", {}) or {}
+    ind14 = (l0.get("indicators", {}) or {}).get("interest_to_revenue", {}) or {}
+    cur = ind14.get("current")
+    top = l0.get("interest_to_revenue")
+    g.check("#14 L0 主源 current 为数值", isinstance(cur, (int, float)), f"current={cur}")
+    g.check("#14 顶层简写 == 主源 current（消除 22 vs 33.55）", top == cur, f"top={top} vs current={cur}")
+    g.check("#14 顶层简写已标来源指针", bool(l0.get("interest_to_revenue_source")), str(l0.get("interest_to_revenue_source"))[:40])
+    pct = ind14.get("percentile") or {}
+    if isinstance(cur, (int, float)) and isinstance(pct.get("p75"), (int, float)):
+        expect = ">p75" if cur > pct["p75"] else ("p50-p75" if cur > pct.get("p50", 0) else "<=p50")
+        g.check("#14 percentile.current_rank 与 p75 自洽（不再硬编码 p50）",
+                pct.get("current_rank") != "p50" or cur <= pct.get("p50", 0),
+                f"current={cur} p50={pct.get('p50')} p75={pct.get('p75')} rank={pct.get('current_rank')} expect={expect}")
+    c1 = ((v4.get("constraint_degradation", {}) or {}).get("C1_debt_cycle", {}) or {})
+    cv = c1.get("current_values") or {}
+    g.check("#14 v4 C1.current_values.interest_to_revenue == v3 主源",
+            cv.get("interest_to_revenue") == cur, f"c1={cv.get('interest_to_revenue')} vs v3={cur}")
+
+    # ---- #15 工业企业利润 不再复用工业增加值 ----
+    cn = ind.get("china", {})
+    ip = ((cn.get("sectors", {}) or {}).get("corporate", {}) or {}).get("industrial_profit") or {}
+    iprod = ((cn.get("validation", {}) or {}).get("coincident", {}) or {}).get("industrial_prod") or {}
+    ip_h = ip.get("history") or []
+    iprod_h = iprod.get("history") or []
+    same = bool(ip_h) and bool(iprod_h) and ip_h[-5:] == iprod_h[-5:]
+    g.check("#15 工业利润 ≠ 工业增加值（静默兜底已移除）", not same,
+            f"profit={ip.get('value')} prod={iprod.get('value')}")
+    g.check("#15 工业利润来源为 NBS 利润口径",
+            ("利润" in str(ip.get("source", ""))), str(ip.get("source"))[:56])
+    g.check("#15 工业利润口径标注为累计同比（非当月）",
+            "累计" in str(ip.get("caliber", "")), str(ip.get("caliber"))[:40])
+
+    # ---- P2-3 source/caliber 覆盖 ----
+    total = miss = 0
+    for region in ("china", "us", "cross"):
+        def walk(o):
+            nonlocal total, miss
+            if isinstance(o, dict):
+                if "value" in o and "history" in o:
+                    total += 1
+                    if not o.get("source") or not o.get("caliber"):
+                        miss += 1
+                else:
+                    for v in o.values():
+                        walk(v)
+            elif isinstance(o, list):
+                for v in o:
+                    walk(v)
+        walk(ind.get(region, {}))
+    g.check(f"P2-3 指标级 source/caliber 覆盖 100%（{total} 个节点）", total > 0 and miss == 0,
+            f"total={total} missing={miss}")
+
 def stage1_exim(repo, g):
     """[C] #12 出口系列换源门禁：当期口径 + 自然月日期 + 单位 + 与主源同月（不滞后）。
     离线判据（数据文件自证）；A/B 双源交叉校验在网络可达时附加执行（超差则 FAIL）。"""
@@ -157,6 +237,7 @@ if __name__ == "__main__":
     if a.stage == 1:
         stage1(a.repo, code, g)
         stage1_exim(a.repo, g)
+        stage1_rulings(a.repo, g)
     elif a.stage == 3: stage3(a.repo, code, g)
     print(f"\n合计 {g.n} 项断言, 失败 {len(g.fails)} 项 -> {'PASS' if not g.fails else 'FAIL'}")
     sys.exit(0 if not g.fails else 1)
