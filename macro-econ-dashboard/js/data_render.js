@@ -859,6 +859,17 @@ function renderCrossSection(crossData) {
 
 // ==================== 通用指标卡片 ====================
 
+// [第4阶段 T-3] 指标 key -> 中文标签兜底：当数据缺 name 字段时不再直接透出 snake_case 标识符
+const METRIC_ZH = {
+  fiscal_revenue_growth: '财政收入增速',
+  fiscal_balance: '财政收支差额',
+  special_bond: '专项债发行进度',
+  industrial_production: '工业增加值同比',
+  trade_balance: '贸易差额',
+  export: '出口同比',
+  import: '进口同比',
+};
+
 function renderMetricCard(key, metric, prefix) {
   if (!metric || typeof metric !== 'object') return '';
   const v = safeVal(metric.value);
@@ -867,7 +878,10 @@ function renderMetricCard(key, metric, prefix) {
   const pct10 = safeVal(metric.pct_10y);
   const unit = metric.unit || '';
   const date = metric.date || '—';
-  const name = metric.name || key;
+  // [第4阶段 T-3] 若上游把 snake_case key 误当 name 透出，回退到中文标签，避免裸标识符进 DOM
+  const _nm = metric.name;
+  const _snake = typeof _nm === 'string' && /^[a-z][a-z0-9_]*$/.test(_nm);
+  const name = (_nm && !_snake) ? _nm : (METRIC_ZH[key] || METRIC_ZH[_nm] || _nm || key);
   const chartId = `chart-${prefix}`;
 
   return `

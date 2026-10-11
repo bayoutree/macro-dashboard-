@@ -141,6 +141,15 @@ const CycleV3Module = (() => {
   function fmtNum(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals); }
   function fmtPct(v, decimals=1) { return v == null ? '--' : Number(v).toFixed(decimals) + '%'; }
   function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function zhText(s){ if(s==null) return s; return String(s)
+    .replace(/build_cycle_position_v4(\.py)?/g,'周期定位模型')
+    .replace(/cautious_bullish/g,'谨慎看多')
+    .replace(/consensus_score/g,'共识度')
+    .replace(/constraint_degradation/g,'约束降级')
+    .replace(/transmission_table/g,'传导矩阵')
+    .replace(/raw_score/g,'原始分')
+    .replace(/std_dev/g,'标准差')
+    .replace(/us_equity/g,'美股'); }
 
   // Frequency-aware thresholds: cycleDays = normal publication lag + period length
   // e.g. monthly: data for month M published ~15-30 days after M ends, so cycleDays=60 is safe
@@ -260,7 +269,7 @@ const CycleV3Module = (() => {
     return `
     <section class="v3-section" id="section-debt-cycle">
       <h2 class="section-title"> 达里奥·大债务周期 <span class="section-subtitle">第0层 · 约束层</span></h2>
-      ${layer.constraint_triggered ? '<div class="constraint-warning" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:8px;padding:10px 14px;margin-bottom:12px;color:#fca5a5;font-size:13px;">⚠️ 债务约束生效：所有量化层bullish信号已降级为cautious_bullish，共识度上限60分</div>' : ''}
+      ${layer.constraint_triggered ? '<div class="constraint-warning" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:8px;padding:10px 14px;margin-bottom:12px;color:#fca5a5;font-size:13px;">⚠️ 债务约束生效：所有量化层bullish信号已降级为谨慎看多，共识度上限60分</div>' : ''}
       <p class="section-desc">${escapeHtml(layer.description||'')}</p>
       <div class="regions-row">
         ${renderRegion(layer.us, 'us')}
@@ -394,7 +403,7 @@ const CycleV3Module = (() => {
         <h4>📊 ${escapeHtml(kr.name)}</h4>
         <div class="kr-value">当前: <strong>${fmtNum(kr.current_value ?? kr.current, 2)}</strong></div>
         <div class="kr-threshold">阈值: ${escapeHtml(kr.threshold||'')}</div>
-        ${tp.mean!=null?`<div class="kr-params">均值=${tp.mean} | σ=${tp.std_dev} | Frenzy阈值=${tp.frenzy_threshold} <span class="kr-note">${escapeHtml(tp.note||'')}</span></div>`:''}
+        ${tp.mean!=null?`<div class="kr-params">均值=${tp.mean} | 标准差=${tp.std_dev} | Frenzy阈值=${tp.frenzy_threshold} <span class="kr-note">${escapeHtml(zhText(tp.note||''))}</span></div>`:''}
         ${isFrenzy?'<div class="kr-warning" style="color:#ef4444">️ 当前值已超过Frenzy阈值!</div>':''}
         <div id="chart-perez-ratio" class="chart-container" style="width:100%;height:200px;margin-top:8px;"></div>
       </div>`;
@@ -595,8 +604,8 @@ const CycleV3Module = (() => {
             <span class="crc-name">${label}</span>
           </div>
           <div class="crc-score" style="color:${sc}">${d.consensus_score.toFixed(1)}</div>
-          <div class="crc-signal" style="color:${sc}">${escapeHtml(d.signal || '')}</div>
-          <div class="crc-formula">raw=${d.raw_score.toFixed(1)}</div>
+          <div class="crc-signal" style="color:${sc}">${escapeHtml(zhText(d.signal || ''))}</div>
+          <div class="crc-formula">原始分=${d.raw_score.toFixed(1)}</div>
           <div class="crc-p-grid">${pHtml}</div>
         </div>`;
       }
@@ -607,7 +616,7 @@ const CycleV3Module = (() => {
           <h2 class="section-title">📊 周期共识评分</h2>
           <span class="consensus-date">📅 ${escapeHtml(consensus.last_updated || '--')}</span>
         </div>
-        <div class="consensus-formula-bar">${escapeHtml(consensus.formula || '')}</div>
+        <div class="consensus-formula-bar">${escapeHtml(zhText(consensus.formula || ''))}</div>
         <div class="consensus-v4-grid">
           ${renderRegionCard('🇺🇸', '美国', us)}
           ${renderRegionCard('🇨🇳', '中国', cn)}
@@ -664,9 +673,9 @@ const CycleV3Module = (() => {
       return `<tr>
         <td><strong>${escapeHtml(d.name)}</strong></td>
         <td style="color:${usColor}">${escapeHtml(d.us_direction)}</td>
-        <td><span class="signal-dot" style="background:${usColor}"></span>${escapeHtml(d.us_signal)}</td>
+        <td><span class="signal-dot" style="background:${usColor}"></span>${escapeHtml(zhText(d.us_signal))}</td>
         <td style="color:${cnColor}">${escapeHtml(d.cn_direction)}</td>
-        <td><span class="signal-dot" style="background:${cnColor}"></span>${escapeHtml(d.cn_signal)}</td>
+        <td><span class="signal-dot" style="background:${cnColor}"></span>${escapeHtml(zhText(d.cn_signal))}</td>
         <td><span class="rel-badge" style="background:${rc}20;color:${rc};border:1px solid ${rc}">${escapeHtml(d.relationship)}</span></td>
       </tr>`;
     }).join('');
@@ -806,7 +815,7 @@ const CycleV3Module = (() => {
             <span class="pyramid-layer">L${l.layer}</span>
             <span class="pyramid-name">${escapeHtml(l.name)}</span>
             <span class="pyramid-position">${escapeHtml(l.position||'')}</span>
-            <span class="pyramid-signal" style="color:${l.color||'#6b7280'}">${escapeHtml(l.signal||'')}</span>
+            <span class="pyramid-signal" style="color:${l.color||'#6b7280'}">${escapeHtml(zhText(l.signal||''))}</span>
           </div>
         </div>`;
       }).join('');
@@ -924,7 +933,7 @@ const CycleV3Module = (() => {
         <span class="pos-layer">L${p.layer}</span>
         <span class="pos-cycle">${escapeHtml(p.cycle)}</span>
         <span class="pos-position">${escapeHtml(p.position||'')}</span>
-        <span class="pos-signal" style="color:${p.color}">${escapeHtml(p.signal||'')}</span>
+        <span class="pos-signal" style="color:${p.color}">${escapeHtml(zhText(p.signal||''))}</span>
         <span class="pos-weight">${p.signal_weight>0?'+':''}${p.signal_weight}</span>
       </div>`
     ).join('');

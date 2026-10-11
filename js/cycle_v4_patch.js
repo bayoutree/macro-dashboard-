@@ -46,6 +46,15 @@
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  function zhText(s){ if(s==null) return s; return String(s)
+    .replace(/build_cycle_position_v4(\.py)?/g,'周期定位模型')
+    .replace(/cautious_bullish/g,'谨慎看多')
+    .replace(/consensus_score/g,'共识度')
+    .replace(/constraint_degradation/g,'约束降级')
+    .replace(/transmission_table/g,'传导矩阵')
+    .replace(/raw_score/g,'原始分')
+    .replace(/std_dev/g,'标准差')
+    .replace(/us_equity/g,'美股'); }
 
   // ========== 1. Hero Section ==========
   function renderHeroSection(data) {
@@ -114,7 +123,7 @@
         '<h2 class="v4-hero-title">📊 周期定位总览</h2>' +
         '<span class="v4-hero-date">📅 ' + esc(cc.last_updated || '') + '</span>' +
       '</div>' +
-      '<div class="v4-hero-formula">' + esc(formula) + '</div>' +
+      '<div class="v4-hero-formula">' + esc(zhText(formula)) + '</div>' +
       '<div class="v4-hero-deltas">' +
         '<span class="v4-delta-label">vs 上期:</span>' +
         '<span>🇺🇸 ' + renderDelta(usDelta) + '</span>' +
@@ -159,13 +168,13 @@
     if (ar.constraint_active) {
       constraintHtml = '<div class="v4-constraint-notice">' +
         '⚠️ 约束层生效: C1(大债务) + C2(高利率) 已触发降级' +
-        '<span class="v4-constraint-note">' + esc(ar.note || '') + '</span>' +
+        '<span class="v4-constraint-note">' + esc(zhText(ar.note || '')) + '</span>' +
       '</div>';
     }
 
     return '<section class="v4-section v4-ranking-section" id="v4-asset-ranking">' +
       '<h2 class="v4-section-title">🏆 8资产吸引力排序</h2>' +
-      '<div class="v4-ranking-subtitle">基于 transmission_table(P1=' + (((data.cycle_consensus || {}).united_states || {}).p1_score || ((data.cycle_consensus || {}).china || {}).p1_score || '?') + ',P2=' + (((data.cycle_consensus || {}).united_states || {}).p2_score || ((data.cycle_consensus || {}).china || {}).p2_score || '?') + ') + constraint_degradation</div>' +
+      '<div class="v4-ranking-subtitle">基于 传导矩阵(P1=' + (((data.cycle_consensus || {}).united_states || {}).p1_score || ((data.cycle_consensus || {}).china || {}).p1_score || '?') + ',P2=' + (((data.cycle_consensus || {}).united_states || {}).p2_score || ((data.cycle_consensus || {}).china || {}).p2_score || '?') + ') + 约束降级</div>' +
       '<table class="v4-ranking-table">' +
         '<thead><tr>' +
           '<th>排名</th><th>资产</th><th>信号</th><th>方向</th><th>降级</th><th>强度</th>' +

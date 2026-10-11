@@ -133,23 +133,23 @@
     {
       "indicator": "all_a_turnover",
       "file": "stock_dashboard.html",
-      "static_value": "1.8%",
+      "static_value": "1.4%",
       "runtime_ref": "R[1] ← _tsInd(timing_scores.json, 'sentiment', 'turnover_rate')",
-      "status": "运行时已引用主源；静态兜底值待前端阶段(松子)同步为 1.4%",
+      "status": "已闭环（第4阶段 2026-10-11）：静态兜底已同步为主源 1.4%",
       "owner": "松子"
     },
     {
       "indicator": "cn_m2_yoy",
       "file": "stock_dashboard.html",
-      "static_value": "7.2%",
-      "status": "静态快照，待前端阶段(松子)改为引用主源 7.5%",
+      "static_value": "7.5%",
+      "status": "已闭环（第4阶段 2026-10-11）：静态快照已同步为主源 7.5%",
       "owner": "松子"
     },
     {
       "indicator": "data_freshness",
       "file": "stock_dashboard.html",
-      "static_value": 78,
-      "status": "硬编码 78，待前端阶段(松子)改为读取 cycle_position_v4._meta.data_freshness_score(100)",
+      "static_value": 100,
+      "status": "已闭环（第4阶段 2026-10-11）：硬编码 78 → 100，对齐 cycle_position_v4._meta.data_freshness_score",
       "owner": "松子"
     }
   ]

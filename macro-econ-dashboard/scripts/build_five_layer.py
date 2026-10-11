@@ -85,6 +85,8 @@ NAME_MAP = {
     "current_account": "经常账户",
     "fed_spending": "联邦支出",
     "fed_receipts": "联邦收入",
+    "fiscal_revenue_growth": "财政收入增速",
+    "consumer_confidence": "消费者信心指数",
 }
 
 ASSET_NAMES = {

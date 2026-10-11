@@ -4610,7 +4610,7 @@
               "value": 4.6768
             }
           ],
-          "name": "fiscal_revenue_growth"
+          "name": "财政收入增速"
         }
       },
       "external": {
@@ -7564,7 +7564,7 @@
               "value": 4.6768
             }
           ],
-          "name": "fiscal_revenue_growth"
+          "name": "财政收入增速"
         }
       }
     },
@@ -21959,7 +21959,7 @@
               "value": 51.7
             }
           ],
-          "name": "consumer_confidence"
+          "name": "消费者信心指数"
         }
       },
       "coincident": {
