@@ -268,6 +268,7 @@ function renderUsCycleDims(ec, countryData) {
   const ust10 = ec.liquidity_indicators?.ust_10y;
   const tips = ec.liquidity_indicators?.tips_10y;
   const hy = ec.liquidity_indicators?.hy_spread;
+  const ig = ec.liquidity_indicators?.ig_spread;
   return `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="p-4 bg-dash-bg/30 rounded-lg border border-dash-border/50">
@@ -296,6 +297,7 @@ function renderUsCycleDims(ec, countryData) {
           ${tips ? renderMiniMetricCard('10Y实际利率', tips, 'us-l-tips') : ''}
           ${ust10 ? renderMiniMetricCard('10Y美债', ust10, 'us-l-u10') : ''}
           ${hy ? renderMiniMetricCard('HY信用利差', hy, 'us-l-hy') : ''}
+          ${ig ? renderMiniMetricCard('投资级利差(BAA−AAA)', ig, 'us-l-ig') : ''}
         </div>
       </div>
     </div>
@@ -963,7 +965,7 @@ function renderCountry(countryData, country) {
       const m = ec.quadrant_indicators?.[k];
       if (m) renderMiniChart(`mini-us-q-${k[0]}`, m.history, m.change, scope);
     });
-    [['fed_funds', 'ff'], ['ust_10y', 'u10'], ['tips_10y', 'tips'], ['hy_spread', 'hy']].forEach(([k, suf]) => {
+    [['fed_funds', 'ff'], ['ust_10y', 'u10'], ['tips_10y', 'tips'], ['hy_spread', 'hy'], ['ig_spread', 'ig']].forEach(([k, suf]) => {
       const m = ec.liquidity_indicators?.[k];
       if (m) renderMiniChart(`mini-us-l-${suf}`, m.history, m.change, scope);
     });
