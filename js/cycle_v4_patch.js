@@ -54,6 +54,7 @@
     .replace(/transmission_table/g,'传导矩阵')
     .replace(/raw_score/g,'原始分')
     .replace(/std_dev/g,'标准差')
+    .replace(/\bmean\b/g,'均值')
     .replace(/us_equity/g,'美股'); }
 
   // ========== 1. Hero Section ==========
