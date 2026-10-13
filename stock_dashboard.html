@@ -2808,18 +2808,24 @@ function applyTimingDataToMockData() {
   //     数据源: guard_margin_buying_ratio_daily_2010_2026.json (3989点)
   //     评分: 2016后百分位 + 护栏 floor (≥15%→90/≥11%→75/≥9%→60), 取max
   //     低分=冰点(反向积极), 高分=过热(反向风险); 顶部信号领先指数
-  const margin = _tag(_tsInd(ts, 'capital_flow', 'margin_ratio'));
-  if (margin && Array.isArray(margin.history) && margin.history.length >= 2) {
+  const margin = _tag(_tsInd(ts, 'capital_flow', 'margin_buying_ratio'));
+  if (margin && (margin.value !== undefined && margin.value !== null)) {
+    // margin_buying_ratio: no history array → show current value only
     M[1].name = '融资买入占比';
-    M[1].freq = '日频(20MA)';
-    M[1].value = (+margin.value).toFixed(2) + '%';
+    M[1].freq = margin.freq || '日频';
+    const _mv = typeof margin.value === 'number' ? margin.value : parseFloat(String(margin.value).replace('%',''));
+    M[1].value = (isNaN(_mv) ? '--' : _mv.toFixed(2)) + '%';
     const _tierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','fear':'green','extreme_fear':'green'};
     M[1].signal = _tierSig[margin.tier] || _scoreSignal(margin.score);
     const _tierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','fear':'偏冷','extreme_fear':'冰点'};
     M[1].signalText = _tierText[margin.tier] || _scoreText(margin.score, '');
     M[1].slope = null;
-    M[1].dates = margin.history.map(p => p.date);
-    M[1].history = margin.history.map(p => +p.value);
+    if (Array.isArray(margin.history) && margin.history.length >= 2) {
+      M[1].dates = margin.history.map(p => p.date);
+      M[1].history = margin.history.map(p => +p.value);
+    } else {
+      M[1].dates = []; M[1].history = [];
+    }
     M[1].history2 = undefined;
     const _pctTxt = (margin.pctile_2016 !== undefined) ? (+margin.pctile_2016).toFixed(0) + '%分位' : '';
     M[1].description = '<span class="desc-range">2016后 ' + _pctTxt + '</span>'

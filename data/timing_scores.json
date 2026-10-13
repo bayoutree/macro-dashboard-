@@ -1,7 +1,7 @@
 {
-  "update_date": "2026-10-12",
+  "update_date": "2026-10-13",
   "version": "v4.1",
-  "composite_score": 51.6,
+  "composite_score": 50.2,
   "position_range": "25%-40%",
   "market_status": "中性偏贪婪，逐步兑现",
   "dimensions": {
@@ -2065,8 +2065,8 @@
       "indicators": {
         "social_financing_trend": {
           "name": "社融增速趋势",
-          "value": 7.18,
-          "value_label": "宽松见顶",
+          "value": null,
+          "value_label": "紧缩(Δ-12288.0)",
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -2209,7 +2209,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.71%)",
+          "value": "极低/偏热(1.67%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -2854,8 +2854,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.29%",
-          "percentile": "64.6%",
+          "value": "6.33%",
+          "percentile": "50.2%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
@@ -3871,7 +3871,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.89%",
+          "value": "2.93%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -4886,7 +4886,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.10%",
+          "value": "1.14%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -10168,10 +10168,10 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 68.7,
+      "score": 59.7,
       "weight": 16,
-      "weighted_score": 10.99,
-      "signal": "偏贪婪",
+      "weighted_score": 9.55,
+      "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
@@ -10815,8 +10815,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 98.41,
-          "score": 98.41,
+          "value": 72.62,
+          "score": 72.62,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">80",
@@ -15657,7 +15657,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数>80(极度贪婪)",
         "stars": 4,
-        "active": true
+        "active": false
       },
       {
         "dimension": "市场情绪",
@@ -15717,7 +15717,7 @@
       },
       {
         "condition": "恐贪指数回到80以上",
-        "met": true
+        "met": false
       },
       {
         "condition": "社融增速进一步下行",
