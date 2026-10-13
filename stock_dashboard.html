@@ -2846,10 +2846,22 @@ function applyTimingDataToMockData() {
     const _qvixTxt = (fgp.qvix_close !== undefined) ? (+fgp.qvix_close).toFixed(2) : '--';
     const _pctTxt = (fgp.qvix_pctile_252 !== undefined) ? (+fgp.qvix_pctile_252).toFixed(1) + '%' : '--';
     M[2].description = '<span class="desc-range">QVIX ' + _qvixTxt + ' · 一年分位 ' + _pctTxt + '</span>'
+      + ' <span style="display:inline-block;background:#e8f0fe;color:#1a56db;font-size:10px;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600;">QVIX 单因子体系</span>'
       + ' 50ETF期权隐含波动率反向标准化；低分=恐慌(底部区域)，高分=自满(拥挤)。'
       + '极度恐惧&lt;15；极度贪婪需 score&gt;85 且 QVIX&lt;14 双重确认。'
+      + '<span style="display:block;font-size:10px;color:#e65100;margin-top:2px;">⚠ 本指标基于 50ETF 期权隐含波动率(QVIX)单因子体系，与 CNN Fear &amp; Greed、baifenwei.com 等多因子体系口径不同，数值不可直接比较。</span>'
       + (fgp.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">非对称阈值设计说明</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(fgp.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
     M[2].updateTime = fgp.as_of || '';
+    // [P0① 2026-10-13] 数据新鲜度警告：as_of 距今 >3 交易日则标注滞后
+    const _asOf = fgp.as_of || '';
+    if (_asOf) {
+      const _asOfDate = new Date(_asOf + 'T00:00:00');
+      const _now = new Date();
+      const _tradingDaysSince = Math.round((_now - _asOfDate) / 86400000 * 5/7);
+      if (_tradingDaysSince > 3) {
+        M[2].signalText = fgp.zone_confirmed + ' ⚠数据滞后' + _tradingDaysSince + '天';
+      }
+    }
   } else {
     _setPending(M[2], '恐贪指针(QVIX)数据待获取');
   }
