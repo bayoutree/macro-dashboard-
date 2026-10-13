@@ -38,7 +38,7 @@ DATA_DIR = Path(__file__).parent.parent / 'data'
 EXTERNAL_DIR = DATA_DIR / 'external'
 V3_FILE = DATA_DIR / 'cycle_position_v3.json'
 
-FRED_API_KEY = os.environ.get('FRED_API_KEY', '')
+FRED_API_KEY = os.environ.get('FRED_API_KEY', '712fbffa4e6e99945445842d2a799e58')
 FRED_BASE = 'https://api.stlouisfed.org/fred/series/observations'
 WB_BASE = 'https://api.worldbank.org/v2/country/{country}/indicator/{indicator}'
 CST = timezone(timedelta(hours=8))
