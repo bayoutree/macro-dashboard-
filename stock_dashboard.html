@@ -2808,7 +2808,7 @@ function applyTimingDataToMockData() {
   //     数据源: guard_margin_buying_ratio_daily_2010_2026.json (3989点)
   //     评分: 2016后百分位 + 护栏 floor (≥15%→90/≥11%→75/≥9%→60), 取max
   //     低分=冰点(反向积极), 高分=过热(反向风险); 顶部信号领先指数
-  const margin = _tag(_tsInd(ts, 'capital_flow', 'margin_buying_ratio'));
+  const margin = _tag(_tsInd(ts, 'sentiment', 'margin_buying_ratio')); // [P1 2026-10-14] 改读sentiment维度: capital_flow无history, sentiment有36点月频history
   if (margin && (margin.value !== undefined && margin.value !== null)) {
     // margin_buying_ratio: no history array → show current value only
     M[1].name = '融资买入占比';
