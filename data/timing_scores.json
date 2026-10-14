@@ -2055,6 +2055,72 @@
           },
           "data_source": "sina",
           "collect_time": "2026-10-14T16:41:54"
+        },
+        "median_pe_all_a": {
+          "name": "中位数PE(全A)",
+          "value": 36.39,
+          "unit": "倍",
+          "score": null,
+          "freq": "周频",
+          "source": "legulegu.com/stockdata/a-ttm-lyr",
+          "caliber": "全A股滚动市盈率(TTM)中位数",
+          "note": "参考指标，不计分",
+          "history": [
+            {
+              "date": "2024-03-15",
+              "value": 38.5
+            },
+            {
+              "date": "2024-06-14",
+              "value": 32.1
+            },
+            {
+              "date": "2024-09-13",
+              "value": 28.4
+            },
+            {
+              "date": "2024-12-13",
+              "value": 26.8
+            },
+            {
+              "date": "2025-03-14",
+              "value": 31.2
+            },
+            {
+              "date": "2025-06-13",
+              "value": 35.6
+            },
+            {
+              "date": "2025-09-12",
+              "value": 33.2
+            },
+            {
+              "date": "2025-12-12",
+              "value": 30.5
+            },
+            {
+              "date": "2026-03-13",
+              "value": 34.8
+            },
+            {
+              "date": "2026-06-12",
+              "value": 38.2
+            },
+            {
+              "date": "2026-08-21",
+              "value": 36.8
+            },
+            {
+              "date": "2026-10-13",
+              "value": 36.39
+            }
+          ],
+          "_history_meta": {
+            "source": "legulegu全A中位数PE(TTM)",
+            "restored_from": "mockData迁移+legulegu最新值",
+            "restored_at": "2026-10-14",
+            "original_count": 12
+          }
         }
       }
     },
@@ -9616,8 +9682,8 @@
         },
         "industrial_capital": {
           "name": "产业资本增减持",
-          "value": 0.0168,
-          "score": 40,
+          "value": 0.0277,
+          "score": 60,
           "sub_weight": 15,
           "bottom_signal": "净增持/回购潮",
           "top_signal": "大举减持",
@@ -9765,6 +9831,10 @@
             {
               "date": "2026-08",
               "value": 0.0168
+            },
+            {
+              "date": "2026-09",
+              "value": 0.0277
             }
           ],
           "_history_meta": {
@@ -9775,8 +9845,8 @@
         },
         "fiscal_expenditure": {
           "name": "财政支出",
-          "value": 1.3,
-          "score": 33,
+          "value": 1.2,
+          "score": 30,
           "sub_weight": 0,
           "note": "【参考】财政支出仅作辅助参考",
           "bottom_signal": "财政紧缩",
@@ -10158,6 +10228,10 @@
             {
               "date": "2026-07",
               "value": 1.3
+            },
+            {
+              "date": "2026-08",
+              "value": 1.2
             }
           ],
           "_history_meta": {
@@ -11237,8 +11311,8 @@
         },
         "new_account_opening": {
           "name": "新增开户数",
-          "value": 238.57,
-          "score": 82,
+          "value": 191.19,
+          "score": 35.0,
           "sub_weight": 20,
           "bottom_threshold": "<80万",
           "top_threshold": ">200万",
@@ -11801,7 +11875,11 @@
             },
             {
               "date": "2026-08",
-              "value": 238.57
+              "value": 239.73
+            },
+            {
+              "date": "2026-09",
+              "value": 191.19
             }
           ],
           "_history_meta": {

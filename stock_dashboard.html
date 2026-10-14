@@ -3047,8 +3047,37 @@ function applyTimingDataToMockData() {
   // 全A非金融盈利增速 — 保留前端硬编码静态快照（40季，2016Q4~2026Q3）
   // 无 timing_scores 自动数据源，保留静态数据用于 sparkline 渲染
   // _setAnchorPending('earn-card'); // 不再清空
-  // 中位数PE(全A) — 保留前端硬编码静态快照（520周，2016-09~2026-08）
-  // _setAnchorPending('pe-card'); // 不再清空
+  // 中位数PE(全A) — [P2 2026-10-14] 从 timing_scores.json valuation.median_pe_all_a 合并最新数据
+  {
+    const mpe = _tag(_tsInd(ts, 'valuation', 'median_pe_all_a'));
+    if (mpe && mpe.history && mpe.history.length >= 2) {
+      const existingDates = new Set(mockData.medianPE.dates);
+      let added = 0;
+      for (const pt of mpe.history) {
+        if (!existingDates.has(pt.date)) {
+          mockData.medianPE.dates.push(pt.date);
+          mockData.medianPE.history.push(pt.value);
+          added++;
+        }
+      }
+      // 保持日期排序
+      if (added > 0) {
+        const paired = mockData.medianPE.dates.map((d, i) => ({ d, v: mockData.medianPE.history[i] }));
+        paired.sort((a, b) => a.d.localeCompare(b.d));
+        mockData.medianPE.dates = paired.map(p => p.d);
+        mockData.medianPE.history = paired.map(p => p.v);
+        mockData.medianPE.updateTime = mockData.medianPE.dates[mockData.medianPE.dates.length - 1] + ' (周频)';
+      }
+      // 更新卡片显示值
+      const peCard = document.getElementById('pe-card');
+      if (peCard && mpe.value != null) {
+        const bv = peCard.querySelector('.indicator-value');
+        if (bv) { bv.textContent = mpe.value + 'x'; bv.style.color = ''; }
+        const bup = peCard.querySelector('.update-time');
+        if (bup) bup.textContent = '更新: ' + mockData.medianPE.dates[mockData.medianPE.dates.length - 1] + ' (周频)';
+      }
+    }
+  }
   // 盈利预期调整 — 保留前端硬编码静态快照（60月，2021-10~2026-09）
   // 不再清空 dates/history，保留 sparkline 数据
   // 信用利差无自动数据源 → 清空假线（10Y国债真值在 loadExternalLiqData 中接入）
