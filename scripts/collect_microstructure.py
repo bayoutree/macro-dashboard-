@@ -517,8 +517,37 @@ def main():
     if hhi_val is not None:
         trend_val, trend_score = calc_concentration_trend(hhi_val, ts)
     else:
-        trend_val, trend_score = "数据待获取(依赖HHI)", None
-        logger.info("  ⚠️ HHI不可用，趋势无法计算")
+        # [P1 2026-10-14] HHI缺失时从concentration_trend.history末值派生，避免占位符覆盖425点有效历史
+        ct_hist = (ts.get("dimensions", {})
+                     .get("micro_structure", {})
+                     .get("indicators", {})
+                     .get("concentration_trend", {})
+                     .get("history", []))
+        if ct_hist and len(ct_hist) >= 2:
+            last_point = ct_hist[-1]
+            last_val = last_point.get("value")
+            last_date = last_point.get("date", "")
+            if isinstance(last_val, (int, float)) and not math.isnan(last_val):
+                # 从末值派生趋势描述（负值=分散，正值=集中）
+                if last_val < -100:
+                    trend_val = f"分散(HHI{last_val:.1f}@{last_date})"
+                    trend_score = 40
+                elif last_val < 0:
+                    trend_val = f"温和分散(HHI{last_val:.1f}@{last_date})"
+                    trend_score = 45
+                elif last_val < 100:
+                    trend_val = f"持平(HHI{last_val:+.1f}@{last_date})"
+                    trend_score = 50
+                else:
+                    trend_val = f"集中(HHI+{last_val:.1f}@{last_date})"
+                    trend_score = 60
+                logger.info(f"  ⚠️ HHI不可用，从history末值派生: {trend_val}")
+            else:
+                trend_val, trend_score = "数据待获取(依赖HHI)", None
+                logger.info("  ⚠️ HHI不可用且history末值无效，趋势无法计算")
+        else:
+            trend_val, trend_score = "数据待获取(依赖HHI)", None
+            logger.info("  ⚠️ HHI不可用且无history，趋势无法计算")
     
     # ---- 合理性检查 ----
     logger.info("\n--- 合理性检查 ---")
