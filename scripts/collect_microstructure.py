@@ -689,10 +689,24 @@ def _update_timing_scores(ts, source,
         ic["history"] = append_or_update_history(ic["history"], {"date": today, "value": hhi_val})
         logger.info(f"  ✅ industry_concentration 已更新: HHI={hhi_val}, history点数={len(ic['history'])}")
     else:
-        ic["value"] = "数据待获取"
-        ic["score"] = 50
-        # 不追加 history
-        logger.warning("  ⚠️ industry_concentration 置灰（行业板块数据不可用）")
+        # [P1 2026-10-14] HHI缺失时从history末值派生，避免占位符覆盖445点有效历史
+        ic_hist = ic.get("history", [])
+        if ic_hist and len(ic_hist) >= 2:
+            last_point = ic_hist[-1]
+            last_hhi = last_point.get("value")
+            last_date = last_point.get("date", "")
+            if isinstance(last_hhi, (int, float)) and not math.isnan(last_hhi):
+                ic["value"] = f"HHI={last_hhi:.0f}@{last_date}（派生）"
+                # HHI 越小越集中(红色)，越大越分散(绿色)
+                ic["score"] = max(20, min(80, 60 - int((last_hhi - 1000) / 50)))
+                logger.info(f"  ⚠️ HHI不可用，从history末值派生: {ic['value']}")
+            else:
+                ic["value"] = "数据待获取"
+                ic["score"] = 50
+        else:
+            ic["value"] = "数据待获取"
+            ic["score"] = 50
+            logger.warning("  ⚠️ industry_concentration 置灰（行业板块数据不可用且无history）")
     
     # ---- 4. concentration_trend (micro_structure) ----
     ct = ms.get("indicators", {}).get("concentration_trend", {})

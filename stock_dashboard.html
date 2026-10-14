@@ -1412,7 +1412,8 @@ function applyRealDataToMockData() {
     const _d = (StageEngine._rightScoresData && StageEngine._rightScoresData.update_date) || '';
     mockData.confirmSignals.forEach((cf) => {
       // 保留 dates/history/dif/dea/historyMA 不清空，保留 sparkline 数据
-      cf.updateTime = _d;
+      // [P1 2026-10-14] updateTime 统一为 dates末项+频率（不再用数据抓取时间）
+      cf.updateTime = ((cf.dates && cf.dates.length > 0) ? cf.dates[cf.dates.length - 1] : _d) + (cf.freq ? ' (' + cf.freq + ')' : '');
       if (typeof cf.signalText === 'string' && cf.signalText.includes('数据获取异常')) cf.signalText = '未触发';
     });
   }
@@ -1731,7 +1732,7 @@ function _fillAnchorCard(cfg, ind, valueText) {
       }
     }
     const up = document.getElementById(cfg.card.replace('-card', '-update'));
-    if (up) { up.textContent = '更新: ' + (ind._updateDate || '') + ' (' + cfg.freq + ' · ' + n + '点)'; up.className = 'update-time'; }
+    if (up) { const _lastD = (series.dates.length > 0) ? series.dates[series.dates.length - 1] : (ind._updateDate || ''); up.textContent = '更新: ' + _lastD + ' (' + cfg.freq + ' · ' + n + '点)'; up.className = 'update-time'; }
     const dl = document.getElementById(cfg.card.replace('-card', '-dates'));
     if (dl) dl.innerHTML = '';
   } else {
@@ -2750,7 +2751,9 @@ function _setSnapshot(ind, ts, valueText, freq) {
   ind.history2 = undefined;
   ind.slope = null;
   ind.freq = freq || ind.freq || '';
-  ind.updateTime = ind._updateDate || '';
+  // [P1 2026-10-14] updateTime 统一为 dates末项+频率（不再用数据抓取时间）
+  const _lastD = (ind.dates && ind.dates.length > 0) ? ind.dates[ind.dates.length - 1] : (ind._updateDate || '');
+  ind.updateTime = _lastD + (ind.freq ? ' (' + ind.freq + ')' : '');
 }
 function _setAnchorValue(cardId, text, sigClass, sigText, chgText) {
   const card = document.getElementById(cardId);
@@ -2790,7 +2793,7 @@ function applyTimingDataToMockData() {
       M[0].dates = fs.dates;
       M[0].history = fs.history;
       M[0].history2 = fl.history;
-      M[0].updateTime = fundStock._updateDate || '';
+      M[0].updateTime = ((fs.dates.length > 0) ? fs.dates[fs.dates.length - 1] : (fundStock._updateDate || '')) + ' (周频)';
       // Signal: stock >92% red, >85% yellow, else green; flex >85% red, >75% yellow, else green
       const sv = +fundStock.value, fv = +fundFlex.value;
       if (sv > 92 || fv > 85) {
@@ -2812,7 +2815,7 @@ function applyTimingDataToMockData() {
   if (margin && (margin.value !== undefined && margin.value !== null)) {
     // margin_buying_ratio: no history array → show current value only
     M[1].name = '融资买入占比';
-    M[1].freq = margin.freq || '日频';
+    M[1].freq = margin.freq || '月频'; // [P1 2026-10-14] sentiment维度为月频history(36点)，freq标注修正
     const _mv = typeof margin.value === 'number' ? margin.value : parseFloat(String(margin.value).replace('%',''));
     M[1].value = (isNaN(_mv) ? '--' : _mv.toFixed(2)) + '%';
     const _tierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','fear':'green','extreme_fear':'green'};
@@ -2832,7 +2835,7 @@ function applyTimingDataToMockData() {
       + ' 两市融资买入额/成交额 20MA。低占比=杠杆冰点(反向积极)，高占比=杠杆过热(反向风险)。'
       + '顶部信号领先指数约4个月(2015占比2月见顶、指数6月见顶)。'
       + (margin.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">护栏分档与历史触发率</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(margin.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
-    M[1].updateTime = margin.update_date || margin._updateDate || '';
+    M[1].updateTime = ((M[1].dates.length > 0) ? M[1].dates[M[1].dates.length - 1] : (margin.update_date || margin._updateDate || '')) + ' (' + (M[1].freq || '月频') + ')';
   } else _setPending(M[1]);
   // [2] 恐贪指针 — 工单7: QVIX单因子（50ETF期权隐含波动率），score=100-滚动252日百分位
   //     五档取色严格跟随 zone_confirmed（极度贪婪为双条件: score>85 且 QVIX<14），禁止用score自行分档
@@ -2893,7 +2896,7 @@ function applyTimingDataToMockData() {
       + ' 新发主动偏股基金(股票型+偏股混合+灵活配置)成立份额3月滚动和，严格剔除ETF/指数/债基/FOF。'
       + '反向指标：发行冰点常对应底部区域，爆款频现常对应顶部。'
       + (nf.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">阈值说明与采集方法</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(nf.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
-    M[3].updateTime = nf.update_date || nf._updateDate || '';
+    M[3].updateTime = ((M[3].dates.length > 0) ? M[3].dates[M[3].dates.length - 1] : (nf.update_date || nf._updateDate || '')) + ' (' + (M[3].freq || '月频') + ')';
   } else _setPending(M[3]);
   // [4] 偏股基金3年年化 — fund_3y_annual 顶层快照
   const f3 = _tag(_tsInd(ts, 'sentiment', 'fund_3y_annual'));
@@ -2946,7 +2949,7 @@ function applyTimingDataToMockData() {
       + ' 产业资本净减持额/流通市值。低减持率=产业资本不卖(底部区域)，高减持率=大举卖出(风险信号)。'
       + '回购计入增持端后数据将下修，当前值为上限估计。'
       + (ic6.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">数据说明与局限</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(ic6.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
-    M[6].updateTime = ic6.update_date || ic6._updateDate || '';
+    M[6].updateTime = ((M[6].dates.length > 0) ? M[6].dates[M[6].dates.length - 1] : (ic6.update_date || ic6._updateDate || '')) + ' (' + (M[6].freq || '月频') + ')';
   } else _setPending(M[6], '产业资本净减持率数据待获取');
 
   // ============ 参考指标 5 项 ============
@@ -3149,6 +3152,9 @@ async function loadExternalLiqData() {
         if (bv) { bv.textContent = last.toFixed(2) + '%'; bv.style.color = ''; }
         const sig = bondCard.querySelector('.ind-signal');
         if (sig) { sig.className = 'ind-signal yellow'; sig.textContent = '中国10Y国债'; }
+        // [P1 2026-10-14] update-time 动态化为折线末项日期+日频
+        const bup = bondCard.querySelector('.update-time');
+        if (bup) bup.textContent = '更新: ' + cnb[cnb.length-1].date + ' (日频)';
       }
     } else {
       mockData.bondYield.dates = []; mockData.bondYield.history = []; mockData.bondYield.creditSpread = [];

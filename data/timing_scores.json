@@ -11839,8 +11839,8 @@
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "数据待获取",
-          "score": 50,
+          "value": "HHI=1800@2026-09-11（派生）",
+          "score": 44,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
           "top_threshold": "前三行业>40%",
