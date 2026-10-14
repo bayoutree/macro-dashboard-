@@ -2973,7 +2973,7 @@ function applyTimingDataToMockData() {
   // [1] 全A换手率 — turnover_rate 顶层快照
   const to = _tag(_tsInd(ts, 'sentiment', 'turnover_rate'));
   if (to) {
-    _setSnapshot(R[1], to, to.value, '周频');
+    _setSnapshot(R[1], to, to.value, '日频'); // [P1 2026-10-14] 60点日频history，freq标注修正
     R[1].signalText = _scoreText(to.score, '换手');
   } else _setPending(R[1]);
   // [2] 财政支出增速(月) — timing_scores.json capital_flow.fiscal_expenditure
