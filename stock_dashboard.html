@@ -971,7 +971,7 @@ const StageEngine = {
   _rightScoresData: null,  // v3.3: 缓存 timing_right_scores.json
   async load() {
     try {
-      const resp = await fetch('data/timing_scores.json?v=20260914r');
+      const resp = await fetch('data/timing_scores.json?v=' + Date.now()); // [P2 2026-10-15] 动态cache-buster替代硬编码版本号
       if (resp.ok) {
         this._timingData = await resp.json();
       }
@@ -980,14 +980,14 @@ const StageEngine = {
     }
     // 工单7: 恐贪指针（QVIX单因子，五档zone_confirmed驱动取色）
     try {
-      const respFG = await fetch('data/feargreed_pointer.json?v=20260917');
+      const respFG = await fetch('data/feargreed_pointer.json?v=' + Date.now()); // [P2 2026-10-15] 动态cache-buster
       if (respFG.ok) this._fearGreedPointer = await respFG.json();
     } catch(e) {
       console.log('[StageEngine] feargreed_pointer.json 未加载');
     }
     // v3.3: 加载右侧趋势确认数据
     try {
-      const resp2 = await fetch('data/timing_right_scores.json');
+      const resp2 = await fetch('data/timing_right_scores.json?v=' + Date.now()); // [P2 2026-10-15] 动态cache-buster
       if (resp2.ok) {
         this._rightScoresData = await resp2.json();
       }
@@ -3136,8 +3136,8 @@ async function loadExternalLiqData() {
     // v3.4.3: ERP 卡 liquidity-overlay 静态假值先置待获取，fetch 成功后由下方真值覆盖
     document.querySelectorAll('.liq-item .liq-value').forEach(el => { el.textContent = '--'; });
     const [usResp, cnResp] = await Promise.all([
-      fetch('data/us_macro.json').then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('data/cn_macro.json').then(r => r.ok ? r.json() : null).catch(() => null)
+      fetch('data/us_macro.json?v=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('data/cn_macro.json?v=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
     ]);
 
     // --- 美债10Y: from us_macro.json history.yield_10y ---
