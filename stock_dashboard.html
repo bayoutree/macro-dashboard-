@@ -1372,6 +1372,38 @@ function applyRealDataToMockData() {
     }
   }
 
+  // --- 确认信号3项：从 timing_scores.json confirm_signals 动态更新 dates/history/updateTime ---
+  // [P3 2026-10-15] 替换 mockData 硬编码 240 点，改用沪深300月K线真实计算数据
+  {
+    const _csData = leftData && leftData.confirm_signals;
+    if (_csData) {
+      // 确认信号[0]: 均线排列(月线)
+      const _ma = _csData.ma_arrangement;
+      if (_ma && _ma.dates && _ma.dates.length >= 2 && mockData.confirmSignals[0]) {
+        mockData.confirmSignals[0].dates = _ma.dates;
+        mockData.confirmSignals[0].history = _ma.history;
+        mockData.confirmSignals[0].updateTime = _ma.dates[_ma.dates.length-1] + ' (月频)';
+      }
+      // 确认信号[1]: MACD(月线)
+      const _macd = _csData.macd_monthly;
+      if (_macd && _macd.dates && _macd.dates.length >= 2 && mockData.confirmSignals[1]) {
+        mockData.confirmSignals[1].dates = _macd.dates;
+        mockData.confirmSignals[1].dif = _macd.dif;
+        mockData.confirmSignals[1].dea = _macd.dea;
+        mockData.confirmSignals[1].history = _macd.histogram;
+        mockData.confirmSignals[1].updateTime = _macd.dates[_macd.dates.length-1] + ' (月频)';
+      }
+      // 确认信号[2]: 月线成交量趋势
+      const _vol = _csData.volume_monthly;
+      if (_vol && _vol.dates && _vol.dates.length >= 2 && mockData.confirmSignals[2]) {
+        mockData.confirmSignals[2].dates = _vol.dates;
+        mockData.confirmSignals[2].history = _vol.history;
+        mockData.confirmSignals[2].historyMA = _vol.historyMA;
+        mockData.confirmSignals[2].updateTime = _vol.dates[_vol.dates.length-1] + ' (月频)';
+      }
+    }
+  }
+
   // --- 参考指标5项：从 timing_scores.json / timing_right_scores.json 读取 ---
   if (rightData && rightData.signals) {
     const sigs = rightData.signals;
