@@ -489,7 +489,7 @@ body::before {
     </div>
     <div class="header-right">
       <span class="data-status fresh"><span class="dot"></span>数据正常</span>
-      <span class="update-badge">更新: 2026-09-01 18:00</span>
+      <span class="update-badge" id="header-update-time">更新: --</span>
     </div>
   </header>
 
@@ -2768,6 +2768,9 @@ function _setAnchorValue(cardId, text, sigClass, sigText, chgText) {
 function applyTimingDataToMockData() {
   const ts = StageEngine._timingData;
   const _ud = (ts && ts.update_date) || '';
+  // [P2 2026-10-15] 页头时间戳动态化
+  const _hut = document.getElementById('header-update-time');
+  if (_hut && _ud) _hut.textContent = '更新: ' + _ud;
   if (!ts || !ts.dimensions) {
     console.warn('[applyTiming] timing_scores unavailable, marking pending');
     return;
