@@ -610,7 +610,7 @@ body::before {
       <div class="anchor-card" id="erp-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name" id="erp-title">万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span><span class="dim-tag dim-tag-ref">参考</span></div>
+            <div class="indicator-name" id="erp-title">万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·月频)</span><span class="dim-tag dim-tag-ref">参考</span></div>
             <div class="indicator-value" id="erp-value">数据待获取</div>
             <div class="indicator-change down"></div>
           </div>
@@ -637,7 +637,7 @@ body::before {
       <div class="anchor-card" id="buffett-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">巴菲特指标 <span style="font-size:10px;color:var(--text-muted);">(市值/GDP·月频)</span><span class="dim-tag dim-tag-valuation">估值</span></div>
+            <div class="indicator-name">巴菲特指标 <span style="font-size:10px;color:var(--text-muted);">(市值/GDP·日频)</span><span class="dim-tag dim-tag-valuation">估值</span></div>
             <div class="indicator-value" id="buffett-value">数据待获取</div>
             <div class="indicator-change up"></div>
           </div>
@@ -709,7 +709,7 @@ body::before {
         <div class="update-time" id="pb-update">更新: --</div>
       </div>
 
-      <!-- v3.4.9: 破净率（valuation.break_net_rate，周频真值） -->
+      <!-- v3.4.9: 破净率（valuation.break_net_rate，日频真值） -->
       <div class="anchor-card" id="break-net-rate-card">
         <div class="card-header">
           <div>
@@ -727,7 +727,7 @@ body::before {
         <div class="update-time" id="break-net-rate-update">数据待获取</div>
       </div>
 
-      <!-- v3.4.9: 股息率利差（equity_bond.dividend_bond_spread_red，周频真值） -->
+      <!-- v3.4.9: 股息率利差（equity_bond.dividend_bond_spread_red，日频真值） -->
       <div class="anchor-card" id="dividend-spread-card">
         <div class="card-header">
           <div>
@@ -812,7 +812,7 @@ body::before {
       <div class="anchor-card">
         <div class="card-header">
           <div>
-            <div class="indicator-name">10Y国债收益率 + 信用利差 <span style="font-size:10px;color:var(--text-muted);">(月频)</span><span class="dim-tag dim-tag-liquidity">流动性</span></div>
+            <div class="indicator-name">10Y国债收益率 + 信用利差 <span style="font-size:10px;color:var(--text-muted);">(周频)</span><span class="dim-tag dim-tag-liquidity">流动性</span></div>
             <div class="indicator-value">1.70% / 0.60%</div>
           </div>
           <div class="ind-signal yellow">中性</div>
@@ -1467,16 +1467,16 @@ applyRealDataToMockData();
 const mockData = {
   // --- ERP (E2: upgraded to anchor) ---
   erp: {
-    name: '万得全A ERP', freq: '周频', unit: '%', // v3.4.5: 口径回归——仅万得全A，真序列上线前灰灯，不设沪深300副卡
+    name: '万得全A ERP', freq: '月频', unit: '%', // v3.4.5: 口径回归——仅万得全A，真序列上线前灰灯，不设沪深300副卡
     dates: ['2016-09','2016-10','2016-11','2016-12','2017-01','2017-02','2017-03','2017-04','2017-05','2017-06','2017-07','2017-08','2017-09','2017-10','2017-11','2017-12','2018-01','2018-02','2018-03','2018-04','2018-05','2018-06','2018-07','2018-08','2018-09','2018-10','2018-11','2018-12','2019-01','2019-02','2019-03','2019-04','2019-05','2019-06','2019-07','2019-08','2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03','2020-04','2020-05','2020-06','2020-07','2020-08','2020-09','2020-10','2020-11','2020-12','2021-01','2021-02','2021-03','2021-04','2021-05','2021-06','2021-07','2021-08','2021-09','2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
     history: [5.5,5.3,5.1,4.6,4.7,4.7,5.2,5.3,5.5,5.8,6.0,6.3,6.5,6.6,6.7,6.8,7.2,7.4,7.4,7.5,7.7,7.5,7.8,8.1,8.3,8.2,8.4,8.5,8.1,7.3,7.1,6.3,5.6,5.4,5.2,5.3,5.1,4.7,4.8,4.3,4.4,4.3,4.3,4.3,4.2,4.1,4.0,3.9,3.7,3.6,3.5,3.6,3.7,4.3,4.0,4.2,4.7,5.0,5.0,5.3,5.6,5.6,5.6,5.9,6.2,5.9,6.2,6.3,6.3,6.5,6.6,6.9,6.7,6.6,6.6,6.7,6.9,6.7,6.7,6.8,6.6,6.6,6.3,6.4,6.5,6.6,6.7,6.5,6.6,6.6,6.8,6.8,6.7,6.6,6.9,6.9,7.1,6.9,7.3,6.9,7.3,7.1,7.0,6.9,7.1,7.4,7.3,7.3,6.9,7.4,7.4,7.2,7.2,7.2,7.4,7.0,7.0,7.3,6.9,7.2],
-    updateTime: '2026-08 (周频)',
+    updateTime: '2026-08 (月频)',
     p25: 4.5, p50: 6.0, p75: 7.5
   },
 
   // --- Buffett (E2: upgraded to anchor) ---
   buffett: {
-    name: '巴菲特指标', freq: '月频', unit: '%', // v3.4.5: 月度快照
+    name: '巴菲特指标', freq: '日频', unit: '%', // v3.4.5: 日度快照
     dates: ['2011Q3','2011Q4','2012Q1','2012Q2','2012Q3','2012Q4','2013Q1','2013Q2','2013Q3','2013Q4','2014Q1','2014Q2','2014Q3','2014Q4','2015Q1','2015Q2','2015Q3','2015Q4','2016Q1','2016Q2','2016Q3','2016Q4','2017Q1','2017Q2','2017Q3','2017Q4','2018Q1','2018Q2','2018Q3','2018Q4','2019Q1','2019Q2','2019Q3','2019Q4','2020Q1','2020Q2','2020Q3','2020Q4','2021Q1','2021Q2','2021Q3','2021Q4','2022Q1','2022Q2','2022Q3','2022Q4','2023Q1','2023Q2','2023Q3','2023Q4','2024Q1','2024Q2','2024Q3','2024Q4','2025Q1','2025Q2','2025Q3','2025Q4','2026Q1','2026Q2'],
     history: [58.1,57.6,61.3,60.7,65.3,65.5,70.4,68.9,72.0,74.0,79.8,84.5,90.6,89.5,97.5,100.9,96.1,88.6,81.3,74.2,74.4,77.8,78.5,83.0,80.3,83.0,75.1,71.9,67.9,63.7,67.2,67.4,68.3,73.2,69.5,65.7,72.4,83.7,90.1,87.0,83.9,78.9,74.4,73.2,71.1,71.1,72.4,75.2,73.9,75.3,76.3,73.7,71.9,74.9,74.8,73.1,74.6,73.4,70.3,72.5],
     updateTime: '2026Q3 (季频)',
@@ -1501,11 +1501,11 @@ const mockData = {
 
   // --- Bond yield + credit spread (E3 new) ---
   bondYield: {
-    name: '10Y国债收益率', freq: '月频', unit: '%',
+    name: '10Y国债收益率', freq: '周频', unit: '%',
     dates: ['2016-09','2016-10','2016-11','2016-12','2017-01','2017-02','2017-03','2017-04','2017-05','2017-06','2017-07','2017-08','2017-09','2017-10','2017-11','2017-12','2018-01','2018-02','2018-03','2018-04','2018-05','2018-06','2018-07','2018-08','2018-09','2018-10','2018-11','2018-12','2019-01','2019-02','2019-03','2019-04','2019-05','2019-06','2019-07','2019-08','2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03','2020-04','2020-05','2020-06','2020-07','2020-08','2020-09','2020-10','2020-11','2020-12','2021-01','2021-02','2021-03','2021-04','2021-05','2021-06','2021-07','2021-08','2021-09','2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
     history: [2.98,3.04,2.98,3.04,3.05,3.22,3.23,3.42,3.32,3.47,3.41,3.56,3.55,3.65,3.69,3.62,3.58,3.54,3.53,3.43,3.36,3.32,3.39,3.26,3.28,3.24,3.21,3.09,3.09,3.2,3.07,3.09,3.01,3.09,2.93,2.92,2.84,2.79,2.78,2.66,2.73,2.72,2.64,2.55,2.54,2.59,2.51,2.64,2.66,2.69,2.73,2.82,2.81,2.87,2.9,2.95,2.93,3.05,3.03,2.9,2.98,2.89,2.91,2.89,2.78,2.83,2.8,2.88,2.79,2.79,2.78,2.8,2.85,2.7,2.72,2.68,2.6,2.67,2.56,2.58,2.46,2.51,2.47,2.37,2.33,2.23,2.24,2.15,2.06,1.94,1.87,1.83,1.78,1.67,1.66,1.75,1.78,1.73,1.72,1.8,1.67,1.75,1.75,1.75,1.76,1.76,1.74,1.78,1.75,1.8,1.78,1.81,1.7,1.71,1.81,1.82,1.82,1.79,1.82,1.88],
     creditSpread: [0.76,0.79,0.8,0.81,0.82,0.84,0.77,0.76,0.78,0.81,0.81,0.79,0.78,0.8,0.82,0.75,0.94,1.07,1.07,1.21,1.37,1.42,1.5,1.59,1.73,1.68,1.62,1.54,1.49,1.45,1.3,1.26,1.14,1.06,1.05,1.0,0.98,1.05,0.97,0.95,0.93,0.89,0.96,0.93,0.87,0.88,0.79,0.83,0.8,0.78,0.78,0.8,0.78,0.8,0.79,0.83,0.84,0.91,0.94,0.93,0.96,1.0,1.0,1.05,1.05,1.05,0.94,0.91,0.95,0.86,0.88,0.88,0.79,0.78,0.81,0.74,0.68,0.74,0.74,0.72,0.66,0.67,0.61,0.69,0.64,0.62,0.58,0.53,0.58,0.58,0.51,0.58,0.55,0.51,0.48,0.49,0.48,0.51,0.42,0.47,0.46,0.51,0.44,0.43,0.42,0.41,0.41,0.44,0.47,0.45,0.51,0.47,0.44,0.45,0.44,0.43,0.41,0.47,0.46,0.45],
-    updateTime: '2026-08 (月频)',
+    updateTime: '2026-08 (周频)',
     p25: 2.0, p50: 2.8, p75: 3.3
   },
 
@@ -1699,14 +1699,14 @@ const fedAnchorData = {
 };
 
 // v3.4.10: 新增锚点卡数据对象（timing_scores dimensions 真值驱动；无数据时灰灯）
-const buffettAnchorData = { history: [], dates: [], freq: '月频' };  // 巴菲特指标（总市值/GDP）
+const buffettAnchorData = { history: [], dates: [], freq: '日频' };  // 巴菲特指标（总市值/GDP）
 const sfAnchorData   = { history: [], dates: [], freq: '月频' };  // 社融存量TTM同比
 const m12AnchorData  = { history: [], dates: [], freq: '月频' };  // M1-M2剪刀差
 const pbAnchorData   = { history: [], dates: [], freq: '月频' };  // 沪深300 PB分位
 const hhiAnchorData  = { history: [], dates: [], freq: '周频' };  // HHI水平
 const hhitAnchorData = { history: [], dates: [], freq: '周频' };  // HHI 20周动量
-const bnrAnchorData  = { history: [], dates: [], freq: '周频' };  // 破净率（全A PB<1占比）
-const dbsAnchorData  = { history: [], dates: [], freq: '周频' };  // 股息率利差（股息率-10Y国债）
+const bnrAnchorData  = { history: [], dates: [], freq: '日频' };  // 破净率（全A PB<1占比）
+const dbsAnchorData  = { history: [], dates: [], freq: '日频' };  // 股息率利差（股息率-10Y国债）
 function _fillAnchorCard(cfg, ind, valueText) {
   // cfg: {card, spark, dates, update, data, freq, valSuffix, sigText}
   const card = document.getElementById(cfg.card);
@@ -3026,22 +3026,22 @@ function applyTimingDataToMockData() {
         erp.score >= 70 ? '偏贵' : erp.score <= 30 ? '偏便宜' : '中性偏吸引力', '')
       mockData.erp.signal = _scoreSignal(erp.score);
       const et = document.getElementById('erp-title');
-      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频·000985口径)</span>';
+      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·月频·000985口径)</span>';
       const eu = document.getElementById('erp-updatetime');
-      if (eu) eu.textContent = '更新: ' + _ud + ' | 中证全指000985 PE(TTM)−中国10Y国债,周频 | 分位: ' + (erp.percentile || '2020年以来');
+      if (eu) eu.textContent = '更新: ' + _ud + ' | 中证全指000985 PE(TTM)−中国10Y国债,月频 | 分位: ' + (erp.percentile || '2020年以来');
     } else {
       mockData.erp.dates = []; mockData.erp.history = [];
       _setAnchorPending('erp-card');
       mockData.erp.signal = 'gray';
       const et = document.getElementById('erp-title');
-      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·周频)</span>';
+      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·月频)</span>';
       const eu = document.getElementById('erp-updatetime');
       if (eu) eu.textContent = '数据待获取（万得全A PE 序列采集中）';
     }
   }
   // 巴菲特指标 — buffett_ratio 工单4真数据（257月点，2005-04~2026-08）
   const bf = _tag(_tsInd(ts, 'valuation', 'buffett_ratio'));
-  _fillAnchorCard({card:'buffett-card', data:buffettAnchorData, freq:'月频', valSuffix:'%',
+  _fillAnchorCard({card:'buffett-card', data:buffettAnchorData, freq:'日频', valSuffix:'%',
     sigText: bf ? (bf.score >= 70 ? '高于历史中枢(风险)' : bf.score <= 30 ? '低于历史中枢(便宜)' : '中性区间') : ''}, bf, bf ? (bf.value + '%') : null);
   // 巴菲特 note
   if (bf && bf.note) {
@@ -3114,7 +3114,7 @@ function applyTimingDataToMockData() {
   // ============ v3.4.9 新增2张锚点卡（工单2/3：股息率利差 + 破净率） ============
   // 破净率 — valuation.break_net_rate（445周点，2018年起）
   const bnr = _tag(_tsInd(ts, 'valuation', 'break_net_rate'));
-  _fillAnchorCard({card:'break-net-rate-card', data:bnrAnchorData, freq:'周频', valSuffix:'%',
+  _fillAnchorCard({card:'break-net-rate-card', data:bnrAnchorData, freq:'日频', valSuffix:'%',
     sigText: bnr ? (bnr.score <= 30 ? '市场健康' : bnr.score >= 70 ? '破净偏高' : '中性') : ''}, bnr, bnr ? (parseFloat(bnr.value).toFixed(2) + '%') : null);
   // 破净率 note
   if (bnr && bnr.note) {
@@ -3124,7 +3124,7 @@ function applyTimingDataToMockData() {
 
   // 股息率利差 — equity_bond.dividend_bond_spread_red（445周点，2018年起）
   const dbs = _tag(_tsInd(ts, 'equity_bond', 'dividend_bond_spread_red'));
-  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'周频', valSuffix:'%',
+  _fillAnchorCard({card:'dividend-spread-card', data:dbsAnchorData, freq:'日频', valSuffix:'%',
     sigText: dbs ? (dbs.score <= 30 ? '股票吸引力高' : dbs.score >= 70 ? '股票吸引力低' : '中性') : ''}, dbs, dbs ? (dbs.value + '%') : null);
   // 股息率利差 note
   if (dbs && dbs.note) {
