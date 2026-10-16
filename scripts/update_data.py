@@ -250,6 +250,150 @@ def score_from_percentile(val, pct, reverse=False):
         return round(min(100, max(0, 100 - pct)), 0)
 
 
+
+# ============================================================
+# P1-7: 非线性权重 + 极端锚定状态机 (2026-10-16)
+# ============================================================
+# 设计意图：当维度分极端时（>85 或 <15），该维度权重×2
+# 滞回逻辑防止跨月边界反复触发（进>85/<15，退<80/>20）
+# 已知特性：情绪/资金流极端时常同向触发，是设计意图（解决双重稀释），
+# 但属对相关维度的隐性重复计数——投资分析专业校验已确认接受此特性。
+
+P17_ENTER_HIGH = 85
+P17_EXIT_HIGH = 80
+P17_ENTER_LOW = 15
+P17_EXIT_LOW = 20
+
+P17_A_STAR_ENTER = 20
+P17_A_STAR_EXIT = 23
+P17_D_STAR_ENTER = 70
+P17_D_STAR_EXIT = 67
+P17_COOLDOWN_DAYS = 90  # 3个月
+
+def apply_nonlinear_weights(dimensions, prev_hysteresis):
+    """
+    P1-7: 对极端维度应用权重×2，带滞回防跳变
+    进入带：score > 85 或 score < 15
+    退出带：score < 80（高）或 score > 20（低）
+    Returns: (adjusted_dimensions, today_hysteresis)
+    """
+    import copy
+    adjusted_dimensions = copy.deepcopy(dimensions)
+    today_hysteresis = {}
+
+    for dim_name, dim_data in adjusted_dimensions.items():
+        if dim_name.startswith("_"):
+            continue
+
+        score = dim_data.get("score", 50)
+        orig_weight = dim_data.get("_orig_weight", dim_data.get("weight", 15))
+        dim_data["_orig_weight"] = orig_weight
+
+        prev_state = prev_hysteresis.get(dim_name, {"active": False, "direction": None})
+        was_active = prev_state.get("active", False)
+        last_dir = prev_state.get("direction")
+
+        is_extreme = False
+        direction = None
+
+        if score > P17_ENTER_HIGH:
+            is_extreme = True
+            direction = "high"
+        elif score < P17_ENTER_LOW:
+            is_extreme = True
+            direction = "low"
+        elif was_active:
+            if last_dir == "high" and score < P17_EXIT_HIGH:
+                is_extreme = False
+            elif last_dir == "low" and score > P17_EXIT_LOW:
+                is_extreme = False
+            else:
+                is_extreme = True
+                direction = last_dir
+
+        if is_extreme:
+            new_weight = orig_weight * 2
+            dim_data["weight"] = new_weight
+            dim_data["weighted_score"] = round(score * new_weight / 100, 2)
+            today_hysteresis[dim_name] = {"active": True, "direction": direction}
+        else:
+            dim_data["weight"] = orig_weight
+            dim_data["weighted_score"] = round(score * orig_weight / 100, 2)
+            today_hysteresis[dim_name] = {"active": False, "direction": None}
+
+    return adjusted_dimensions, today_hysteresis
+
+
+def apply_extreme_anchoring(composite_score, prev_anchor_state, today):
+    """
+    P1-7: 极端锚定状态机
+    A* (composite<20 → target 65%), D* (>70 → target 15%)
+    滞回：退出条件 composite>23 / <67
+    冷却期：解除后3个月内不重复触发
+    Returns: (anchor_state, target_equity, anchor_note)
+    """
+    from datetime import datetime, timedelta
+
+    current_anchor = prev_anchor_state.get("current", "normal")
+    cooldown_until = prev_anchor_state.get("cooldown_until")
+    since_date = prev_anchor_state.get("since")
+
+    in_cooldown = False
+    if cooldown_until:
+        try:
+            cooldown_date = datetime.strptime(cooldown_until, "%Y-%m-%d").date()
+            if datetime.now().date() < cooldown_date:
+                in_cooldown = True
+        except:
+            pass
+
+    new_anchor = current_anchor
+    anchor_note = ""
+
+    if current_anchor == "normal":
+        if in_cooldown:
+            new_anchor = "normal"
+            anchor_note = f"冷却中（至{cooldown_until}）"
+        elif composite_score < P17_A_STAR_ENTER:
+            new_anchor = "A_star"
+            anchor_note = "A* 极端恐惧锚定（target 65%）"
+        elif composite_score > P17_D_STAR_ENTER:
+            new_anchor = "D_star"
+            anchor_note = "D* 极端贪婪锚定（target 15%）"
+    elif current_anchor == "A_star":
+        if composite_score > P17_A_STAR_EXIT:
+            new_anchor = "normal"
+            cooldown_date = datetime.now() + timedelta(days=P17_COOLDOWN_DAYS)
+            cooldown_until = cooldown_date.strftime("%Y-%m-%d")
+            anchor_note = f"A* 解除，进入冷却（至{cooldown_until}）"
+        else:
+            anchor_note = "A* 持续中（target 65%）"
+    elif current_anchor == "D_star":
+        if composite_score < P17_D_STAR_EXIT:
+            new_anchor = "normal"
+            cooldown_date = datetime.now() + timedelta(days=P17_COOLDOWN_DAYS)
+            cooldown_until = cooldown_date.strftime("%Y-%m-%d")
+            anchor_note = f"D* 解除，进入冷却（至{cooldown_until}）"
+        else:
+            anchor_note = "D* 持续中（target 15%）"
+
+    if new_anchor == "A_star":
+        target_equity = 65
+    elif new_anchor == "D_star":
+        target_equity = 15
+    else:
+        target_equity = None
+
+    anchor_state = {
+        "current": new_anchor,
+        "since": since_date if new_anchor == current_anchor else today,
+        "cooldown_until": cooldown_until if (new_anchor == "normal" and current_anchor != "normal") else prev_anchor_state.get("cooldown_until"),
+        "last_trigger": today if new_anchor != current_anchor else prev_anchor_state.get("last_trigger")
+    }
+
+    return anchor_state, target_equity, anchor_note
+
+
 # ============================================================
 # 六维择时评分计算引擎
 # ============================================================
@@ -2084,6 +2228,30 @@ class TimingScoreEngine:
                     "weighted_score": 7.5, "signal": "数据异常", "indicators": {}
                 })
 
+        # ============================================================
+        # P1-7: 非线性权重×2 + 滞回 (2026-10-16)
+        # ============================================================
+        # 加载上一日滞回状态
+        prev_history = load_json("timing_history.json")
+        prev_hysteresis = {}
+        prev_anchor_state = {}
+        if prev_history and isinstance(prev_history, list) and len(prev_history) > 0:
+            last_record = prev_history[-1]
+            prev_hysteresis = last_record.get("hysteresis_state", {})
+            prev_anchor_state = last_record.get("anchor_state", {})
+
+        # 应用非线性权重调整
+        dimensions, today_hysteresis = apply_nonlinear_weights(dimensions, prev_hysteresis)
+
+        # 打印非线性权重调整结果
+        for dim_name, dim_data in dimensions.items():
+            if dim_name.startswith("_"):
+                continue
+            orig_w = dim_data.get("_orig_weight", dim_data.get("weight", 15))
+            curr_w = dim_data.get("weight", 15)
+            if curr_w != orig_w:
+                logger.info(f"    ⚡ P1-7 {dim_data.get('name', dim_name)}: 权重 {orig_w}% → {curr_w}% (维度分{dim_data['score']}极端)")
+
         # 综合得分
         total_weighted = sum(d.get("weighted_score", 0) for d in dimensions.values())
         total_weight = sum(d.get("weight", 0) for d in dimensions.values())
@@ -2098,7 +2266,18 @@ class TimingScoreEngine:
             1
         )
 
-        # 仓位区间: 统一使用 generate_position_advice() 返回的 equity_range
+        # ============================================================
+        # P1-7: 极端锚定状态机 (2026-10-16)
+        # ============================================================
+        today = today_str()
+        anchor_state, target_equity, anchor_note = apply_extreme_anchoring(
+            composite_score, prev_anchor_state, today
+        )
+        if anchor_note:
+            logger.info(f"    🔗 P1-7 锚定状态: {anchor_state['current']} — {anchor_note}")
+        if target_equity is not None:
+            logger.info(f"    🎯 P1-7 目标仓位: {target_equity}% (覆盖常规映射)")
+
 
         # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
         prev = load_json("timing_scores.json")
@@ -2130,6 +2309,16 @@ class TimingScoreEngine:
         triggers = self.generate_triggers(dimensions)
         position_advice, market_status = self.generate_position_advice(composite_score, dimensions)
 
+        # 清理 _orig_weight 内部字段（不写入 JSON）
+        for _dn, _dd in dimensions.items():
+            _dd.pop("_orig_weight", None)
+
+        # P1-7: 如果锚定激活，覆盖仓位区间
+        if target_equity is not None:
+            position_advice["equity_range"] = f"{target_equity-5}%-{target_equity+10}%"
+            position_advice["base_equity"] = target_equity
+            position_advice["anchor_override"] = True
+
         output = {
             "update_date": today_str(),
             "version": "v4.1",
@@ -2140,7 +2329,11 @@ class TimingScoreEngine:
             "style_rotation": style_rotation,
             "signals": signals,
             "triggers": triggers,
-            "position_advice": position_advice
+            "position_advice": position_advice,
+            "p1_7_state": {
+                "hysteresis": today_hysteresis,
+                "anchor": anchor_state
+            }
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
@@ -3111,8 +3304,21 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     if right_data:
         triggers["signal_light"] = right_data.get("signal_light", "")
         triggers["signal_direction"] = right_data.get("signal_direction", "")
-    
-    record = {"date": today, "composite_score": cs, "stage": stage, "dimensions": dims, "triggers": triggers}
+
+    # [P1-7 2026-10-16] 持久化非线性状态
+    p17 = timing_data.get("p1_7_state", {})
+    hysteresis_state = p17.get("hysteresis", {})
+    anchor_state = p17.get("anchor", {})
+
+    record = {
+        "date": today,
+        "composite_score": cs,
+        "stage": stage,
+        "dimensions": dims,
+        "triggers": triggers,
+        "hysteresis_state": hysteresis_state,
+        "anchor_state": anchor_state
+    }
     history = [r for r in history if r.get("date") != today]
     history.append(record)
     history.sort(key=lambda x: x.get("date", ""))
