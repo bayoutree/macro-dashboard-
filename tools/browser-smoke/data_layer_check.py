@@ -31,13 +31,20 @@ def _engine(code_dir):
     importlib.reload(U)
     return U.TimingScoreEngine()
 
-def _trig(eng, score):
+def _trig(eng, score, qvix=10.0):
+    """[P0-3 同步 2026-10-16] 减仓触发=恐贪>85 且 QVIX<14 双确认；qvix 可控注入。"""
     eng._fear_greed_score_ssot = (lambda s: (lambda: s))(score)
-    dims = {"social_financing": {"value_label": "触底回升"},
-            "sentiment": {"indicators": {"crowding": {}}},
-            "valuation": {"indicators": {"erp": {}}},
-            "capital_flow": {"indicators": {"margin": {}}}}
-    t = eng.generate_triggers(dims)
+    import update_data as U
+    _orig_load = U.load_json
+    U.load_json = lambda name, *a, **k: ({"score": score, "qvix_close": qvix} if name == "feargreed_pointer.json" else _orig_load(name, *a, **k))
+    try:
+        dims = {"social_financing": {"value_label": "触底回升"},
+                "sentiment": {"indicators": {"crowding": {}}},
+                "valuation": {"indicators": {"erp": {}}},
+                "capital_flow": {"indicators": {"margin": {}}}}
+        t = eng.generate_triggers(dims)
+    finally:
+        U.load_json = _orig_load
     add = [x for x in t["add_position"] if "恐贪" in x["condition"]]
     red = [x for x in t["reduce_position"] if "恐贪" in x["condition"]]
     return (add[0]["met"] if add else None, red[0]["met"] if red else None)
@@ -66,18 +73,22 @@ def stage1(repo, code, g):
     add = trig("add_position"); red = trig("reduce_position")
     g.check("P0-1 触发项齐备（加/减各含恐贪项）", bool(add) and bool(red))
     if add: g.check("P0-1 加仓『恐贪<20』方向正确(当前值)", add[0]["met"] == (fgp_score < 20), f"met={add[0]['met']}, score={fgp_score}")
-    if red: g.check("P0-1 减仓『恐贪>80』方向正确(当前值)", red[0]["met"] == (fgp_score > 80), f"met={red[0]['met']}, score={fgp_score}")
+    if red:
+        _qv = fgp.get("qvix_close")
+        _exp_red = (fgp_score is not None and fgp_score > 85) and (_qv is not None and _qv < 14)
+        g.check("P0-3 减仓『恐贪>85且QVIX<14』方向正确(当前值)", red[0]["met"] == _exp_red, f"met={red[0]['met']}, score={fgp_score}, qvix={_qv}")
 
     print("[B] 代码层：边界真值表 + null 降级（调用交付版引擎）")
     try:
         eng = _engine(code)
-        expect = {5:(True,False), 19.9:(True,False), 20:(False,False), 50:(False,False),
-                  79.9:(False,False), 80:(False,False), 80.1:(False,True), 95:(False,True)}
+        expect = {(5,10):(True,False), (19.9,10):(True,False), (20,10):(False,False), (50,10):(False,False),
+                  (85,10):(False,False), (85.1,10):(False,True), (95,10):(False,True),
+                  (95,14):(False,False), (95,13.9):(False,True), (95,None):(False,False)}
         ok = True; rows = []
-        for s, exp in expect.items():
-            got = _trig(eng, s); rows.append((s, got, exp))
+        for (s, q), exp in expect.items():
+            got = _trig(eng, s, q); rows.append(((s, q), got, exp))
             if got != exp: ok = False
-        g.check("P0-1 5+边界值方向正确", ok, str(rows))
+        g.check("P0-3 边界真值表(恐贪>85且QVIX<14)", ok, str(rows))
         got_null = _trig(eng, None)   # 缺源降级
         g.check("P0-2 null 降级路径可用（两触发均不触发）", got_null == (False, False), str(got_null))
         g.check("P0-2 主源缺失时 _calc_fear_greed 返回 (None,None)",

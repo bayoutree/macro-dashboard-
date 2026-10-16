@@ -1,0 +1,32 @@
+[
+  {
+    "date": "2026-10-16",
+    "composite_score": 46.8,
+    "stage": "B",
+    "dimensions": {
+      "valuation": 47.2,
+      "liquidity": 42.2,
+      "equity_bond": 38.3,
+      "capital_flow": 65.2,
+      "sentiment": 35.7,
+      "micro_structure": 53.4
+    },
+    "triggers": {
+      "add_position": {
+        "社融增速触底回升(连续3个月环比改善)": false,
+        "恐贪指数回落至20以下(极度恐惧)": false,
+        "交易拥挤度回落至40%以下": false,
+        "ERP突破6%": true
+      },
+      "reduce_position": {
+        "两融占比突破3.5%": false,
+        "恐贪指数>85且QVIX<14(极度贪婪双确认)": false,
+        "社融增速进一步下行": false,
+        "美联储重启加息": false,
+        "股息率-国债利差(沪深300)降至0.3%以下": false
+      },
+      "signal_light": "orange",
+      "signal_direction": "bear"
+    }
+  }
+]

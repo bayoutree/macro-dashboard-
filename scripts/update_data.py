@@ -1369,7 +1369,7 @@ class TimingScoreEngine:
                 "score": 50,
                 "sub_weight": 35,
                 "bottom_threshold": "<20",
-                "top_threshold": ">80",
+                "top_threshold": ">85且QVIX<14",
                 "note": "主源 data/feargreed_pointer.json 缺 score，降级中性"
             }
         else:
@@ -1379,7 +1379,7 @@ class TimingScoreEngine:
                 "score": fg_score,
                 "sub_weight": 35,
                 "bottom_threshold": "<20",
-                "top_threshold": ">80",
+                "top_threshold": ">85且QVIX<14",
                 "source": "data/feargreed_pointer.json#score"
             }
 
@@ -3104,10 +3104,11 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
         dims[dname] = dval.get("score")
     
     triggers = {}
-    if right_data:
-        for side, trig_list in right_data.get("triggers", {}).items():
+    if timing_data:
+        for side, trig_list in timing_data.get("triggers", {}).items():
             triggers[side] = {t.get("condition", ""): t.get("met", False) for t in trig_list}
-        # Also capture signal_light/direction
+    # Also capture signal_light/direction from right_data if available
+    if right_data:
         triggers["signal_light"] = right_data.get("signal_light", "")
         triggers["signal_direction"] = right_data.get("signal_direction", "")
     
@@ -3164,6 +3165,12 @@ def main():
             logger.info("✅ timing_right_scores.json 更新完成!")
         except Exception as e:
             logger.error(f"❌ timing_right_scores 计算失败: {e}", exc_info=True)
+
+        # [P0-1 fix 2026-10-16] --timing 分支也追加决策态日志
+        try:
+            append_timing_history(timing_data, right_data)
+        except Exception as e:
+            logger.warning(f"⚠️ timing_history.json 追加失败: {e}")
         return timing_ok
 
     # ============================================================
