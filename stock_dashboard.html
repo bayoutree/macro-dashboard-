@@ -850,6 +850,11 @@ body::before {
   <!-- 过渡期/急冻 横幅 -->
   <div id="transition-banner" style="display:none; margin-bottom:12px; padding:10px 16px; background:rgba(255,215,110,0.15); border:1px solid rgba(255,215,110,0.3); border-radius:12px; font-size:14px; color:var(--yellow); font-weight:600; text-align:center;">⚠️ 信号混合·过渡期</div>
   <div id="freeze-banner" style="display:none; margin-bottom:12px; padding:10px 16px; background:rgba(255,107,107,0.15); border:1px solid rgba(255,107,107,0.3); border-radius:12px; font-size:14px; color:var(--red); font-weight:600; text-align:center;">⚡ 风险模式（急冻）</div>
+  <!-- [P0-2 2026-10-16] 极端情绪快速信号通道：恐贪>85 且 QVIX<14 时弹出，与综合分显式解耦，可关闭 -->
+  <div id="extreme-emotion-banner" style="display:none; position:relative; margin-bottom:12px; padding:10px 40px 10px 16px; background:rgba(255,107,107,0.18); border:1px solid rgba(255,107,107,0.5); border-radius:12px; font-size:13px; color:var(--red); font-weight:600; text-align:left;">
+    <span id="extreme-emotion-text"></span>
+    <button id="extreme-emotion-close" onclick="dismissExtremeEmotionBanner()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--red); font-size:16px; cursor:pointer; padding:2px 6px;" title="今日不再显示">✕</button>
+  </div>
 
   <div class="action-bar" id="action-bar">
     <!-- ① 状态行 -->
@@ -943,10 +948,10 @@ body::before {
 // STAGE DEFINITIONS
 // ============================================================
 const STAGES = {
-  A:  { name: 'A·春播 🌱', emoji: '🌱', position: '55%-70%',  desc: '极度恐惧，逆向布局',         range: 'composite<25' },
-  B:  { name: 'B·夏长 ☀️', emoji: '☀️', position: '40%-55%',  desc: '中性偏恐惧，正常配置',       range: 'composite 25-49' },
-  C:  { name: 'C·秋收 🍂', emoji: '🍂', position: '25%-40%', desc: '中性偏贪婪，逐步兑现', range: 'composite 50-74' },
-  D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '10%-25%',   desc: '极度贪婪，过热清仓',         range: 'composite≥75' }
+  A:  { name: 'A·春播 🌱', emoji: '🌱', position: '55%-70%',  desc: '综合分极冷，逆向布局',         range: 'composite<25' },
+  B:  { name: 'B·夏长 ☀️', emoji: '☀️', position: '40%-55%',  desc: '综合分偏冷，正常配置',       range: 'composite 25-49' },
+  C:  { name: 'C·秋收 🍂', emoji: '🍂', position: '25%-40%', desc: '综合分偏热，逐步兑现', range: 'composite 50-74' },
+  D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '10%-25%',   desc: '综合分极热，过热清仓',         range: 'composite≥75' }
 };
 // v3.1仓位模板（用于加权期望仓位计算）
 const POSITION_TEMPLATES = {
@@ -2505,6 +2510,15 @@ function renderReferenceIndicators() {
   });
 }
 
+// [P0-2 2026-10-16] 极端情绪警告条关闭：当日不再显示
+function dismissExtremeEmotionBanner() {
+  const _fgp = StageEngine._fearGreedPointer;
+  const _key = 'extreme_emotion_dismissed_' + (_fgp && _fgp.as_of ? _fgp.as_of : '');
+  localStorage.setItem(_key, '1');
+  const _b = document.getElementById('extreme-emotion-banner');
+  if (_b) _b.style.display = 'none';
+}
+
 // ============================================================
 // HELPERS
 // ============================================================
@@ -2547,6 +2561,28 @@ function renderActionBar() {
   // v3.3.1: 趋势逆风层（提前计算，banner/状态行/仓位行共用）
   const trendOv = e.trend_overlay || { level: null, warning: null, position_multiplier: 1 };
   const trendBear = trendOv.level === 'strong_bear' || trendOv.level === 'weak_bear';
+
+  // [P0-2 2026-10-16] 极端情绪快速信号通道：恐贪>85 且 QVIX<14 → 警告条（不改 composite/仓位本身）
+  {
+    const _fgp = StageEngine._fearGreedPointer;
+    const _eeBanner = document.getElementById('extreme-emotion-banner');
+    const _eeText = document.getElementById('extreme-emotion-text');
+    if (_eeBanner && _eeText) {
+      const _triggered = _fgp && typeof _fgp.score === 'number' && typeof _fgp.qvix_close === 'number'
+        && _fgp.score > 85 && _fgp.qvix_close < 14;
+      // 当日已关闭则不再显示（新的一天重新评估）
+      const _dismissKey = 'extreme_emotion_dismissed_' + (_fgp && _fgp.as_of ? _fgp.as_of : '');
+      const _dismissed = _triggered && localStorage.getItem(_dismissKey) === '1';
+      if (_triggered && !_dismissed) {
+        _eeText.innerHTML = `⚠️ <b>极端情绪警告</b>：恐贪指针 ${_fgp.score.toFixed(1)}（>85）且 QVIX ${_fgp.qvix_close.toFixed(1)}（<14），达「极度贪婪」双确认阈值。`
+          + `该信号<b>独立于左侧综合分</b>（当前 ${(typeof e.composite_score==='number') ? e.composite_score.toFixed(1) : '--'}），综合分尚未确认此极端读数。`
+          + `建议：在下方建议仓位基础上<b>保守下调一档</b>，等待综合分确认后再回补。`;
+        _eeBanner.style.display = 'block';
+      } else {
+        _eeBanner.style.display = 'none';
+      }
+    }
+  }
 
   if (e.freeze_active) {
     freezeBanner.style.display = 'block';
@@ -2606,7 +2642,9 @@ function renderActionBar() {
     stageLabel.innerHTML = `⚠️ 过渡带: ${STAGES[s0].emoji}${arrow}${STAGES[s1].emoji} ${dirTxt}`;
     stageLabel.style.color = 'var(--yellow)';
   } else {
-    stageLabel.innerHTML = `${stage.emoji} ${stage.name}`;
+    // [P0-5 2026-10-16] 标签追加综合分当前值，显式声明阶段来源于 composite（与恐贪指数解耦）
+    const _compVal = (typeof e.composite_score === 'number') ? e.composite_score.toFixed(1) : null;
+    stageLabel.innerHTML = `${stage.emoji} ${stage.name}` + (_compVal ? ` <span style="font-size:12px;font-weight:400;color:var(--text-muted);">综合分 ${_compVal}</span>` : '');
     stageLabel.style.color = '';
   }
 
