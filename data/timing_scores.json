@@ -10905,7 +10905,7 @@
           "score": 72.62,
           "sub_weight": 35,
           "bottom_threshold": "<20",
-          "top_threshold": ">80",
+          "top_threshold": ">85且QVIX<14",
           "source": "data/feargreed_pointer.json#score",
           "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。"
         },
@@ -16877,7 +16877,7 @@
     "top": [
       {
         "dimension": "市场情绪",
-        "signal": "恐贪指数>80(极度贪婪)",
+        "signal": "恐贪指数>85且QVIX<14(极度贪婪双确认)",
         "stars": 4,
         "active": false
       },
@@ -16938,7 +16938,7 @@
         "met": false
       },
       {
-        "condition": "恐贪指数回到80以上",
+        "condition": "恐贪指数>85且QVIX<14(极度贪婪双确认)",
         "met": false
       },
       {

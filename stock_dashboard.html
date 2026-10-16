@@ -1462,7 +1462,7 @@ function getRealTriggers() {
   if (!leftData || !leftData.triggers) {
     // fallback to hardcoded
     return [
-      { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+      { cond: '恐贪指数 > 85 且 QVIX < 14，持续 ≥10 交易日', met: false },
       { cond: '新发基金份额月均 > 800 亿', met: false },
       { cond: '偏股基金3年年化 > 25%', met: false },
       { cond: '融资融券余额 > 2.0 万亿', met: false },
@@ -1485,7 +1485,7 @@ function getRealTriggers() {
     });
   }
   return allTriggers.length > 0 ? allTriggers : [
-    { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+    { cond: '恐贪指数 > 85 且 QVIX < 14，持续 ≥10 交易日', met: false },
     { cond: '新发基金份额月均 > 800 亿', met: false },
     { cond: '偏股基金3年年化 > 25%', met: false },
     { cond: '融资融券余额 > 2.0 万亿', met: false },
@@ -2714,7 +2714,7 @@ function renderActionBar() {
   const triggerList = document.getElementById('action-trigger-list');
   // v3.3: 从 timing_scores.json 动态读取触发器（去mock）
   const c1Triggers = (typeof getRealTriggers === 'function') ? getRealTriggers() : [
-    { cond: '恐贪指数 > 80，持续 ≥10 交易日', met: false },
+    { cond: '恐贪指数 > 85 且 QVIX < 14，持续 ≥10 交易日', met: false },
     { cond: '新发基金份额月均 > 800 亿', met: false },
     { cond: '偏股基金3年年化 > 25%', met: false },
     { cond: '融资融券余额 > 2.0 万亿', met: false },

@@ -1860,8 +1860,12 @@ class TimingScoreEngine:
                 fg_val = float(fg_val)
             except:
                 fg_val = 50
+        # P0-3: 统一极度贪婪判断 = score>85 且 QVIX<14
+        fgp_data = load_json("feargreed_pointer.json")
+        qvix_val = fgp_data.get("qvix_close") if fgp_data else None
+        is_extreme_greed = (fg_val > 85) and (qvix_val is not None and qvix_val < 14)
         check_bottom(fg_val < 20, "市场情绪", "恐贪指数<20(极度恐惧)", 3)
-        check_top(fg_val > 80, "市场情绪", "恐贪指数>80(极度贪婪)", 4)
+        check_top(is_extreme_greed, "市场情绪", "恐贪指数>85且QVIX<14(极度贪婪)", 4)
 
         turnover_str = sent.get("turnover_rate", {}).get("value", "2.5%")
         try:
@@ -1915,6 +1919,9 @@ class TimingScoreEngine:
         fg_val = self._fear_greed_score_ssot()
         if fg_val is None:
             fg_val = 50
+        # P0-3: 读取 QVIX 用于极度贪婪双确认
+        fgp_data = load_json("feargreed_pointer.json")
+        qvix_val = fgp_data.get("qvix_close") if fgp_data else None
         add_triggers.append({"condition": "恐贪指数回落至20以下(极度恐惧)", "met": fg_val < 20})
 
         crowd_str = micro.get("crowding_ratio", {}).get("value", "0%")
@@ -1932,7 +1939,8 @@ class TimingScoreEngine:
         try: margin_num = float(margin_str.replace('%', ''))
         except: margin_num = 2.66
         reduce_triggers.append({"condition": "两融占比突破3.5%", "met": margin_num > 3.5})
-        reduce_triggers.append({"condition": "恐贪指数回到80以上", "met": fg_val > 80})
+        reduce_triggers.append({"condition": "恐贪指数>85且QVIX<14(极度贪婪双确认)", 
+                     "met": (fg_val > 85) and (qvix_val is not None and qvix_val < 14)})
 
         sf_score = liq.get("social_financing_trend", {}).get("score", 50)
         reduce_triggers.append({"condition": "社融增速进一步下行", "met": sf_score > 65})
@@ -1945,12 +1953,13 @@ class TimingScoreEngine:
         except: div_num = 1
         reduce_triggers.append({"condition": "股息率-国债利差(沪深300)降至0.3%以下", "met": div_num < 0.3})
 
-        # [P0-1] 输出前断言：方向必须与单一真值一致（score>80 → 减仓项 true；score<20 → 加仓项 true）
+        # [P0-1] 输出前断言：方向必须与单一真值一致（score>85且QVIX<14 → 减仓项 true；score<20 → 加仓项 true）
         _fg_add = [t for t in add_triggers if t["condition"].startswith("恐贪指数回落至20以下")]
-        _fg_red = [t for t in reduce_triggers if t["condition"].startswith("恐贪指数回到80以上")]
-        if fg_val > 80:
+        _fg_red = [t for t in reduce_triggers if t["condition"].startswith("恐贪指数>85")]
+        is_extreme_greed_for_assert = (fg_val > 85) and (qvix_val is not None and qvix_val < 14)
+        if is_extreme_greed_for_assert:
             assert _fg_red and _fg_red[0]["met"] is True, \
-                f"P0-1 断言失败: 恐贪={fg_val}>80 但『恐贪指数回到80以上』未置 true"
+                f"P0-1 断言失败: 恐贪={fg_val}>85且QVIX<14 但极度贪婪触发未置 true"
         elif fg_val < 20:
             assert _fg_add and _fg_add[0]["met"] is True, \
                 f"P0-1 断言失败: 恐贪={fg_val}<20 但『恐贪指数回落至20以下』未置 true"
@@ -3070,6 +3079,47 @@ def dry_run_check():
 # 主入口
 # ============================================================
 
+def append_timing_history(timing_data, right_data, history_path="data/timing_history.json"):
+    """[P0-1 2026-10-16] 决策态日志 - 每日追加 composite/六维/阶段/触发器快照"""
+    import json
+    from datetime import date
+    from pathlib import Path
+    
+    history = []
+    p = Path(DATA_DIR) / history_path.replace("data/", "")
+    if p.exists():
+        try:
+            history = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            history = []
+    
+    today = date.today().isoformat()
+    cs = timing_data.get("composite_score", 0)
+    stage = "A" if cs < 25 else ("B" if cs < 50 else ("C" if cs < 75 else "D"))
+    
+    dims = {}
+    for dname, dval in timing_data.get("dimensions", {}).items():
+        if dname.startswith("_"):
+            continue
+        dims[dname] = dval.get("score")
+    
+    triggers = {}
+    if right_data:
+        for side, trig_list in right_data.get("triggers", {}).items():
+            triggers[side] = {t.get("condition", ""): t.get("met", False) for t in trig_list}
+        # Also capture signal_light/direction
+        triggers["signal_light"] = right_data.get("signal_light", "")
+        triggers["signal_direction"] = right_data.get("signal_direction", "")
+    
+    record = {"date": today, "composite_score": cs, "stage": stage, "dimensions": dims, "triggers": triggers}
+    history = [r for r in history if r.get("date") != today]
+    history.append(record)
+    history.sort(key=lambda x: x.get("date", ""))
+    p.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
+    logger.info(f"✅ timing_history.json 已追加: date={today}, composite={cs}, stage={stage}")
+    return record
+
+
 def main():
     parser = argparse.ArgumentParser(description="宏观看板数据更新脚本")
     parser.add_argument("--dry-run", action="store_true", help="仅检查接口连通性，不写文件")
@@ -3142,6 +3192,11 @@ def main():
         right_engine = TimingRightEngine()
         right_data = right_engine.compute_all()
         save_json(right_data, "timing_right_scores.json")
+        # [P0-1 2026-10-16] 追加决策态日志
+        try:
+            append_timing_history(timing_data, right_data)
+        except Exception as e:
+            logger.warning(f"⚠️ timing_history.json 追加失败: {e}")
         script_results["timing_right_scores"] = True
     except Exception as e:
         logger.error(f"❌ timing_right_scores 失败: {e}", exc_info=True)
