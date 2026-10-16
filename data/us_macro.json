@@ -45,8 +45,9 @@
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.cpi"
     },
     "ppi_yoy": {
-      "value": 5.4136,
-      "date": "2026-08"
+      "value": 6.3463,
+      "date": "2026-09-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.ppi"
     },
     "fed_funds_rate": {
       "value": "3.75%",
