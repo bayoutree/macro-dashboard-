@@ -1,4 +1,23 @@
 {
   "_comment": "历史序列缩减白名单。仅当某序列的缩减是【有意且已核实】时才登记，须写明 reason。空表示不允许任何缩减。",
-  "allowed": []
+  "allowed": [
+    {
+      "file": "frontend/data/timing_scores.json",
+      "path": "dimensions.micro_structure.indicators.industry_concentration.history",
+      "reason": "352f97f 申万口径重算：东财 445点(2018-01起) → 申万 247点(2021-12起)，口径切换后旧历史不再可比，data/ 已为正确口径",
+      "from": 445,
+      "to": 247,
+      "authorized_at": "2026-10-17",
+      "authorized_by": "CIO"
+    },
+    {
+      "file": "frontend/data/timing_scores.json",
+      "path": "dimensions.micro_structure.indicators.concentration_trend.history",
+      "reason": "352f97f 申万口径重算：东财 425点(2018-01起) → 申万 228点(2021-12起)，口径切换后旧历史不再可比，data/ 已为正确口径",
+      "from": 425,
+      "to": 228,
+      "authorized_at": "2026-10-17",
+      "authorized_by": "CIO"
+    }
+  ]
 }

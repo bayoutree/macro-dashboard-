@@ -1,0 +1,133 @@
+{
+  "base": "http://127.0.0.1:8899",
+  "pages": [
+    {
+      "name": "cycle_global",
+      "url": "http://127.0.0.1:8899/index.html",
+      "console_errors": [],
+      "pageerrors": [],
+      "real_errors": 0,
+      "checks": [
+        [
+          "title含'宏观'",
+          true,
+          "title='宏观经济指标看板 | Macro Dashboard V2'"
+        ],
+        [
+          "图形容器>=40",
+          true,
+          "chart_divs=53"
+        ],
+        [
+          "图形元素(canvas+svg)>=1",
+          true,
+          "graphics=68(canvas=2,svg=66)"
+        ],
+        [
+          "可见文本含'全球周期'",
+          true,
+          ""
+        ],
+        [
+          "Console真实错误==0",
+          true,
+          ""
+        ]
+      ],
+      "pass": true,
+      "raw_identifier_tokens": [],
+      "title": "宏观经济指标看板 | Macro Dashboard V2",
+      "stats": {
+        "divs": 53,
+        "canvas": 2,
+        "svg": 66,
+        "graphics": 68,
+        "textLen": 14599
+      }
+    },
+    {
+      "name": "stock",
+      "url": "http://127.0.0.1:8899/stock_dashboard.html",
+      "console_errors": [],
+      "pageerrors": [],
+      "real_errors": 0,
+      "checks": [
+        [
+          "title含'A股'",
+          true,
+          "title='A股周期定位看板 V4.1'"
+        ],
+        [
+          "图形容器>=10",
+          true,
+          "chart_divs=18"
+        ],
+        [
+          "图形元素(canvas+svg)>=5",
+          true,
+          "graphics=30(canvas=0,svg=30)"
+        ],
+        [
+          "可见文本含'新鲜度'",
+          true,
+          ""
+        ],
+        [
+          "Console真实错误==0",
+          true,
+          ""
+        ]
+      ],
+      "pass": true,
+      "raw_identifier_tokens": [],
+      "title": "A股周期定位看板 V4.1",
+      "stats": {
+        "divs": 18,
+        "canvas": 0,
+        "svg": 30,
+        "graphics": 30,
+        "textLen": 5556
+      }
+    },
+    {
+      "name": "macro_econ",
+      "url": "http://127.0.0.1:8899/macro-econ-dashboard/index.html",
+      "console_errors": [],
+      "pageerrors": [],
+      "real_errors": 0,
+      "checks": [
+        [
+          "title含'宏观'",
+          true,
+          "title='宏观经济看板 | Macro Economy Dashboard'"
+        ],
+        [
+          "图形容器>=20",
+          true,
+          "chart_divs=46"
+        ],
+        [
+          "图形元素(canvas+svg)>=10",
+          true,
+          "graphics=58(canvas=57,svg=1)"
+        ],
+        [
+          "Console真实错误==0",
+          true,
+          ""
+        ]
+      ],
+      "pass": true,
+      "raw_identifier_tokens": [],
+      "title": "宏观经济看板 | Macro Economy Dashboard",
+      "stats": {
+        "divs": 46,
+        "canvas": 57,
+        "svg": 1,
+        "graphics": 58,
+        "textLen": 3023
+      }
+    }
+  ],
+  "pass": true
+}

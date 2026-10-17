@@ -136,6 +136,13 @@ _VERIFIED_HISTORY_INDICATORS = {
     ("equity_bond", "hs300_erp"),
 }
 
+# [CI修复 2026-10-17] 由外部脚本累积历史的指标，即使无 _history_meta 也继承旧 history
+# 防止数据源断连时静默丢失真历史（akshare 东财接口在海外 runner 被断连）
+_EXTERNAL_HISTORY_INDICATORS = {
+    ("sentiment", "turnover_rate"),        # 60点日频 history
+    ("micro_structure", "crowding_ratio"), # collect_microstructure.py 周频累积
+}
+
 
 def merge_history_description(new_data: dict) -> dict:
     """合并旧 JSON 的 description 字段与已验证真实 history。
@@ -169,15 +176,39 @@ def merge_history_description(new_data: dict) -> dict:
                 ind["description"] = old_ind["description"]
             # 新数据自身无 history、旧版带真源标记且点数>=2 时继承
             # （2026-09-27: 白名单 -> 只认 _history_meta.source 真源凭证）
-            if (
-                not ind.get("history")
-                and isinstance(old_ind.get("history"), list)
-                and len(old_ind["history"]) >= 2
-                and isinstance(old_ind.get("_history_meta"), dict)
-                and old_ind["_history_meta"].get("source")
-            ):
+            # [CI修复 2026-10-17] 外部累积历史的指标也继承（即使无 _history_meta）
+            _is_external = (dim_key, ind_key) in _EXTERNAL_HISTORY_INDICATORS
+            _new_hist = ind.get("history") or []
+            _old_hist = old_ind.get("history") or []
+            _old_has_meta = (isinstance(old_ind.get("_history_meta"), dict)
+                             and old_ind["_history_meta"].get("source"))
+            # 条件A: 新数据无history，旧数据有真源标记 → 继承
+            _cond_a = (not _new_hist and len(_old_hist) >= 1
+                       and (_old_has_meta or _is_external))
+            # 条件B: [CI修复] 新数据history比旧数据短，且旧数据有真源标记 → 保留旧版
+            _cond_b = (len(_new_hist) < len(_old_hist) and len(_old_hist) >= 1
+                       and (_old_has_meta or _is_external))
+            if _cond_a or _cond_b:
                 ind["history"] = old_ind["history"]
-                ind["_history_meta"] = old_ind["_history_meta"]
+                if old_ind.get("_history_meta"):
+                    ind["_history_meta"] = old_ind["_history_meta"]
+                else:
+                    ind["_history_meta"] = {
+                        "source": f"inherited external history ({len(_old_hist)} pts)",
+                        "inherited_at": "2026-10-17"
+                    }
+        # [CI修复 2026-10-17] 保留旧数据中存在但新数据未生成的指标
+        # (如 median_pe_all_a: 由外部脚本写入，compute_all 不重生，
+        #  数据源断连时 compute_all 不会产出该指标，但旧 history 必须保留)
+        new_ind_keys = set(dim.get("indicators", {}).keys())
+        for old_ind_key, old_ind in old_dim.get("indicators", {}).items():
+            if old_ind_key not in new_ind_keys:
+                old_hist = old_ind.get("history", [])
+                old_meta = old_ind.get("_history_meta")
+                if (isinstance(old_hist, list) and len(old_hist) >= 2
+                        and isinstance(old_meta, dict) and old_meta.get("source")):
+                    dim.setdefault("indicators", {})[old_ind_key] = old_ind
+                    logger.info(f"    🔒 保留旧指标(新数据未生成): {dim_key}.{old_ind_key} ({len(old_hist)}点)")
     return new_data
 
 
