@@ -2315,7 +2315,7 @@ class TimingScoreEngine:
 
         # P1-7: 如果锚定激活，覆盖仓位区间
         if target_equity is not None:
-            position_advice["equity_range"] = f"{target_equity-5}%-{target_equity+10}%"
+            position_advice["equity_range"] = f"{target_equity}%"
             position_advice["base_equity"] = target_equity
             position_advice["anchor_override"] = True
 
