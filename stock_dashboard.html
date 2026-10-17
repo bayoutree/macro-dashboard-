@@ -953,6 +953,12 @@ const STAGES = {
   C:  { name: 'C·秋收 🍂', emoji: '🍂', position: '25%-40%', desc: '综合分偏热，逐步兑现', range: 'composite 50-74' },
   D:  { name: 'D·冬藏 ❄️', emoji: '❄️', position: '10%-25%',   desc: '综合分极热，过热清仓',         range: 'composite≥75' }
 };
+
+// [P1-7 2026-10-17] 锚定状态阶段定义（A*/D*）
+const ANCHOR_STAGES = {
+  A_star: { name: 'A*·春播(锚定65%) 🌱⚓', emoji: '🌱⚓', position: '60%-75%',  desc: '综合分<20，极端恐惧锚定65%目标仓位', range: 'composite<20' },
+  D_star: { name: 'D*·冬藏(锚定15%) ❄️⚓', emoji: '❄️⚓', position: '10%-25%',   desc: '综合分>70，极端贪婪锚定15%目标仓位', range: 'composite>70' }
+};
 // v3.1仓位模板（用于加权期望仓位计算）
 const POSITION_TEMPLATES = {
   A:  { min: 55, max: 70 },
@@ -1255,6 +1261,9 @@ const StageEngine = {
     // 保存本期概率为下期prev
     this._prevProbabilities = {...probs};
 
+    // [P1-7 2026-10-17] 读取锚定状态
+    const p17State = this._timingData?.p1_7_state || { anchor: { current: 'normal' }, hysteresis: {} };
+
     return {
       update_date: this._timingData?.update_date || new Date().toISOString().slice(0,10),
       current_stage: currentStage,
@@ -1274,7 +1283,9 @@ const StageEngine = {
         position_multiplier: mult,
         warning: trend.warning,
         triggers: trend.triggers || []
-      }
+      },
+      // [P1-7] 锚定状态机
+      p1_7_state: p17State
     };
   }
 };
@@ -1836,6 +1847,8 @@ function renderStageCards() {
   const migration = engineOutput.prob_change_vs_last;
   const current = engineOutput.current_stage;
   let html = '';
+  // [P1-7 2026-10-17] 读取锚定状态
+  const _anchor = (engineOutput.p1_7_state && engineOutput.p1_7_state.anchor) ? engineOutput.p1_7_state.anchor.current : 'normal';
   stages.forEach(key => {
     const s = STAGES[key];
     const pct = probs[key];
@@ -1847,12 +1860,20 @@ function renderStageCards() {
     const mBadge = m !== 0
       ? `<div class="migration-badge ${mClass}">↕ ${m > 0 ? '+' : ''}${m}%</div>`
       : `<div class="migration-badge" style="visibility:hidden;">·</div>`;
+    // [P1-7] 锚定标注：A 卡激活 A* 时加锚图标+说明；D 卡激活 D* 同理
+    let _anchorBadge = '';
+    if (key === 'A' && _anchor === 'A_star') {
+      _anchorBadge = '<div style="font-size:11px;font-weight:700;color:var(--green);margin-top:2px;">⚓ A* 锚定65%</div>';
+    } else if (key === 'D' && _anchor === 'D_star') {
+      _anchorBadge = '<div style="font-size:11px;font-weight:700;color:var(--red);margin-top:2px;">⚓ D* 锚定15%</div>';
+    }
     html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
       <span class="season-emoji">${s.emoji}</span>
       <div class="stage-name">${s.name}</div>
       <div class="stage-prob">${pct}%</div>
       <div class="stage-range">仓位 ${s.position}</div>
       ${mBadge}
+      ${_anchorBadge}
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });
@@ -2644,8 +2665,23 @@ function renderActionBar() {
   } else {
     // [P0-5 2026-10-16] 标签追加综合分当前值，显式声明阶段来源于 composite（与恐贪指数解耦）
     const _compVal = (typeof e.composite_score === 'number') ? e.composite_score.toFixed(1) : null;
-    stageLabel.innerHTML = `${stage.emoji} ${stage.name}` + (_compVal ? ` <span style="font-size:12px;font-weight:400;color:var(--text-muted);">综合分 ${_compVal}</span>` : '');
-    stageLabel.style.color = '';
+    // [P1-7 2026-10-17] 锚定状态标注：A* / D* 与常规 A/B/C/D 显式区分
+    const _anchor = (e.p1_7_state && e.p1_7_state.anchor) ? e.p1_7_state.anchor.current : 'normal';
+    let _labelHtml = '';
+    if (_anchor === 'A_star') {
+      const _as = ANCHOR_STAGES.A_star;
+      _labelHtml = `${_as.emoji} <b style="color:var(--green);">${_as.name}</b>`;
+      stageLabel.style.color = 'var(--green)';
+    } else if (_anchor === 'D_star') {
+      const _ds = ANCHOR_STAGES.D_star;
+      _labelHtml = `${_ds.emoji} <b style="color:var(--red);">${_ds.name}</b>`;
+      stageLabel.style.color = 'var(--red)';
+    } else {
+      _labelHtml = `${stage.emoji} ${stage.name}`;
+      stageLabel.style.color = '';
+    }
+    _labelHtml += (_compVal ? ` <span style="font-size:12px;font-weight:400;color:var(--text-muted);">综合分 ${_compVal}</span>` : '');
+    stageLabel.innerHTML = _labelHtml;
   }
 
   // 分歧度标记
