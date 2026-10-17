@@ -52,7 +52,7 @@
         "name": "产业资本转增持",
         "triggered": false,
         "score": 7,
-        "current_value": "数据获取异常: module 'akshare' has no attribute 'stock_share_change'",
+        "current_value": "数据待获取",
         "data_source": "交易所公告汇总",
         "update_time": "2026-10-17"
       },
@@ -60,7 +60,7 @@
         "name": "北向配置型资金持续净流入",
         "triggered": false,
         "score": 10,
-        "current_value": "近2周净流入: -148亿, -50亿",
+        "current_value": "数据待获取",
         "data_source": "沪深港通数据",
         "update_time": "2026-10-17"
       },
