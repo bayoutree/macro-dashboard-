@@ -78,6 +78,15 @@ def stage1(repo, code, g):
         _exp_red = (fgp_score is not None and fgp_score > 85) and (_qv is not None and _qv < 14)
         g.check("P0-3 减仓『恐贪>85且QVIX<14』方向正确(当前值)", red[0]["met"] == _exp_red, f"met={red[0]['met']}, score={fgp_score}, qvix={_qv}")
 
+    # [CIO 2026-10-17] CI修复验收增补：confirm_signals 顶层节存在性（P0-4 SSOT 序列资产，曾两次被 merge 丢失）
+    _cs = ts.get("confirm_signals", {})
+    _mm = _cs.get("macd_monthly", {})
+    g.check("confirm_signals 顶层节齐备(均线/MACD/成交量月线)",
+            all(k in _cs for k in ("ma_arrangement", "macd_monthly", "volume_monthly")),
+            str(list(_cs.keys())))
+    g.check("MACD月线 dif 序列资产完整(>=200点)",
+            len(_mm.get("dif", [])) >= 200, f"dif={len(_mm.get('dif', []))}pts")
+
     print("[B] 代码层：边界真值表 + null 降级（调用交付版引擎）")
     try:
         eng = _engine(code)
