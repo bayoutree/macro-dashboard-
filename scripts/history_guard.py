@@ -73,15 +73,28 @@ def _discover_files(root: Path) -> list:
     return sorted(set(files))
 
 
-def _collect_history_arrays(obj, prefix: str = "") -> dict:
-    """递归收集「列表且元素为含 date 的 dict」的历史数组，键为点分路径。"""
+def _collect_history_arrays(obj, prefix: str = "", inside_confirm=False) -> dict:
+    """递归收集「列表且元素为含 date 的 dict」的历史数组，键为点分路径。
+
+    [2026-10-17 CI修复] 同时捕获 confirm_signals 节内的纯数字数组
+    （dif/dea/histogram/history/historyMA），这些是 P0-4 SSOT 序列资产，
+    丢失时也必须被 guard 拦截。
+    """
     out = {}
     if isinstance(obj, dict):
+        # detect confirm_signals section at any depth
+        if "confirm_signals" in obj and isinstance(obj["confirm_signals"], dict):
+            out.update(_collect_history_arrays(obj["confirm_signals"], "confirm_signals", inside_confirm=True))
         for k, v in obj.items():
+            if k == "confirm_signals":
+                continue  # already handled above
             sub = f"{prefix}.{k}" if prefix else str(k)
-            out.update(_collect_history_arrays(v, sub))
+            out.update(_collect_history_arrays(v, sub, inside_confirm=inside_confirm))
     elif isinstance(obj, list):
         if obj and all(isinstance(e, dict) and "date" in e for e in obj):
+            out[prefix] = obj
+        elif inside_confirm and obj and all(isinstance(e, (int, float)) for e in obj):
+            # confirm_signals 内的纯数字数组也纳入守护（P0-4 SSOT 序列资产）
             out[prefix] = obj
     return out
 
@@ -207,6 +220,26 @@ def main() -> int:
                     violations.append(dmsg)
                 else:
                     warnings.append(dmsg)
+
+    # [2026-10-17 CI修复] 顶层节存在性硬检查：confirm_signals 等关键节必须存在
+    _CRITICAL_TOP_LEVEL_SECTIONS = {"confirm_signals": ["ma_arrangement", "macd_monthly", "volume_monthly"]}
+    for path_v in files:
+        if not path_v.endswith("timing_scores.json"):
+            continue
+        if args.current_ref:
+            doc = _load(_git_show(root, args.current_ref, path_v))
+        else:
+            fp = root / path_v
+            doc = _load(fp.read_text(encoding="utf-8")) if fp.exists() else None
+        if doc is None:
+            continue
+        for section, subkeys in _CRITICAL_TOP_LEVEL_SECTIONS.items():
+            if section not in doc:
+                violations.append(f"SECTION_MISSING  {path_v}#{section}  (顶层节缺失)")
+                continue
+            for sk in subkeys:
+                if sk not in doc[section]:
+                    violations.append(f"SUBKEY_MISSING  {path_v}#{section}.{sk}  (子节缺失)")
 
     print(f"[history-guard] 基线={args.baseline_ref} 当前={args.current_ref or '工作区'}；"
           f"扫描 {len(files)} 个数据文件 / {checked} 个历史数组")

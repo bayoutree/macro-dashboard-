@@ -209,6 +209,16 @@ def merge_history_description(new_data: dict) -> dict:
                         and isinstance(old_meta, dict) and old_meta.get("source")):
                     dim.setdefault("indicators", {})[old_ind_key] = old_ind
                     logger.info(f"    🔒 保留旧指标(新数据未生成): {dim_key}.{old_ind_key} ({len(old_hist)}点)")
+
+    # [CI修复 2026-10-17] 顶层节继承：confirm_signals 等顶层数据由外部采集器
+    # (collect_confirm_signals.py) 写入，compute_all 不生成这些节。
+    # 当 runner 上采集失败时，旧节必须保留，否则每日 CI 都会丢。
+    _TOP_LEVEL_PRESERVE_KEYS = {"confirm_signals"}
+    for _tl_key in _TOP_LEVEL_PRESERVE_KEYS:
+        if _tl_key not in new_data and _tl_key in old:
+            new_data[_tl_key] = old[_tl_key]
+            logger.info(f"    🔒 保留顶层节(新数据未生成): {_tl_key}")
+
     return new_data
 
 

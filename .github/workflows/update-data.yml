@@ -88,6 +88,19 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           PYTHONUNBUFFERED: '1'
 
+      # ----------------------------------------------------------
+      # 4a. 采集确认信号（均线排列/MACD月线/成交量月线）
+      # [CI修复 2026-10-17] collect_confirm_signals.py 独立采集器，
+      # 写入 timing_scores.json 的 confirm_signals 顶层节。
+      # 失败时 merge_history_description 的顶层节继承会兜底保留旧节。
+      # ----------------------------------------------------------
+      - name: Collect confirm signals (monthly MACD/MA/volume)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        continue-on-error: true
+        run: python scripts/collect_confirm_signals.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
       - name: Run data update (timing only)
         if: github.event.inputs.mode == 'timing'
         run: python scripts/update_data.py --timing
