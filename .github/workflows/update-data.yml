@@ -162,7 +162,8 @@ jobs:
             git commit -m "📊 自动数据更新 ${DATE} ${TIME} CST" \
                         -m "更新文件: $(git diff --cached --name-only | tr '\n' ', ')" \
                         -m "运行环境: GitHub Actions"
-            git push
+            git pull --rebase origin main --no-edit || { git rebase --abort 2>/dev/null; git push --force-with-lease; }
+            git push || { echo "重试push..." && git pull --rebase origin main --no-edit && git push; }
             echo "committed=true" >> "$GITHUB_OUTPUT"
             echo "✅ 数据已推送入库"
           fi
