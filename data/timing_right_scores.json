@@ -60,7 +60,7 @@
         "name": "北向配置型资金持续净流入",
         "triggered": false,
         "score": 10,
-        "current_value": "数据待获取",
+        "current_value": "近2周净流入: -148亿, -50亿",
         "data_source": "沪深港通数据",
         "update_time": "2026-10-17"
       },

@@ -1560,9 +1560,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.4,
+          "value": 9.0,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2052,9 +2052,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-17T12:00:13"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -11931,13 +11929,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-17T12:00:13"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -13865,9 +13861,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-17T12:00:13"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
