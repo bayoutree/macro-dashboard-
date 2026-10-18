@@ -93,12 +93,12 @@
   },
   {
     "date": "2026-10-18",
-    "composite_score": 49.0,
+    "composite_score": 47.8,
     "stage": "B",
     "dimensions": {
       "valuation": 47.2,
       "liquidity": 42.2,
-      "equity_bond": 35.0,
+      "equity_bond": 29.0,
       "capital_flow": 70.5,
       "sentiment": 48.1,
       "micro_structure": 53.4

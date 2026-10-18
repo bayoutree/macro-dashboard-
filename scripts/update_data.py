@@ -1143,7 +1143,7 @@ class TimingScoreEngine:
             "percentile": f"{erp_pct:.1f}%" if erp_pct is not None else "数据待更新",
             "score": erp_score,
             "sub_weight": 0,
-            "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
+            "note": "【参考】沪深300口径仅作参考，主指标为中证800 ERP（全A代理）",
             "bottom_threshold": ">6%",
             "top_threshold": "<2.5%"
         }
@@ -1152,12 +1152,12 @@ class TimingScoreEngine:
         wanda_erp_val, wanda_erp_pct, wanda_erp_score = self._calc_wanda_erp()
         if wanda_erp_val is not None:
             indicators["wanda_erp"] = {
-                "name": "万得全A ERP ★主指标",
+                "name": "中证800 ERP ★主指标（全A代理）",
                 "value": f"{wanda_erp_val:.2f}%",
                 "percentile": f"{wanda_erp_pct:.1f}%" if wanda_erp_pct is not None else "数据待更新",
                 "score": wanda_erp_score,
                 "sub_weight": 40,
-                "note": "【新】股债性价比主指标，取代沪深300 ERP",
+                "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
                 "bottom_threshold": ">4%",
                 "top_threshold": "<1.5%"
             }
@@ -1282,15 +1282,18 @@ class TimingScoreEngine:
 
     def _calc_wanda_erp(self):
         """
-        万得全A ERP = 1/PE_TTM(全A) - 10年国债收益率
-        PE来源: akshare stock_index_pe_lg (symbol="中证A股")
+        中证800 ERP（全A代理）= 1/PE_TTM(中证800) - 10年国债收益率
+        [P1-10⑦ 2026-10-18 投资分析裁决] 乐咕已下线'中证A股' symbol（symbol_map 无全A口径），
+        免费全A PE 长历史源绝迹；中证800 覆盖 A 股市值约 70%，月频 2007 起 19.7 年连续，
+        为乐咕现存最接近全A的代理。分位口径下 300/800/全A 股债拐点一致（裁决原文）。
+        PE来源: akshare stock_index_pe_lg (symbol="中证800")
         阈值: >4%底部 / >3%便宜 / >2%中性 / >1.5%偏贵 / <1.5%昂贵
         """
         try:
             ak = self.init_akshare()
-            pe_df = safe_ak_call(ak.stock_index_pe_lg, symbol="中证A股")
+            pe_df = safe_ak_call(ak.stock_index_pe_lg, symbol="中证800")
             if pe_df is None or pe_df.empty:
-                raise ValueError("中证A股PE数据为空")
+                raise ValueError("中证800 PE数据为空")
 
             pe_col = None
             for col in ['滚动市盈率', '市盈率(TTM)', 'PE']:

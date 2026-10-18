@@ -1,7 +1,7 @@
 {
   "update_date": "2026-10-18",
   "version": "v4.1",
-  "composite_score": 49.0,
+  "composite_score": 47.8,
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
@@ -3672,10 +3672,10 @@
     },
     "equity_bond": {
       "name": "股债性价比",
-      "score": 35.0,
+      "score": 29.0,
       "weight": 20,
-      "weighted_score": 7.0,
-      "signal": "股票有吸引力",
+      "weighted_score": 5.8,
+      "signal": "股票极具吸引力",
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
@@ -3683,7 +3683,7 @@
           "percentile": "54.4%",
           "score": 20,
           "sub_weight": 0,
-          "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
+          "note": "【参考】沪深300口径仅作参考，主指标为中证800 ERP（全A代理）",
           "bottom_threshold": ">6%",
           "top_threshold": "<2.5%",
           "description": "股权风险溢价ERP=1/PE−10年国债收益率(全A口径,中证全指000985)。ERP越高股票相对债券越有吸引力。分位为2020年以来。",
@@ -4693,6 +4693,16 @@
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-10-17"
           }
+        },
+        "wanda_erp": {
+          "name": "中证800 ERP ★主指标（全A代理）",
+          "value": "5.78%",
+          "percentile": "49.2%",
+          "score": 20,
+          "sub_weight": 40,
+          "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
+          "bottom_threshold": ">4%",
+          "top_threshold": "<1.5%"
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
