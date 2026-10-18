@@ -444,7 +444,7 @@ def apply_extreme_anchoring(composite_score, prev_anchor_state, today):
     return anchor_state, target_equity, anchor_note
 
 
-def apply_warning_state(composite_score, composite_history, prev_warning_state, fear_greed_data):
+def apply_warning_state(composite_score, composite_history, prev_warning_state, fear_greed_data, anchor_state=None):
     """P1-9: 预警中间态状态机（非对称响应）
     
     预警态触发条件（满足任一）：
@@ -532,10 +532,26 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
             else:
                 note = f"维持预警态，目标仓位{target_equity}%"
     elif current_state == "escalated":
-        # 已升级至 D*，由 P1-7 接管，但保持 escalated 状态直到 D* 解除
-        new_state = "escalated"
-        target_equity = 15
-        note = f"D*锚定生效中，仓位钉死15%"
+        # P1-7 D* 锚定是否仍在激活
+        d_star_active = anchor_state and anchor_state.get("current") == "D_star"
+        if d_star_active:
+            # D* 仍在，保持 escalated
+            new_state = "escalated"
+            target_equity = 15
+            note = f"D*锚定生效中，仓位钉死15%"
+        else:
+            # D* 已解除，escalated 跟随退出
+            if composite_score > P19_WARNING_ENTER_COMPOSITE:
+                # 仍满足预警条件 → 回 warning
+                new_state = "warning"
+                target_equity = P19_WARNING_TARGET_EQUITY
+                since_date = today_str()
+                note = f"D*解除后回落至预警态（composite={composite_score}>{P19_WARNING_ENTER_COMPOSITE}），仓位{target_equity}%"
+            else:
+                # 不满足预警条件 → 回 normal
+                new_state = "normal"
+                target_equity = None
+                note = f"D*解除后退出预警态（composite={composite_score}），恢复正常流转"
     
     warning_state = {
         "current": new_state,
@@ -2446,7 +2462,7 @@ class TimingScoreEngine:
         # 读取恐贪数据（P0-3 统一阈值判断用）
         fg_data = load_json("feargreed_pointer.json") or {}
         warning_state, warning_target_equity, warning_note = apply_warning_state(
-            composite_score, recent_composites, prev_warning_state, fg_data
+            composite_score, recent_composites, prev_warning_state, fg_data, anchor_state
         )
         if warning_note:
             logger.info(f"    ⚠️ P1-9 预警状态: {warning_state['current']} — {warning_note}")
