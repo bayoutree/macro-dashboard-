@@ -95,6 +95,8 @@ jobs:
       # ----------------------------------------------------------
       - name: Run data update (full)
         if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full'
+        timeout-minutes: 20
+        continue-on-error: true
         run: python scripts/update_data.py
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
@@ -115,6 +117,7 @@ jobs:
 
       - name: Run data update (timing only)
         if: github.event.inputs.mode == 'timing'
+        continue-on-error: true
         timeout-minutes: 20
         run: python scripts/update_data.py --timing
         env:
