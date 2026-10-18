@@ -1659,15 +1659,15 @@ class TimingScoreEngine:
             margin_display = margin_val or "数据待更新"
             margin_numeric = None
         indicators["margin_ratio"] = {
-            "name": "两融/流通市值",
-            "value": margin_display,
+            "name": "融资余额250日分位（沪市）",
+            "value": f"{margin_numeric:.1f}%分位" if margin_numeric is not None else "数据待更新",
             "value_numeric": margin_numeric,
-            "unit": "%",
+            "unit": "分位%",
             "score": margin_score,
             "sub_weight": 0,
-            "note": "【参考】两融/流通市值仅作辅助参考",
-            "bottom_threshold": "<2.0%",
-            "top_threshold": ">3.5%"
+            "note": "【P1-10① 2026-10-18裁决】口径=沪市融资余额250日分位（逆向：分位高=杠杆热=score低）。原两融/流通市值分母无源弃用。局限：仅沪市（深市45%缺失偏保守）；250日窗口无法识别跨周期泡沫（2015式），V2恢复ratio口径",
+            "bottom_threshold": "分位<10%（冰点）",
+            "top_threshold": "分位>90%（过热）"
         }
 
         # --- 股基仓位 (v4.1新增) ---
@@ -1770,46 +1770,40 @@ class TimingScoreEngine:
         }
 
     def _calc_margin_ratio(self):
-        """两融余额/流通市值"""
+        """[P1-10① 2026-10-18 投资分析裁决] 沪市融资余额 250 日分位（逆向）。
+        原口径"两融/流通市值"分母无长历史免费源→弃用；250 日窗口内趋势失真小，
+        捕捉近一年杠杆边际热度对月频择时足够。
+        score = 100 − 分位×100（分位越高=杠杆越热=score 越低，与其他分位子指标同构）。
+        裁决注记：①仅沪市——深市约占两融总量45%且偏成长/激进，缺失使杠杆情绪系统性
+        偏保守估计；②250 日窗口无法识别跨周期绝对杠杆率泡沫（2015 式 4%+），
+        V2 若流通市值源可得恢复 ratio 口径。
+        返回 (score, 分位数值0-100)。"""
         try:
             ak = self.init_akshare()
-            # 两融数据
-            margin_df = safe_ak_call(ak.stock_margin_sse, start_date=(datetime.now() - timedelta(days=30)).strftime("%Y%m%d"))
-            if margin_df is not None and not margin_df.empty:
-                # 最新两融余额
-                latest = margin_df.iloc[-1] if len(margin_df) > 0 else None
-                if latest is not None:
-                    # 获取融资融券余额
-                    balance_col = None
-                    for col in margin_df.columns:
-                        if '余额' in str(col) or 'balance' in str(col).lower():
-                            balance_col = col
-                            break
-
-                    if balance_col:
-                        margin_balance = safe_float(margin_df[balance_col].iloc[-1])
-                        if margin_balance:
-                            # 估算流通市值 (约 60-80万亿)
-                            # 简化: 从上期数据获取比例
-                            prev = load_json("timing_scores.json")
-                            prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("value", "2.66%")
-                            prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("score", 48)
-
-                            logger.info(f"      两融余额: {margin_balance/1e8:.0f}亿, 使用上期比例 {prev_val}")
-                            try:
-                                return prev_score, float(prev_val.replace('%', ''))
-                            except:
-                                return 48, 2.66
+            end = datetime.now().strftime("%Y%m%d")
+            start = (datetime.now() - timedelta(days=550)).strftime("%Y%m%d")
+            df = safe_ak_call(ak.stock_margin_sse, start_date=start, end_date=end)
+            if df is None or df.empty:
+                raise ValueError("margin_sse 为空")
+            df = df.copy()
+            df['date'] = pd.to_datetime(df['信用交易日期'], format='%Y%m%d')
+            df = df.set_index('date').sort_index()
+            bal = df['融资余额'].astype(float)
+            win = bal.tail(250)
+            cur = float(bal.iloc[-1])
+            pctile = float((win <= cur).mean() * 100)
+            score = round(100 - pctile, 1)
+            logger.info(f"      融资余额250日分位（沪市）: {pctile:.1f}% → score={score}（逆向）")
+            return score, round(pctile, 1)
         except Exception as e:
-            logger.warning(f"      两融数据异常: {e}")
-
-        prev = load_json("timing_scores.json")
-        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("value", "2.66%")
-        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {}).get("score", 48)
-        try:
-            return prev_score, float(prev_val.replace('%', ''))
-        except:
-            return 48, 2.66
+            logger.warning(f"      融资余额分位计算失败（继承上期）: {e}")
+            prev = load_json("timing_scores.json")
+            ind = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("margin_ratio", {})
+            pv = ind.get("value_numeric")
+            try:
+                return ind.get("score", 50), float(pv) if pv is not None else None
+            except (TypeError, ValueError):
+                return ind.get("score", 50), None
 
     def _calc_margin_balance(self):
         """[P1-10④] 沪市融资余额+周变化（北向卡位替代指标，参考权重0）"""
