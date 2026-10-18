@@ -3181,9 +3181,9 @@ function applyTimingDataToMockData() {
         erp.score >= 70 ? '偏贵' : erp.score <= 30 ? '偏便宜' : '中性偏吸引力', '')
       mockData.erp.signal = _scoreSignal(erp.score);
       const et = document.getElementById('erp-title');
-      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·月频·000985口径)</span>';
+      if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·000985口径·主指标为中证800)</span>';
       const eu = document.getElementById('erp-updatetime');
-      if (eu) eu.textContent = '更新: ' + _ud + ' | 中证全指000985 PE(TTM)−中国10Y国债,月频 | 分位: ' + (erp.percentile || '2020年以来');
+      if (eu) eu.textContent = '更新: ' + _ud + ' | 本卡=中证全指000985 PE(TTM)−10Y,月频 | composite主指标=中证800 ERP（全A代理,乐咕月频2007起） | 分位: ' + (erp.percentile || '2020年以来');
     } else {
       mockData.erp.dates = []; mockData.erp.history = [];
       _setAnchorPending('erp-card');
