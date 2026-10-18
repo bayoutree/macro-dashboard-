@@ -547,11 +547,17 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
                 target_equity = P19_WARNING_TARGET_EQUITY
                 since_date = today_str()
                 note = f"D*解除后回落至预警态（composite={composite_score}>{P19_WARNING_ENTER_COMPOSITE}），仓位{target_equity}%"
-            else:
-                # 不满足预警条件 → 回 normal
+            elif composite_score < P19_WARNING_EXIT_COMPOSITE:
+                # composite < 50 → 回 normal
                 new_state = "normal"
                 target_equity = None
-                note = f"D*解除后退出预警态（composite={composite_score}），恢复正常流转"
+                note = f"D*解除后退出预警态（composite={composite_score}<{P19_WARNING_EXIT_COMPOSITE}），恢复正常流转"
+            else:
+                # 50 <= composite <= 62 → 维持 warning（预警态不受冷却期限制）
+                new_state = "warning"
+                target_equity = P19_WARNING_TARGET_EQUITY
+                since_date = today_str()
+                note = f"D*解除后维持预警态（composite={composite_score}在50-62之间），仓位{target_equity}%"
     
     warning_state = {
         "current": new_state,
