@@ -36,25 +36,46 @@ def main():
     low, high = fw.fetch_target_range()
     probs = fw.get_probabilities()
 
-    meetings = []
-    if isinstance(probs, dict):
-        for date_str, p in sorted(probs.items())[:2]:
-            hike = None
-            if isinstance(p, dict):
-                for k in ("hike", "raise", "increase", "up"):
-                    if k in p:
-                        hike = p[k]
-                        break
-            meetings.append({"date": date_str, "hike_prob": hike})
+    # 真实返回结构（0.2.1 源码 __init__.py 文档串实证）：
+    # {"effr":..., "current_target":"3.75%-4.00%", "trade_date":...,
+    #  "meetings":[{"date":"2026-10-28","contract":"ZQV6",
+    #               "probabilities":{"3.75%-4.00%":42.4,"4.00%-4.25%":57.6}}]}
+    # hike_prob = 概率质量和（区间下限 >= 当前区间上限 high → 该档为加息档）
+    import re as _re
 
-    def _norm(p):
-        if p is None:
+    def _hike_prob(prob_map, cur_high):
+        if not isinstance(prob_map, dict) or not prob_map:
             return None
-        p = float(p)
-        return round(p / 100 if p > 1 else p, 4)
+        total, hike = 0.0, 0.0
+        for label, pct in prob_map.items():
+            m = _re.match(r"^\s*([\d.]+)%", str(label))
+            if not m:
+                continue
+            try:
+                lower = float(m.group(1))
+                v = float(pct)
+            except (TypeError, ValueError):
+                continue
+            total += v
+            if lower >= cur_high - 1e-9:  # 区间整体高于当前目标区间 → 加息
+                hike += v
+        if total <= 0:
+            return None
+        return round(hike / 100.0, 4)  # 百分数→0-1
 
-    p1 = _norm(meetings[0]["hike_prob"]) if len(meetings) > 0 else None
-    p2 = _norm(meetings[1]["hike_prob"]) if len(meetings) > 1 else None
+    meetings = []
+    raw_meetings = probs.get("meetings") if isinstance(probs, dict) else None
+    if isinstance(raw_meetings, list):
+        for item in raw_meetings[:2]:
+            if not isinstance(item, dict):
+                continue
+            meetings.append({
+                "date": item.get("date"),
+                "hike_prob": _hike_prob(item.get("probabilities"), float(high)),
+            })
+
+    p1 = meetings[0]["hike_prob"] if len(meetings) > 0 else None
+    p2 = meetings[1]["hike_prob"] if len(meetings) > 1 else None
     cum = None
     if p1 is not None and p2 is not None:
         cum = round(1 - (1 - p1) * (1 - p2), 4)
