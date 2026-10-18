@@ -19,11 +19,19 @@ def leaves(o, path=""):
     else: yield path, o
 
 class Gate:
-    def __init__(self): self.fails = []; self.n = 0
+    def __init__(self): self.fails = []; self.warns = []; self.n = 0
     def check(self, label, cond, detail=""):
         self.n += 1
         print(f"  [{'PASS' if cond else 'FAIL'}] {label}" + (f"  {detail}" if detail else ""))
         if not cond: self.fails.append(label)
+    def warn(self, label, cond, detail=""):
+        """[CIO 2026-10-18 #12口径裁决] 源端发布滞后属结构性、非数据缺陷：不满足记 WARN 不阻断。"""
+        self.n += 1
+        if cond:
+            print(f"  [PASS] {label}" + (f"  {detail}" if detail else ""))
+        else:
+            self.warns.append(label)
+            print(f"  [WARN] {label}" + (f"  {detail}" if detail else ""))
 
 def _engine(code_dir):
     if code_dir not in sys.path: sys.path.insert(0, os.path.join(code_dir, "scripts"))
@@ -206,9 +214,23 @@ def stage1_exim(repo, g):
                 f"last={hist[-1] if hist else None}")
     # 不再滞后：出口系列月份应与同期中国主源（M2）同为最新月
     if m2_date:
+        # [CIO 2026-10-18 口径裁决] 海关发布早、NBS 入库滞后属源端结构性滞后：
+        # 同月=PASS；滞后≤1月=WARN（跟踪不阻断）；滞后>1月=FAIL（真停滞才红灯）
+        def _mlag(a, b):
+            try:
+                ay, am = int(a[:4]), int(a[5:7]); by, bm = int(b[:4]), int(b[5:7])
+                return (by * 12 + bm) - (ay * 12 + am)
+            except Exception:
+                return 99
         for key in ("export", "import", "trade_balance"):
             d = str((ext.get(key) or {}).get("date") or "")
-            g.check(f"#12 {key} 与主源 M2 同月（滞后已消除）", d == m2_date, f"{d} vs m2={m2_date}")
+            lag = _mlag(d, m2_date)
+            if lag == 0:
+                g.check(f"#12 {key} 与主源 M2 同月", True, f"{d} vs m2={m2_date}")
+            elif lag <= 1:
+                g.warn(f"#12 {key} 滞后主源 M2 ≤1月（源端结构性，跟踪）", False, f"{d} vs m2={m2_date} lag={lag}")
+            else:
+                g.check(f"#12 {key} 滞后主源 M2 >1月（异常停滞）", False, f"{d} vs m2={m2_date} lag={lag}")
     ex, im = (ext.get("export") or {}).get("value"), (ext.get("import") or {}).get("value")
     g.check("#12 出口/进口为当月同比（量级合理 −60~60%）",
             ex is not None and im is not None and -60 <= ex <= 60 and -60 <= im <= 60, f"export={ex}, import={im}")
@@ -259,5 +281,6 @@ if __name__ == "__main__":
         stage1_exim(a.repo, g)
         stage1_rulings(a.repo, g)
     elif a.stage == 3: stage3(a.repo, code, g)
-    print(f"\n合计 {g.n} 项断言, 失败 {len(g.fails)} 项 -> {'PASS' if not g.fails else 'FAIL'}")
+    print(f"\n合计 {g.n} 项断言, 失败 {len(g.fails)} 项, 警告 {len(g.warns)} 项 -> {'PASS' if not g.fails else 'FAIL'}")
+    if g.warns: print("  [WARN 清单] " + " | ".join(g.warns))
     sys.exit(0 if not g.fails else 1)
