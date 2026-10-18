@@ -351,6 +351,252 @@ def apply_stage_hysteresis(composite_score, prev_stage):
     return raw
 
 
+# P2-13: 信号 IC/胜率检验（投资分析 2026-10-18 裁决 Q6-Q8）
+# 四类信号+composite IC；20/60 交易日双窗；弱多头/弱空头不计胜负；
+# 披露门槛 n≥20 显示百分比 / n≥50 允许研报引用 / n<10 只显示"n 累积中"
+P213_WINDOWS = (20, 60)
+P213_MIN_DISCLOSE_N = 20
+P213_MIN_CITE_N = 50
+
+
+def _p213_direction_of_stage(from_s, to_s):
+    order = "ABCD"
+    if from_s not in order or to_s not in order:
+        return None
+    return "reduce" if order.index(to_s) > order.index(from_s) else "add"
+
+
+def p213_diff_signals(prev_rec, cur_rec, price_today):
+    """[P2-13 裁决Q6/Q7] 相邻决策态 diff → 信号列表。
+    direction: add=加仓向（未来涨=胜）/ reduce=减仓向（未来跌=胜）。
+    弱多头/弱空头切换不生成信号（裁决Q7：方向模糊会稀释统计）。
+    锚定/预警仅记录进入事件（解除走冷却状态机，不作反向信号）。
+    """
+    sigs = []
+    date = cur_rec.get("date")
+    comp = cur_rec.get("composite_score")
+
+    # ① 阶段切换
+    ps, cs = prev_rec.get("stage"), cur_rec.get("stage")
+    # from=None=机制上线首日伪前态（如P1-6前无trend字段），不生成信号防统计污染
+    if ps and cs and ps != cs:
+        d = _p213_direction_of_stage(ps, cs)
+        if d:
+            sigs.append({"type": "stage", "from": ps, "to": cs, "direction": d})
+
+    # ② 预警进出（进入=减仓向；退出=恢复=加仓向）
+    pw = (prev_rec.get("warning_state") or {}).get("current")
+    cw = (cur_rec.get("warning_state") or {}).get("current")
+    if pw is not None and pw != cw:
+        if cw == "warning":
+            sigs.append({"type": "warning_enter", "from": pw, "to": cw, "direction": "reduce"})
+        elif pw == "warning":
+            sigs.append({"type": "warning_exit", "from": pw, "to": cw, "direction": "add"})
+
+    # ③ A*/D* 锚定进入（A*=极端恐惧逆向加仓向 / D*=极端贪婪减仓向）
+    pa = (prev_rec.get("anchor_state") or {}).get("current")
+    ca = (cur_rec.get("anchor_state") or {}).get("current")
+    if pa is not None and pa != ca:
+        if ca == "A_star":
+            sigs.append({"type": "anchor", "from": pa, "to": ca, "direction": "add"})
+        elif ca == "D_star":
+            sigs.append({"type": "anchor", "from": pa, "to": ca, "direction": "reduce"})
+
+    # ④ 趋势切换（仅强多头/强空头计胜负；弱态不生成信号）
+    pt = (prev_rec.get("trend_state") or {}).get("trend")
+    ct = (cur_rec.get("trend_state") or {}).get("trend")
+    if pt is not None and pt != ct:
+        if ct == "strong_bull":
+            sigs.append({"type": "trend", "from": pt, "to": ct, "direction": "add"})
+        elif ct == "strong_bear":
+            sigs.append({"type": "trend", "from": pt, "to": ct, "direction": "reduce"})
+
+    for s in sigs:
+        s.update({"date": date, "composite": comp, "price": price_today,
+                  "settled20": None, "settled60": None})
+    return sigs
+
+
+def _p213_close_map(index_df):
+    """日K DataFrame → {date_str: close}（腾讯源 date 列为 'YYYY-MM-DD' 字符串或 Timestamp）"""
+    out = {}
+    if index_df is None:
+        return out
+    for d, c in zip(index_df["date"], index_df["close"]):
+        out[str(d)[:10]] = float(c)
+    return out
+
+
+def p213_settle(entries, close_map):
+    """结算：每条含 date/price 的记录，满窗口交易日数则写 settled{win}={date, ret}。
+    窗口按收盘价序列的交易日索引推进（用排序后的收盘日期表）。
+    信号日无收盘（周末/假日）→ 以次一交易日收盘为基准价（信号次日执行口径），
+    记 base_date 显形偏移。"""
+    dates = sorted(close_map.keys())
+    idx = {d: i for i, d in enumerate(dates)}
+    n_settled = 0
+    for e in entries:
+        d0 = e.get("date")
+        if not d0:
+            continue
+        if d0 in idx:
+            base_i, base_d = idx[d0], d0
+        else:
+            later = [d for d in dates if d > d0]
+            if not later:
+                continue
+            base_d = later[0]
+            base_i = idx[base_d]
+        for win in P213_WINDOWS:
+            key = f"settled{win}"
+            if e.get(key) is not None:
+                continue
+            j = base_i + win
+            if j < len(dates):
+                d1 = dates[j]
+                p0 = e.get("price") or close_map.get(base_d)
+                if p0:
+                    st = {"date": d1, "ret": round(close_map[d1] / p0 - 1, 4)}
+                    if base_d != d0:
+                        st["base_date"] = base_d  # 假日信号：基准日=次一交易日
+                    e[key] = st
+                    n_settled += 1
+    return n_settled
+
+
+def _p213_win(direction, ret):
+    """胜=方向一致；ret==0 记 None（平局，不入胜负分子分母）"""
+    if ret is None:
+        return None
+    if abs(ret) < 1e-12:
+        return None
+    return (ret > 0) if direction == "add" else (ret < 0)
+
+
+def _spearman(xs, ys):
+    """秩相关（无 scipy：rank 后 pearson；并列秩取均值）"""
+    n = len(xs)
+    if n < 3:
+        return None
+    def _rank(v):
+        order = sorted(range(n), key=lambda i: v[i])
+        r = [0.0] * n
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and v[order[j + 1]] == v[order[i]]:
+                j += 1
+            avg = (i + j) / 2.0 + 1
+            for k in range(i, j + 1):
+                r[order[k]] = avg
+            i = j + 1
+        return r
+    rx, ry = _rank(xs), _rank(ys)
+    mx, my = sum(rx) / n, sum(ry) / n
+    cov = sum((rx[i] - mx) * (ry[i] - my) for i in range(n))
+    vx = sum((v - mx) ** 2 for v in rx)
+    vy = sum((v - my) ** 2 for v in ry)
+    if vx <= 0 or vy <= 0:
+        return None
+    return round(cov / (vx ** 0.5 * vy ** 0.5), 4)
+
+
+def p213_compute_stats(log):
+    """聚合统计：分类型 20/60 窗 n/胜率/平均收益 + composite IC（裁决Q6 元指标）"""
+    stats = {"by_type": {}, "ic": {}, "total_signals": len(log.get("signals", []))}
+    for sig in log.get("signals", []):
+        t = sig["type"]
+        bucket = stats["by_type"].setdefault(t, {})
+        for win in P213_WINDOWS:
+            st = sig.get(f"settled{win}")
+            b = bucket.setdefault(f"w{win}", {"n": 0, "win": 0, "draw": 0, "ret_sum": 0.0})
+            if st is None:
+                continue
+            b["n"] += 1
+            b["ret_sum"] += st["ret"]
+            w = _p213_win(sig["direction"], st["ret"])
+            if w is True:
+                b["win"] += 1
+            elif w is None:
+                b["draw"] += 1
+    # 收敛输出：胜率=win/(n-draw)，披露门槛由前端按 n 判断
+    for t, bucket in stats["by_type"].items():
+        for win in P213_WINDOWS:
+            b = bucket.get(f"w{win}")
+            if not b:
+                continue
+            eff = b["n"] - b["draw"]
+            b["win_rate"] = round(b["win"] / eff, 4) if eff > 0 else None
+            b["avg_ret"] = round(b["ret_sum"] / b["n"], 4) if b["n"] > 0 else None
+            del b["ret_sum"]
+    # composite IC：每日决策点（ic_points 已结算窗）
+    for win in P213_WINDOWS:
+        pts = [(p["composite"], p[f"ret{win}"]) for p in log.get("ic_points", [])
+               if p.get(f"ret{win}") is not None and p.get("composite") is not None]
+        if len(pts) >= 10:
+            stats["ic"][f"ic{win}"] = _spearman([p[0] for p in pts], [p[1] for p in pts])
+            stats["ic"][f"ic{win}_n"] = len(pts)
+        else:
+            stats["ic"][f"ic{win}"] = None
+            stats["ic"][f"ic{win}_n"] = len(pts)
+    stats["disclose_min_n"] = P213_MIN_DISCLOSE_N
+    stats["cite_min_n"] = P213_MIN_CITE_N
+    return stats
+
+
+def p213_update(history, fetch_index_fn=None, log_name="signal_log.json"):
+    """[P2-13] 主入口：diff 最新两条决策态生成信号 + 结算 + IC 日点 + 统计。
+    返回 stats（供 timing_scores.p2_13_state 下发）；任何子步骤失败仅告警不阻断主流程。
+    fetch_index_fn 默认 None → 惰性解析 fetch_trend_index_daily（定义在后文 P1-6 区块）。
+    """
+    if fetch_index_fn is None:
+        fetch_index_fn = fetch_trend_index_daily
+    log = load_json(log_name) or {"signals": [], "ic_points": []}
+    log.setdefault("signals", [])
+    log.setdefault("ic_points", [])
+
+    df = fetch_index_fn()
+    close_map = _p213_close_map(df)
+
+    # ① 新信号：diff 末两条 record（同日重跑去重：信号 id=date+type+from+to）
+    if len(history) >= 2:
+        prev_rec, cur_rec = history[-2], history[-1]
+        if prev_rec.get("date") != cur_rec.get("date"):
+            px = close_map.get(cur_rec.get("date"))
+            new_sigs = p213_diff_signals(prev_rec, cur_rec, px)
+            existing = {(s["date"], s["type"], s.get("from"), s.get("to")) for s in log["signals"]}
+            for s in new_sigs:
+                key = (s["date"], s["type"], s.get("from"), s.get("to"))
+                if key not in existing:
+                    log["signals"].append(s)
+
+    # ② IC 日点：最新 record 当日（同日去重）
+    if history:
+        cur = history[-1]
+        d, comp = cur.get("date"), cur.get("composite_score")
+        if d and comp is not None and d in close_map:
+            if not any(p["date"] == d for p in log["ic_points"]):
+                log["ic_points"].append({"date": d, "composite": comp,
+                                         "price": close_map[d], "ret20": None, "ret60": None})
+
+    # ③ 结算：信号（用 settled 结构）+ IC 日点（用 ret{win} 扁平结构）
+    p213_settle(log["signals"], close_map)
+    for pt in log["ic_points"]:
+        dates = sorted(close_map.keys())
+        if pt["date"] not in dates:
+            continue
+        i0 = dates.index(pt["date"])
+        for win in P213_WINDOWS:
+            k = f"ret{win}"
+            if pt.get(k) is None and i0 + win < len(dates) and pt.get("price"):
+                pt[k] = round(close_map[dates[i0 + win]] / pt["price"] - 1, 4)
+
+    log["stats"] = p213_compute_stats(log)
+    log["updated"] = date.today().isoformat()
+    save_json(log, log_name)
+    return log["stats"]
+
+
 # P1-8: 美联储双层（投资分析 2026-10-18 裁决终版）
 # 数据源：collect_fedwatch.py（cme-fedwatch 包，每日结算后取数一次）→ data/fed_watch.json
 P18_HIKE_PROB_THRESHOLD = 0.60   # 预期层：未来2次会议累计加息概率阈值（1-(1-p1)(1-p2)，独立性假设偏保守）
@@ -4013,6 +4259,27 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     history.sort(key=lambda x: x.get("date", ""))
     p.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
     logger.info(f"✅ timing_history.json 已追加: date={today}, composite={cs}, stage={stage}")
+
+    # [P2-13] 信号 IC/胜率累积（失败仅告警，不阻断决策态日志）
+    try:
+        stats = p213_update(history)
+        p213_state = {
+            "total_signals": stats.get("total_signals", 0),
+            "by_type": stats.get("by_type", {}),
+            "ic": stats.get("ic", {}),
+            "disclose_min_n": P213_MIN_DISCLOSE_N,
+            "cite_min_n": P213_MIN_CITE_N,
+            "note": "P2-13 样本外信号统计（2026-10-18起累积；n<10只显示累积中，n≥20显示百分比，n≥50方可研报引用）",
+        }
+        timing_data["p2_13_state"] = p213_state
+        # 主流程 save_json 在 append 之前 → 直接注入已落盘的 timing_scores.json
+        ts_on_disk = load_json("timing_scores.json")
+        if isinstance(ts_on_disk, dict):
+            ts_on_disk["p2_13_state"] = p213_state
+            save_json(ts_on_disk, "timing_scores.json")
+        logger.info(f"    📊 P2-13 信号统计: 累计信号 {stats.get('total_signals', 0)} 条")
+    except Exception as e:
+        logger.warning(f"⚠️ P2-13 信号统计失败（不阻断）: {e}")
     return record
 
 

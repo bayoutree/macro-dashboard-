@@ -1307,7 +1307,8 @@ const StageEngine = {
       // [P1-6 2026-10-18] 趋势过滤
       p1_6_state: this._timingData?.p1_6_state || { trend: 'unknown' },
       // [P1-8 2026-10-18] 美联储双层
-      p1_8_state: this._timingData?.p1_8_state || { layer: 'none' }
+      p1_8_state: this._timingData?.p1_8_state || { layer: 'none' },
+      p2_13_state: this._timingData?.p2_13_state || {}
     };
   }
 };
@@ -1890,6 +1891,26 @@ function renderStageCards() {
     }
     // [P1-8 2026-10-18] Fed 双层徽章：预期层/事件层激活时在活跃卡标注（裁决：预期层32%禁加成长股、事件软32%、人工钉25%）
     const _fedSt = (engineOutput.p1_8_state && engineOutput.p1_8_state.layer) ? engineOutput.p1_8_state : null;
+    // [P2-13 2026-10-18裁决Q8] 样本外信号统计小字（n<10只显示累积中，n≥20显示百分比）
+    let _p213Badge = '';
+    if (isActive) {
+      const _p213 = engineOutput.p2_13_state || {};
+      const _tot = _p213.total_signals || 0;
+      if (_tot > 0) {
+        let _bestN = 0, _bestTxt = '';
+        const _bt = _p213.by_type || {};
+        for (const _ty of Object.keys(_bt)) {
+          const _w = _bt[_ty].w20;
+          if (_w && _w.n > _bestN) {
+            _bestN = _w.n;
+            _bestTxt = (_w.n >= (_p213.disclose_min_n || 20) && _w.win_rate != null)
+              ? ' 20日胜率' + Math.round(_w.win_rate * 100) + '%(n=' + _w.n + ')'
+              : ' 累积中(n=' + _w.n + ')';
+          }
+        }
+        _p213Badge = '<div title="P2-13 样本外信号统计：每次信号后自动累积20/60日检验，n≥20显示百分比，n≥50方可研报引用" style="font-size:10px;color:var(--text-muted);margin-top:2px;">📊 信号' + _tot + '条' + _bestTxt + '</div>';
+      }
+    }
     let _fedBadge = '';
     if (isActive && _fedSt && _fedSt.layer && _fedSt.layer !== 'none') {
       const _fedLayerTxt = { expect: '预期层', event_soft: '事件层·软', event_hard: '事件层·钉' }[_fedSt.layer] || _fedSt.layer;
@@ -1905,6 +1926,7 @@ function renderStageCards() {
       ${_anchorBadge}
       ${_warnBadge}
       ${_fedBadge}
+      ${_p213Badge}
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });

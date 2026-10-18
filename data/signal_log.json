@@ -1,0 +1,17 @@
+{
+  "signals": [],
+  "ic_points": [],
+  "stats": {
+    "by_type": {},
+    "ic": {
+      "ic20": null,
+      "ic20_n": 0,
+      "ic60": null,
+      "ic60_n": 0
+    },
+    "total_signals": 0,
+    "disclose_min_n": 20,
+    "cite_min_n": 50
+  },
+  "updated": "2026-10-18"
+}
