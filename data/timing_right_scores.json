@@ -4,7 +4,7 @@
   "signal_light": "orange",
   "signal_direction": "bear",
   "bull_score": 0,
-  "bear_score": 27,
+  "bear_score": 37,
   "trend_bias": "neutral",
   "signals": {
     "early_bull": [
@@ -86,7 +86,7 @@
         "name": "月线MACD金叉",
         "triggered": false,
         "score": 10,
-        "current_value": "月DIFF=147.45, DEA=197.84",
+        "current_value": "月DIFF=193.23, DEA=210.44",
         "data_source": "交易所行情",
         "update_time": "2026-10-18"
       },
@@ -186,9 +186,9 @@
       },
       {
         "name": "月线MACD死叉",
-        "triggered": false,
+        "triggered": true,
         "score": 10,
-        "current_value": "月DIFF=147.45, DEA=197.84",
+        "current_value": "月DIFF=193.23, DEA=210.44",
         "data_source": "交易所行情",
         "update_time": "2026-10-18"
       },
@@ -214,7 +214,7 @@
   },
   "style_rotation": {
     "large_small": {
-      "ratio": 1.6021,
+      "ratio": 1.6022,
       "trend": "大盘占优",
       "signal": "小盘偏弱"
     },

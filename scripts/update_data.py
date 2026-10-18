@@ -2684,8 +2684,15 @@ class TimingRightEngine:
             return self._idx_df
         try:
             ak = self.init_akshare()
-            df = safe_ak_call(ak.stock_zh_index_daily, symbol=symbol)
+            # [P1-10 2026-10-18] MACD两源统一：默认腾讯源(stock_zh_index_daily_tx)，与 confirm_signals
+            # 同链路（月线MACD SSOT=193.228）。修复前新浪源月DIFF=147.45 与 SSOT 不一致（P0-4遗留）。
+            # 注：sh880009(全A中位数)腾讯源无数据，_sig_median_sync_* 调用点保留新浪源，不改本函数。
+            df = safe_ak_call(ak.stock_zh_index_daily_tx, symbol=symbol)
             if df is not None and not df.empty:
+                # 腾讯源无 volume(成交量)列，以 amount(成交额)替代——量能类信号口径随之变为成交额，
+                # 相对判断（放量/缩量）结论不受影响（价格短期变动小，量额高度同向）
+                if 'volume' not in df.columns and 'amount' in df.columns:
+                    df['volume'] = df['amount']
                 df['date'] = pd.to_datetime(df['date'])
                 df = df.sort_values('date').reset_index(drop=True)
                 self._idx_df = df
@@ -2728,6 +2735,13 @@ class TimingRightEngine:
                 'close': 'last', 'volume': 'sum'
             }).dropna()
             monthly = monthly.reset_index()
+            # [P1-10 2026-10-18] 月K构造对齐 confirm_signals SSOT：末月交易日<10 视为不完整月排除
+            # （月线信号以走完的K线为准，防月内波动致信号反复；P0-4 裁决 DIFF=193.228 即此口径）
+            if len(monthly) > 0:
+                last_period = monthly['date'].iloc[-1].to_period('M')
+                last_days = int((df.index.to_period('M') == last_period).sum())
+                if last_days < 10:
+                    monthly = monthly.iloc[:-1]
             self._idx_monthly = monthly
             return monthly
         except Exception as e:
