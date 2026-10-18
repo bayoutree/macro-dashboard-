@@ -688,8 +688,8 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
     if hw.get("confirmed") is True and hw.get("confirmed_at"):
         try:
             c_at = _date.fromisoformat(str(hw["confirmed_at"]))
-            # 时限近似：2 个交易日 ≈ 4 自然日（含周末保守上沿）；超时维持软层 32%
-            if (today - c_at).days <= 4:
+            # 时限：P18_MANUAL_CONFIRM_LIMIT_DAYS 个交易日 ≈ ×2 自然日（含周末保守上沿）
+            if (today - c_at).days <= P18_MANUAL_CONFIRM_LIMIT_DAYS * 2:
                 manual_hard = True
                 triggers.append("人工确认鹰派")
             else:
@@ -715,12 +715,19 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
     if manual_hard:
         st["layer"], st["cap"] = "event_hard", P18_EVENT_HARD_CAP
         st["note"] = "事件层人工轨：会后人工确认鹰派 → 仓位钉 25%"
-    elif event_auto:
+    elif event_auto or manual_expired:
+        # [CIO验收D1修复] 裁决语义：人工确认超时（>2交易日）维持软事件层32%，防人工位空转；
+        # 解除路径=人工撤销 config_overrides.fed_hawkish 标志（撤销后次采集周期落 none+冷却）
         st["layer"], st["cap"] = "event_soft", P18_EVENT_SOFT_CAP
-        note = "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）"
-        if manual_expired:
-            note += "；人工确认超时（>2交易日），维持软层"
-        st["note"] = note
+        if manual_expired and not event_auto:
+            st["note"] = ("事件层维持：人工确认超时（>2交易日）→ 维持软压 32%（防人工位空转）；"
+                          "解除路径=人工撤销 fed_hawkish 标志")
+            triggers.append("人工确认超时·维持软层")
+        else:
+            note = "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）"
+            if manual_expired:
+                note += "；人工确认超时（>2交易日），维持软层"
+            st["note"] = note
     elif expect_hit:
         st["layer"], st["cap"] = "expect", P18_EXPECT_CAP
         st["note"] = "预期层：加息概率+长端利率双高 → 仓位上限 32%，禁加成长股"
@@ -2858,17 +2865,12 @@ class TimingScoreEngine:
             target_equity = warning_target_equity
             logger.info(f"    🎯 P1-9 目标仓位: {target_equity}% (覆盖常规映射)")
 
-        # P1-8: 美联储双层（预期层/事件层，取与现有 target 更保守者）
+        # P1-8: 美联储双层数据加载（层判定在 A* 联动之后取小——[CIO验收D2修复]
+        # 防止 A*+strong_bear 无条件赋值 55% 击穿 Fed cap 32%/25%）
         fed_watch_data = load_json("fed_watch.json") or {}
         us_macro_data = load_json("us_macro.json") or {}
         manual_cfg = load_json("config_overrides.json") or {}
         fed_state, fed_cap = apply_fed_layer(fed_watch_data, us_macro_data, prev_fed_state, manual_cfg)
-        if fed_state.get("layer", "none") != "none":
-            logger.info(f"    🦅 P1-8 Fed 层: {fed_state['layer']} cap={fed_state['cap']}% — {fed_state.get('note','')}")
-        if fed_cap is not None:
-            if target_equity is None or fed_cap < target_equity:
-                target_equity = fed_cap
-                logger.info(f"    🎯 P1-8 Fed 仓位上限生效: {fed_cap}%")
 
         # P1-6: A* 与趋势联动（D* 方向不 veto——卖侧无条件优先）
         if anchor_state.get("current") == "A_star" and target_equity is not None:
@@ -2879,6 +2881,14 @@ class TimingScoreEngine:
             elif _trend == "weak_bear":
                 trend_state["a_star_unconfirmed"] = True
                 logger.info(f"    📉 P1-6 A* 联动: 弱空头 → 维持 65% 但页面标注「趋势未确认」")
+
+        # P1-8 取小：A* 联动/预警/锚定之后的最终保守者（Fed cap 不可被击穿）
+        if fed_state.get("layer", "none") != "none":
+            logger.info(f"    🦅 P1-8 Fed 层: {fed_state['layer']} cap={fed_state['cap']}% — {fed_state.get('note','')}")
+        if fed_cap is not None:
+            if target_equity is None or fed_cap < target_equity:
+                target_equity = fed_cap
+                logger.info(f"    🎯 P1-8 Fed 仓位上限生效: {fed_cap}%")
 
 
         # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
