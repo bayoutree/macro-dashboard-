@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-10-17",
+  "update_time": "2026-10-18",
   "us_stock": {
     "shiller_pe": {
       "value": null,
@@ -6684,7 +6684,7 @@
   },
   "commodity": {
     "copper": {
-      "price": 6.531,
+      "price": 6.5735,
       "inventory": null,
       "history": [
         {
@@ -6925,12 +6925,12 @@
         },
         {
           "date": "2026-10-16",
-          "value": 6.531
+          "value": 6.5735
         }
       ]
     },
     "crude_oil": {
-      "brent": 101.41,
+      "brent": 99.02,
       "history": [
         {
           "date": "2026-07-24",
@@ -7170,7 +7170,7 @@
         },
         {
           "date": "2026-10-16",
-          "value": 101.41
+          "value": 99.02
         }
       ]
     }
