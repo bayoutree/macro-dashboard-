@@ -90,5 +90,83 @@
       "cooldown_until": null,
       "last_trigger": null
     }
+  },
+  {
+    "date": "2026-10-18",
+    "composite_score": 48.1,
+    "stage": "B",
+    "dimensions": {
+      "valuation": 47.2,
+      "liquidity": 42.2,
+      "equity_bond": 35.0,
+      "capital_flow": 65.2,
+      "sentiment": 48.1,
+      "micro_structure": 53.4
+    },
+    "triggers": {
+      "add_position": {
+        "社融增速触底回升(连续3个月环比改善)": false,
+        "恐贪指数回落至20以下(极度恐惧)": false,
+        "交易拥挤度回落至40%以下": false,
+        "ERP突破6%": true
+      },
+      "reduce_position": {
+        "两融占比突破3.5%": false,
+        "恐贪指数>85且QVIX<14(极度贪婪双确认)": false,
+        "社融增速进一步下行": false,
+        "美联储重启加息": false,
+        "股息率-国债利差(沪深300)降至0.3%以下": false
+      },
+      "signal_light": "orange",
+      "signal_direction": "bear"
+    },
+    "hysteresis_state": {
+      "valuation": {
+        "active": false,
+        "direction": null
+      },
+      "liquidity": {
+        "active": false,
+        "direction": null
+      },
+      "equity_bond": {
+        "active": false,
+        "direction": null
+      },
+      "capital_flow": {
+        "active": false,
+        "direction": null
+      },
+      "sentiment": {
+        "active": false,
+        "direction": null
+      },
+      "micro_structure": {
+        "active": false,
+        "direction": null
+      }
+    },
+    "anchor_state": {
+      "current": "normal",
+      "since": null,
+      "cooldown_until": null,
+      "last_trigger": null
+    },
+    "warning_state": {
+      "current": "normal",
+      "since": null,
+      "target_equity": null,
+      "weekly_change": 0,
+      "trigger_reason": ""
+    },
+    "trend_state": {
+      "trend": "strong_bear",
+      "close": 5289.37,
+      "ma120": 6085.73,
+      "ma120_direction": "down",
+      "momentum_12m": -0.0819,
+      "as_of": "2026-10-16",
+      "source": "tencent_tx sh000985"
+    }
   }
 ]

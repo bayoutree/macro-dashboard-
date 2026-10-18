@@ -319,6 +319,16 @@ P19_WARNING_EXIT_COMPOSITE = 50
 P19_WARNING_UPGRADE_COMPOSITE = 70
 P19_WARNING_TARGET_EQUITY = 40
 P19_WARNING_MONTHLY_DECAY = 2
+# P1-6 联动：强空头趋势下预警触发①放宽（投资分析终版规格 2026-10-18）
+P19_WARNING_ENTER_TREND_BEAR = 55
+
+# P1-6: 价格趋势过滤（投资分析终版规格 2026-10-18）
+# 标的：中证全指（万得全 A 免费替代，覆盖全部 A 股；腾讯源，CI 已验证可用）
+P16_INDEX_SYMBOL = "sh000985"
+P16_MA_PERIOD = 120              # 120 日线
+P16_MA_DIRECTION_LOOKBACK = 20   # 均线方向：今日 MA120 vs 20 交易日前 MA120（防单日噪音）
+P16_MOMENTUM_LOOKBACK = 250      # 12 个月动量：现价/250 日前收盘−1，阈值 0
+P16_A_STAR_BEAR_TARGET = 55      # A* 触发+强空头 → 降档 55%（A 区间下沿）
 
 def apply_nonlinear_weights(dimensions, prev_hysteresis):
     """
@@ -444,7 +454,7 @@ def apply_extreme_anchoring(composite_score, prev_anchor_state, today):
     return anchor_state, target_equity, anchor_note
 
 
-def apply_warning_state(composite_score, composite_history, prev_warning_state, fear_greed_data, anchor_state=None):
+def apply_warning_state(composite_score, composite_history, prev_warning_state, fear_greed_data, anchor_state=None, trend_state=None):
     """P1-9: 预警中间态状态机（非对称响应）
     
     预警态触发条件（满足任一）：
@@ -483,10 +493,13 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     trigger_reason = ""
     
     if current_state == "normal":
-        # 条件①: composite > 62
-        if composite_score > P19_WARNING_ENTER_COMPOSITE:
+        # 条件①: composite > 62（P1-6 联动：强空头趋势下放宽到 > 55）
+        _enter_threshold = P19_WARNING_ENTER_COMPOSITE
+        if trend_state and trend_state.get("trend") == "strong_bear":
+            _enter_threshold = P19_WARNING_ENTER_TREND_BEAR
+        if composite_score > _enter_threshold:
             should_enter = True
-            trigger_reason = f"composite>{P19_WARNING_ENTER_COMPOSITE}"
+            trigger_reason = f"composite>{_enter_threshold}" + ("（强空头放宽）" if _enter_threshold != P19_WARNING_ENTER_COMPOSITE else "")
         # 条件②: composite > 55 且单周变化 > +8
         elif composite_score > P19_WARNING_ENTER_ACCEL and weekly_change > P19_WARNING_ACCEL_THRESHOLD:
             should_enter = True
@@ -568,6 +581,72 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     }
     
     return warning_state, target_equity, note
+
+
+# ============================================================
+# P1-6: 价格趋势过滤 (2026-10-18)
+# ============================================================
+def fetch_trend_index_daily():
+    """P1-6: 拉取中证全指日K（腾讯源，CI 已验证可用）。失败返回 None。"""
+    import akshare as ak
+    df = safe_ak_call(ak.stock_zh_index_daily_tx, symbol=P16_INDEX_SYMBOL)
+    if df is None or len(df) < P16_MOMENTUM_LOOKBACK + 1:
+        return None
+    return df
+
+
+def compute_trend_state(df, prev_trend_state, today):
+    """P1-6: 价格趋势四态判定（投资分析终版规格 2026-10-18）
+
+    判定口径：
+    ① 价格位置：最新收盘 vs MA120
+    ② 均线方向：今日 MA120 vs 20 交易日前 MA120（防单日噪音）
+    ③ 四态组合：价上+均上=strong_bull 强多头 / 价上+均下=weak_bull 弱多头
+                价下+均上=weak_bear 弱空头 / 价下+均下=strong_bear 强空头
+    ④ 12 月动量 = 现价/250 日前收盘 − 1，阈值 0（TSMOM，缓冲由组合逻辑承担）
+
+    断连容错：采集失败时继承前日趋势（同 P1-7 外部指标继承模式）。
+    Returns: (trend_state, trend_note)
+    """
+    if df is None:
+        if prev_trend_state and prev_trend_state.get("trend") not in (None, "unknown"):
+            inherited = dict(prev_trend_state)
+            inherited["source"] = "inherited"
+            return inherited, "指数日K采集失败，继承前日趋势"
+        return {"trend": "unknown", "source": "unavailable"}, "指数日K不可用，趋势未知"
+
+    closes = df["close"].astype(float).values
+    ma = df["close"].astype(float).rolling(P16_MA_PERIOD).mean().values
+    close_now = closes[-1]
+    ma_now = ma[-1]
+    ma_prev = ma[-1 - P16_MA_DIRECTION_LOOKBACK]
+    price_above = close_now > ma_now
+    ma_up = ma_now > ma_prev
+
+    if price_above and ma_up:
+        trend = "strong_bull"
+    elif price_above and not ma_up:
+        trend = "weak_bull"
+    elif not price_above and ma_up:
+        trend = "weak_bear"
+    else:
+        trend = "strong_bear"
+
+    momentum = close_now / closes[-1 - P16_MOMENTUM_LOOKBACK] - 1
+    trend_state = {
+        "trend": trend,
+        "close": round(float(close_now), 2),
+        "ma120": round(float(ma_now), 2),
+        "ma120_direction": "up" if ma_up else "down",
+        "momentum_12m": round(float(momentum), 4),
+        "as_of": str(df["date"].iloc[-1])[:10],
+        "source": f"tencent_tx {P16_INDEX_SYMBOL}"
+    }
+    label = {"strong_bull": "强多头", "weak_bull": "弱多头",
+             "weak_bear": "弱空头", "strong_bear": "强空头"}[trend]
+    note = (f"中证全指 {close_now:.0f} vs MA120 {ma_now:.0f}（价{'上' if price_above else '下'}）"
+            f"+ 均线{'上行' if ma_up else '下行'} → {label}；12月动量 {momentum:+.1%}")
+    return trend_state, note
 
 
 # ============================================================
@@ -2455,6 +2534,17 @@ class TimingScoreEngine:
             logger.info(f"    🎯 P1-7 目标仓位: {target_equity}% (覆盖常规映射)")
 
         # ============================================================
+        # P1-6: 价格趋势过滤 (2026-10-18)
+        # ============================================================
+        prev_trend_state = {}
+        if prev_history and isinstance(prev_history, list) and len(prev_history) > 0:
+            prev_trend_state = prev_history[-1].get("trend_state", {})
+        trend_df = fetch_trend_index_daily()
+        trend_state, trend_note = compute_trend_state(trend_df, prev_trend_state, today)
+        if trend_note:
+            logger.info(f"    📈 P1-6 趋势状态: {trend_state.get('trend')} — {trend_note}")
+
+        # ============================================================
         # P1-9: 预警中间态状态机 (2026-10-18)
         # ============================================================
         prev_warning_state = {}
@@ -2468,7 +2558,7 @@ class TimingScoreEngine:
         # 读取恐贪数据（P0-3 统一阈值判断用）
         fg_data = load_json("feargreed_pointer.json") or {}
         warning_state, warning_target_equity, warning_note = apply_warning_state(
-            composite_score, recent_composites, prev_warning_state, fg_data, anchor_state
+            composite_score, recent_composites, prev_warning_state, fg_data, anchor_state, trend_state
         )
         if warning_note:
             logger.info(f"    ⚠️ P1-9 预警状态: {warning_state['current']} — {warning_note}")
@@ -2476,6 +2566,16 @@ class TimingScoreEngine:
         if warning_target_equity is not None and anchor_state.get("current", "normal") == "normal":
             target_equity = warning_target_equity
             logger.info(f"    🎯 P1-9 目标仓位: {target_equity}% (覆盖常规映射)")
+
+        # P1-6: A* 与趋势联动（D* 方向不 veto——卖侧无条件优先）
+        if anchor_state.get("current") == "A_star" and target_equity is not None:
+            _trend = trend_state.get("trend")
+            if _trend == "strong_bear":
+                target_equity = P16_A_STAR_BEAR_TARGET
+                logger.info(f"    📉 P1-6 A* 联动: 强空头 → target 降档 {P16_A_STAR_BEAR_TARGET}%（A 区间下沿）")
+            elif _trend == "weak_bear":
+                trend_state["a_star_unconfirmed"] = True
+                logger.info(f"    📉 P1-6 A* 联动: 弱空头 → 维持 65% 但页面标注「趋势未确认」")
 
 
         # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
@@ -2535,7 +2635,8 @@ class TimingScoreEngine:
                 "hysteresis": today_hysteresis,
                 "anchor": anchor_state
             },
-            "p1_9_state": warning_state
+            "p1_9_state": warning_state,
+            "p1_6_state": trend_state
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
@@ -3513,6 +3614,7 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     anchor_state = p17.get("anchor", {})
     p19 = timing_data.get("p1_9_state", {})
     warning_state = p19
+    trend_state = timing_data.get("p1_6_state", {})
 
     record = {
         "date": today,
@@ -3522,7 +3624,8 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
         "triggers": triggers,
         "hysteresis_state": hysteresis_state,
         "anchor_state": anchor_state,
-        "warning_state": warning_state
+        "warning_state": warning_state,
+        "trend_state": trend_state
     }
     history = [r for r in history if r.get("date") != today]
     history.append(record)

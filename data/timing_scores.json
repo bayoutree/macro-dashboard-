@@ -17025,6 +17025,15 @@
     "weekly_change": 0,
     "trigger_reason": ""
   },
+  "p1_6_state": {
+    "trend": "strong_bear",
+    "close": 5289.37,
+    "ma120": 6085.73,
+    "ma120_direction": "down",
+    "momentum_12m": -0.0819,
+    "as_of": "2026-10-16",
+    "source": "tencent_tx sh000985"
+  },
   "confirm_signals": {
     "ma_arrangement": {
       "name": "均线排列(月线)",
