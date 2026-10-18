@@ -322,6 +322,35 @@ P19_WARNING_MONTHLY_DECAY = 2
 # P1-6 联动：强空头趋势下预警触发①放宽（投资分析终版规格 2026-10-18）
 P19_WARNING_ENTER_TREND_BEAR = 55
 
+# P2-11: 仓位映射迟滞（投资分析 2026-10-18 裁决：升温 h=0 一碰即走/降温 h=2 需确认）
+P211_HYSTERESIS_BAND = 2
+P211_STAGE_ORDER = ["A", "B", "C", "D"]
+P211_STAGE_THRESHOLDS = [25, 50, 75]  # A<25<=B<50<=C<75<=D
+
+
+def apply_stage_hysteresis(composite_score, prev_stage):
+    """[P2-11 2026-10-18 裁决] 阶段映射迟滞状态机：
+    - 升温方向（A→B→C→D，卖侧减仓）：h=0，一碰即走（"卖必须早"，渐进由 P1-9 预警态承担）
+    - 降温方向（D→C→B→A，买侧加仓）：h=2，需穿越 边界-2 才确认（吸收 49/50 边界横跳，主人 10-18 实测）
+    - 无/非法 prev_stage → 裸映射 fallback
+    裁决注记：渐进卖出由 P1-9 预警态（>62）承担，阶段层卖侧可激进。
+    """
+    cs = composite_score
+    raw = "A" if cs < 25 else ("B" if cs < 50 else ("C" if cs < 75 else "D"))
+    if prev_stage not in P211_STAGE_ORDER:
+        return raw
+    prev_idx = P211_STAGE_ORDER.index(prev_stage)
+    raw_idx = P211_STAGE_ORDER.index(raw)
+    if raw_idx >= prev_idx:
+        return raw  # 升温方向（含不变）h=0 直接采用
+    # 降温方向：自 prev 向 raw 逐边界检查，需每边界 ≤ boundary-2 才继续穿
+    for b in range(prev_idx - 1, raw_idx - 1, -1):
+        if cs <= P211_STAGE_THRESHOLDS[b] - P211_HYSTERESIS_BAND:
+            continue
+        return P211_STAGE_ORDER[b + 1]  # 未确认穿越，停在该边界暖侧阶段
+    return raw
+
+
 # P1-8: 美联储双层（投资分析 2026-10-18 裁决终版）
 # 数据源：collect_fedwatch.py（cme-fedwatch 包，每日结算后取数一次）→ data/fed_watch.json
 P18_HIKE_PROB_THRESHOLD = 0.60   # 预期层：未来2次会议累计加息概率阈值（1-(1-p1)(1-p2)，独立性假设偏保守）
@@ -2940,10 +2969,21 @@ class TimingScoreEngine:
             position_advice["fed_growth_ban"] = fed_state["growth_ban"]
             position_advice["fed_note"] = fed_state.get("note", "")
 
+        # [P2-11] 迟滞阶段（SSOT 下发前端，替代双端裸映射）
+        prev_stage_for_hyst = prev_history[-1].get("stage") if prev_history else None
+        stage_hysteresis = apply_stage_hysteresis(composite_score, prev_stage_for_hyst)
+        if prev_stage_for_hyst and stage_hysteresis != prev_stage_for_hyst:
+            logger.info(f"    🔄 P2-11 阶段切换: {prev_stage_for_hyst} → {stage_hysteresis}（composite={composite_score}）")
+        elif prev_stage_for_hyst:
+            _raw = "A" if composite_score < 25 else ("B" if composite_score < 50 else ("C" if composite_score < 75 else "D"))
+            if _raw != stage_hysteresis:
+                logger.info(f"    🛡️ P2-11 迟滞生效: 裸映射={_raw} 维持={stage_hysteresis}（composite={composite_score}，降温需确认）")
+
         output = {
             "update_date": today_str(),
             "version": "v4.1",
             "composite_score": composite_score,
+            "stage": stage_hysteresis,
             "position_range": position_advice["equity_range"],
             "market_status": market_status,
             "dimensions": dimensions,
@@ -3926,7 +3966,11 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     
     today = date.today().isoformat()
     cs = timing_data.get("composite_score", 0)
-    stage = "A" if cs < 25 else ("B" if cs < 50 else ("C" if cs < 75 else "D"))
+    # [P2-11] 阶段=迟滞状态机；主流程 SSOT 已算则直接用，否则自算（函数独立可用）
+    stage = timing_data.get("stage")
+    if stage not in ("A", "B", "C", "D"):
+        prev_stage = history[-1].get("stage") if history else None
+        stage = apply_stage_hysteresis(cs, prev_stage)
     
     dims = {}
     for dname, dval in timing_data.get("dimensions", {}).items():

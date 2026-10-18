@@ -1057,12 +1057,18 @@ const StageEngine = {
     const composite = scores.composite;
     const divergence = this.calcDivergence(scores);
 
-    // 锚定阶段（按 v3.2 §3.2 阈值）
+    // 锚定阶段：[P2-11 2026-10-18裁决] 读后端迟滞 SSOT（timing_scores.stage），
+    // 消除双端裸映射漂移+49/50边界横跳；无 SSOT 时裸映射 fallback（旧数据兼容）
+    const _backendStage = this._timingData?.stage;
     let anchorStage;
-    if (composite < 25) anchorStage = 'A';
-    else if (composite < 50) anchorStage = 'B';
-    else if (composite < 75) anchorStage = 'C';
-    else anchorStage = 'D';
+    if (_backendStage && ['A','B','C','D'].includes(_backendStage)) {
+      anchorStage = _backendStage;
+    } else {
+      if (composite < 25) anchorStage = 'A';
+      else if (composite < 50) anchorStage = 'B';
+      else if (composite < 75) anchorStage = 'C';
+      else anchorStage = 'D';
+    }
 
     // v3.3: 融合右侧趋势确认层（不对称修正）
     const rd = this._rightScoresData;
