@@ -32,18 +32,18 @@ DIRECTION = {
     "equity_bond.wanda_erp": -1,              # ERP高=股票便宜=冷（score20=ERP高位 ✓）
     "equity_bond.dividend_bond_spread_red": -1,   # 利差高=便宜=冷（3.0→score20 ✓）
     "equity_bond.dividend_bond_spread_hs300": -1, # 同上
-    "equity_bond.cn_us_spread": None,         # 存疑：利差方向对composite语义待复核
+    "equity_bond.cn_us_spread": +1,           # [投资分析复核10-18] 利差走阔(倒挂收窄)=外部友好=高分
     "capital_flow.equity_fund_position": +1,  # 仓位高=热（95.89→score85 ✓）
     "capital_flow.margin_buying_ratio": +1,   # 分位=score（76.4/76.4 ✓）
     "capital_flow.flexible_fund_position": +1,
     "capital_flow.new_fund": +1,              # 新发多=热
-    "capital_flow.industrial_capital": None,  # 存疑：增减持与冷热映射待复核
+    "capital_flow.industrial_capital": +1,    # [复核10-18] 净增持=产业资本抄底=底部信号=高分
     "sentiment.fund_3y_annual": +1,           # 收益高=热（阈值映射，分位近似）
     "sentiment.turnover_rate": +1,            # 换手高=热
     "sentiment.new_account_opening": +1,      # 开户多=热
     "micro_structure.crowding_ratio": +1,     # 仅1条，实际不入序列
-    "micro_structure.industry_concentration": None,  # 存疑：HHI口径
-    "micro_structure.concentration_trend": None,     # 存疑：HHI趋势口径
+    "micro_structure.industry_concentration": -1,    # [复核10-18] HHI高=抱团=结构脆弱=低分(卡片释义一致)
+    "micro_structure.concentration_trend": -1,       # [复核10-18] 动量正=抱团加剧=低分(卡片释义一致)
 }
 PERCENTILE_AS_SCORE = {"valuation.hs300_pe_percentile", "capital_flow.margin_buying_ratio"}  # history value 即分位/score
 
@@ -152,7 +152,7 @@ def main():
                 "span": f"{min(series_map)}→{max(series_map)}"}
 
     report = {
-        "generated": "2026-10-18",
+        "generated": "2026-10-18", "direction_review": "投资分析2026-10-18复核：4待定组全部定向(cn_us+1/industrial+1/HHI×2−1)，待定组清空",
         "method": "逐月可用指标集+权重归一化；分位类history即score；原始值全样本分位近似；方向表人工核对(待复核)",
         "indicators_used": {k: {"start": v["start"], "n": v["n"], "dir": v["dir"]}
                             for k, v in series.items()},
