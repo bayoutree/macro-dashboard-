@@ -40,8 +40,9 @@
   },
   "lagging": {
     "cpi_yoy": {
-      "value": 4.0233,
-      "date": "2026-09"
+      "value": 3.7173,
+      "date": "2026-09-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.cpi"
     },
     "ppi_yoy": {
       "value": 6.3463,

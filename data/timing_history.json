@@ -173,12 +173,12 @@
       "layer": "none",
       "cap": null,
       "cumulative_hike_prob": null,
-      "yield_10y": null,
+      "yield_10y": 5.1,
       "triggers": [],
       "as_of": "2026-10-18",
       "cooldown_until": null,
       "growth_ban": [],
-      "note": "【降级】fed_watch.json 缺失，继承前日层状态（none）",
+      "note": "",
       "source": "cme-fedwatch + FRED DGS10（每日结算后取数一次）"
     }
   }
