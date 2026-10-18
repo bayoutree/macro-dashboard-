@@ -959,6 +959,16 @@ const ANCHOR_STAGES = {
   A_star: { name: 'A*·春播(锚定65%) 🌱⚓', emoji: '🌱⚓', position: '65%',  desc: '综合分<20，极端恐惧锚定65%目标仓位', range: 'composite<20' },
   D_star: { name: 'D*·冬藏(锚定15%) ❄️⚓', emoji: '❄️⚓', position: '15%',   desc: '综合分>70，极端贪婪锚定15%目标仓位', range: 'composite>70' }
 };
+// [P1-9 2026-10-18] 预警中间态定义（非对称响应：卖侧提前预警，压40%逐月递减，不钉死）
+const WARNING_STAGE = { emoji: '⚠️', name: '预警', desc: '综合分升温/情绪极端提前预警，仓位压至40%逐月递减' };
+// [P1-6 2026-10-18] 趋势四态标签（中证全指 价vsMA120+均线方向）
+const TREND_LABELS = {
+  strong_bull: { text: '强多头', emoji: '📈', color: 'var(--green)' },
+  weak_bull:   { text: '弱多头', emoji: '📈', color: 'var(--green)' },
+  weak_bear:   { text: '弱空头', emoji: '📉', color: 'var(--red)' },
+  strong_bear: { text: '强空头', emoji: '📉', color: 'var(--red)' }
+};
+
 // v3.1仓位模板（用于加权期望仓位计算）
 const POSITION_TEMPLATES = {
   A:  { min: 55, max: 70 },
@@ -1285,7 +1295,11 @@ const StageEngine = {
         triggers: trend.triggers || []
       },
       // [P1-7] 锚定状态机
-      p1_7_state: p17State
+      p1_7_state: p17State,
+      // [P1-9 2026-10-18] 预警中间态
+      p1_9_state: this._timingData?.p1_9_state || { current: 'normal' },
+      // [P1-6 2026-10-18] 趋势过滤
+      p1_6_state: this._timingData?.p1_6_state || { trend: 'unknown' }
     };
   }
 };
@@ -1867,6 +1881,12 @@ function renderStageCards() {
     } else if (key === 'D' && _anchor === 'D_star') {
       _anchorBadge = '<div style="font-size:11px;font-weight:700;color:var(--red);margin-top:2px;">⚓ D* 锚定15%</div>';
     }
+    // [P1-9 2026-10-18] 预警徽章：预警态激活时在活跃卡标注
+    const _warnState = (engineOutput.p1_9_state && engineOutput.p1_9_state.current) ? engineOutput.p1_9_state.current : 'normal';
+    let _warnBadge = '';
+    if (isActive && _warnState === 'warning') {
+      _warnBadge = '<div style="font-size:11px;font-weight:700;color:var(--yellow);margin-top:2px;">⚠️ 预警 仓位压40%</div>';
+    }
     html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
       <span class="season-emoji">${s.emoji}</span>
       <div class="stage-name">${s.name}</div>
@@ -1874,6 +1894,7 @@ function renderStageCards() {
       <div class="stage-range">仓位 ${s.position}</div>
       ${mBadge}
       ${_anchorBadge}
+      ${_warnBadge}
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });
@@ -2667,20 +2688,38 @@ function renderActionBar() {
     const _compVal = (typeof e.composite_score === 'number') ? e.composite_score.toFixed(1) : null;
     // [P1-7 2026-10-17] 锚定状态标注：A* / D* 与常规 A/B/C/D 显式区分
     const _anchor = (e.p1_7_state && e.p1_7_state.anchor) ? e.p1_7_state.anchor.current : 'normal';
+    // [P1-9 2026-10-18] 预警中间态（优先级：锚定 > 预警 > 常规）
+    const _warn = (e.p1_9_state && e.p1_9_state.current) ? e.p1_9_state.current : 'normal';
+    // [P1-6 2026-10-18] 趋势四态标签
+    const _trendKey = (e.p1_6_state && e.p1_6_state.trend) ? e.p1_6_state.trend : 'unknown';
+    const _trendLabel = TREND_LABELS[_trendKey];
     let _labelHtml = '';
     if (_anchor === 'A_star') {
       const _as = ANCHOR_STAGES.A_star;
       _labelHtml = `${_as.emoji} <b style="color:var(--green);">${_as.name}</b>`;
+      // [P1-6] A*+弱空头 → 「趋势未确认」标注
+      if (e.p1_6_state && e.p1_6_state.a_star_unconfirmed) {
+        _labelHtml += ` <span style="font-size:11px;font-weight:600;color:var(--yellow);">(趋势未确认)</span>`;
+      }
       stageLabel.style.color = 'var(--green)';
     } else if (_anchor === 'D_star') {
       const _ds = ANCHOR_STAGES.D_star;
       _labelHtml = `${_ds.emoji} <b style="color:var(--red);">${_ds.name}</b>`;
       stageLabel.style.color = 'var(--red)';
+    } else if (_warn === 'warning') {
+      _labelHtml = `${stage.emoji} ${stage.name} <b style="color:var(--yellow);">⚠️预警</b>`;
+      stageLabel.style.color = 'var(--yellow)';
     } else {
       _labelHtml = `${stage.emoji} ${stage.name}`;
       stageLabel.style.color = '';
     }
     _labelHtml += (_compVal ? ` <span style="font-size:12px;font-weight:400;color:var(--text-muted);">综合分 ${_compVal}</span>` : '');
+    // [P1-6] 趋势徽章（含动量 title）
+    if (_trendLabel) {
+      const _mom = (typeof e.p1_6_state?.momentum_12m === 'number') ? `12月动量 ${(e.p1_6_state.momentum_12m*100).toFixed(1)}%` : '';
+      const _ma = e.p1_6_state?.ma120 ? `MA120 ${Math.round(e.p1_6_state.ma120)}` : '';
+      _labelHtml += ` <span title="中证全指 ${e.p1_6_state?.close || ''} / ${_ma} / ${_mom}" style="font-size:11px;font-weight:600;color:${_trendLabel.color};border:1px solid ${_trendLabel.color};border-radius:4px;padding:0 4px;margin-left:4px;white-space:nowrap;">${_trendLabel.emoji}${_trendLabel.text}</span>`;
+    }
     stageLabel.innerHTML = _labelHtml;
   }
 
