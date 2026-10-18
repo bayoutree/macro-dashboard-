@@ -25,6 +25,15 @@ import math
 import argparse
 import subprocess
 import traceback
+
+# [CI加固 2026-10-18] runner→中文数据源时段性挂死（Codex 3 连 dispatch 复现，
+# 均卡在 Run data update 步骤 >5min 无输出；定时跑历史正常→疑似周末维护窗口
+# 特定源 TCP 半开无响应）。akshare 内部 requests 多数不显式传 timeout 会无限等待。
+# 全局 socket 默认超时覆盖所有未显式超时的网络调用（显式传 timeout 的不受影响）；
+# 单路挂死由"无限等待"变为 ≤N 秒抛 socket.timeout → safe_ak_call 捕获→该路降级。
+# 口径=单次 socket 阻塞操作无响应时长（非整体下载限时），慢速大数据下载不受影响。
+import socket as _socket
+_socket.setdefaulttimeout(int(os.environ.get("AK_NET_TIMEOUT_SECONDS", "60")))
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
@@ -233,16 +242,24 @@ def load_json(filename: str) -> dict:
 
 
 def safe_ak_call(func, *args, **kwargs):
-    """安全调用 AKShare 接口"""
+    """安全调用 AKShare 接口（2026-10-18 加固：逐路起始+耗时日志）。
+
+    起始日志（⟳）配合 CI 的 PYTHONUNBUFFERED=1 实时输出——runner 再挂死时，
+    日志中最后一条 ⟳ 即为挂死数据源，直接定位无需复现。
+    """
+    fname = getattr(func, "__name__", str(func))
+    t0 = time.time()
+    logger.info(f"    ⟳ ak.{fname} ...")
     try:
         result = func(*args, **kwargs)
+        el = time.time() - t0
         if isinstance(result, pd.DataFrame):
-            logger.info(f"    ✓ ak.{func.__name__}: {len(result)} 行")
+            logger.info(f"    ✓ ak.{fname}: {len(result)} 行 ({el:.1f}s)")
         else:
-            logger.info(f"    ✓ ak.{func.__name__}: OK")
+            logger.info(f"    ✓ ak.{fname}: OK ({el:.1f}s)")
         return result
     except Exception as e:
-        logger.warning(f"    ✗ ak.{func.__name__}: {e}")
+        logger.warning(f"    ✗ ak.{fname} ({time.time() - t0:.1f}s): {type(e).__name__}: {e}")
         return pd.DataFrame() if hasattr(func, '__name__') and 'stock' in func.__name__ else None
 
 
@@ -259,12 +276,11 @@ def _ak_industry_capital_df(ak):
         fn = getattr(ak, name, None)
         if fn is None:
             continue
-        try:
-            df = fn(**kwargs)
-            if isinstance(df, pd.DataFrame) and not df.empty:
-                return df
-        except Exception as e:
-            logger.warning(f"    ✗ ak.{name}: {e}")
+        # 2026-10-18 加固：走 safe_ak_call（起始/耗时日志+socket 超时降级），
+        # 失败返回空 df 不抛出，降级链语义不变
+        df = safe_ak_call(fn, **kwargs)
+        if isinstance(df, pd.DataFrame) and not df.empty:
+            return df
     return pd.DataFrame()
 
 
