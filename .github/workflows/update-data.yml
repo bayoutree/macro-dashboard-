@@ -115,6 +115,7 @@ jobs:
 
       - name: Run data update (timing only)
         if: github.event.inputs.mode == 'timing'
+        timeout-minutes: 20
         run: python scripts/update_data.py --timing
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
