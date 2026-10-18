@@ -621,20 +621,24 @@ def compute_trend_state(df, prev_trend_state, today):
     ma_now = ma[-1]
     ma_prev = ma[-1 - P16_MA_DIRECTION_LOOKBACK]
     price_above = close_now > ma_now
-    ma_up = ma_now > ma_prev
+    ma_up = ma_now > ma_prev  # 均线方向：保留计算供展示，不参与判定（投资分析 10-18 裁决）
 
-    if price_above and ma_up:
-        trend = "strong_bull"
-    elif price_above and not ma_up:
-        trend = "weak_bull"
-    elif not price_above and ma_up:
-        trend = "weak_bear"
-    else:
-        trend = "strong_bear"
-
+    # 判定矩阵（投资分析 2026-10-18 裁决：动量参与判定，非仅展示）
+    # 价上+动量正=强多头；价上+动量负=弱多头（熊市反弹风险）
+    # 价下+动量正=弱空头（长期趋势未破）；价下+动量负=强空头
     momentum = close_now / closes[-1 - P16_MOMENTUM_LOOKBACK] - 1
+    if price_above and momentum > 0:
+        trend, annotation = "strong_bull", ""
+    elif price_above and momentum <= 0:
+        trend, annotation = "weak_bull", "熊市反弹风险"
+    elif not price_above and momentum > 0:
+        trend, annotation = "weak_bear", "长期趋势未破"
+    else:
+        trend, annotation = "strong_bear", ""
+
     trend_state = {
         "trend": trend,
+        "annotation": annotation,
         "close": round(float(close_now), 2),
         "ma120": round(float(ma_now), 2),
         "ma120_direction": "up" if ma_up else "down",
@@ -645,7 +649,7 @@ def compute_trend_state(df, prev_trend_state, today):
     label = {"strong_bull": "强多头", "weak_bull": "弱多头",
              "weak_bear": "弱空头", "strong_bear": "强空头"}[trend]
     note = (f"中证全指 {close_now:.0f} vs MA120 {ma_now:.0f}（价{'上' if price_above else '下'}）"
-            f"+ 均线{'上行' if ma_up else '下行'} → {label}；12月动量 {momentum:+.1%}")
+            f"+ 12月动量 {momentum:+.1%} → {label}" + (f"（{annotation}）" if annotation else ""))
     return trend_state, note
 
 

@@ -2714,11 +2714,15 @@ function renderActionBar() {
       stageLabel.style.color = '';
     }
     _labelHtml += (_compVal ? ` <span style="font-size:12px;font-weight:400;color:var(--text-muted);">综合分 ${_compVal}</span>` : '');
-    // [P1-6] 趋势徽章（含动量 title）
+    // [P1-6] 趋势徽章（含动量 title；弱态附裁决标注——弱多头=熊市反弹风险/弱空头=长期趋势未破）
     if (_trendLabel) {
       const _mom = (typeof e.p1_6_state?.momentum_12m === 'number') ? `12月动量 ${(e.p1_6_state.momentum_12m*100).toFixed(1)}%` : '';
       const _ma = e.p1_6_state?.ma120 ? `MA120 ${Math.round(e.p1_6_state.ma120)}` : '';
-      _labelHtml += ` <span title="中证全指 ${e.p1_6_state?.close || ''} / ${_ma} / ${_mom}" style="font-size:11px;font-weight:600;color:${_trendLabel.color};border:1px solid ${_trendLabel.color};border-radius:4px;padding:0 4px;margin-left:4px;white-space:nowrap;">${_trendLabel.emoji}${_trendLabel.text}</span>`;
+      const _anno = e.p1_6_state?.annotation || '';
+      _labelHtml += ` <span title="中证全指 ${e.p1_6_state?.close || ''} / ${_ma} / ${_mom}${_anno ? ' / ' + _anno : ''}" style="font-size:11px;font-weight:600;color:${_trendLabel.color};border:1px solid ${_trendLabel.color};border-radius:4px;padding:0 4px;margin-left:4px;white-space:nowrap;">${_trendLabel.emoji}${_trendLabel.text}</span>`;
+      if (_anno) {
+        _labelHtml += ` <span style="font-size:10px;font-weight:400;color:var(--yellow);white-space:nowrap;">(${_anno})</span>`;
+      }
     }
     stageLabel.innerHTML = _labelHtml;
   }

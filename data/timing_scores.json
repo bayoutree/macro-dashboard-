@@ -17027,6 +17027,7 @@
   },
   "p1_6_state": {
     "trend": "strong_bear",
+    "annotation": "",
     "close": 5289.37,
     "ma120": 6085.73,
     "ma120_direction": "down",
