@@ -479,7 +479,7 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     since_date = prev_warning_state.get("since")
     target_equity = prev_warning_state.get("target_equity", P19_WARNING_TARGET_EQUITY)
     
-    # 计算单周变化
+    # 计算单周变化（口径：history[-5] 即 5 条记录≈4-5 个交易日间隔，投资分析 2026-10-18 确认可接受、偏保守方向）
     weekly_change = 0
     if len(composite_history) >= 5:
         weekly_change = composite_score - composite_history[-5]
