@@ -311,6 +311,15 @@ P17_D_STAR_ENTER = 70
 P17_D_STAR_EXIT = 67
 P17_COOLDOWN_DAYS = 90  # 3个月
 
+# P1-9: 预警中间态阈值（非对称响应）
+P19_WARNING_ENTER_COMPOSITE = 62
+P19_WARNING_ENTER_ACCEL = 55
+P19_WARNING_ACCEL_THRESHOLD = 8
+P19_WARNING_EXIT_COMPOSITE = 50
+P19_WARNING_UPGRADE_COMPOSITE = 70
+P19_WARNING_TARGET_EQUITY = 40
+P19_WARNING_MONTHLY_DECAY = 2
+
 def apply_nonlinear_weights(dimensions, prev_hysteresis):
     """
     P1-7: 对极端维度应用权重×2，带滞回防跳变
@@ -433,6 +442,110 @@ def apply_extreme_anchoring(composite_score, prev_anchor_state, today):
     }
 
     return anchor_state, target_equity, anchor_note
+
+
+def apply_warning_state(composite_score, composite_history, prev_warning_state, fear_greed_data):
+    """P1-9: 预警中间态状态机（非对称响应）
+    
+    预警态触发条件（满足任一）：
+    ① composite > 62
+    ② composite > 55 且单周变化 > +8
+    ③ 恐贪 > 85 且 QVIX < 14（P0-3 统一阈值）
+    ④ 强空头趋势下条件①放宽到 > 55（待 P1-6 联动）
+    
+    预警态退出：
+    - composite < 50 → 回夏长
+    - composite > 70 → 升级接 D* 锚定（P1-7 接管）
+    
+    Args:
+        composite_score: 当日综合分
+        composite_history: 近7日composite列表（用于计算单周变化）
+        prev_warning_state: 上一日预警状态
+        fear_greed_data: 恐贪指针数据（含 score 和 qvix）
+    
+    Returns: (warning_state, warning_target_equity, warning_note)
+    """
+    current_state = prev_warning_state.get("current", "normal")  # normal / warning / escalated
+    since_date = prev_warning_state.get("since")
+    target_equity = prev_warning_state.get("target_equity", P19_WARNING_TARGET_EQUITY)
+    
+    # 计算单周变化
+    weekly_change = 0
+    if len(composite_history) >= 5:
+        weekly_change = composite_score - composite_history[-5]
+    
+    # 获取恐贪数据
+    fg_score = fear_greed_data.get("score", 50)
+    fg_qvix = fear_greed_data.get("qvix", 20)
+    
+    # 判断是否满足预警触发条件
+    should_enter = False
+    trigger_reason = ""
+    
+    if current_state == "normal":
+        # 条件①: composite > 62
+        if composite_score > P19_WARNING_ENTER_COMPOSITE:
+            should_enter = True
+            trigger_reason = f"composite>{P19_WARNING_ENTER_COMPOSITE}"
+        # 条件②: composite > 55 且单周变化 > +8
+        elif composite_score > P19_WARNING_ENTER_ACCEL and weekly_change > P19_WARNING_ACCEL_THRESHOLD:
+            should_enter = True
+            trigger_reason = f"composite>{P19_WARNING_ENTER_ACCEL}且单周+{weekly_change:.1f}>{P19_WARNING_ACCEL_THRESHOLD}"
+        # 条件③: 恐贪 > 85 且 QVIX < 14
+        elif fg_score > 85 and fg_qvix < 14:
+            should_enter = True
+            trigger_reason = f"恐贪{fg_score:.1f}>85且QVIX{fg_qvix:.1f}<14"
+    
+    # 状态转换逻辑
+    if current_state == "normal":
+        if should_enter:
+            new_state = "warning"
+            since_date = today_str()
+            target_equity = P19_WARNING_TARGET_EQUITY
+            note = f"进入预警态（{trigger_reason}），仓位压至{target_equity}%"
+        else:
+            new_state = "normal"
+            target_equity = None
+            note = None
+    elif current_state == "warning":
+        # 升级条件：composite > 70 → 升级接 D* 锚定
+        if composite_score > P19_WARNING_UPGRADE_COMPOSITE:
+            new_state = "escalated"
+            target_equity = 15  # D* 锚定仓位
+            note = f"预警升级至D*锚定（composite={composite_score}>{P19_WARNING_UPGRADE_COMPOSITE}），仓位钉死15%"
+        # 退出条件：composite < 50 → 回夏长
+        elif composite_score < P19_WARNING_EXIT_COMPOSITE:
+            new_state = "normal"
+            target_equity = None
+            note = f"退出预警态回夏长（composite={composite_score}<{P19_WARNING_EXIT_COMPOSITE}）"
+        else:
+            # 维持预警态，逐月递减仓位
+            new_state = "warning"
+            # 计算已预警月数
+            from datetime import datetime
+            if since_date:
+                days_in_warning = (datetime.strptime(today_str(), "%Y-%m-%d") - 
+                                  datetime.strptime(since_date, "%Y-%m-%d")).days
+                months_in_warning = days_in_warning // 30
+                target_equity = max(30, P19_WARNING_TARGET_EQUITY - months_in_warning * P19_WARNING_MONTHLY_DECAY)
+                note = f"维持预警态（已{days_in_warning}天），目标仓位{target_equity}%"
+            else:
+                note = f"维持预警态，目标仓位{target_equity}%"
+    elif current_state == "escalated":
+        # 已升级至 D*，由 P1-7 接管，但保持 escalated 状态直到 D* 解除
+        new_state = "escalated"
+        target_equity = 15
+        note = f"D*锚定生效中，仓位钉死15%"
+    
+    warning_state = {
+        "current": new_state,
+        "since": since_date if (new_state != "normal" and current_state == "normal") else prev_warning_state.get("since"),
+        "target_equity": target_equity,
+        "weekly_change": round(weekly_change, 1),
+        "trigger_reason": trigger_reason if should_enter else prev_warning_state.get("trigger_reason", "")
+    }
+    
+    return warning_state, target_equity, note
 
 
 # ============================================================
@@ -2319,6 +2432,29 @@ class TimingScoreEngine:
         if target_equity is not None:
             logger.info(f"    🎯 P1-7 目标仓位: {target_equity}% (覆盖常规映射)")
 
+        # ============================================================
+        # P1-9: 预警中间态状态机 (2026-10-18)
+        # ============================================================
+        prev_warning_state = {}
+        if prev_history and isinstance(prev_history, list) and len(prev_history) > 0:
+            prev_warning_state = prev_history[-1].get("warning_state", {})
+        # 取近5日composite历史（用于计算单周变化）
+        recent_composites = []
+        if prev_history and isinstance(prev_history, list):
+            recent_composites = [r.get("composite_score", 50) for r in prev_history[-5:]]
+        recent_composites.append(composite_score)
+        # 读取恐贪数据（P0-3 统一阈值判断用）
+        fg_data = load_json("feargreed_pointer.json") or {}
+        warning_state, warning_target_equity, warning_note = apply_warning_state(
+            composite_score, recent_composites, prev_warning_state, fg_data
+        )
+        if warning_note:
+            logger.info(f"    ⚠️ P1-9 预警状态: {warning_state['current']} — {warning_note}")
+        # P1-9 覆盖逻辑：仅在 P1-7 未锚定且预警态激活时覆盖
+        if warning_target_equity is not None and anchor_state.get("current", "normal") == "normal":
+            target_equity = warning_target_equity
+            logger.info(f"    🎯 P1-9 目标仓位: {target_equity}% (覆盖常规映射)")
+
 
         # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
         prev = load_json("timing_scores.json")
@@ -2354,11 +2490,13 @@ class TimingScoreEngine:
         for _dn, _dd in dimensions.items():
             _dd.pop("_orig_weight", None)
 
-        # P1-7: 如果锚定激活，覆盖仓位区间
+        # P1-7/P1-9: 如果锚定或预警激活，覆盖仓位区间
         if target_equity is not None:
             position_advice["equity_range"] = f"{target_equity}%"
             position_advice["base_equity"] = target_equity
             position_advice["anchor_override"] = True
+            if warning_state.get("current", "normal") != "normal" and anchor_state.get("current", "normal") == "normal":
+                position_advice["warning_override"] = True
 
         output = {
             "update_date": today_str(),
@@ -2374,7 +2512,8 @@ class TimingScoreEngine:
             "p1_7_state": {
                 "hysteresis": today_hysteresis,
                 "anchor": anchor_state
-            }
+            },
+            "p1_9_state": warning_state
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
@@ -3350,6 +3489,8 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     p17 = timing_data.get("p1_7_state", {})
     hysteresis_state = p17.get("hysteresis", {})
     anchor_state = p17.get("anchor", {})
+    p19 = timing_data.get("p1_9_state", {})
+    warning_state = p19
 
     record = {
         "date": today,
@@ -3358,7 +3499,8 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
         "dimensions": dims,
         "triggers": triggers,
         "hysteresis_state": hysteresis_state,
-        "anchor_state": anchor_state
+        "anchor_state": anchor_state,
+        "warning_state": warning_state
     }
     history = [r for r in history if r.get("date") != today]
     history.append(record)

@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-10-17",
+  "update_date": "2026-10-18",
   "version": "v4.1",
   "composite_score": 48.1,
   "position_range": "40%-55%",
@@ -2131,8 +2131,8 @@
       "indicators": {
         "social_financing_trend": {
           "name": "社融增速趋势",
-          "value": 7.11,
-          "value_label": "宽松见顶",
+          "value": null,
+          "value_label": "紧缩(Δ-12288.0)",
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -2925,7 +2925,7 @@
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
           "value": "6.51%",
-          "percentile": "74.4%",
+          "percentile": "54.4%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为万得全A ERP",
@@ -17017,6 +17017,13 @@
       "cooldown_until": null,
       "last_trigger": null
     }
+  },
+  "p1_9_state": {
+    "current": "normal",
+    "since": null,
+    "target_equity": null,
+    "weekly_change": 0,
+    "trigger_reason": ""
   },
   "confirm_signals": {
     "ma_arrangement": {
