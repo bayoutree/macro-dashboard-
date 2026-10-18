@@ -1516,14 +1516,16 @@ class TimingScoreEngine:
         }
 
         # --- 融资买入占比 (v4.1从情绪移入) ---
-        mb_score, mb_val = self._calc_margin_buying()
+        mb_score, mb_val, mb_extra = self._calc_margin_buying()
         indicators["margin_buying_ratio"] = {
             "name": "融资买入占比",
-            "value": mb_val or "数据待更新",
+            "value": mb_val if mb_val is not None else "数据待更新",
             "score": mb_score,
             "sub_weight": 20,
             "bottom_threshold": "<7%",
-            "top_threshold": ">11%"
+            "top_threshold": ">11%",
+            **{k: v for k, v in (mb_extra or {}).items()
+               if k in ("tier", "ma20", "pctile_2016", "as_of", "freq", "source")}
         }
 
         # --- 灵基仓位 (v4.1新增) ---
@@ -1798,15 +1800,17 @@ class TimingScoreEngine:
         }
 
         # --- 融资买入占比 ---
-        fb_score, fb_val = self._calc_margin_buying()
+        fb_score, fb_val, fb_extra = self._calc_margin_buying()
         indicators["margin_buying_ratio"] = {
             "name": "融资买入占比",
-            "value": fb_val or "数据待更新",
+            "value": fb_val if fb_val is not None else "数据待更新",
             "score": fb_score,
             "sub_weight": 0,
             "note": "【已移至资金面】",
             "bottom_threshold": "<7%",
-            "top_threshold": ">11%"
+            "top_threshold": ">11%",
+            **{k: v for k, v in (fb_extra or {}).items()
+               if k in ("tier", "ma20", "pctile_2016", "as_of", "freq", "source")}
         }
 
         # --- 新增开户数 (从资金面移入) ---
@@ -1923,12 +1927,61 @@ class TimingScoreEngine:
                 .get("turnover_rate", {}).get("value", "2.5%"))
 
     def _calc_margin_buying(self):
-        """融资买入占比"""
+        """融资买入占比（P1-10 修复 2026-10-18，工单6a口径）
+        = 沪市融资买入额 / 全A成交额 × 100（仅沪市分子：深市接口仅支持单日查询无法历史回填，
+        沪市占两市55-60%，历史同口径下分位相对比较有效；分母=中证全指成交额，
+        腾讯 sh000985 amount，与 P1-6 同链路）
+        score = max(2016后分位, 护栏floor≥15%→90/≥11%→75/≥9%→60)；低分=冰点(积极) 高分=过热(风险)
+        返回 (score, value, extra)；失败降级抄上期。
+        """
         prev = load_json("timing_scores.json")
-        prev_val = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("margin_buying_ratio", {}).get("value", "8-10%")
-        prev_score = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("margin_buying_ratio", {}).get("score", 48)
-        logger.info(f"      融资买入占比: {prev_val} (使用上期值)")
-        return prev_score, prev_val
+        prev_ind = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("margin_buying_ratio", {})
+        try:
+            ak = self.init_akshare()
+            end = datetime.now().strftime("%Y%m%d")
+            start = (datetime.now() - timedelta(days=60)).strftime("%Y%m%d")
+            m_df = safe_ak_call(ak.stock_margin_sse, start_date=start, end_date=end)
+            idx_df = safe_ak_call(ak.stock_zh_index_daily_tx, symbol="sh000985")
+            if m_df is None or m_df.empty or idx_df is None or idx_df.empty:
+                raise ValueError("两融或指数数据为空")
+            m_df = m_df.copy()
+            m_df['date'] = pd.to_datetime(m_df['信用交易日期'], format='%Y%m%d')
+            m_df = m_df.set_index('date').sort_index()
+            idx_df = idx_df.copy()
+            idx_df['date'] = pd.to_datetime(idx_df['date'])
+            amount = idx_df.set_index('date')['amount'].astype(float) * 1000  # 千元→元
+            j = m_df[['融资买入额']].astype(float).join(amount.rename('amount'), how='inner')
+            if j.empty:
+                raise ValueError("两融与成交额日期无交集")
+            ratio = j['融资买入额'] / j['amount'] * 100
+            cur = float(ratio.iloc[-1])
+            ma20 = float(ratio.rolling(20).mean().iloc[-1]) if len(ratio) >= 20 else None
+            as_of = str(ratio.index[-1].date())
+
+            # 2016后分位：基于落盘 history（回填3486条）+ 当日值
+            hist = prev_ind.get("history", [])
+            hist_vals = [h["value"] for h in hist
+                         if isinstance(h.get("value"), (int, float)) and h.get("date", "") >= "2016-01-01"]
+            if hist_vals:
+                pct = sum(1 for v in hist_vals if v < cur) / len(hist_vals) * 100
+            else:
+                pct = 50.0  # 无历史兜底
+            floor = 90 if cur >= 15 else 75 if cur >= 11 else 60 if cur >= 9 else 0
+            score = round(max(pct, floor), 1)
+            tier = ('extreme_greed' if pct >= 95 or cur >= 15 else
+                    'greed' if pct >= 85 or cur >= 11 else
+                    'watch' if pct >= 70 or cur >= 9 else
+                    'neutral' if pct >= 30 else
+                    'fear' if pct >= 5 else 'extreme_fear')
+            logger.info(f"      融资买入占比: {cur:.2f}% (2016后分位{pct:.1f}%, 20MA {ma20:.2f}%, {as_of})")
+            return score, round(cur, 2), {"tier": tier, "ma20": round(ma20, 2) if ma20 else None,
+                                          "pctile_2016": round(pct, 1), "as_of": as_of,
+                                          "freq": "日频", "source": "沪市stock_margin_sse/全A成交额(腾讯sh000985)"}
+        except Exception as e:
+            logger.warning(f"      融资买入占比计算失败: {e}，抄上期")
+            prev_val = prev_ind.get("value", "8-10%")
+            prev_score = prev_ind.get("score", 48)
+            return prev_score, prev_val, dict(prev_ind) if isinstance(prev_ind, dict) else {}
 
     # ----------------------------------------------------------
     # 维度6: 微观结构 (micro_structure)

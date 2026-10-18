@@ -2984,7 +2984,7 @@ function applyTimingDataToMockData() {
     M[1].history2 = undefined;
     const _pctTxt = (margin.pctile_2016 !== undefined) ? (+margin.pctile_2016).toFixed(0) + '%分位' : '';
     M[1].description = '<span class="desc-range">2016后 ' + _pctTxt + '</span>'
-      + ' 两市融资买入额/成交额 20MA。低占比=杠杆冰点(反向积极)，高占比=杠杆过热(反向风险)。'
+      + ' 沪市融资买入/全A成交额 20MA（深市接口仅单日查询无法历史回填，仅沪市口径，同口径分位有效）。低占比=杠杆冰点(反向积极)，高占比=杠杆过热(反向风险)。'
       + '顶部信号领先指数约4个月(2015占比2月见顶、指数6月见顶)。'
       + (margin.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">护栏分档与历史触发率</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(margin.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
     M[1].updateTime = ((M[1].dates.length > 0) ? M[1].dates[M[1].dates.length - 1] : (margin.update_date || margin._updateDate || '')) + ' (' + (M[1].freq || '月频') + ')';
