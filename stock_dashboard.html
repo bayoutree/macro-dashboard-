@@ -1299,7 +1299,9 @@ const StageEngine = {
       // [P1-9 2026-10-18] 预警中间态
       p1_9_state: this._timingData?.p1_9_state || { current: 'normal' },
       // [P1-6 2026-10-18] 趋势过滤
-      p1_6_state: this._timingData?.p1_6_state || { trend: 'unknown' }
+      p1_6_state: this._timingData?.p1_6_state || { trend: 'unknown' },
+      // [P1-8 2026-10-18] 美联储双层
+      p1_8_state: this._timingData?.p1_8_state || { layer: 'none' }
     };
   }
 };
@@ -1459,13 +1461,6 @@ function applyRealDataToMockData() {
     // 参考指标[4]: 韭圈儿神奇指标 → 已移除
   }
 
-  // 北向资金 → 在参考指标中找不到的，检查early_bear/early_bull中的北向
-  if (rightData && rightData.signals) {
-    const northBear = (rightData.signals.early_bear || []).find(s => s.name.includes('北向'));
-    const northBull = (rightData.signals.early_bull || []).find(s => s.name.includes('北向'));
-    // 北向数据存储在referenceIndicators中没有专门项，但信号要能显示
-    // 这里暂不新增行，保持5项不变
-  }
 
   // v3.4.5→v3.4.12: 确认信号3项保留前端硬编码静态快照用于 sparkline 渲染
   // 当前信号状态（value/signal/signalText）来自 right_scores 真实计算。
@@ -1721,19 +1716,19 @@ const mockData = {
       history: [-18.0,-6.0,1.0,-86.0,-48.0,-62.0,-63.0,-94.0,-82.0,-96.0,-0.0,-49.0,-55.0,-64.0,-1.0,-6.0,12.0,-4.0,-20.0,-22.0,-19.0,-8.0,22.0,-6.0,17.0,31.0,4.0,43.0,32.0,35.0,28.0,36.0,13.0,12.0,36.0,50.0,19.0,35.0,14.0,-0.0,19.0,27.0,-1.0,1.0,3.0,20.0,-20.0,24.0,25.0,24.0,6.0,28.0,-6.0,3.0,43.0,-9.0,9.0,11.0,43.0,20],
       updateTime: '2026-09 (月频)'
     },
-    // 6. 北向资金累计净流入（已折叠 — 2024-08起东财停更）
-    <!-- 北向资金卡：2024-08起停更，已折叠到参考区 -->
+    // 6. 两融余额（沪市）— [P1-10④ 2026-10-18 投资分析裁决] 北向删卡（2024-08起披露制度消灭免费高频源），
+    //    卡位腾给两融余额变化：沪市融资余额，杠杆资金情绪，免费日频，衔接①两融修复
     {
-      name: '北向资金累计净流入',
-      dim: '参考', dimClass: 'dim-tag-ref',
-      value: '已折叠',
+      name: '两融余额（沪市）',
+      dim: '资金流', dimClass: 'dim-tag-capital-flow',
+      value: '数据待更新',
       signal: 'gray',
-      signalText: '已折叠',
-      freq: '周频',
-      description: '北向净买卖数据 2024-08 起东财停更；仅成交额可获取但缺方向信号；已折叠至参考区；2024-08-20 为最后有效数据点',
-      dates: ['2024-08-20'],
+      signalText: '待更新',
+      freq: '日频',
+      description: '沪市融资余额（深交所接口仅单日查询无法历史回填，仅沪市口径）。余额上升=杠杆资金流入；周变化为方向信号',
+      dates: [],
       history: [],
-      updateTime: '2024-08-20（最后有效）'
+      updateTime: '—'
     },
     // 6. 中证1000/沪深300比值
     {
@@ -1887,6 +1882,14 @@ function renderStageCards() {
     if (isActive && _warnState === 'warning') {
       _warnBadge = '<div style="font-size:11px;font-weight:700;color:var(--yellow);margin-top:2px;">⚠️ 预警 仓位压40%</div>';
     }
+    // [P1-8 2026-10-18] Fed 双层徽章：预期层/事件层激活时在活跃卡标注（裁决：预期层32%禁加成长股、事件软32%、人工钉25%）
+    const _fedSt = (engineOutput.p1_8_state && engineOutput.p1_8_state.layer) ? engineOutput.p1_8_state : null;
+    let _fedBadge = '';
+    if (isActive && _fedSt && _fedSt.layer && _fedSt.layer !== 'none') {
+      const _fedLayerTxt = { expect: '预期层', event_soft: '事件层·软', event_hard: '事件层·钉' }[_fedSt.layer] || _fedSt.layer;
+      const _fedTitle = (_fedSt.note || '') + (_fedSt.cumulative_hike_prob != null ? ' / 累计加息概率 ' + Math.round(_fedSt.cumulative_hike_prob * 100) + '%' : '');
+      _fedBadge = '<div title="' + _fedTitle.replace(/"/g, '&quot;') + '" style="font-size:11px;font-weight:700;color:var(--red);margin-top:2px;">🦅 Fed ' + _fedLayerTxt + ' 仓位≤' + _fedSt.cap + '% 禁加成长股</div>';
+    }
     html += `<div class="stage-card ${cls} ${isActive ? 'active' : ''}">
       <span class="season-emoji">${s.emoji}</span>
       <div class="stage-name">${s.name}</div>
@@ -1895,6 +1898,7 @@ function renderStageCards() {
       ${mBadge}
       ${_anchorBadge}
       ${_warnBadge}
+      ${_fedBadge}
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${s.desc}</div>
     </div>`;
   });
@@ -3055,7 +3059,7 @@ function applyTimingDataToMockData() {
   if (f3) {
     _setSnapshot(M[4], f3, f3.value, '周频');
     M[4].signalText = _scoreText(f3.score, '收益');
-    M[4].description = '偏股基金指数(930950)3年滚动年化收益率周频，反映公募赚钱效应；日频精确3自然年算法（删除旧4.10%占位值）';
+    M[4].description = '【P1-10② 2026-10-18裁决】中证偏股型基金指数930950（csindex官方周频）3年滚动年化(756交易日)，反映公募赚钱效应。替代885001万得偏股混（付费源不可得，重叠段差0.40pp）；score阈值映射：<-10%→90/[0,10%)→50/≥30%→10';
   } else _setPending(M[4]);
   // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，指标已下线
   // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，已折叠至参考区
@@ -3068,16 +3072,6 @@ function applyTimingDataToMockData() {
   M[5].history = [];
   M[5].updateTime = '2024-08-20';
   M[5]._folded = true;
-  // R[5] 北向资金参考卡：灰灯 + note四要素
-  if (mockData.referenceIndicators[4]) {
-    mockData.referenceIndicators[4].value = '已折叠';
-    mockData.referenceIndicators[4].signal = 'gray';
-    mockData.referenceIndicators[4].signalText = '已折叠';
-    mockData.referenceIndicators[4].description = '北向净买卖数据 2024-08 起东财停更；仅成交额可获取但缺方向信号；已折叠至参考区；2024-08-20 为最后有效数据点';
-    mockData.referenceIndicators[4].dates = ['2024-08-20'];
-    mockData.referenceIndicators[4].history = [];
-    mockData.referenceIndicators[4].updateTime = '2024-08-20（最后有效）';
-  }
   // [6] 产业资本净减持率 — 工单6c: 股东增减持净减持额/流通市值，2018起全历史百分位
   //     数据源: 东方财富RPTA_WEB_GDSCTJ日度汇总(公告日口径) + AKShare流通市值
   //     评分: 全历史百分位分档 + 护栏(≥0.15%→90/≥0.10%→75/≥0.05%→60)
@@ -3154,7 +3148,19 @@ function applyTimingDataToMockData() {
     R[3].dates = ic.history.map(p => p.date);
     R[3].history = ic.history.map(p => +p.value);
   } else _setPending(R[3], '产业资本数据待获取');
-  // [4] 韭圈儿神奇指标 — 已移除
+  // [4] 两融余额（沪市）— [P1-10④] 北向卡位替代，timing_scores.json capital_flow.margin_balance
+  const _mb = _tag(_tsInd(ts, 'capital_flow', 'margin_balance'));
+  if (_mb && Array.isArray(_mb.history) && _mb.history.length >= 2) {
+    _setSnapshot(R[4], _mb, _mb.value, '日频');
+    R[4].dates = _mb.history.map(p => p.date);
+    R[4].history = _mb.history.map(p => +p.value);
+    // 周变化方向信号：流入=绿（资金进场），流出=红，小波动=灰
+    const _wc = parseFloat((_mb.week_change || '0').replace('亿', ''));
+    if (_wc > 100) { R[4].signal = 'green'; R[4].signalText = '周流入 ' + _mb.week_change; }
+    else if (_wc < -100) { R[4].signal = 'red'; R[4].signalText = '周流出 ' + _mb.week_change; }
+    else { R[4].signal = 'gray'; R[4].signalText = '周变化 ' + (_mb.week_change || '—'); }
+    if (_mb.as_of) R[4].updateTime = _mb.as_of;
+  } else _setPending(R[4], '两融余额数据待获取');
 
   // ============ 锚点卡 ============
   // ERP —— 唯一口径：万得全A ERP（用户拍板）。

@@ -322,6 +322,17 @@ P19_WARNING_MONTHLY_DECAY = 2
 # P1-6 联动：强空头趋势下预警触发①放宽（投资分析终版规格 2026-10-18）
 P19_WARNING_ENTER_TREND_BEAR = 55
 
+# P1-8: 美联储双层（投资分析 2026-10-18 裁决终版）
+# 数据源：collect_fedwatch.py（cme-fedwatch 包，每日结算后取数一次）→ data/fed_watch.json
+P18_HIKE_PROB_THRESHOLD = 0.60   # 预期层：未来2次会议累计加息概率阈值（1-(1-p1)(1-p2)，独立性假设偏保守）
+P18_YIELD_10Y_THRESHOLD = 5.2    # 预期层：10Y 美债收益率阈值 %
+P18_EXPECT_CAP = 32              # 预期层仓位上限 %（25-32 区间取上沿，禁加成长股：创业板+科创50）
+P18_EVENT_SOFT_CAP = 32          # 事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）
+P18_EVENT_HARD_CAP = 25          # 事件层人工轨：会后人工确认 hawkish=true → 钉 25%
+P18_MANUAL_CONFIRM_LIMIT_DAYS = 2  # 人工轨 2 个交易日时限，超时维持软事件层 32%（防人工位空转）
+P18_COOLDOWN_DAYS = 180          # Fed_D* 冷却：层解除后 180 天内不重复触发
+P18_STALE_DAYS = 4               # fed_watch.json 超过 N 天未更新视为 stale → 继承前日状态
+
 # P1-6: 价格趋势过滤（投资分析终版规格 2026-10-18）
 # 标的：中证全指（万得全 A 免费替代，覆盖全部 A 股；腾讯源，CI 已验证可用）
 P16_INDEX_SYMBOL = "sh000985"
@@ -581,6 +592,158 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     }
     
     return warning_state, target_equity, note
+
+
+def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None):
+    """[P1-8 美联储双层 2026-10-18 投资分析裁决终版]
+
+    预期层：累计加息概率(1-(1-p1)(1-p2))>60% 且 10Y>5.2% 且趋势限定
+            （20日均线上行 或 60日新高）→ 仓位压至 32%，禁加成长股（创业板+科创50）
+    事件层自动轨：目标区间较上期上移 → 软事件层压 32%（不钉死）
+    事件层人工轨：会后人工确认 hawkish=true → 钉 25%；2 交易日时限超时维持软层 32%
+    降级链：fed_watch.json 缺失/stale(>4天) → 继承前日状态（裁决③）
+    冷却：层解除后 180 天内不重复进入（Fed_D*，复用 P1-7 cooldown 模式）
+    返回 (fed_state, fed_cap)；fed_cap=None 表示不限制。
+    """
+    from datetime import date as _date, timedelta as _td
+    today = today or _date.today()
+    prev = prev_fed_state or {}
+    prev_layer = prev.get("layer", "none")
+    # ---- 冷却期检查（Fed_D*）----
+    cd_until = prev.get("cooldown_until")
+    in_cooldown = False
+    if cd_until:
+        try:
+            in_cooldown = today <= _date.fromisoformat(cd_until)
+        except Exception:
+            in_cooldown = False
+
+    # ---- 输入降级：fed_watch.json 缺失/stale → 继承前日状态 ----
+    fw_ok = False
+    fw_stale_reason = ""
+    if fed_watch and fed_watch.get("as_of"):
+        try:
+            as_of = _date.fromisoformat(str(fed_watch["as_of"]))
+            if (today - as_of).days <= P18_STALE_DAYS:
+                fw_ok = True
+            else:
+                fw_stale_reason = f"fed_watch.json 数据滞后 {(today - as_of).days} 天"
+        except Exception:
+            fw_stale_reason = "fed_watch.json as_of 解析失败"
+    else:
+        fw_stale_reason = "fed_watch.json 缺失"
+
+    base_state = {
+        "layer": "none", "cap": None,
+        "cumulative_hike_prob": None, "yield_10y": None,
+        "triggers": [], "as_of": str(today),
+        "cooldown_until": cd_until,
+        "growth_ban": [], "note": "",
+        "source": "cme-fedwatch + FRED DGS10（每日结算后取数一次）",
+    }
+    if not fw_ok:
+        # 继承前日（降级链），显式标注
+        st = dict(base_state)
+        st["layer"] = prev_layer if prev_layer in ("expect", "event_soft", "event_hard") else "none"
+        st["cap"] = prev.get("cap")
+        st["cumulative_hike_prob"] = prev.get("cumulative_hike_prob")
+        st["note"] = f"【降级】{fw_stale_reason}，继承前日层状态（{st['layer']}）"
+        st["growth_ban"] = prev.get("growth_ban", [])
+        cap = st["cap"] if st["layer"] != "none" else None
+        return st, cap
+
+    # ---- 输入解析 ----
+    cum = fed_watch.get("cumulative_hike_prob")
+    tr = fed_watch.get("target_range") or []
+    tr_prev = fed_watch.get("prev_target_range") or []
+    # 10Y 收益率与趋势
+    y10_hist = ((us_macro or {}).get("history", {}) or {}).get("yield_10y", []) or []
+    y10_now = None
+    ma20_up = False
+    high_60 = False
+    if len(y10_hist) >= 25:
+        vals = [float(x["value"]) for x in y10_hist if x.get("value") is not None]
+        if len(vals) >= 65:
+            y10_now = vals[-1]
+            ma20_today = sum(vals[-20:]) / 20
+            ma20_5d_ago = sum(vals[-25:-5]) / 20
+            ma20_up = ma20_today > ma20_5d_ago
+            high_60 = y10_now >= max(vals[-60:])
+
+    triggers = []
+    # ---- 事件层自动轨：目标区间上移检测 ----
+    event_auto = False
+    if len(tr) == 2 and len(tr_prev) == 2:
+        try:
+            event_auto = (float(tr[0]) > float(tr_prev[0]) or float(tr[1]) > float(tr_prev[1]))
+        except Exception:
+            event_auto = False
+    if event_auto:
+        triggers.append("目标区间上移")
+
+    # ---- 事件层人工轨：hawkish 确认（2 交易日时限）----
+    hw = (manual_cfg or {}).get("fed_hawkish", {}) or {}
+    manual_hard = False
+    manual_expired = False
+    if hw.get("confirmed") is True and hw.get("confirmed_at"):
+        try:
+            c_at = _date.fromisoformat(str(hw["confirmed_at"]))
+            # 时限近似：2 个交易日 ≈ 4 自然日（含周末保守上沿）；超时维持软层 32%
+            if (today - c_at).days <= 4:
+                manual_hard = True
+                triggers.append("人工确认鹰派")
+            else:
+                manual_expired = True
+        except Exception:
+            pass
+
+    # ---- 预期层判定 ----
+    expect_hit = False
+    if cum is not None and y10_now is not None:
+        if cum > P18_HIKE_PROB_THRESHOLD and y10_now > P18_YIELD_10Y_THRESHOLD and (ma20_up or high_60):
+            expect_hit = True
+            triggers.append(
+                f"累计加息概率{cum*100:.0f}%>60% + 10Y {y10_now:.2f}%>5.2% + "
+                + ("20MA上行" if ma20_up else "60日新高"))
+
+    # ---- 层裁决（事件层优先于预期层；冷却期不重复进入）----
+    st = dict(base_state)
+    st["cumulative_hike_prob"] = cum
+    st["yield_10y"] = y10_now
+    st["triggers"] = triggers
+
+    if manual_hard:
+        st["layer"], st["cap"] = "event_hard", P18_EVENT_HARD_CAP
+        st["note"] = "事件层人工轨：会后人工确认鹰派 → 仓位钉 25%"
+    elif event_auto:
+        st["layer"], st["cap"] = "event_soft", P18_EVENT_SOFT_CAP
+        note = "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）"
+        if manual_expired:
+            note += "；人工确认超时（>2交易日），维持软层"
+        st["note"] = note
+    elif expect_hit:
+        st["layer"], st["cap"] = "expect", P18_EXPECT_CAP
+        st["note"] = "预期层：加息概率+长端利率双高 → 仓位上限 32%，禁加成长股"
+    else:
+        st["layer"], st["cap"] = "none", None
+        # 层解除 → 若此前在层内，落冷却 180 天
+        if prev_layer in ("expect", "event_soft", "event_hard"):
+            st["cooldown_until"] = str(today + _td(days=P18_COOLDOWN_DAYS))
+            st["note"] = f"Fed 层解除，进入 {P18_COOLDOWN_DAYS} 天冷却（至 {st['cooldown_until']}）"
+
+    # 冷却期防护：非事件硬轨下，冷却内不重复进入 expect/event_soft
+    if in_cooldown and st["layer"] in ("expect", "event_soft"):
+        st["layer"], st["cap"] = "none", None
+        st["note"] = f"Fed_D* 冷却期内（至 {cd_until}），不重复触发"
+        st["growth_ban"] = []
+        st["cooldown_until"] = cd_until
+        return st, None
+
+    if st["layer"] in ("expect", "event_soft", "event_hard"):
+        st["growth_ban"] = ["创业板指", "科创50"]
+        st["cooldown_until"] = None
+    return st, st["cap"]
+
 
 
 # ============================================================
@@ -1544,15 +1707,20 @@ class TimingScoreEngine:
 
         # --- 北向资金趋势 ---
         north_score, north_val = self._calc_northbound()
-        indicators["northbound"] = {
-            "name": "北向资金趋势",
-            "value": "⚠️数据已停更(2025-09起)",
+        # [P1-10④ 2026-10-18 投资分析裁决] 北向删卡（披露制度消灭免费高频源），
+        # 卡位腾给两融余额变化（沪市融资余额，杠杆资金情绪，免费日频衔接①修复）；
+        # 原 northbound sub_weight=0 → 本指标同 0（换子指标不动权重，不进 composite）
+        mb_balance, mb_w_chg, mb_asof, mb_hist = self._calc_margin_balance()
+        indicators["margin_balance"] = {
+            "name": "两融余额（沪市）",
+            "value": f"{mb_balance:.2f}万亿" if mb_balance else "数据待更新",
+            "week_change": f"{mb_w_chg:+.0f}亿" if mb_w_chg is not None else None,
             "score": 50,
             "sub_weight": 0,
-            "status": "deprecated",
-            "note": "AKShare北向资金接口停更，本版本移除该指标",
-            "bottom_signal": "—",
-            "top_signal": "—"
+            "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+            "as_of": mb_asof,
+            "freq": "日频",
+            "history": mb_hist or []
         }
 
         # --- 新发基金热度 ---
@@ -1642,6 +1810,31 @@ class TimingScoreEngine:
             return prev_score, float(prev_val.replace('%', ''))
         except:
             return 48, 2.66
+
+    def _calc_margin_balance(self):
+        """[P1-10④] 沪市融资余额+周变化（北向卡位替代指标，参考权重0）"""
+        try:
+            ak = self.init_akshare()
+            end = datetime.now().strftime("%Y%m%d")
+            start = (datetime.now() - timedelta(days=550)).strftime("%Y%m%d")
+            df = safe_ak_call(ak.stock_margin_sse, start_date=start, end_date=end)
+            if df is None or df.empty:
+                raise ValueError("margin_sse 为空")
+            df = df.copy()
+            df['date'] = pd.to_datetime(df['信用交易日期'], format='%Y%m%d')
+            df = df.set_index('date').sort_index()
+            bal = df['融资余额'].astype(float)
+            cur = float(bal.iloc[-1]) / 1e12  # 万亿
+            w_ago = float(bal.iloc[-6]) if len(bal) >= 6 else float(bal.iloc[0])
+            w_chg = (bal.iloc[-1] - w_ago) / 1e8  # 亿
+            # 近250交易日余额 history（亿元），供前端 sparkline
+            hist = [{"date": str(d.date()), "value": round(float(v) / 1e8, 0)}
+                    for d, v in bal.tail(250).items()]
+            logger.info(f"      两融余额（沪市）: {cur:.2f}万亿, 周变化 {w_chg:+.0f}亿, history {len(hist)}点")
+            return round(cur, 2), round(float(w_chg), 0), str(bal.index[-1].date()), hist
+        except Exception as e:
+            logger.warning(f"      两融余额计算失败: {e}")
+            return None, None, None, None
 
     def _calc_northbound(self):
         """北向资金趋势"""
@@ -1764,7 +1957,9 @@ class TimingScoreEngine:
             "score": fund_score,
             "sub_weight": 20,
             "bottom_threshold": "<-10%",
-            "top_threshold": ">30%"
+            "top_threshold": ">30%",
+            "source": "中证偏股型基金指数 930950（csindex 官方）",
+            "note": "【P1-10② 2026-10-18裁决】885001万得偏股混→930950中证偏股（付费→官方免费替代，重叠段差0.40pp）"
         }
 
         # --- 恐贪指数 (P0-2: 单一真值源 feargreed_pointer.json → score) ---
@@ -1840,12 +2035,52 @@ class TimingScoreEngine:
         }
 
     def _calc_fund_3y(self):
-        """偏股基金滚动3年年化"""
-        prev = load_json("timing_scores.json")
-        prev_val = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("fund_3y_annual", {}).get("value", "4.10%")
-        prev_score = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("fund_3y_annual", {}).get("score", 48)
-        logger.info(f"      基金3年年化: {prev_val} (使用上期值)")
-        return prev_score, prev_val
+        """偏股基金滚动3年年化 —— [P1-10② 2026-10-18 投资分析裁决]
+        数据源：中证偏股型基金指数 930950（csindex 官方免费 JSON，替代已不可得的 885001 万得偏股混合型基金指数；
+        与万得全A→中证全指同一替代逻辑，重叠段差 0.40pp 趋势一致，慢变量可忽略）。
+        score 阈值映射（裁决原案，规避 2023 起仅 194 点分位无法覆盖完整牛熊的硬伤）：
+        x<-10→90 / [-10,0)→70 / [0,10)→50 / [10,20)→30 / [20,30)→20 / ≥30→10
+        （赚钱效应越高 score 越低=逆向；V2 可选 ±1pp 滞后带防边界抖动，本期不做）
+        """
+        try:
+            closes = self._fetch_csi_index_close("930950", days=4000)
+            if closes is None or len(closes) < 756:
+                raise ValueError("930950 历史不足")
+            # 3年滚动年化 = (close_t / close_{t-756})^(1/3) - 1
+            ann = (closes.iloc[-1] / closes.iloc[-756]) ** (1/3) - 1
+            x = float(ann) * 100
+            if x < -10: score = 90
+            elif x < 0: score = 70
+            elif x < 10: score = 50
+            elif x < 20: score = 30
+            elif x < 30: score = 20
+            else: score = 10
+            val = f"{x:.2f}%"
+            logger.info(f"      基金3年年化(930950): {val} → score={score}")
+            return score, val
+        except Exception as e:
+            logger.warning(f"      基金3年年化计算失败（继承上期）: {e}")
+            prev = load_json("timing_scores.json")
+            ind = prev.get("dimensions", {}).get("sentiment", {}).get("indicators", {}).get("fund_3y_annual", {})
+            return ind.get("score", 50), ind.get("value", "数据待更新")
+
+    @staticmethod
+    def _fetch_csi_index_close(index_code, days=4000):
+        """中证指数官网免费日频收盘 JSON（CI 美国 runner 已验证可达）。
+        返回 pd.Series（index=date, values=close 升序）或 None。"""
+        import requests
+        end = datetime.now().strftime("%Y%m%d")
+        start = (datetime.now() - timedelta(days=days)).strftime("%Y%m%d")
+        url = (f"https://www.csindex.com.cn/csindex-home/perf/index-perf"
+               f"?indexCode={index_code}&startDate={start}&endDate={end}")
+        r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        rows = r.json().get("data", [])
+        if not rows:
+            return None
+        df = pd.DataFrame(rows)
+        df["date"] = pd.to_datetime(df["tradeDate"], format="%Y%m%d")
+        return df.set_index("date")["close"].astype(float).sort_index()
 
     def _fear_greed_score_ssot(self):
         """[P0-1/P0-2 单一真值源 2026-10-10] 恐贪 score 只来自 data/feargreed_pointer.json。
@@ -2608,8 +2843,10 @@ class TimingScoreEngine:
         # P1-9: 预警中间态状态机 (2026-10-18)
         # ============================================================
         prev_warning_state = {}
+        prev_fed_state = {}
         if prev_history and isinstance(prev_history, list) and len(prev_history) > 0:
             prev_warning_state = prev_history[-1].get("warning_state", {})
+            prev_fed_state = prev_history[-1].get("fed_state", {})
         # 取近5日composite历史（用于计算单周变化）
         recent_composites = []
         if prev_history and isinstance(prev_history, list):
@@ -2626,6 +2863,18 @@ class TimingScoreEngine:
         if warning_target_equity is not None and anchor_state.get("current", "normal") == "normal":
             target_equity = warning_target_equity
             logger.info(f"    🎯 P1-9 目标仓位: {target_equity}% (覆盖常规映射)")
+
+        # P1-8: 美联储双层（预期层/事件层，取与现有 target 更保守者）
+        fed_watch_data = load_json("fed_watch.json") or {}
+        us_macro_data = load_json("us_macro.json") or {}
+        manual_cfg = load_json("config_overrides.json") or {}
+        fed_state, fed_cap = apply_fed_layer(fed_watch_data, us_macro_data, prev_fed_state, manual_cfg)
+        if fed_state.get("layer", "none") != "none":
+            logger.info(f"    🦅 P1-8 Fed 层: {fed_state['layer']} cap={fed_state['cap']}% — {fed_state.get('note','')}")
+        if fed_cap is not None:
+            if target_equity is None or fed_cap < target_equity:
+                target_equity = fed_cap
+                logger.info(f"    🎯 P1-8 Fed 仓位上限生效: {fed_cap}%")
 
         # P1-6: A* 与趋势联动（D* 方向不 veto——卖侧无条件优先）
         if anchor_state.get("current") == "A_star" and target_equity is not None:
@@ -2672,13 +2921,20 @@ class TimingScoreEngine:
         for _dn, _dd in dimensions.items():
             _dd.pop("_orig_weight", None)
 
-        # P1-7/P1-9: 如果锚定或预警激活，覆盖仓位区间
+        # P1-7/P1-9/P1-8: 如果锚定/预警/Fed层激活，覆盖仓位区间
         if target_equity is not None:
             position_advice["equity_range"] = f"{target_equity}%"
             position_advice["base_equity"] = target_equity
             position_advice["anchor_override"] = True
             if warning_state.get("current", "normal") != "normal" and anchor_state.get("current", "normal") == "normal":
                 position_advice["warning_override"] = True
+            if fed_state.get("layer", "none") != "none":
+                position_advice["fed_override"] = True
+                position_advice["fed_layer"] = fed_state["layer"]
+        # P1-8 禁加成长股标注（裁决：预期层起即禁加创业板+科创50）
+        if fed_state.get("growth_ban"):
+            position_advice["fed_growth_ban"] = fed_state["growth_ban"]
+            position_advice["fed_note"] = fed_state.get("note", "")
 
         output = {
             "update_date": today_str(),
@@ -2696,7 +2952,8 @@ class TimingScoreEngine:
                 "anchor": anchor_state
             },
             "p1_9_state": warning_state,
-            "p1_6_state": trend_state
+            "p1_6_state": trend_state,
+            "p1_8_state": fed_state
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
@@ -3689,6 +3946,7 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
     p19 = timing_data.get("p1_9_state", {})
     warning_state = p19
     trend_state = timing_data.get("p1_6_state", {})
+    fed_state = timing_data.get("p1_8_state", {})
 
     record = {
         "date": today,
@@ -3699,7 +3957,8 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
         "hysteresis_state": hysteresis_state,
         "anchor_state": anchor_state,
         "warning_state": warning_state,
-        "trend_state": trend_state
+        "trend_state": trend_state,
+        "fed_state": fed_state
     }
     history = [r for r in history if r.get("date") != today]
     history.append(record)

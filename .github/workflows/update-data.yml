@@ -79,6 +79,18 @@ jobs:
           pip install akshare requests pandas numpy openpyxl
 
       # ----------------------------------------------------------
+      # 3b. [P1-8 美联储双层 2026-10-18 裁决] 采集 FedWatch 加息概率+目标区间
+      # cme-fedwatch 包（CME 官方方法学重组，每日结算后取数一次）。
+      # 失败时 continue-on-error + update_data 侧继承前日状态（降级链③）。
+      # ----------------------------------------------------------
+      - name: Collect FedWatch probabilities (P1-8)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        continue-on-error: true
+        run: python scripts/collect_fedwatch.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      # ----------------------------------------------------------
       # 4. 运行数据更新
       # ----------------------------------------------------------
       - name: Run data update (full)
