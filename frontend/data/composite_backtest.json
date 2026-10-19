@@ -1,0 +1,152 @@
+{
+ "generated": "2026-10-18",
+ "direction_review": "投资分析2026-10-18复核：4待定组全部定向(cn_us+1/industrial+1/HHI×2−1)，待定组清空",
+ "method": "逐月可用指标集+权重归一化；分位类history即score；原始值全样本分位近似；方向表人工核对(待复核)",
+ "indicators_used": {
+  "valuation.hs300_pe_percentile": {
+   "start": "2010-01-29",
+   "n": 202,
+   "dir": 1
+  },
+  "valuation.buffett_ratio": {
+   "start": "2026-04-20",
+   "n": 120,
+   "dir": 1
+  },
+  "valuation.break_net_rate": {
+   "start": "2026-04-20",
+   "n": 120,
+   "dir": -1
+  },
+  "liquidity.social_financing_trend": {
+   "start": "2024-01",
+   "n": 33,
+   "dir": 1
+  },
+  "liquidity.interest_rate": {
+   "start": "2025-09-22",
+   "n": 51,
+   "dir": -1
+  },
+  "liquidity.fed_policy": {
+   "start": "2023-09",
+   "n": 36,
+   "dir": -1
+  },
+  "equity_bond.dividend_bond_spread_red": {
+   "start": "2025-11-03",
+   "n": 250,
+   "dir": -1
+  },
+  "equity_bond.dividend_bond_spread_hs300": {
+   "start": "2026-04-20",
+   "n": 120,
+   "dir": -1
+  },
+  "equity_bond.cn_us_spread": {
+   "start": "2025-09-22",
+   "n": 51,
+   "dir": 1
+  },
+  "capital_flow.equity_fund_position": {
+   "start": "2017-12-04",
+   "n": 455,
+   "dir": 1
+  },
+  "capital_flow.margin_buying_ratio": {
+   "start": "2012-06-08",
+   "n": 3486,
+   "dir": 1
+  },
+  "capital_flow.flexible_fund_position": {
+   "start": "2017-12-04",
+   "n": 455,
+   "dir": 1
+  },
+  "capital_flow.new_fund": {
+   "start": "2023-09",
+   "n": 37,
+   "dir": 1
+  },
+  "capital_flow.industrial_capital": {
+   "start": "2023-09",
+   "n": 37,
+   "dir": 1
+  },
+  "sentiment.fund_3y_annual": {
+   "start": "2023-09-01",
+   "n": 161,
+   "dir": 1
+  },
+  "sentiment.turnover_rate": {
+   "start": "2026-07-14",
+   "n": 60,
+   "dir": 1
+  },
+  "sentiment.new_account_opening": {
+   "start": "2015-01",
+   "n": 141,
+   "dir": 1
+  },
+  "micro_structure.industry_concentration": {
+   "start": "2021-12-19",
+   "n": 247,
+   "dir": -1
+  },
+  "micro_structure.concentration_trend": {
+   "start": "2022-05-08",
+   "n": 228,
+   "dir": -1
+  }
+ },
+ "pending_group": [],
+ "distributions": [
+  {
+   "label": "全段·主序列(不含待定组)",
+   "n": 202,
+   "min": 0.0,
+   "p10": 2.4,
+   "p25": 16.5,
+   "p50": 34.8,
+   "p75": 45.0,
+   "p90": 55.0,
+   "max": 68.6,
+   "mean": 31.7,
+   "cur_47_7_percentile": 81.7,
+   "span": "2010-01→2026-10"
+  },
+  {
+   "label": "全段·含待定组(正向假设)",
+   "n": 202,
+   "min": 0.0,
+   "p10": 2.4,
+   "p25": 16.5,
+   "p50": 34.8,
+   "p75": 45.0,
+   "p90": 55.0,
+   "max": 68.6,
+   "mean": 31.7,
+   "cur_47_7_percentile": 81.7,
+   "span": "2010-01→2026-10"
+  },
+  {
+   "label": "2023-09起·主序列",
+   "n": 38,
+   "min": 24.6,
+   "p10": 34.3,
+   "p25": 38.7,
+   "p50": 47.3,
+   "p75": 55.3,
+   "p90": 60.2,
+   "max": 68.6,
+   "mean": 48.1,
+   "cur_47_7_percentile": 50.0,
+   "span": "2023-09→2026-10"
+  }
+ ],
+ "coverage_sample": {
+  "2010-01": 1,
+  "2018-06": 5,
+  "2026-10": 10
+ }
+}

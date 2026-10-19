@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-10-17",
+  "update_time": "2026-10-19",
   "leading": {
     "pmi": {
       "value": 50.1,
@@ -19,8 +19,8 @@
   },
   "coincident": {
     "gdp_growth": {
-      "value": 4.7,
-      "date": "2026-06",
+      "value": 4.6,
+      "date": "2026-09",
       "unit": "%",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#china.validation.coincident.gdp"
     }
@@ -44,12 +44,12 @@
   },
   "stock_index": {
     "sse_composite": {
-      "value": 3716.284,
-      "date": "2026-10-16"
+      "value": 3730.92,
+      "date": "2026-10-19"
     },
     "hs300": {
-      "value": 4170.613,
-      "date": "2026-10-16"
+      "value": 4174.535,
+      "date": "2026-10-19"
     }
   },
   "bond": {
@@ -60,25 +60,21 @@
   },
   "valuation": {
     "hs300_pe": {
-      "value": 12.33,
-      "percentile": 45.1737,
-      "date": "2026-10-17"
+      "value": 12.38,
+      "percentile": 45.9459,
+      "date": "2026-10-19"
     },
     "hs300_pb": {
       "value": null,
-      "date": "2026-10-17"
+      "date": "2026-10-19"
     },
     "csi500_pe": {
-      "value": 23.82,
-      "date": "2026-10-17"
+      "value": 24.06,
+      "date": "2026-10-19"
     }
   },
   "history": {
     "sse_index": [
-      {
-        "date": "2026-04-20",
-        "value": 4082.127
-      },
       {
         "date": "2026-04-21",
         "value": 4085.077
@@ -554,13 +550,13 @@
       {
         "date": "2026-10-16",
         "value": 3716.284
+      },
+      {
+        "date": "2026-10-19",
+        "value": 3730.92
       }
     ],
     "hs300_index": [
-      {
-        "date": "2026-04-20",
-        "value": 4757.442
-      },
       {
         "date": "2026-04-21",
         "value": 4767.997
@@ -1036,6 +1032,10 @@
       {
         "date": "2026-10-16",
         "value": 4170.613
+      },
+      {
+        "date": "2026-10-19",
+        "value": 4174.535
       }
     ],
     "cn_10y_bond": [
@@ -3038,8 +3038,8 @@
         "value": 12.48
       },
       {
-        "date": "2026-10-16",
-        "value": 12.33
+        "date": "2026-10-19",
+        "value": 12.38
       }
     ],
     "csi500_pe": [
@@ -3992,8 +3992,8 @@
         "value": 25.95
       },
       {
-        "date": "2026-10-16",
-        "value": 23.82
+        "date": "2026-10-19",
+        "value": 24.06
       }
     ],
     "pmi": [

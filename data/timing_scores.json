@@ -1,23 +1,23 @@
 {
   "update_date": "2026-10-19",
   "version": "v4.1",
-  "composite_score": 47.7,
+  "composite_score": 48.0,
   "stage": "B",
   "position_range": "40%-55%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 47.2,
+      "score": 47.6,
       "weight": 18,
-      "weighted_score": 8.5,
+      "weighted_score": 8.57,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 45.2,
+          "value": 45.9,
           "unit": "%分位",
-          "score": 45.0,
+          "score": 46.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -2316,9 +2316,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.4,
+          "value": 9.0,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2808,9 +2808,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-10-19"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-19T15:28:02"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -4699,8 +4697,8 @@
         },
         "wanda_erp": {
           "name": "中证800 ERP ★主指标（全A代理）",
-          "value": "5.78%",
-          "percentile": "49.2%",
+          "value": "5.74%",
+          "percentile": "47.9%",
           "score": 20,
           "sub_weight": 40,
           "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
@@ -40919,14 +40917,14 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 47.7,
+      "score": 48.7,
       "weight": 16,
-      "weighted_score": 7.63,
+      "weighted_score": 7.79,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
-          "value": "6.62%",
+          "value": "6.38%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": "<-10%",
@@ -41589,8 +41587,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 66.27,
-          "score": 66.27,
+          "value": 69.05,
+          "score": 69.05,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
@@ -56427,13 +56425,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-19T15:28:02"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58361,13 +58357,11 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-19T15:28:02"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘偏弱(%B=0.21)",
+          "value": "小盘偏弱(%B=0.22)",
           "score": 50,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -61267,10 +61261,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘偏弱(%B=0.21)",
+        "current_value": "小盘偏弱(%B=0.22)",
         "status": "小盘偏弱",
         "signal": "不追涨",
-        "detail": "小盘风格小盘偏弱(%B=0.21)"
+        "detail": "小盘风格小盘偏弱(%B=0.22)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -61291,10 +61285,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘偏弱(%B=0.21)",
+      "current_value": "小盘偏弱(%B=0.22)",
       "status": "小盘偏弱",
       "signal": "不追涨",
-      "detail": "小盘风格小盘偏弱(%B=0.21)"
+      "detail": "小盘风格小盘偏弱(%B=0.22)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
@@ -61530,20 +61524,20 @@
   "p1_6_state": {
     "trend": "strong_bear",
     "annotation": "",
-    "close": 5289.37,
-    "ma120": 6085.73,
+    "close": 5292.21,
+    "ma120": 6077.33,
     "ma120_direction": "down",
-    "momentum_12m": -0.0819,
-    "as_of": "2026-10-16",
+    "momentum_12m": -0.0939,
+    "as_of": "2026-10-19",
     "source": "tencent_tx sh000985"
   },
   "p1_8_state": {
     "layer": "none",
     "cap": null,
-    "cumulative_hike_prob": null,
+    "cumulative_hike_prob": 0.9071,
     "yield_10y": 5.1,
     "triggers": [],
-    "as_of": "2026-10-18",
+    "as_of": "2026-10-19",
     "cooldown_until": null,
     "growth_ban": [],
     "note": "",
@@ -63471,18 +63465,5 @@
       "source": "沪深300月K线·腾讯",
       "caliber": "月成交额(亿)+12月均线"
     }
-  },
-  "p2_13_state": {
-    "total_signals": 0,
-    "by_type": {},
-    "ic": {
-      "ic20": null,
-      "ic20_n": 0,
-      "ic60": null,
-      "ic60_n": 0
-    },
-    "disclose_min_n": 20,
-    "cite_min_n": 50,
-    "note": "P2-13 样本外信号统计（2026-10-18起累积；n<10只显示累积中，n≥20显示百分比，n≥50方可研报引用）"
   }
 }
