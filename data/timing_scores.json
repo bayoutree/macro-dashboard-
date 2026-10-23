@@ -63525,5 +63525,68 @@
     "exemption_active": false,
     "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
   },
-  "f3_backfill_note": "2026-10-23 F3 修复回补（松子）：①触发器解硬编码（hiking_cycle 数据驱动）②事件层 edge→level 化③预期层 A1（概率>85% 单路 或 10Y>5.2%+趋势确认）④全球主导权仲裁三阈值上线（当前 0/3 未否决）。本次仅回补当前态与注记，真实历史日志不动；dimensions/position_advice 等其余字段保持 10-22 流水线原值，今晚 CI 全链重算。"
+  "f3_backfill_note": "2026-10-23 F3 修复回补（松子）：①触发器解硬编码（hiking_cycle 数据驱动）②事件层 edge→level 化③预期层 A1（概率>85% 单路 或 10Y>5.2%+趋势确认）④全球主导权仲裁三阈值上线（当前 0/3 未否决）。本次仅回补当前态与注记，真实历史日志不动；dimensions/position_advice 等其余字段保持 10-22 流水线原值，今晚 CI 全链重算。",
+  "catalyst_state": {
+    "asof": "2026-10-23",
+    "policy": {
+      "pass": false,
+      "manual_pivot": false,
+      "pivot_date": null,
+      "expires": null,
+      "note": "默认 false（保守）；落地工具才算、喊话不算"
+    },
+    "liquidity": {
+      "pass": false,
+      "m1_turn": false,
+      "spread_narrow": false,
+      "latest_m1_yoy": 3.2
+    },
+    "earnings": {
+      "pass": true,
+      "profit_turn": null,
+      "ppi_turn": true
+    },
+    "catalyst_score": 1,
+    "has_catalyst": false,
+    "params": {
+      "k_liq": 2,
+      "k_ern": 2,
+      "m": 2,
+      "policy_ttl_months": 6
+    }
+  },
+  "r7_state": {
+    "as_of": "2026-10-23",
+    "position_pct": 1.6,
+    "position_zone": "extreme",
+    "window_n": 245,
+    "trend": "strong_bear",
+    "trend_negative": true,
+    "bear_form": "none",
+    "bear_detail": {
+      "decline_3m_pct": -6.8,
+      "monthly_neg_streak": 2
+    },
+    "conflict": "A",
+    "verdict": "按既有框架（P1-7/P1-9 信号）",
+    "verdict_ref": "非冲突分档区",
+    "catalyst_coupling": {
+      "zone_active": true,
+      "has_catalyst": false,
+      "mode": "rebound_only",
+      "cap_pct": 55,
+      "note": "极端区+催化剂≤1路=仅反弹（2012 型）：交易性仓位 ≤55%，需 trend 确认方可延续，反弹高度有限"
+    },
+    "params": {
+      "extreme_pct": 15.0,
+      "normal_hi_pct": 50.0,
+      "fast_bear_3m_pct": -15.0,
+      "slow_bear_min_months": 3,
+      "rebound_cap": 55,
+      "reversal_target": 70,
+      "window_days": 365
+    },
+    "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核"
+  },
+  "r7_backfill_note": "R7 冲突状态卡 2026-10-23 回补：catalyst_state/r7_state 两键为今日离线重算真实值（数据源：cn_macro_supplement m1/剪刀差、cn_macro ppi_yoy、timing_history 365天窗口、sh000985 日K腾讯源）。政策路人工位默认 false（config_overrides.json policy_pivot 未配置）。今晚 CI 全链重算起转为日常产出。"
 }

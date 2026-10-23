@@ -683,6 +683,20 @@ F3_CNH_CNY_SINGLE_BP = 70          # b. 单日触发阈值 bp（=0.7%≈500pips�
 F3_DOM_CREDIT_GAP_PP = 2.0         # c. M2-社融存量同比裂口（pp）
 F3_DOM_VETO_CAP = 25               # 否决仓位上限 %
 
+# R7: 冲突状态卡 + 催化剂（v2 P1，2026-10-23 主人确认；参数=投资分析交付，全部参数化供 P2-12 校准）
+R7_EXTREME_PCT = 15.0            # 位置分位：极端区上界 %
+R7_NORMAL_HI_PCT = 50.0          # 普通区上界 %
+R7_EXPENSIVE_PCT = 75.0          # 偏高区上界（>75=极贵）
+R7_FAST_BEAR_3M_PCT = -15.0      # 快熊：近3月跌幅 ≥15%（63 交易日）
+R7_SLOW_BEAR_MIN_MONTHS = 3      # 阴熊：连续 ≥3 月负动量（未达快熊）
+R7_REBOUND_ONLY_CAP = 55         # 极端区无催化剂：交易性仓位上限 %（2012 型反弹）
+R7_REVERSAL_TARGET = 70          # 极端区有催化剂：反转候选目标 %（2018Q4/2024.9 型）
+R7_PCT_WINDOW_DAYS = 365         # 位置分位窗口（与前端 R1/R5 同口径：含重建段）
+CATALYST_K_LIQ = 2               # 流动性路连续月数
+CATALYST_K_ERN = 2               # 盈利路连续月数
+CATALYST_M = 2                   # 有/无判定：≥2 路=有（反转候选）
+CATALYST_POLICY_TTL_MONTHS = 6   # 政策路人工位有效期（政策窗口期）
+
 def compute_f3_usdcny_and_fx(us_macro_data):
     """F3①-3: USDCNY 年贬幅度 + 外储月度（入 us_macro history）
 
@@ -999,6 +1013,192 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     }
     
     return warning_state, target_equity, note
+
+
+def compute_catalyst_state(cn_supplement=None, cn_macro_data=None, manual_cfg=None, today=None):
+    """R7 催化剂三路代理（投资分析参数 2026-10-23：政策/流动性/盈利，≥2 路=有）
+
+    政策路：人工确认位（config_overrides.json "policy_pivot"：{"confirmed": true, "pivot_date": "YYYY-MM-DD", "note": "..."}），
+            落地工具才算、喊话不算；true 后 6 个月有效期，过期自动归 false。运营：事件驱动年≤5 次+日历提醒（铁律⑧）。
+    流动性路：M1 同比连续 k_liq=2 月回升，或 M1-M2 剪刀差连续 2 月收窄（负值收敛方向）。
+    盈利路：工业企业利润同比（无源→None）或 PPI 同比连续 k_ern=2 月回升。
+    """
+    from datetime import datetime as _dt
+    today = today or _dt.now().date()
+
+    def _series(rows, key):
+        out = []
+        for r in (rows or []):
+            try:
+                out.append((str(r.get("date")), float(r.get(key))))
+            except (TypeError, ValueError, AttributeError):
+                continue
+        return out
+
+    def _rising(vals, k):
+        """最新值连续 k 次环比改善（需 k+1 个点）；不足返回 None"""
+        if len(vals) < k + 1:
+            return None
+        return all(vals[-i][1] > vals[-i - 1][1] for i in range(1, k + 1))
+
+    sup = cn_supplement or {}
+    # --- 政策路（人工位 + TTL）---
+    pp = ((manual_cfg or {}).get("policy_pivot") or {})
+    policy_pass = False
+    pivot_date = pp.get("pivot_date")
+    expires = None
+    if pp.get("confirmed") and pivot_date:
+        try:
+            d0 = _dt.strptime(str(pivot_date), "%Y-%m-%d").date()
+            m = d0.month + CATALYST_POLICY_TTL_MONTHS
+            y = d0.year + (m - 1) // 12
+            m = (m - 1) % 12 + 1
+            exp_d = d0.replace(year=y, month=m)
+            expires = exp_d.isoformat()
+            policy_pass = today <= exp_d
+        except Exception:
+            policy_pass = False
+
+    # --- 流动性路 ---
+    m1 = _series(sup.get("m1_yoy"), "value_pct")
+    sc = _series(sup.get("m1_m2_scissors"), "value_pct")
+    m1_turn = _rising(m1, CATALYST_K_LIQ)
+    spread_narrow = _rising(sc, CATALYST_K_LIQ)  # 负值变大=收窄
+    liquidity_pass = bool(m1_turn or spread_narrow)
+
+    # --- 盈利路 ---
+    cn_hist = (cn_macro_data or {}).get("history", {}) or {}
+    ppi = _series(cn_hist.get("ppi_yoy"), "value")
+    ppi_turn = _rising(ppi, CATALYST_K_ERN)
+    profit_turn = None  # 工业企业利润同比：东财可采，源未接入（下批）
+    earnings_pass = bool(profit_turn or ppi_turn)
+
+    score = int(policy_pass) + int(liquidity_pass) + int(earnings_pass)
+    return {
+        "asof": today.isoformat() if hasattr(today, "isoformat") else str(today),
+        "policy": {"pass": bool(policy_pass), "manual_pivot": bool(pp.get("confirmed")),
+                   "pivot_date": pivot_date, "expires": expires,
+                   "note": pp.get("note", "") if pp.get("confirmed") else "默认 false（保守）；落地工具才算、喊话不算"},
+        "liquidity": {"pass": liquidity_pass, "m1_turn": m1_turn, "spread_narrow": spread_narrow,
+                      "latest_m1_yoy": (m1[-1][1] if m1 else None)},
+        "earnings": {"pass": earnings_pass, "profit_turn": profit_turn, "ppi_turn": ppi_turn},
+        "catalyst_score": score,
+        "has_catalyst": bool(score >= CATALYST_M),
+        "params": {"k_liq": CATALYST_K_LIQ, "k_ern": CATALYST_K_ERN, "m": CATALYST_M,
+                   "policy_ttl_months": CATALYST_POLICY_TTL_MONTHS},
+    }
+
+
+def compute_r7_state(timing_history, trend_state, trend_df, catalyst_state, today=None):
+    """R7 冲突状态卡（v2 P1，2026-10-23 主人确认；裁决表证据=CIO 197 月回测+投分 4 案例）
+
+    状态识别：位置分位区（近365天窗口，与前端 R1 同口径含重建段）× 趋势（P1-6 四态）× 熊形态
+    （快熊=近3月跌幅≥15%；阴熊=连续≥3月负动量未达快熊）→ 信号优先级裁决。
+    冲突A（便宜+跌势）/冲突B（贵+涨势）自动点亮。催化剂耦合：仅极端区作定性开关
+    （有→反转候选目标 70%；无→仅反弹 ≤55% 需 trend 确认），普通区权重 0 仅展示。
+    """
+    from datetime import datetime as _dt, timedelta as _td
+    today = today or _dt.now().date()
+
+    # --- 位置分位（近 365 天窗口，含重建段，与 R1/R5 前端口径一致）---
+    position_pct = None
+    window_n = 0
+    hist = [r for r in (timing_history or []) if isinstance(r, dict) and isinstance(r.get("composite_score"), (int, float)) and r.get("date")]
+    if len(hist) >= 20:
+        last_d = _dt.strptime(str(hist[-1]["date"])[:10], "%Y-%m-%d").date()
+        cut = (last_d - _td(days=R7_PCT_WINDOW_DAYS)).isoformat()
+        window = [r for r in hist if str(r["date"])[:10] >= cut]
+        window_n = len(window)
+        if window_n >= 20:
+            cur = float(window[-1]["composite_score"])
+            position_pct = round(sum(1 for r in window if float(r["composite_score"]) < cur) / window_n * 100, 1)
+    if position_pct is None:
+        zone = "unknown"
+    elif position_pct < R7_EXTREME_PCT:
+        zone = "extreme"
+    elif position_pct < R7_NORMAL_HI_PCT:
+        zone = "normal"
+    elif position_pct < R7_EXPENSIVE_PCT:
+        zone = "high"
+    else:
+        zone = "extreme_rich"
+
+    # --- 趋势（P1-6 四态）---
+    trend = (trend_state or {}).get("trend", "unknown")
+    trend_negative = trend in ("weak_bear", "strong_bear")
+    trend_positive = trend in ("weak_bull", "strong_bull")
+
+    # --- 熊形态（与 P1-6 同源 sh000985 日K）---
+    bear_form = "none"
+    bear_detail = {"decline_3m_pct": None, "monthly_neg_streak": 0}
+    try:
+        if trend_df is not None and len(trend_df) > 64:
+            closes = trend_df["close"].astype(float).values
+            decline_3m = round((closes[-1] / closes[-64] - 1) * 100, 1)
+            bear_detail["decline_3m_pct"] = decline_3m
+            # 月负动量：按月聚合收盘，连续负月收益计数
+            mdf = (trend_df.assign(date=pd.to_datetime(trend_df["date"]))
+                   .set_index("date")["close"].astype(float).resample("ME").last().dropna())
+            streak = 0
+            for i in range(len(mdf) - 1, 0, -1):
+                if mdf.iloc[i] < mdf.iloc[i - 1]:
+                    streak += 1
+                else:
+                    break
+            bear_detail["monthly_neg_streak"] = streak
+            if decline_3m <= R7_FAST_BEAR_3M_PCT:
+                bear_form = "fast_bear"
+            elif streak >= R7_SLOW_BEAR_MIN_MONTHS:
+                bear_form = "slow_bear"
+    except Exception:
+        bear_form = "unknown"
+
+    # --- 冲突自动点亮 ---
+    conflict = None
+    if position_pct is not None:
+        if position_pct < R7_NORMAL_HI_PCT and trend_negative:
+            conflict = "A"   # 便宜+跌势（历史 25% 月份，位置派 vs 趋势派 8:7，必须分档）
+        elif position_pct >= R7_NORMAL_HI_PCT and trend_positive:
+            conflict = "B"   # 贵+涨势
+
+    # --- 裁决表（四行，证据见 v2 文档 §三 R7）---
+    if zone == "extreme" and bear_form == "fast_bear":
+        verdict, verdict_ref = "位置优先·左侧买", "2018Q4 +9.0%、2024/2 A* +20.2%"
+    elif zone == "extreme" and bear_form == "slow_bear":
+        verdict, verdict_ref = "只做反弹·止盈不加满", "2011-12 comp 2.6 仍再跌 -22.5%（CIO 回测反例）"
+    elif zone == "normal" and trend_negative:
+        verdict, verdict_ref = "趋势优先（价值陷阱）", "2021-22 趋势空仓避过 -41%"
+    else:
+        verdict, verdict_ref = "按既有框架（P1-7/P1-9 信号）", "非冲突分档区"
+
+    # --- 催化剂耦合（仅极端区定性开关）---
+    has_cat = bool((catalyst_state or {}).get("has_catalyst"))
+    if zone == "extreme":
+        coupling = {
+            "zone_active": True, "has_catalyst": has_cat,
+            "mode": ("reversal_candidate" if has_cat else "rebound_only"),
+            "cap_pct": (R7_REVERSAL_TARGET if has_cat else R7_REBOUND_ONLY_CAP),
+            "note": ("极端区+催化剂≥2路=反转候选：左侧买点，目标可看 A 区上限 70%，可突破常态锚定" if has_cat
+                     else "极端区+催化剂≤1路=仅反弹（2012 型）：交易性仓位 ≤55%，需 trend 确认方可延续，反弹高度有限"),
+        }
+    else:
+        coupling = {"zone_active": False, "has_catalyst": has_cat, "mode": "display_only",
+                    "cap_pct": None, "note": "普通区催化剂不参与裁决（权重 0 仅展示），防与 composite 加分双重计数"}
+
+    return {
+        "as_of": today.isoformat() if hasattr(today, "isoformat") else str(today),
+        "position_pct": position_pct, "position_zone": zone, "window_n": window_n,
+        "trend": trend, "trend_negative": trend_negative,
+        "bear_form": bear_form, "bear_detail": bear_detail,
+        "conflict": conflict,
+        "verdict": verdict, "verdict_ref": verdict_ref,
+        "catalyst_coupling": coupling,
+        "params": {"extreme_pct": R7_EXTREME_PCT, "normal_hi_pct": R7_NORMAL_HI_PCT,
+                   "fast_bear_3m_pct": R7_FAST_BEAR_3M_PCT, "slow_bear_min_months": R7_SLOW_BEAR_MIN_MONTHS,
+                   "rebound_cap": R7_REBOUND_ONLY_CAP, "reversal_target": R7_REVERSAL_TARGET,
+                   "window_days": R7_PCT_WINDOW_DAYS},
+        "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核",
+    }
 
 
 def compute_global_dominance(us_macro_data, cn_macro_data=None, fx_rates=None, cn_supplement=None, fx_sina=None, r7_has_catalyst=None, today=None):
@@ -3492,6 +3692,16 @@ class TimingScoreEngine:
         if target_equity is not None:
             logger.info(f"    🎯 P1-7 目标仓位: {target_equity}% (覆盖常规映射)")
 
+        # R7: 催化剂三路代理（提前计算：R7 状态机耦合 + F3④ 豁免输入共用本次新值，不读昨日文件）
+        manual_cfg = load_json("config_overrides.json") or {}
+        _cn_supplement = load_json("cn_macro_supplement.json")
+        _cn_macro_for_cat = load_json("cn_macro.json")
+        try:
+            catalyst_state = compute_catalyst_state(_cn_supplement, _cn_macro_for_cat, manual_cfg)
+        except Exception as e:
+            logger.warning(f"  ⚠ R7 催化剂计算失败（不阻断主流程）: {e}")
+            catalyst_state = None
+
         # ============================================================
         # P1-6: 价格趋势过滤 (2026-10-18)
         # ============================================================
@@ -3502,6 +3712,14 @@ class TimingScoreEngine:
         trend_state, trend_note = compute_trend_state(trend_df, prev_trend_state, today)
         if trend_note:
             logger.info(f"    📈 P1-6 趋势状态: {trend_state.get('trend')} — {trend_note}")
+
+        # R7: 冲突状态卡（位置分位区×趋势×熊形态→信号优先级；催化剂耦合极端区定性开关）
+        try:
+            r7_state = compute_r7_state(prev_history, trend_state, trend_df, catalyst_state)
+            logger.info(f"    ⚖️ R7: {r7_state.get('position_zone')}({r7_state.get('position_pct')}%) × {trend_state.get('trend')} × {r7_state.get('bear_form')} → {r7_state.get('verdict')}" + (f" [冲突{r7_state.get('conflict')}]" if r7_state.get('conflict') else ""))
+        except Exception as e:
+            logger.warning(f"  ⚠ R7 状态机失败（不阻断主流程）: {e}")
+            r7_state = None
 
         # ============================================================
         # P1-9: 预警中间态状态机 (2026-10-18)
@@ -3532,7 +3750,6 @@ class TimingScoreEngine:
         # 防止 A*+strong_bear 无条件赋值 55% 击穿 Fed cap 32%/25%）
         fed_watch_data = load_json("fed_watch.json") or {}
         us_macro_data = load_json("us_macro.json") or {}
-        manual_cfg = load_json("config_overrides.json") or {}
         fed_state, fed_cap = apply_fed_layer(fed_watch_data, us_macro_data, prev_fed_state, manual_cfg)
 
         # F3①-3: USDCNY 年贬 + 外储（合入 us_macro history；不立即落盘，由主流程 ssot 统一写）
@@ -3553,17 +3770,15 @@ class TimingScoreEngine:
         except Exception as e:
             logger.warning(f"  ⚠ F3① USDCNY/外储合流失败（不阻断主流程）: {e}")
 
-        # F3④: 全球主导权仲裁（三阈值≥2 → 仓位否决 B1+豁免，松子实现）
+        # F3④: 全球主导权仲裁（三阈值≥2 → 仓位否决 B1+豁免，松子实现；catalyst 已在趋势段前算好）
         try:
-            _prev_ts_for_dom = load_json("timing_scores.json") or {}
-            _r7_cat = (_prev_ts_for_dom.get("catalyst_state") or {}).get("has_catalyst") if isinstance(_prev_ts_for_dom, dict) else None
             dominance_state = compute_global_dominance(
                 us_macro_data,
-                cn_macro_data=load_json("cn_macro.json"),
+                cn_macro_data=_cn_macro_for_cat,
                 fx_rates=load_json("fx_rates_em.json"),
-                cn_supplement=load_json("cn_macro_supplement.json"),
+                cn_supplement=_cn_supplement,
                 fx_sina=load_json("fx_rates_sina.json"),
-                r7_has_catalyst=_r7_cat)
+                r7_has_catalyst=(catalyst_state or {}).get("has_catalyst"))
         except Exception as e:
             logger.warning(f"  ⚠ F3④ 主导权仲裁失败（不阻断主流程）: {e}")
             dominance_state = None
@@ -3676,7 +3891,9 @@ class TimingScoreEngine:
             "p1_9_state": warning_state,
             "p1_6_state": trend_state,
             "p1_8_state": fed_state,
-            "global_dominance": dominance_state
+            "global_dominance": dominance_state,
+            "catalyst_state": catalyst_state,
+            "r7_state": r7_state
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")
