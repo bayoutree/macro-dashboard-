@@ -652,7 +652,7 @@ def p213_update(history, fetch_index_fn=None, log_name="signal_log.json"):
 
 # P1-8: 美联储双层（投资分析 2026-10-18 裁决终版）
 # 数据源：collect_fedwatch.py（cme-fedwatch 包，每日结算后取数一次）→ data/fed_watch.json
-P18_HIKE_PROB_THRESHOLD = 0.60   # 预期层：未来2次会议累计加息概率阈值（1-(1-p1)(1-p2)，独立性假设偏保守）
+P18_HIKE_PROB_THRESHOLD = 0.85   # 预期层概率单路阈值 [F3③ A1 主人裁决 2026-10-23]：累计加息概率>85%=市场定价近乎确定，独立触发（AND 时代 0.60 辅助水位废止）
 P18_YIELD_10Y_THRESHOLD = 5.2    # 预期层：10Y 美债收益率阈值 %
 P18_EXPECT_CAP = 32              # 预期层仓位上限 %（25-32 区间取上沿，禁加成长股：创业板+科创50）
 P18_EVENT_SOFT_CAP = 32          # 事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）
@@ -660,6 +660,85 @@ P18_EVENT_HARD_CAP = 25          # 事件层人工轨：会后人工确认 hawki
 P18_MANUAL_CONFIRM_LIMIT_DAYS = 2  # 人工轨 2 个交易日时限，超时维持软事件层 32%（防人工位空转）
 P18_COOLDOWN_DAYS = 180          # Fed_D* 冷却：层解除后 180 天内不重复触发
 P18_STALE_DAYS = 4               # fed_watch.json 超过 N 天未更新视为 stale → 继承前日状态
+
+# F3①: 加息周期检测（投资分析 2026-10-23 裁决）
+# hiking_cycle：fed_funds 当前值 > 3个月前 + 12.5bp（0.125%）
+F3_HIKING_CYCLE_WINDOW_MONTHS = 3   # 对比窗口
+F3_HIKING_CYCLE_THRESHOLD_BP = 10.0 # 加息阈值（基点）——[松子 F3 联调] 月均口径容差：单次25bp加息的月均仅+12bp半步，12.5 会漏检（9/16 实例 3.63→3.75），10 吸收半步且高于平台期噪声(±3bp)
+# FOMC 双保险：会议已过 + CME 加息概率 > 90% → 自动置位
+F3_FOMC_AUTO_THRESHOLD = 0.90       # hike_prob > 90%
+# USDCNY 年贬幅度
+F3_USDCNY_ANNUAL_WINDOW_DAYS = 250  # ≈ 1 年交易日
+
+# F3④: 全球主导权仲裁三阈值（2026-10-23 主人裁决 B1+豁免）
+# ≥2 满足 = 全球流动性压倒国内面 → 仓位上限 25% + 冻结全部加仓触发器；
+# 豁免 = R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结），全程注记可观测
+F3_DOM_HIKE_SLOPE_BP_YR = 300.0    # a. 加息斜率年化阈值（bp）
+F3_DOM_QT_3M_PCT = -0.5            # a. QT：fed_balance 近3月降幅 %
+F3_DOM_USDCNY_DEPREC_PCT = 4.5     # b. USDCNY 年贬阈值 %（文档 4-5% 取中值，主人认可）
+F3_DOM_FX_RESERVE_DECLINE_M = 3    # b. 外储连降月数
+F3_CNH_CNY_STREAK_BP = 40          # b. CNH-CNY 价差连判阈值 bp（=0.4%≈300pips，投资分析参数 2026-10-23）
+F3_CNH_CNY_STREAK_DAYS = 5         # b. 连判交易日数
+F3_CNH_CNY_SINGLE_BP = 70          # b. 单日触发阈值 bp（=0.7%≈500pips）
+F3_DOM_CREDIT_GAP_PP = 2.0         # c. M2-社融存量同比裂口（pp）
+F3_DOM_VETO_CAP = 25               # 否决仓位上限 %
+
+def compute_f3_usdcny_and_fx(us_macro_data):
+    """F3①-3: USDCNY 年贬幅度 + 外储月度（入 us_macro history）
+
+    - usdcny_annual_depreciation_pct: 现价/250日前收盘 − 1（×100），正=贬值
+    - fx_reserves_billion_usd: 国家外汇储备（亿美元），月度，源 akshare macro_china_fx_gold
+    返回 dict，由 update_data 主流程 merge 进 us_macro.json 的 history。
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    out = {}
+
+    # --- USDCNY 年贬幅度 ---
+    uc = ((us_macro_data or {}).get("history", {}) or {}).get("usdcny", []) or []
+    if len(uc) >= F3_USDCNY_ANNUAL_WINDOW_DAYS:
+        try:
+            latest = float(uc[-1]["value"])
+            year_ago = float(uc[-F3_USDCNY_ANNUAL_WINDOW_DAYS]["value"])
+            dep_pct = (latest - year_ago) / year_ago * 100.0
+            out["usdcny_annual_depreciation"] = {
+                "date": uc[-1]["date"],
+                "value": round(dep_pct, 4),
+                "unit": "%",
+                "note": f"现价{latest:.4f}/250日前{year_ago:.4f}，正=人民币贬值"
+            }
+            logger.info(f"  ✓ F3① USDCNY 年贬: {dep_pct:.2f}% (1yr {year_ago:.4f}→{latest:.4f})")
+        except Exception as e:
+            logger.warning(f"  ⚠ F3① USDCNY 年贬计算失败: {e}")
+    else:
+        logger.warning(f"  ⚠ F3① USDCNY 历史不足 {F3_USDCNY_ANNUAL_WINDOW_DAYS} 条（{len(uc)}），跳过")
+
+    # --- 外储月度（akshare macro_china_fx_gold）---
+    try:
+        import akshare as ak
+        df = safe_ak_call(ak.macro_china_fx_gold)
+        if df is not None and not df.empty:
+            last_row = df.iloc[-1]
+            m_date = str(last_row.get("月份", ""))
+            # 解析 "2026年09月份" → "2026-09"
+            m_match = re.search(r"(\d{4})年(\d{1,2})月", m_date)
+            if m_match:
+                iso_date = f"{m_match.group(1)}-{int(m_match.group(2)):02d}"
+                reserves_val = float(last_row.get("国家外汇储备-数值", 0))
+                out["fx_reserves"] = {
+                    "date": iso_date,
+                    "value": round(reserves_val, 2),
+                    "unit": "亿美元",
+                    "source": "akshare macro_china_fx_gold（央行口径）"
+                }
+                logger.info(f"  ✓ F3① 外储: {reserves_val:.2f}亿美元 ({iso_date})")
+        else:
+            logger.warning("  ⚠ F3① 外储：akshare macro_china_fx_gold 返回空")
+    except Exception as e:
+        logger.warning(f"  ⚠ F3① 外储采集失败: {e}")
+
+    return out
+
 
 # P1-6: 价格趋势过滤（投资分析终版规格 2026-10-18）
 # 标的：中证全指（万得全 A 免费替代，覆盖全部 A 股；腾讯源，CI 已验证可用）
@@ -922,6 +1001,196 @@ def apply_warning_state(composite_score, composite_history, prev_warning_state, 
     return warning_state, target_equity, note
 
 
+def compute_global_dominance(us_macro_data, cn_macro_data=None, fx_rates=None, cn_supplement=None, fx_sina=None, r7_has_catalyst=None, today=None):
+    """F3④ 全球主导权仲裁（2026-10-23 主人裁决 B1+豁免，松子实现）
+
+    三阈值（满足 ≥2 → veto=True）：
+      a. 加息斜率：fed_funds 近3月变化×4 年化 > 300bp；或 QT：fed_balance 近3月降幅 > 0.5%
+      b. 汇率阀门：USDCNY 年贬 > 4.5% 且（外储3月连降 或 CNH-CNY价差超阈）——北向代理已废弃（无数据源）
+      c. 信用形态：M2 同比近2月上行 且 M2-社融存量同比裂口 > 2pp（宽货币紧信用空转）
+    豁免：R7 has_catalyst=true → 保留 A 段左侧布局（其余加仓仍冻结），注记可观测。
+    数据缺失腿按"未知"处理（不计满足），b 腿三元态照常输出供前端展示。
+    """
+    from datetime import datetime as _dt, timedelta as _td
+    today = today or _dt.now().date()
+    us_hist = (us_macro_data or {}).get("history", {}) or {}
+
+    def _us_series(name):
+        rows = []
+        for r in (us_hist.get(name) or []):
+            try:
+                rows.append((str(r.get("date")), float(r.get("value"))))
+            except (TypeError, ValueError, AttributeError):
+                continue
+        return rows
+
+    # ---------- a. 加息斜率 / QT ----------
+    a_met = False
+    a_detail = []
+    slope_bp = None
+    ff = _us_series("fed_funds")
+    if len(ff) >= 4:
+        slope_bp = round((ff[-1][1] - ff[-4][1]) * 100 * 4, 1)  # 月频3月差×4年化，%→bp
+        if slope_bp > F3_DOM_HIKE_SLOPE_BP_YR:
+            a_met = True
+        a_detail.append(f"加息斜率年化 {slope_bp:.0f}bp（阈值 300bp）")
+    else:
+        a_detail.append("fed_funds 历史不足 4 个月")
+    qt_pct = None
+    fb = _us_series("fed_balance")
+    if len(fb) >= 2:
+        try:
+            end_d, end_v = fb[-1]
+            cutoff = (_dt.strptime(end_d, "%Y-%m-%d") - _td(days=90)).strftime("%Y-%m-%d")
+            base = max((x for x in fb if x[0] <= cutoff), key=lambda x: x[0], default=None)
+            if base:
+                qt_pct = round((end_v - base[1]) / base[1] * 100, 3)
+                if qt_pct < F3_DOM_QT_3M_PCT:
+                    a_met = True
+                a_detail.append(f"fed_balance 近3月 {qt_pct:+.2f}%（QT 阈值 {F3_DOM_QT_3M_PCT}%）")
+        except Exception:
+            a_detail.append("fed_balance 日期解析失败")
+    else:
+        a_detail.append("fed_balance 历史不足")
+
+    # ---------- b. 汇率阀门（三元态：开/关/采集中） ----------
+    def _fx_val(row):
+        if isinstance(row, dict):
+            for k in ("close", "value", "price"):
+                if row.get(k) is not None:
+                    return float(row[k])
+        elif isinstance(row, (list, tuple)) and len(row) >= 2:
+            return float(row[1])
+        return None
+
+    deprec_pct = None
+    fx_rates = fx_rates or {}
+    # 数据源优先级：①us_macro.history.usdcny（既有 SSOT，250 条日频）②fx_rates_em.json（Codex 采集，待网络环境）
+    uc = _us_series("usdcny")
+    uc_src = "us_macro.history.usdcny"
+    if len(uc) < F3_USDCNY_ANNUAL_WINDOW_DAYS:
+        uc = [ (str(r.get("date")), _fx_val(r)) for r in (fx_rates.get("usdcny_daily") or []) ]
+        uc = [x for x in uc if x[1] is not None]
+        uc_src = "fx_rates_em.usdcny_daily"
+    if len(uc) >= F3_USDCNY_ANNUAL_WINDOW_DAYS:
+        try:
+            now_v, yr_v = uc[-1][1], uc[-F3_USDCNY_ANNUAL_WINDOW_DAYS][1]
+            if now_v and yr_v:
+                deprec_pct = round((now_v - yr_v) / yr_v * 100, 3)
+        except Exception:
+            deprec_pct = None
+    # CNH-CNY 价差判定（投资分析参数 2026-10-23 CIO 转达，验收按此桩测）：
+    # (USDCNH−USDCNY)/USDCNY > 0.4%(40bp) 连续 5 交易日，或单日 > 0.7%(70bp) → 触发
+    # 源① fx_rates_sina.json daily 自积累（cny_mid/cnh_mid/spread_bp）②fx_rates_em 双腿按日期对齐（备）
+    spread_rows = []
+    for r in ((fx_sina or {}).get("daily") or []):
+        try:
+            spread_rows.append((str(r.get("date")), float(r.get("spread_bp"))))
+        except (TypeError, ValueError, AttributeError):
+            continue
+    if not spread_rows:
+        _cny = {}
+        for x in (fx_rates.get("usdcny_daily") or []):
+            try: _cny[str(x.get("date"))] = _fx_val(x)
+            except Exception: pass
+        _cnh = {}
+        for x in (fx_rates.get("usdcnh_daily") or []):
+            try: _cnh[str(x.get("date"))] = _fx_val(x)
+            except Exception: pass
+        for d in sorted(set(_cny) & set(_cnh)):
+            if _cny[d] and _cnh[d]:
+                spread_rows.append((d, (_cnh[d] - _cny[d]) / _cny[d] * 10000))
+    spread_latest_bp = None
+    spread_triggered = None      # None=无数据
+    spread_detail = "CNH-CNY 无数据源"
+    if spread_rows:
+        spread_latest_bp = round(spread_rows[-1][1], 1)
+        single_hit = spread_rows[-1][1] > F3_CNH_CNY_SINGLE_BP
+        streak_hit = None
+        if len(spread_rows) >= F3_CNH_CNY_STREAK_DAYS:
+            streak_hit = all(v > F3_CNH_CNY_STREAK_BP for _, v in spread_rows[-F3_CNH_CNY_STREAK_DAYS:])
+        spread_triggered = bool(single_hit or streak_hit)
+        spread_detail = (f"最新价差 {spread_latest_bp:+.0f}bp（阈值：单日>{F3_CNH_CNY_SINGLE_BP}bp 或 连续{F3_CNH_CNY_STREAK_DAYS}日>{F3_CNH_CNY_STREAK_BP}bp）；"
+                         f"序列 {len(spread_rows)} 日" + ("（连判已可判）" if streak_hit is not None else "（不足5日，连判暂不可判）"))
+    spread_met = spread_triggered
+    reserve_decline = None
+    fr = ((cn_supplement or {}).get("fx_reserves")) or []
+    if len(fr) >= F3_DOM_FX_RESERVE_DECLINE_M + 1:
+        try:
+            vals = [float(x.get("value_billion_usd")) for x in fr[-(F3_DOM_FX_RESERVE_DECLINE_M + 1):]]
+            reserve_decline = all(vals[i + 1] < vals[i] for i in range(len(vals) - 1))
+        except (TypeError, ValueError):
+            reserve_decline = None
+    if deprec_pct is not None:
+        b_met = bool(deprec_pct > F3_DOM_USDCNY_DEPREC_PCT and (reserve_decline or spread_met))
+        b_status = "ok"
+    else:
+        b_met = False
+        b_status = "pending_data"  # USDCNY 采集缺位（东财需网络环境，Codex 修复中）→ 未知，不计满足
+
+    # ---------- c. 信用形态（宽货币紧信用空转） ----------
+    cn_hist = (cn_macro_data or {}).get("history", {}) or {}
+
+    def _cn_series(name):
+        rows = []
+        for r in (cn_hist.get(name) or []):
+            try:
+                rows.append((str(r.get("date")), float(r.get("value"))))
+            except (TypeError, ValueError, AttributeError):
+                continue
+        return rows
+
+    m2 = _cn_series("m2_yoy")
+    sf = _cn_series("social_financing_stock")
+    m2_up = None
+    if len(m2) >= 3:
+        m2_up = bool(m2[-1][1] > m2[-3][1])
+    gap_pp = None
+    if m2 and len(sf) >= 13:
+        if abs(sf[-1][1]) < 50:  # 已是同比口径
+            sf_yoy = sf[-1][1]
+        else:                    # 存量水平 → 12 个月前同比
+            sf_yoy = (sf[-1][1] / sf[-13][1] - 1) * 100 if sf[-13][1] else None
+        if sf_yoy is not None:
+            gap_pp = round(m2[-1][1] - sf_yoy, 2)
+    c_met = bool(m2_up and gap_pp is not None and gap_pp > F3_DOM_CREDIT_GAP_PP)
+
+    satisfied_n = int(bool(a_met)) + int(bool(b_met)) + int(bool(c_met))
+    veto = satisfied_n >= 2
+    exemption_active = bool(veto and r7_has_catalyst)
+    valve_open = (None if b_status == "pending_data" else bool(deprec_pct > F3_DOM_USDCNY_DEPREC_PCT and (reserve_decline or spread_met)))
+
+    return {
+        "as_of": today.isoformat() if hasattr(today, "isoformat") else str(today),
+        "thresholds": {
+            "a_hike_slope_or_qt": {
+                "met": bool(a_met), "slope_bp_annualized": slope_bp, "qt_3m_pct": qt_pct,
+                "detail": "；".join(a_detail),
+            },
+            "b_fx_valve": {
+                "met": bool(b_met), "data_status": b_status, "valve_open": valve_open,
+                "usdcny_annual_deprec_pct": deprec_pct, "threshold_deprec_pct": F3_DOM_USDCNY_DEPREC_PCT,
+                "usdcny_source": (uc_src if deprec_pct is not None else None),
+                "fx_reserve_3m_decline": reserve_decline,
+                "cnh_cny_spread_latest_bp": spread_latest_bp, "cnh_cny_spread_triggered": spread_triggered,
+                "cnh_cny_params": {"streak_bp": F3_CNH_CNY_STREAK_BP, "streak_days": F3_CNH_CNY_STREAK_DAYS, "single_bp": F3_CNH_CNY_SINGLE_BP},
+                "cnh_cny_detail": spread_detail,
+                "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；北向代理已废弃（无数据源）",
+            },
+            "c_credit_form": {
+                "met": bool(c_met), "m2_yoy_2m_up": m2_up, "m2_sf_gap_pp": gap_pp,
+                "threshold_gap_pp": F3_DOM_CREDIT_GAP_PP,
+            },
+        },
+        "satisfied_n": satisfied_n,
+        "veto": bool(veto),
+        "veto_cap": (F3_DOM_VETO_CAP if veto else None),
+        "r7_has_catalyst": r7_has_catalyst,
+        "exemption_active": exemption_active,
+        "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。",
+    }
+
+
 def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None):
     """[P1-8 美联储双层 2026-10-18 投资分析裁决终版]
 
@@ -967,7 +1236,9 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
         "triggers": [], "as_of": str(today),
         "cooldown_until": cd_until,
         "growth_ban": [], "note": "",
-        "source": "cme-fedwatch + FRED DGS10（每日结算后取数一次）",
+        "source": "cme-fedwatch + FRED DGS10 + us_macro fed_funds（F3①加息周期检测）",
+        "hiking_cycle": False,
+        "fomc_auto": False,
     }
     if not fw_ok:
         # 继承前日（降级链），显式标注
@@ -999,15 +1270,61 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
             high_60 = y10_now >= max(vals[-60:])
 
     triggers = []
-    # ---- 事件层自动轨：目标区间上移检测 ----
+    # ---- F3①-1: hiking_cycle 加息周期检测 ----
+    hiking_cycle = False
+    hiking_cycle_detail = ""
+    ff_hist = ((us_macro or {}).get("history", {}) or {}).get("fed_funds", []) or []
+    if len(ff_hist) >= F3_HIKING_CYCLE_WINDOW_MONTHS + 1:
+        try:
+            ff_now = float(ff_hist[-1]["value"])
+            ff_3m_ago = float(ff_hist[-(F3_HIKING_CYCLE_WINDOW_MONTHS + 1)]["value"])
+            if ff_now > ff_3m_ago + F3_HIKING_CYCLE_THRESHOLD_BP / 100.0:
+                hiking_cycle = True
+                hiking_cycle_detail = (
+                    f"fed_funds {ff_now:.2f}% > 3月前 {ff_3m_ago:.2f}% + "
+                    f"{F3_HIKING_CYCLE_THRESHOLD_BP}bp（加息周期确认）"
+                )
+        except Exception:
+            pass
+
+    # ---- F3①-2: FOMC 双保险（会议已过 + CME 概率>90%）----
+    fomc_auto = False
+    fomc_auto_detail = ""
+    meetings = (fed_watch or {}).get("meetings", []) or []
+    for m in meetings:
+        try:
+            m_date = m.get("date", "")
+            m_hike = m.get("hike_prob")
+            if m_date and m_hike is not None and float(m_hike) >= F3_FOMC_AUTO_THRESHOLD:
+                if str(m_date) <= str(today):
+                    fomc_auto = True
+                    fomc_auto_detail = f"FOMC {m_date} 已过 + hike_prob={float(m_hike)*100:.0f}%≥90%（双保险置位）"
+                    break
+        except Exception:
+            pass
+
+    # ---- 事件层自动轨：目标区间上移 OR hiking_cycle OR FOMC 双保险 ----
     event_auto = False
     if len(tr) == 2 and len(tr_prev) == 2:
         try:
             event_auto = (float(tr[0]) > float(tr_prev[0]) or float(tr[1]) > float(tr_prev[1]))
         except Exception:
             event_auto = False
+    # F3①: 三源合并（区间上移 | hiking_cycle | FOMC双保险）
+    event_auto = event_auto or hiking_cycle or fomc_auto
     if event_auto:
-        triggers.append("目标区间上移")
+        _ev_reasons = []
+        if len(tr) == 2 and len(tr_prev) == 2:
+            try:
+                if float(tr[0]) > float(tr_prev[0]) or float(tr[1]) > float(tr_prev[1]):
+                    _ev_reasons.append("目标区间上移")
+            except Exception:
+                pass
+        if hiking_cycle:
+            _ev_reasons.append(hiking_cycle_detail)
+        if fomc_auto:
+            _ev_reasons.append(fomc_auto_detail)
+        triggers.append(" | ".join(_ev_reasons) if _ev_reasons else "事件层触发")
 
     # ---- 事件层人工轨：hawkish 确认（2 交易日时限）----
     hw = (manual_cfg or {}).get("fed_hawkish", {}) or {}
@@ -1025,20 +1342,25 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
         except Exception:
             pass
 
-    # ---- 预期层判定 ----
+    # ---- 预期层判定 [F3③ A1 主人裁决 2026-10-23：任一触发] ----
+    # 概率单路：cum>85%（9/16 漏检根因=AND 被 10Y 差 8bp 挡住；A1 下会前即预警）
+    # 利率路径：10Y>5.2% 且趋势确认（保留趋势过滤防平台期毛刺，5.2% 不动）
     expect_hit = False
-    if cum is not None and y10_now is not None:
-        if cum > P18_HIKE_PROB_THRESHOLD and y10_now > P18_YIELD_10Y_THRESHOLD and (ma20_up or high_60):
-            expect_hit = True
-            triggers.append(
-                f"累计加息概率{cum*100:.0f}%>60% + 10Y {y10_now:.2f}%>5.2% + "
-                + ("20MA上行" if ma20_up else "60日新高"))
+    if cum is not None and cum > P18_HIKE_PROB_THRESHOLD:
+        expect_hit = True
+        triggers.append(f"累计加息概率{cum*100:.0f}%>85%（概率单路·A1）")
+    if (not expect_hit) and y10_now is not None and y10_now > P18_YIELD_10Y_THRESHOLD and (ma20_up or high_60):
+        expect_hit = True
+        triggers.append(
+            f"10Y {y10_now:.2f}%>5.2% + " + ("20MA上行" if ma20_up else "60日新高") + "（利率路径·A1）")
 
     # ---- 层裁决（事件层优先于预期层；冷却期不重复进入）----
     st = dict(base_state)
     st["cumulative_hike_prob"] = cum
     st["yield_10y"] = y10_now
     st["triggers"] = triggers
+    st["hiking_cycle"] = hiking_cycle
+    st["fomc_auto"] = fomc_auto
 
     if manual_hard:
         st["layer"], st["cap"] = "event_hard", P18_EVENT_HARD_CAP
@@ -2968,7 +3290,9 @@ class TimingScoreEngine:
         sf_score = liq.get("social_financing_trend", {}).get("score", 50)
         reduce_triggers.append({"condition": "社融增速进一步下行", "met": sf_score > 65})
 
-        reduce_triggers.append({"condition": "美联储重启加息", "met": False})
+        # F3①-4: 美联储重启加息 — 跟随 hiking_cycle 状态（非硬编码）
+        _fed_st = self._fed_state_for_triggers if hasattr(self, '_fed_state_for_triggers') else {}
+        reduce_triggers.append({"condition": "美联储重启加息", "met": bool(_fed_st.get("hiking_cycle", False))})
 
         # 估值触发
         div_str = eb.get("dividend_bond_spread_hs300", {}).get("value", "0%")
@@ -2989,6 +3313,17 @@ class TimingScoreEngine:
         else:
             assert not (_fg_add and _fg_add[0]["met"]) and not (_fg_red and _fg_red[0]["met"]), \
                 f"P0-1 断言失败: 恐贪={fg_val} 落在 20~80 区间但恐贪触发被置 true"
+
+        # F3④ B1: 全球主导权否决 → 冻结全部加仓触发器（豁免：R7 催化剂确认保留 A 段左侧布局）
+        _dom = getattr(self, '_dominance_for_triggers', None)
+        if _dom and _dom.get("veto"):
+            if _dom.get("exemption_active"):
+                add_triggers.append({"condition": "F3④ 全球主导权否决中·R7 催化剂豁免生效：保留 A 段左侧布局（其余加仓信号维持冻结判定）", "met": True, "f3_exemption": True})
+            else:
+                for _t in add_triggers:
+                    _t["met"] = False
+                    _t["frozen_by_f3_dominance"] = True
+                add_triggers.append({"condition": "F3④ 全球主导权否决：全部加仓信号冻结（三阈值满足≥2）", "met": True, "f3_veto": True})
 
         return {"add_position": add_triggers, "reduce_position": reduce_triggers}
 
@@ -3200,6 +3535,39 @@ class TimingScoreEngine:
         manual_cfg = load_json("config_overrides.json") or {}
         fed_state, fed_cap = apply_fed_layer(fed_watch_data, us_macro_data, prev_fed_state, manual_cfg)
 
+        # F3①-3: USDCNY 年贬 + 外储（合入 us_macro history；不立即落盘，由主流程 ssot 统一写）
+        try:
+            f3_fx = compute_f3_usdcny_and_fx(us_macro_data)
+            if f3_fx:
+                us_macro_history = (us_macro_data.get("history") or {})
+                for k, v in f3_fx.items():
+                    if v and isinstance(v, dict) and "date" in v:
+                        lst = us_macro_history.setdefault(k, [])
+                        # 同日期去重
+                        lst = [x for x in lst if x.get("date") != v["date"]]
+                        lst.append({kk: vv[0] if isinstance(vv, tuple) else vv for kk, vv in v.items()})
+                        lst.sort(key=lambda x: x.get("date", ""))
+                        us_macro_history[k] = lst
+                us_macro_data["history"] = us_macro_history
+                logger.info(f"  ✓ F3① USDCNY/外储 合入 us_macro history: {list(f3_fx.keys())}")
+        except Exception as e:
+            logger.warning(f"  ⚠ F3① USDCNY/外储合流失败（不阻断主流程）: {e}")
+
+        # F3④: 全球主导权仲裁（三阈值≥2 → 仓位否决 B1+豁免，松子实现）
+        try:
+            _prev_ts_for_dom = load_json("timing_scores.json") or {}
+            _r7_cat = (_prev_ts_for_dom.get("catalyst_state") or {}).get("has_catalyst") if isinstance(_prev_ts_for_dom, dict) else None
+            dominance_state = compute_global_dominance(
+                us_macro_data,
+                cn_macro_data=load_json("cn_macro.json"),
+                fx_rates=load_json("fx_rates_em.json"),
+                cn_supplement=load_json("cn_macro_supplement.json"),
+                fx_sina=load_json("fx_rates_sina.json"),
+                r7_has_catalyst=_r7_cat)
+        except Exception as e:
+            logger.warning(f"  ⚠ F3④ 主导权仲裁失败（不阻断主流程）: {e}")
+            dominance_state = None
+
         # P1-6: A* 与趋势联动（D* 方向不 veto——卖侧无条件优先）
         if anchor_state.get("current") == "A_star" and target_equity is not None:
             _trend = trend_state.get("trend")
@@ -3217,6 +3585,13 @@ class TimingScoreEngine:
             if target_equity is None or fed_cap < target_equity:
                 target_equity = fed_cap
                 logger.info(f"    🎯 P1-8 Fed 仓位上限生效: {fed_cap}%")
+
+        # F3④ 否决取小（B1）：与 Fed cap 同位取最小，任何情况不可被击穿
+        if dominance_state and dominance_state.get("veto"):
+            _vcap = dominance_state.get("veto_cap", F3_DOM_VETO_CAP)
+            if target_equity is None or _vcap < target_equity:
+                target_equity = _vcap
+            logger.info(f"    🌐 F3④ 全球主导权否决: 仓位上限 {_vcap}%（{dominance_state.get('satisfied_n')}/3 阈值满足）")
 
 
         # 风格轮动 (从上期数据继承) — v4.1: 提前计算以供 generate_position_advice 使用
@@ -3246,6 +3621,10 @@ class TimingScoreEngine:
 
         # 生成信号和建议
         signals = self.generate_signals(dimensions)
+        # F3①-4: 传递 fed_state 到 generate_triggers（供"美联储重启加息"判定）
+        self._fed_state_for_triggers = fed_state
+        # F3④: 传递主导权状态（供加仓触发器冻结判定）
+        self._dominance_for_triggers = dominance_state
         triggers = self.generate_triggers(dimensions)
         position_advice, market_status = self.generate_position_advice(composite_score, dimensions)
 
@@ -3296,7 +3675,8 @@ class TimingScoreEngine:
             },
             "p1_9_state": warning_state,
             "p1_6_state": trend_state,
-            "p1_8_state": fed_state
+            "p1_8_state": fed_state,
+            "global_dominance": dominance_state
         }
 
         logger.info(f"\n  📊 综合得分: {composite_score}")

@@ -303,6 +303,10 @@ body::before {
 .liquidity-overlay .liq-arrow.up { color: var(--green); }
 .liquidity-overlay .liq-arrow.down { color: var(--red); }
 .liquidity-overlay .liq-arrow.flat { color: var(--text-muted); }
+.liquidity-overlay .liq-value.valve-open { color: var(--red); font-weight: 700; }
+.liquidity-overlay .liq-value.valve-closed { color: var(--green); }
+.liquidity-overlay .liq-value.valve-pending { color: var(--text-muted); }
+.liquidity-overlay .dom-veto-item .liq-label { color: var(--red); font-weight: 700; }
 .liquidity-env {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600;
@@ -694,6 +698,7 @@ body::before {
           <div class="liq-item"><span class="liq-label">中国10Y</span><span class="liq-value">1.70%</span></div>
           <div class="liq-item"><span class="liq-label">利差</span><span class="liq-value">0.60%</span><span class="liq-arrow up">↑</span></div>
           <div class="liq-item"><span class="liq-label">美10Y</span><span class="liq-value">2.30%</span></div>
+          <div class="liq-item" id="fx-valve-item" title="F3④ 汇率阀门：USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差超阈）"><span class="liq-label">汇率阀门</span><span class="liq-value" id="fx-valve-value">--</span></div>
           <div class="liquidity-env neutral">流动性: 中性</div>
           <button class="expand-btn" onclick="toggleLiquidityDetail()">展开详情 ▾</button>
         </div>
@@ -1972,6 +1977,44 @@ function renderBucketDist() {
 // [R4 2026-10-23 v2呈现层升级] 斜率时间预告
 // 口径: 仅用真实日志点(剔除 reconstructed 重建段[CIO:后视分位禁入信号] + backfilled.quality==inherited_snapshot 继承快照[CIO F1 验收建议]);
 // 4周平滑=最近20个真实点 OLS 斜率; 样本<15 显形"积累中"; "按当前斜率"限定+拐点失效免责
+// [F3④ 2026-10-23] 汇率阀门三元态（进流动性维度 ERP 卡）+ 全球主导权否决徽标
+// 数据源：timing_scores.global_dominance（update_data.py compute_global_dominance）
+// 三元态：开启⚠(红) / 关闭(绿) / 采集中(灰)；veto 时额外显形否决徽标（可观测性=主人裁决硬性要求）
+function renderFxValve() {
+  const el = document.getElementById('fx-valve-value');
+  if (!el) return;
+  const item = document.getElementById('fx-valve-item');
+  const dom = (StageEngine._timingData && StageEngine._timingData.global_dominance) || null;
+  const b = dom && dom.thresholds && dom.thresholds.b_fx_valve;
+  if (!b) {
+    el.textContent = '--'; el.className = 'liq-value valve-pending';
+    if (item) item.title = 'F3④ 汇率阀门：仲裁数据未接入（今晚 CI 全链重算后上线）';
+  } else if (b.data_status === 'pending_data') {
+    el.textContent = '采集中'; el.className = 'liq-value valve-pending';
+    if (item) item.title = 'F3④ 汇率阀门：USDCNY 数据采集中，该腿按未知处理不计入仲裁';
+  } else if (b.valve_open) {
+    el.textContent = '开启⚠'; el.className = 'liq-value valve-open';
+    if (item) item.title = '汇率阀门开启：USDCNY 年贬 ' + b.usdcny_annual_deprec_pct + '%>4.5% 且资金外流证据成立（外储3月连降=' + b.fx_reserve_3m_decline + '，CNH-CNY=' + (b.cnh_cny_spread_latest_bp === null || b.cnh_cny_spread_latest_bp === undefined ? '--' : b.cnh_cny_spread_latest_bp + 'bp') + '）';
+  } else {
+    el.textContent = '关闭'; el.className = 'liq-value valve-closed';
+    if (item) item.title = '汇率阀门关闭：USDCNY 年贬 ' + b.usdcny_annual_deprec_pct + '%（阈值 4.5%，负值=人民币升值）·外储3月连降=' + (b.fx_reserve_3m_decline === null ? '--' : b.fx_reserve_3m_decline) + '·' + (b.cnh_cny_detail || 'CNH-CNY 采集中') + '·数据源 ' + (b.usdcny_source || '--');
+  }
+  // 否决徽标：veto=true 时显形（三元态之外的独立状态，不与阀门开闭混淆）
+  let badge = document.getElementById('dom-veto-item');
+  if (dom && dom.veto) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'dom-veto-item';
+      badge.className = 'liq-item dom-veto-item';
+      const overlay = document.querySelector('.liquidity-overlay');
+      const expandBtn = overlay && overlay.querySelector('.expand-btn');
+      if (overlay) overlay.insertBefore(badge, expandBtn || null);
+    }
+    badge.innerHTML = '<span class="liq-label">🌐 主导权否决</span><span class="liq-value valve-open">上限' + dom.veto_cap + '%·加仓冻结(' + dom.satisfied_n + '/3)</span>';
+    badge.title = dom.exemption_active ? 'F3④ B1+豁免：R7 催化剂确认，保留 A 段左侧布局，其余加仓仍冻结' : 'F3④ B1：三阈值满足≥2 → 仓位上限 25% + 冻结全部加仓触发器';
+  } else if (badge) { badge.remove(); }
+}
+
 function renderSlopeForecast() {
   const el = document.getElementById('slope-forecast');
   if (!el) return;
@@ -3719,7 +3762,12 @@ function applyTimingDataToMockData() {
 async function loadExternalLiqData() {
   try {
     // v3.4.3: ERP 卡 liquidity-overlay 静态假值先置待获取，fetch 成功后由下方真值覆盖
-    document.querySelectorAll('.liq-item .liq-value').forEach(el => { el.textContent = '--'; });
+    // [F3④ fix 2026-10-23] 置灰跳过汇率阀门/否决徽标——其值由 renderFxValve 三元态管理；
+    // 此前无差别置 '--' 会把已渲染的「关闭/开启⚠」文本抹掉（className 残留 valve-closed，文本丢失）
+    document.querySelectorAll('.liq-item .liq-value').forEach(el => {
+      if (el.id === 'fx-valve-value' || el.closest('.dom-veto-item')) return;
+      el.textContent = '--';
+    });
     const [usResp, cnResp] = await Promise.all([
       fetch('data/us_macro.json?v=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
       fetch('data/cn_macro.json?v=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
@@ -4016,12 +4064,14 @@ async function init() {
   safeRender('renderTimingChart', renderTimingChart); // [R3 2026-10-23]
   safeRender('renderSlopeForecast', renderSlopeForecast); // [R4 2026-10-23]
   safeRender('renderBucketDist', renderBucketDist); // [R5 2026-10-23]
+  safeRender('renderFxValve', renderFxValve); // [F3④ 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
   safeRender('renderRangeInfoBar', renderRangeInfoBar);
 
   // v3.4: Load real data for external liquidity cards + fed rate card
   try { await loadExternalLiqData(); } catch(e) { console.warn('[init] loadExternalLiqData failed:', e); }
+  safeRender('renderFxValveAfterExtLiq', renderFxValve); // [F3④ fix] 外部流动性数据加载后重渲染阀门三元态，防覆盖
 
   // P1: External liquidity triple card
   safeRender('renderExtLiqCards', renderExtLiqCards);

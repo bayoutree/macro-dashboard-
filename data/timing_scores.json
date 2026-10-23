@@ -61447,7 +61447,8 @@
       },
       {
         "condition": "美联储重启加息",
-        "met": false
+        "met": true,
+        "note": "F3 回补：hiking_cycle 确认（fed_funds 3.75% > 3月前 3.63% +10bp），触发器已解硬编码改数据驱动"
       },
       {
         "condition": "股息率-国债利差(沪深300)降至0.3%以下",
@@ -61532,16 +61533,24 @@
     "source": "tencent_tx sh000985"
   },
   "p1_8_state": {
-    "layer": "none",
-    "cap": null,
+    "layer": "event_soft",
+    "cap": 32,
     "cumulative_hike_prob": 0.913,
     "yield_10y": 5.12,
-    "triggers": [],
-    "as_of": "2026-10-22",
+    "triggers": [
+      "fed_funds 3.75% > 3月前 3.63% + 10.0bp（加息周期确认）",
+      "累计加息概率91%>85%（概率单路·A1）"
+    ],
+    "as_of": "2026-10-23",
     "cooldown_until": null,
-    "growth_ban": [],
-    "note": "",
-    "source": "cme-fedwatch + FRED DGS10（每日结算后取数一次）"
+    "growth_ban": [
+      "创业板指",
+      "科创50"
+    ],
+    "note": "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）。【F3 回补注记 2026-10-23】事件层已由 edge 改 level 化（hiking_cycle：fed_funds 月均 3.75 > 3.63+10bp）；9/16 加息后 P1-8 本应持续 event_soft/32%，因触发器硬编码+事件层 edge 语义漏检，9/16~10-22 实际未激活，现按裁决回补当前态；7 条真实历史日志保持原值不追溯改写。仓位建议层以今晚 CI 全链重算为准。",
+    "source": "cme-fedwatch + FRED DGS10 + us_macro fed_funds（F3①加息周期检测）",
+    "hiking_cycle": true,
+    "fomc_auto": false
   },
   "confirm_signals": {
     "ma_arrangement": {
@@ -63474,5 +63483,47 @@
       "source": "沪深300月K线·腾讯",
       "caliber": "月成交额(亿)+12月均线"
     }
-  }
+  },
+  "global_dominance": {
+    "as_of": "2026-10-23",
+    "thresholds": {
+      "a_hike_slope_or_qt": {
+        "met": false,
+        "slope_bp_annualized": 48.0,
+        "qt_3m_pct": 0.187,
+        "detail": "加息斜率年化 48bp（阈值 300bp）；fed_balance 近3月 +0.19%（QT 阈值 -0.5%）"
+      },
+      "b_fx_valve": {
+        "met": false,
+        "data_status": "ok",
+        "valve_open": false,
+        "usdcny_annual_deprec_pct": -6.178,
+        "threshold_deprec_pct": 4.5,
+        "usdcny_source": "us_macro.history.usdcny",
+        "fx_reserve_3m_decline": false,
+        "cnh_cny_spread_latest_bp": -5.0,
+        "cnh_cny_spread_triggered": false,
+        "cnh_cny_params": {
+          "streak_bp": 40,
+          "streak_days": 5,
+          "single_bp": 70
+        },
+        "cnh_cny_detail": "最新价差 -5bp（阈值：单日>70bp 或 连续5日>40bp）；序列 1 日（不足5日，连判暂不可判）",
+        "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；北向代理已废弃（无数据源）"
+      },
+      "c_credit_form": {
+        "met": false,
+        "m2_yoy_2m_up": false,
+        "m2_sf_gap_pp": 0.09,
+        "threshold_gap_pp": 2.0
+      }
+    },
+    "satisfied_n": 0,
+    "veto": false,
+    "veto_cap": null,
+    "r7_has_catalyst": null,
+    "exemption_active": false,
+    "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
+  },
+  "f3_backfill_note": "2026-10-23 F3 修复回补（松子）：①触发器解硬编码（hiking_cycle 数据驱动）②事件层 edge→level 化③预期层 A1（概率>85% 单路 或 10Y>5.2%+趋势确认）④全球主导权仲裁三阈值上线（当前 0/3 未否决）。本次仅回补当前态与注记，真实历史日志不动；dimensions/position_advice 等其余字段保持 10-22 流水线原值，今晚 CI 全链重算。"
 }
