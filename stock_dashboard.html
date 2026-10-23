@@ -140,6 +140,37 @@ body::before {
 .bd-bucket.current .bd-label { color: var(--cyan); }
 .bd-summary { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
 .bd-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+/* [R7 2026-10-23] 冲突状态卡：位置分位区×趋势×熊形态→信号优先级裁决 */
+.r7-card {
+  margin-top: var(--gap-sm); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px var(--gap-md);
+}
+.r7-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.r7-status-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.r7-chip {
+  font-size: 11px; padding: 3px 8px; border-radius: 10px;
+  border: 1px solid var(--border); color: var(--text-secondary);
+  background: rgba(255,255,255,0.03);
+}
+.r7-chip b { font-weight: 700; }
+.r7-chip.r7-zone-extreme { border-color: var(--green); color: var(--green); }
+.r7-chip.r7-zone-normal { border-color: var(--cyan); color: var(--cyan); }
+.r7-chip.r7-zone-high, .r7-chip.r7-zone-extreme_rich { border-color: var(--red); color: var(--red); }
+.r7-chip.r7-trend-neg { border-color: var(--red-dim); color: var(--red); }
+.r7-chip.r7-trend-pos { border-color: var(--green-dim); color: var(--green); }
+.r7-chip.r7-bear-fast, .r7-chip.r7-bear-slow { border-color: var(--orange); color: var(--orange); }
+.r7-chip.r7-conflict { border-color: var(--yellow); color: var(--yellow); font-weight: 700; }
+.r7-verdict { font-size: 13px; color: var(--text-primary); font-weight: 600; margin-bottom: 6px; }
+.r7-verdict .r7-verdict-tag { color: var(--yellow); margin-right: 4px; }
+.r7-catalyst { font-size: 11px; color: var(--text-secondary); line-height: 1.7; }
+.r7-cat-path { display: inline-block; margin-right: 10px; }
+.r7-cat-path .pass { color: var(--green); font-weight: 700; }
+.r7-cat-path .fail { color: var(--text-muted); }
+.r7-cat-path .na { color: var(--text-muted); font-style: italic; }
+.r7-cat-score { font-weight: 700; color: var(--cyan); }
+.r7-coupling { color: var(--orange); font-weight: 600; }
+.r7-note { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
 /* [R4 2026-10-23] 斜率时间预告 */
 .slope-forecast-card {
   margin-top: var(--gap-sm); background: var(--surface);
@@ -587,6 +618,8 @@ body::before {
     <div id="timing-chart" class="timing-chart-wrap"></div>
     <!-- [R5 2026-10-23] 5 分桶分布状态：细化四季概率分布呈现粒度 -->
     <div id="bucket-dist"></div>
+    <!-- [R7 2026-10-23] 冲突状态卡：位置分位区×趋势×熊形态→信号优先级；冲突A/B自动点亮；催化剂耦合仅极端区 -->
+    <div id="r7-conflict"></div>
   </section>
 
   <!-- ===== 2. MACRO LIQUIDITY ===== -->
@@ -1977,6 +2010,62 @@ function renderBucketDist() {
 // [R4 2026-10-23 v2呈现层升级] 斜率时间预告
 // 口径: 仅用真实日志点(剔除 reconstructed 重建段[CIO:后视分位禁入信号] + backfilled.quality==inherited_snapshot 继承快照[CIO F1 验收建议]);
 // 4周平滑=最近20个真实点 OLS 斜率; 样本<15 显形"积累中"; "按当前斜率"限定+拐点失效免责
+// [R7 2026-10-23 v2 P1] 冲突状态卡
+// 数据源：timing_scores.r7_state + catalyst_state（update_data.py compute_r7_state/compute_catalyst_state）
+// 状态=位置分位区(365天窗)×P1-6趋势×熊形态；冲突A(便宜+跌势)/B(贵+涨势)自动点亮；
+// 裁决表四行；催化剂三路表+score；极端区定性开关(有=反转候选70%/无=仅反弹≤55%，普通区权重0)；
+// 数据缺失降级=整卡隐藏（与 bucket-dist 同模式）；参数注记固化（待 P2-12 校准，首批2次真实触发人工复核）
+function renderR7Conflict() {
+  const el = document.getElementById('r7-conflict');
+  if (!el) return;
+  const td = StageEngine._timingData || {};
+  const r7 = td.r7_state, cat = td.catalyst_state;
+  if (!r7 || r7.position_zone === 'unknown' || r7.position_pct === null || r7.position_pct === undefined) { el.innerHTML = ''; return; }
+  const ZONE = { extreme: '极端便宜', normal: '普通区', high: '偏高区', extreme_rich: '极贵区' };
+  const TREND = { strong_bull: '强多头', weak_bull: '弱多头', weak_bear: '弱空头', strong_bear: '强空头' };
+  const BEAR = { fast_bear: '快熊', slow_bear: '阴熊', none: '无', unknown: '未知' };
+  const zone = r7.position_zone, trend = r7.trend || 'unknown';
+  const bearD = r7.bear_detail || {};
+  let chips = `<span class="r7-chip r7-zone-${zone}" title="近365天窗口分位（含重建段，与分桶同口径）：当前 composite 仅高于窗口内 ${r7.position_pct}% 的记录（n=${r7.window_n}）">位置 <b>${ZONE[zone] || zone}</b> ${r7.position_pct}%</span>`;
+  chips += `<span class="r7-chip ${r7.trend_negative ? 'r7-trend-neg' : 'r7-trend-pos'}">趋势 <b>${TREND[trend] || trend}</b></span>`;
+  const bearTitle = `近3月(63交易日)跌幅 ${bearD.decline_3m_pct === null || bearD.decline_3m_pct === undefined ? '--' : bearD.decline_3m_pct + '%'}（快熊阈值≤-15%）· 月负动量连续 ${bearD.monthly_neg_streak === undefined ? '--' : bearD.monthly_neg_streak} 月（阴熊阈值≥3）`;
+  chips += `<span class="r7-chip r7-bear-${r7.bear_form}" title="${bearTitle}">熊形态 <b>${BEAR[r7.bear_form] || r7.bear_form}</b></span>`;
+  if (r7.conflict) {
+    const cTitle = r7.conflict === 'A'
+      ? '冲突A=便宜+跌势（历史25%月份，位置派 vs 趋势派 8:7，必须分档裁决）'
+      : '冲突B=贵+涨势（动量派 vs 估值派分歧，必须分档裁决）';
+    chips += `<span class="r7-chip r7-conflict" title="${cTitle}">⚡ 冲突${r7.conflict}</span>`;
+  }
+  let catHtml = '';
+  if (cat) {
+    const paths = [
+      { name: '政策', pass: cat.policy && cat.policy.pass, na: false,
+        title: (cat.policy && cat.policy.manual_pivot) ? `人工确认位：pivot ${cat.policy.pivot_date}，有效期至 ${cat.policy.expires}` : '人工确认位默认 false（落地工具才算、喊话不算；config_overrides.json policy_pivot）' },
+      { name: '流动性', pass: cat.liquidity && cat.liquidity.pass, na: false,
+        title: `M1同比连续2月回升=${cat.liquidity && cat.liquidity.m1_turn} · M1-M2剪刀差连续2月收窄=${cat.liquidity && cat.liquidity.spread_narrow}（最新M1 ${cat.liquidity && cat.liquidity.latest_m1_yoy}%）` },
+      { name: '盈利', pass: cat.earnings && cat.earnings.pass, na: false,
+        title: `PPI同比连续2月回升=${cat.earnings && cat.earnings.ppi_turn} · 工业企业利润=${cat.earnings && cat.earnings.profit_turn === null ? '无源' : cat.earnings.profit_turn}` },
+    ];
+    const pathHtml = paths.map(pt =>
+      `<span class="r7-cat-path" title="${pt.title}">${pt.name}<span class="${pt.pass ? 'pass' : 'fail'}">${pt.pass ? '✓' : '✗'}</span></span>`
+    ).join('');
+    const cp = r7.catalyst_coupling || {};
+    let cpHtml = '';
+    if (cp.zone_active) {
+      cpHtml = ` → <span class="r7-coupling" title="${cp.note || ''}">${cp.has_catalyst ? `反转候选·目标可看A区上限 ${cp.cap_pct}%` : `仅反弹·交易性仓位 ≤${cp.cap_pct}%`}</span>`;
+    } else {
+      cpHtml = ` <span style="color:var(--text-muted);" title="${cp.note || ''}">（普通区不参与裁决·权重0）</span>`;
+    }
+    catHtml = `<div class="r7-catalyst">催化剂 ${pathHtml}= <span class="r7-cat-score">${cat.catalyst_score}/3</span>${cpHtml}</div>`;
+  }
+  el.innerHTML = `<div class="r7-card">` +
+    `<div class="r7-title">⚖️ R7 冲突状态卡 · 位置分位区 × 趋势 × 熊形态（v2 P1）</div>` +
+    `<div class="r7-status-row">${chips}</div>` +
+    `<div class="r7-verdict" title="证据：${r7.verdict_ref || '--'}"><span class="r7-verdict-tag">裁决</span>${r7.verdict || '--'}</div>` +
+    catHtml +
+    `<div class="r7-note">参数未经样本外验证，待 P2-12 校准；首批 2 次真实触发人工复核。裁决表证据=CIO 197月回测+投分4案例。</div></div>`;
+}
+
 // [F3④ 2026-10-23] 汇率阀门三元态（进流动性维度 ERP 卡）+ 全球主导权否决徽标
 // 数据源：timing_scores.global_dominance（update_data.py compute_global_dominance）
 // 三元态：开启⚠(红) / 关闭(绿) / 采集中(灰)；veto 时额外显形否决徽标（可观测性=主人裁决硬性要求）
@@ -4064,6 +4153,7 @@ async function init() {
   safeRender('renderTimingChart', renderTimingChart); // [R3 2026-10-23]
   safeRender('renderSlopeForecast', renderSlopeForecast); // [R4 2026-10-23]
   safeRender('renderBucketDist', renderBucketDist); // [R5 2026-10-23]
+  safeRender('renderR7Conflict', renderR7Conflict); // [R7 2026-10-23]
   safeRender('renderFxValve', renderFxValve); // [F3④ 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
