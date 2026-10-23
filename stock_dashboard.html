@@ -1925,10 +1925,18 @@ function fmtDateLabel(d) {
 function renderBucketDist() {
   const el = document.getElementById('bucket-dist');
   if (!el) return;
-  const hist = StageEngine._timingHistory;
+  let hist = StageEngine._timingHistory;
   const td = StageEngine._timingData || {};
   const comp = (typeof td.composite_score === 'number') ? td.composite_score : null;
   if (!Array.isArray(hist) || hist.length < 5 || comp === null) { el.innerHTML = ''; return; }
+  // [CIO R4R5 观察项] 与分位同一 365 天窗口（纯 UTC 运算），防真实段超 12 月后漂移
+  const _lastD = hist[hist.length - 1].date;
+  const _dp = _lastD.split('-').map(Number);
+  const _cut = new Date(Date.UTC(_dp[0], _dp[1] - 1, _dp[2]));
+  _cut.setUTCDate(_cut.getUTCDate() - 365);
+  const _cutISO = _cut.toISOString().slice(0, 10);
+  hist = hist.filter(r => r.date >= _cutISO);
+  if (hist.length < 5) { el.innerHTML = ''; return; }
   const BUCKETS = [
     { lo: 0,  hi: 20,  name: '极冷' }, { lo: 20, hi: 40, name: '偏冷' },
     { lo: 40, hi: 60,  name: '中性' }, { lo: 60, hi: 80, name: '偏热' },
@@ -1955,7 +1963,7 @@ function renderBucketDist() {
   const curPct = total && curB >= 0 ? Math.round(counts[curB] / total * 100) : 0;
   const curName = curB >= 0 ? BUCKETS[curB].name : '-';
   el.innerHTML = `<div class="bucket-dist-card">` +
-    `<div class="bd-title">🪣 5 分桶分布状态 · 近12个月（${total} 个记录）</div>` +
+    `<div class="bd-title">🪣 5 分桶分布状态 · 近12个月（${_cutISO}~${_lastD}，${total} 个记录）</div>` +
     `<div class="bd-buckets">${bars}</div>` +
     `<div class="bd-summary">当前 <b>${comp}</b> 分 · <b>${curName}桶</b> · 近12月 <b>${curPct}%</b> 时间处于该桶</div>` +
     `<div class="bd-note">分布含重建数据段 ${nRec} 条（水印显形，仅展示用途）；桶占比为该分数区间的历史时间分布，不构成未来概率预测。</div></div>`;
@@ -2122,8 +2130,10 @@ function renderStatusTriple() {
   if (comp != null && Array.isArray(hist) && hist.length >= 5) {
     // [CIO 观察项] 窗口化：以末条记录日期回推 365 天，防真实段超 12 个月后分母漂移
     const _lastD = hist[hist.length - 1].date;
-    const _cut = new Date(_lastD + 'T00:00:00');
-    _cut.setDate(_cut.getDate() - 365);
+    // [CIO R4R5 观察项] 纯 UTC 日期运算：本地解析+toISOString 在 UTC+8 下 cut 偏 1 天
+    const _dp = _lastD.split('-').map(Number);
+    const _cut = new Date(Date.UTC(_dp[0], _dp[1] - 1, _dp[2]));
+    _cut.setUTCDate(_cut.getUTCDate() - 365);
     const _cutISO = _cut.toISOString().slice(0, 10);
     const win = hist.filter(r => r.date >= _cutISO);
     const vals = win.map(r => r.composite_score).filter(v => typeof v === 'number');
