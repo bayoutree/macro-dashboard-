@@ -80,31 +80,11 @@ def main():
     if p1 is not None and p2 is not None:
         cum = round(1 - (1 - p1) * (1 - p2), 4)
 
-    # F3①-2b: DFEDTAR 日频目标区间历史（FRED DFEDTARU/DFEDTARL）
-    # 提供每日生效的目标区间，比月频 fed_funds 快 2 周检测加息事件
-    from datetime import date as _date, timedelta as _td
-    tr_history = []
-    try:
-        _end = _date.today()
-        _start = _end - _td(days=365)
-        _ranges = fw.fetch_target_range_history(_start, _end)
-        for d in sorted(_ranges.keys()):
-            tr_history.append({
-                "date": str(d),
-                "lower": _ranges[d][0],
-                "upper": _ranges[d][1]
-            })
-    except Exception as e:
-        # 降级：不阻断主流程
-        import sys
-        print(f"WARN DFEDTAR history failed: {e}", file=sys.stderr)
-
     out = {
         "as_of": datetime.now().strftime("%Y-%m-%d"),
         "source": "cme-fedwatch 0.2.1 (CME 30D Fed Funds futures settlements + FRED)",
         "target_range": [float(low), float(high)],
         "prev_target_range": old.get("target_range"),
-        "target_range_history": tr_history,
         "meetings": meetings,
         "cumulative_hike_prob": cum,
         "note": "累计口径=1-(1-p1)(1-p2)（独立性假设偏保守，投资分析2026-10-18裁决）",
