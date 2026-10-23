@@ -1,20 +1,21 @@
 [
   {
     "date": "2025-10-16",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 62.0,
+      "valuation": 62.2,
+      "liquidity": 68.8,
       "equity_bond": 18.0,
-      "capital_flow": 65.6,
-      "sentiment": 67.5,
+      "capital_flow": 70.1,
+      "sentiment": 65.0,
       "micro_structure": 11.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -31,20 +32,21 @@
   },
   {
     "date": "2025-10-17",
-    "composite_score": 45.7,
-    "stage": "B",
+    "composite_score": 56.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 62.0,
+      "valuation": 62.2,
+      "liquidity": 68.8,
       "equity_bond": 18.0,
-      "capital_flow": 68.3,
-      "sentiment": 65.6,
+      "capital_flow": 71.9,
+      "sentiment": 64.1,
       "micro_structure": 11.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -61,20 +63,21 @@
   },
   {
     "date": "2025-10-20",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 58.0,
+      "valuation": 62.2,
+      "liquidity": 67.4,
       "equity_bond": 0.0,
-      "capital_flow": 68.5,
-      "sentiment": 65.6,
+      "capital_flow": 72.0,
+      "sentiment": 64.1,
       "micro_structure": 19.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -91,20 +94,21 @@
   },
   {
     "date": "2025-10-21",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 58.0,
+      "valuation": 62.2,
+      "liquidity": 67.4,
       "equity_bond": 0.0,
-      "capital_flow": 68.6,
-      "sentiment": 65.6,
+      "capital_flow": 72.1,
+      "sentiment": 64.1,
       "micro_structure": 19.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -121,20 +125,21 @@
   },
   {
     "date": "2025-10-22",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 58.0,
+      "valuation": 62.2,
+      "liquidity": 67.4,
       "equity_bond": 0.0,
-      "capital_flow": 68.5,
-      "sentiment": 65.6,
+      "capital_flow": 72.0,
+      "sentiment": 64.1,
       "micro_structure": 19.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -151,20 +156,21 @@
   },
   {
     "date": "2025-10-23",
-    "composite_score": 44.8,
-    "stage": "B",
+    "composite_score": 56.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 58.0,
+      "valuation": 62.2,
+      "liquidity": 67.4,
       "equity_bond": 0.0,
-      "capital_flow": 68.2,
-      "sentiment": 65.6,
+      "capital_flow": 71.9,
+      "sentiment": 64.1,
       "micro_structure": 19.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -181,20 +187,21 @@
   },
   {
     "date": "2025-10-24",
-    "composite_score": 46.3,
-    "stage": "B",
+    "composite_score": 56.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 58.0,
+      "valuation": 62.2,
+      "liquidity": 67.4,
       "equity_bond": 0.0,
-      "capital_flow": 71.3,
-      "sentiment": 70.6,
+      "capital_flow": 73.8,
+      "sentiment": 66.6,
       "micro_structure": 19.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -211,20 +218,21 @@
   },
   {
     "date": "2025-10-27",
-    "composite_score": 45.4,
-    "stage": "B",
+    "composite_score": 56.4,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 60.0,
+      "valuation": 62.2,
+      "liquidity": 68.1,
       "equity_bond": 5.0,
-      "capital_flow": 71.6,
-      "sentiment": 70.6,
+      "capital_flow": 74.0,
+      "sentiment": 66.6,
       "micro_structure": 11.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -241,20 +249,21 @@
   },
   {
     "date": "2025-10-28",
-    "composite_score": 45.3,
-    "stage": "B",
+    "composite_score": 56.4,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 60.0,
+      "valuation": 62.2,
+      "liquidity": 68.1,
       "equity_bond": 5.0,
-      "capital_flow": 71.5,
-      "sentiment": 70.6,
+      "capital_flow": 74.0,
+      "sentiment": 66.6,
       "micro_structure": 11.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -271,20 +280,21 @@
   },
   {
     "date": "2025-10-29",
-    "composite_score": 45.3,
-    "stage": "B",
+    "composite_score": 56.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 60.0,
+      "valuation": 62.2,
+      "liquidity": 68.1,
       "equity_bond": 5.0,
-      "capital_flow": 71.4,
-      "sentiment": 70.6,
+      "capital_flow": 73.9,
+      "sentiment": 66.6,
       "micro_structure": 11.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -301,20 +311,21 @@
   },
   {
     "date": "2025-10-30",
-    "composite_score": 45.3,
-    "stage": "B",
+    "composite_score": 56.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 60.0,
+      "valuation": 62.2,
+      "liquidity": 68.1,
       "equity_bond": 5.0,
-      "capital_flow": 71.3,
-      "sentiment": 70.6,
+      "capital_flow": 73.8,
+      "sentiment": 66.6,
       "micro_structure": 11.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -331,20 +342,21 @@
   },
   {
     "date": "2025-10-31",
-    "composite_score": 44.6,
-    "stage": "B",
+    "composite_score": 54.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 60.0,
+      "valuation": 61.5,
+      "liquidity": 66.4,
       "equity_bond": 5.0,
-      "capital_flow": 69.9,
-      "sentiment": 68.8,
+      "capital_flow": 72.6,
+      "sentiment": 60.1,
       "micro_structure": 11.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -361,20 +373,21 @@
   },
   {
     "date": "2025-11-03",
-    "composite_score": 54.5,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "liquidity": 78.0,
+      "valuation": 61.5,
+      "liquidity": 72.7,
       "equity_bond": 42.0,
-      "capital_flow": 69.8,
-      "sentiment": 68.8,
+      "capital_flow": 72.6,
+      "sentiment": 60.1,
       "micro_structure": 20.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -391,20 +404,21 @@
   },
   {
     "date": "2025-11-04",
-    "composite_score": 54.4,
+    "composite_score": 60.1,
     "stage": "C",
     "dimensions": {
-      "liquidity": 78.0,
+      "valuation": 61.5,
+      "liquidity": 72.7,
       "equity_bond": 42.0,
-      "capital_flow": 69.5,
-      "sentiment": 68.8,
+      "capital_flow": 72.4,
+      "sentiment": 60.1,
       "micro_structure": 20.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -421,20 +435,21 @@
   },
   {
     "date": "2025-11-05",
-    "composite_score": 54.4,
+    "composite_score": 60.1,
     "stage": "C",
     "dimensions": {
-      "liquidity": 78.0,
+      "valuation": 61.5,
+      "liquidity": 72.7,
       "equity_bond": 42.0,
-      "capital_flow": 69.5,
-      "sentiment": 68.8,
+      "capital_flow": 72.4,
+      "sentiment": 60.1,
       "micro_structure": 20.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 8,
+      "coverage_n": 14,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -451,20 +466,21 @@
   },
   {
     "date": "2025-11-06",
-    "composite_score": 49.2,
+    "composite_score": 56.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 78.0,
+      "valuation": 61.5,
+      "liquidity": 72.7,
       "equity_bond": 24.4,
-      "capital_flow": 69.9,
-      "sentiment": 68.8,
+      "capital_flow": 72.7,
+      "sentiment": 60.1,
       "micro_structure": 20.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -481,20 +497,21 @@
   },
   {
     "date": "2025-11-07",
-    "composite_score": 50.7,
+    "composite_score": 57.6,
     "stage": "C",
     "dimensions": {
-      "liquidity": 78.0,
+      "valuation": 61.5,
+      "liquidity": 72.7,
       "equity_bond": 31.5,
-      "capital_flow": 67.9,
-      "sentiment": 74.4,
+      "capital_flow": 71.3,
+      "sentiment": 62.9,
       "micro_structure": 20.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -511,20 +528,21 @@
   },
   {
     "date": "2025-11-10",
-    "composite_score": 42.7,
-    "stage": "B",
+    "composite_score": 53.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 58.3,
       "equity_bond": 24.5,
-      "capital_flow": 67.9,
-      "sentiment": 74.4,
+      "capital_flow": 71.4,
+      "sentiment": 62.9,
       "micro_structure": 18.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -541,20 +559,21 @@
   },
   {
     "date": "2025-11-11",
-    "composite_score": 43.7,
-    "stage": "B",
+    "composite_score": 53.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 58.3,
       "equity_bond": 29.1,
-      "capital_flow": 68.0,
-      "sentiment": 74.4,
+      "capital_flow": 71.4,
+      "sentiment": 62.9,
       "micro_structure": 18.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -571,20 +590,21 @@
   },
   {
     "date": "2025-11-12",
-    "composite_score": 43.6,
-    "stage": "B",
+    "composite_score": 53.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 58.3,
       "equity_bond": 29.1,
-      "capital_flow": 67.7,
-      "sentiment": 74.4,
+      "capital_flow": 71.2,
+      "sentiment": 62.9,
       "micro_structure": 18.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -601,20 +621,21 @@
   },
   {
     "date": "2025-11-13",
-    "composite_score": 42.7,
-    "stage": "B",
+    "composite_score": 52.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 58.3,
       "equity_bond": 24.5,
-      "capital_flow": 67.8,
-      "sentiment": 74.4,
+      "capital_flow": 71.3,
+      "sentiment": 62.9,
       "micro_structure": 18.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -631,20 +652,21 @@
   },
   {
     "date": "2025-11-14",
-    "composite_score": 41.6,
-    "stage": "B",
+    "composite_score": 52.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 58.3,
       "equity_bond": 24.5,
-      "capital_flow": 64.2,
-      "sentiment": 75.0,
+      "capital_flow": 68.9,
+      "sentiment": 63.2,
       "micro_structure": 18.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -661,20 +683,21 @@
   },
   {
     "date": "2025-11-17",
-    "composite_score": 45.8,
-    "stage": "B",
+    "composite_score": 54.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 48.0,
+      "valuation": 61.5,
+      "liquidity": 62.2,
       "equity_bond": 27.5,
-      "capital_flow": 64.2,
-      "sentiment": 75.0,
+      "capital_flow": 69.0,
+      "sentiment": 63.2,
       "micro_structure": 26.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -691,20 +714,21 @@
   },
   {
     "date": "2025-11-18",
-    "composite_score": 45.0,
-    "stage": "B",
+    "composite_score": 54.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 48.0,
+      "valuation": 61.5,
+      "liquidity": 62.2,
       "equity_bond": 24.4,
-      "capital_flow": 64.2,
-      "sentiment": 75.0,
+      "capital_flow": 68.9,
+      "sentiment": 63.2,
       "micro_structure": 26.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -721,20 +745,21 @@
   },
   {
     "date": "2025-11-19",
-    "composite_score": 45.7,
-    "stage": "B",
+    "composite_score": 54.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 48.0,
+      "valuation": 61.5,
+      "liquidity": 62.2,
       "equity_bond": 27.5,
-      "capital_flow": 64.0,
-      "sentiment": 75.0,
+      "capital_flow": 68.8,
+      "sentiment": 63.2,
       "micro_structure": 26.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -751,20 +776,21 @@
   },
   {
     "date": "2025-11-20",
-    "composite_score": 45.7,
-    "stage": "B",
+    "composite_score": 54.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 48.0,
+      "valuation": 61.5,
+      "liquidity": 62.2,
       "equity_bond": 27.5,
-      "capital_flow": 64.1,
-      "sentiment": 75.0,
+      "capital_flow": 68.9,
+      "sentiment": 63.2,
       "micro_structure": 26.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -781,20 +807,21 @@
   },
   {
     "date": "2025-11-21",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 54.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 48.0,
+      "valuation": 61.5,
+      "liquidity": 62.2,
       "equity_bond": 27.5,
-      "capital_flow": 61.7,
-      "sentiment": 73.8,
+      "capital_flow": 67.3,
+      "sentiment": 62.6,
       "micro_structure": 26.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -811,20 +838,21 @@
   },
   {
     "date": "2025-11-24",
-    "composite_score": 43.3,
-    "stage": "B",
+    "composite_score": 53.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 40.0,
+      "valuation": 61.5,
+      "liquidity": 59.4,
       "equity_bond": 11.5,
-      "capital_flow": 61.7,
-      "sentiment": 73.8,
+      "capital_flow": 67.4,
+      "sentiment": 62.6,
       "micro_structure": 39.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -841,20 +869,21 @@
   },
   {
     "date": "2025-11-25",
-    "composite_score": 44.3,
-    "stage": "B",
+    "composite_score": 53.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 40.0,
+      "valuation": 61.5,
+      "liquidity": 59.4,
       "equity_bond": 16.1,
-      "capital_flow": 61.9,
-      "sentiment": 73.8,
+      "capital_flow": 67.5,
+      "sentiment": 62.6,
       "micro_structure": 39.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -871,20 +900,21 @@
   },
   {
     "date": "2025-11-26",
-    "composite_score": 45.8,
-    "stage": "B",
+    "composite_score": 54.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 40.0,
+      "valuation": 61.5,
+      "liquidity": 59.4,
       "equity_bond": 22.4,
-      "capital_flow": 62.0,
-      "sentiment": 73.8,
+      "capital_flow": 67.5,
+      "sentiment": 62.6,
       "micro_structure": 39.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -901,20 +931,21 @@
   },
   {
     "date": "2025-11-27",
-    "composite_score": 46.3,
-    "stage": "B",
+    "composite_score": 55.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 40.0,
+      "valuation": 61.5,
+      "liquidity": 59.4,
       "equity_bond": 24.8,
-      "capital_flow": 62.1,
-      "sentiment": 73.8,
+      "capital_flow": 67.6,
+      "sentiment": 62.6,
       "micro_structure": 39.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -931,20 +962,21 @@
   },
   {
     "date": "2025-11-28",
-    "composite_score": 45.0,
-    "stage": "B",
+    "composite_score": 56.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 40.0,
+      "valuation": 60.5,
+      "liquidity": 61.3,
       "equity_bond": 19.5,
-      "capital_flow": 62.2,
-      "sentiment": 71.9,
+      "capital_flow": 69.5,
+      "sentiment": 76.7,
       "micro_structure": 39.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -961,20 +993,21 @@
   },
   {
     "date": "2025-12-01",
-    "composite_score": 42.7,
-    "stage": "B",
+    "composite_score": 55.4,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 31.0,
+      "valuation": 60.5,
+      "liquidity": 58.2,
       "equity_bond": 25.5,
-      "capital_flow": 62.4,
-      "sentiment": 71.9,
+      "capital_flow": 69.6,
+      "sentiment": 76.7,
       "micro_structure": 29.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -991,20 +1024,21 @@
   },
   {
     "date": "2025-12-02",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 55.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 31.0,
+      "valuation": 60.5,
+      "liquidity": 58.2,
       "equity_bond": 28.4,
-      "capital_flow": 62.1,
-      "sentiment": 71.9,
+      "capital_flow": 69.4,
+      "sentiment": 76.7,
       "micro_structure": 29.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1021,20 +1055,21 @@
   },
   {
     "date": "2025-12-03",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 55.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 31.0,
+      "valuation": 60.5,
+      "liquidity": 58.2,
       "equity_bond": 28.4,
-      "capital_flow": 62.0,
-      "sentiment": 71.9,
+      "capital_flow": 69.3,
+      "sentiment": 76.7,
       "micro_structure": 29.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1051,20 +1086,21 @@
   },
   {
     "date": "2025-12-04",
-    "composite_score": 44.2,
-    "stage": "B",
+    "composite_score": 56.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 31.0,
+      "valuation": 60.5,
+      "liquidity": 58.2,
       "equity_bond": 32.3,
-      "capital_flow": 62.2,
-      "sentiment": 71.9,
+      "capital_flow": 69.5,
+      "sentiment": 76.7,
       "micro_structure": 29.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1081,20 +1117,21 @@
   },
   {
     "date": "2025-12-05",
-    "composite_score": 45.2,
-    "stage": "B",
+    "composite_score": 56.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 31.0,
+      "valuation": 60.5,
+      "liquidity": 58.2,
       "equity_bond": 34.3,
-      "capital_flow": 62.3,
-      "sentiment": 78.1,
+      "capital_flow": 69.5,
+      "sentiment": 79.8,
       "micro_structure": 29.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1111,20 +1148,21 @@
   },
   {
     "date": "2025-12-08",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 55.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 14.0,
+      "valuation": 60.5,
+      "liquidity": 52.2,
       "equity_bond": 37.8,
-      "capital_flow": 62.6,
-      "sentiment": 78.1,
+      "capital_flow": 69.7,
+      "sentiment": 79.8,
       "micro_structure": 27.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1141,20 +1179,21 @@
   },
   {
     "date": "2025-12-09",
-    "composite_score": 42.6,
-    "stage": "B",
+    "composite_score": 55.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 14.0,
+      "valuation": 60.5,
+      "liquidity": 52.2,
       "equity_bond": 35.4,
-      "capital_flow": 62.4,
-      "sentiment": 78.1,
+      "capital_flow": 69.6,
+      "sentiment": 79.8,
       "micro_structure": 27.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1171,20 +1210,21 @@
   },
   {
     "date": "2025-12-10",
-    "composite_score": 42.6,
-    "stage": "B",
+    "composite_score": 55.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 14.0,
+      "valuation": 60.5,
+      "liquidity": 52.2,
       "equity_bond": 35.4,
-      "capital_flow": 62.2,
-      "sentiment": 78.1,
+      "capital_flow": 69.5,
+      "sentiment": 79.8,
       "micro_structure": 27.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1201,20 +1241,21 @@
   },
   {
     "date": "2025-12-11",
-    "composite_score": 42.5,
-    "stage": "B",
+    "composite_score": 55.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 14.0,
+      "valuation": 60.5,
+      "liquidity": 52.2,
       "equity_bond": 35.4,
-      "capital_flow": 62.2,
-      "sentiment": 78.1,
+      "capital_flow": 69.4,
+      "sentiment": 79.8,
       "micro_structure": 27.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1231,20 +1272,21 @@
   },
   {
     "date": "2025-12-12",
-    "composite_score": 43.4,
-    "stage": "B",
+    "composite_score": 55.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 14.0,
+      "valuation": 60.5,
+      "liquidity": 52.2,
       "equity_bond": 35.4,
-      "capital_flow": 64.8,
-      "sentiment": 79.4,
+      "capital_flow": 71.1,
+      "sentiment": 80.4,
       "micro_structure": 27.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1261,20 +1303,21 @@
   },
   {
     "date": "2025-12-15",
-    "composite_score": 44.0,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 20.0,
+      "valuation": 60.5,
+      "liquidity": 54.3,
       "equity_bond": 40.9,
-      "capital_flow": 64.9,
-      "sentiment": 79.4,
+      "capital_flow": 71.2,
+      "sentiment": 80.4,
       "micro_structure": 21.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1291,20 +1334,21 @@
   },
   {
     "date": "2025-12-16",
-    "composite_score": 44.1,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 20.0,
+      "valuation": 60.5,
+      "liquidity": 54.3,
       "equity_bond": 40.9,
-      "capital_flow": 65.0,
-      "sentiment": 79.4,
+      "capital_flow": 71.3,
+      "sentiment": 80.4,
       "micro_structure": 21.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1321,20 +1365,21 @@
   },
   {
     "date": "2025-12-17",
-    "composite_score": 43.4,
-    "stage": "B",
+    "composite_score": 55.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 20.0,
+      "valuation": 60.5,
+      "liquidity": 54.3,
       "equity_bond": 38.0,
-      "capital_flow": 64.9,
-      "sentiment": 79.4,
+      "capital_flow": 71.2,
+      "sentiment": 80.4,
       "micro_structure": 21.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1351,20 +1396,21 @@
   },
   {
     "date": "2025-12-18",
-    "composite_score": 44.6,
-    "stage": "B",
+    "composite_score": 56.4,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 20.0,
+      "valuation": 60.5,
+      "liquidity": 54.3,
       "equity_bond": 43.3,
-      "capital_flow": 64.9,
-      "sentiment": 79.4,
+      "capital_flow": 71.2,
+      "sentiment": 80.4,
       "micro_structure": 21.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1381,20 +1427,21 @@
   },
   {
     "date": "2025-12-19",
-    "composite_score": 42.5,
-    "stage": "B",
+    "composite_score": 55.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 20.0,
+      "valuation": 60.5,
+      "liquidity": 54.3,
       "equity_bond": 38.0,
-      "capital_flow": 64.2,
-      "sentiment": 72.5,
+      "capital_flow": 70.7,
+      "sentiment": 77.0,
       "micro_structure": 21.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1411,20 +1458,21 @@
   },
   {
     "date": "2025-12-22",
-    "composite_score": 50.2,
+    "composite_score": 59.7,
     "stage": "C",
     "dimensions": {
-      "liquidity": 16.0,
+      "valuation": 60.5,
+      "liquidity": 52.9,
       "equity_bond": 37.8,
-      "capital_flow": 64.4,
-      "sentiment": 72.5,
+      "capital_flow": 70.9,
+      "sentiment": 77.0,
       "micro_structure": 56.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1441,20 +1489,21 @@
   },
   {
     "date": "2025-12-23",
-    "composite_score": 49.7,
+    "composite_score": 59.4,
     "stage": "C",
     "dimensions": {
-      "liquidity": 16.0,
+      "valuation": 60.5,
+      "liquidity": 52.9,
       "equity_bond": 35.4,
-      "capital_flow": 64.7,
-      "sentiment": 72.5,
+      "capital_flow": 71.1,
+      "sentiment": 77.0,
       "micro_structure": 56.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1471,20 +1520,21 @@
   },
   {
     "date": "2025-12-24",
-    "composite_score": 50.2,
+    "composite_score": 59.7,
     "stage": "C",
     "dimensions": {
-      "liquidity": 16.0,
+      "valuation": 60.5,
+      "liquidity": 52.9,
       "equity_bond": 37.8,
-      "capital_flow": 64.6,
-      "sentiment": 72.5,
+      "capital_flow": 71.0,
+      "sentiment": 77.0,
       "micro_structure": 56.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1501,20 +1551,21 @@
   },
   {
     "date": "2025-12-25",
-    "composite_score": 49.7,
+    "composite_score": 59.4,
     "stage": "C",
     "dimensions": {
-      "liquidity": 16.0,
+      "valuation": 60.5,
+      "liquidity": 52.9,
       "equity_bond": 35.4,
-      "capital_flow": 64.6,
-      "sentiment": 72.5,
+      "capital_flow": 71.0,
+      "sentiment": 77.0,
       "micro_structure": 56.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1531,20 +1582,21 @@
   },
   {
     "date": "2025-12-26",
-    "composite_score": 49.0,
+    "composite_score": 59.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 16.0,
+      "valuation": 60.5,
+      "liquidity": 52.9,
       "equity_bond": 32.5,
-      "capital_flow": 62.9,
-      "sentiment": 77.5,
+      "capital_flow": 69.9,
+      "sentiment": 79.5,
       "micro_structure": 56.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1561,20 +1613,21 @@
   },
   {
     "date": "2025-12-29",
-    "composite_score": 42.5,
-    "stage": "B",
+    "composite_score": 55.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 4.0,
+      "valuation": 60.5,
+      "liquidity": 48.7,
       "equity_bond": 31.2,
-      "capital_flow": 62.8,
-      "sentiment": 77.5,
+      "capital_flow": 69.9,
+      "sentiment": 79.5,
       "micro_structure": 37.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1591,20 +1644,21 @@
   },
   {
     "date": "2025-12-30",
-    "composite_score": 42.3,
-    "stage": "B",
+    "composite_score": 55.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 4.0,
+      "valuation": 60.5,
+      "liquidity": 48.7,
       "equity_bond": 30.3,
-      "capital_flow": 63.0,
-      "sentiment": 77.5,
+      "capital_flow": 69.9,
+      "sentiment": 79.5,
       "micro_structure": 37.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1621,20 +1675,21 @@
   },
   {
     "date": "2025-12-31",
-    "composite_score": 41.3,
-    "stage": "B",
+    "composite_score": 53.6,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 4.0,
+      "valuation": 62.7,
+      "liquidity": 43.2,
       "equity_bond": 28.8,
-      "capital_flow": 61.4,
-      "sentiment": 75.6,
+      "capital_flow": 68.4,
+      "sentiment": 80.7,
       "micro_structure": 37.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1651,20 +1706,21 @@
   },
   {
     "date": "2026-01-05",
-    "composite_score": 47.9,
-    "stage": "B",
+    "composite_score": 57.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 37.3,
-      "capital_flow": 61.8,
-      "sentiment": 75.6,
+      "capital_flow": 68.7,
+      "sentiment": 80.7,
       "micro_structure": 53.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1681,20 +1737,21 @@
   },
   {
     "date": "2026-01-06",
-    "composite_score": 48.1,
-    "stage": "B",
+    "composite_score": 57.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 38.2,
-      "capital_flow": 61.8,
-      "sentiment": 75.6,
+      "capital_flow": 68.7,
+      "sentiment": 80.7,
       "micro_structure": 53.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1711,20 +1768,21 @@
   },
   {
     "date": "2026-01-07",
-    "composite_score": 48.1,
-    "stage": "B",
+    "composite_score": 57.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 38.2,
-      "capital_flow": 61.9,
-      "sentiment": 75.6,
+      "capital_flow": 68.7,
+      "sentiment": 80.7,
       "micro_structure": 53.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1741,20 +1799,21 @@
   },
   {
     "date": "2026-01-08",
-    "composite_score": 48.3,
-    "stage": "B",
+    "composite_score": 57.6,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 39.1,
-      "capital_flow": 61.8,
-      "sentiment": 75.6,
+      "capital_flow": 68.6,
+      "sentiment": 80.7,
       "micro_structure": 53.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1771,20 +1830,21 @@
   },
   {
     "date": "2026-01-09",
-    "composite_score": 48.5,
-    "stage": "B",
+    "composite_score": 57.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 38.2,
-      "capital_flow": 61.0,
-      "sentiment": 83.1,
+      "capital_flow": 68.1,
+      "sentiment": 84.4,
       "micro_structure": 53.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1801,20 +1861,21 @@
   },
   {
     "date": "2026-01-12",
-    "composite_score": 46.0,
-    "stage": "B",
+    "composite_score": 56.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 42.3,
-      "capital_flow": 61.2,
-      "sentiment": 83.1,
+      "capital_flow": 68.2,
+      "sentiment": 84.4,
       "micro_structure": 38.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1831,20 +1892,21 @@
   },
   {
     "date": "2026-01-13",
-    "composite_score": 45.6,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 40.8,
-      "capital_flow": 60.9,
-      "sentiment": 83.1,
+      "capital_flow": 68.1,
+      "sentiment": 84.4,
       "micro_structure": 38.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1861,20 +1923,21 @@
   },
   {
     "date": "2026-01-14",
-    "composite_score": 45.7,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 40.8,
-      "capital_flow": 61.0,
-      "sentiment": 83.1,
+      "capital_flow": 68.1,
+      "sentiment": 84.4,
       "micro_structure": 38.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1891,20 +1954,21 @@
   },
   {
     "date": "2026-01-15",
-    "composite_score": 46.0,
-    "stage": "B",
+    "composite_score": 56.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 42.3,
-      "capital_flow": 60.9,
-      "sentiment": 83.1,
+      "capital_flow": 68.0,
+      "sentiment": 84.4,
       "micro_structure": 38.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1921,20 +1985,21 @@
   },
   {
     "date": "2026-01-16",
-    "composite_score": 43.7,
-    "stage": "B",
+    "composite_score": 54.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 9.0,
+      "valuation": 62.7,
+      "liquidity": 44.9,
       "equity_bond": 38.4,
-      "capital_flow": 57.2,
-      "sentiment": 80.6,
+      "capital_flow": 65.6,
+      "sentiment": 83.2,
       "micro_structure": 38.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1951,20 +2016,21 @@
   },
   {
     "date": "2026-01-19",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 54.6,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.7,
+      "liquidity": 50.5,
       "equity_bond": 35.5,
-      "capital_flow": 56.8,
-      "sentiment": 80.6,
+      "capital_flow": 65.4,
+      "sentiment": 83.2,
       "micro_structure": 29.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -1981,20 +2047,21 @@
   },
   {
     "date": "2026-01-20",
-    "composite_score": 44.9,
-    "stage": "B",
+    "composite_score": 55.6,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.7,
+      "liquidity": 50.5,
       "equity_bond": 43.5,
-      "capital_flow": 56.6,
-      "sentiment": 80.6,
+      "capital_flow": 65.2,
+      "sentiment": 83.2,
       "micro_structure": 29.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2011,20 +2078,21 @@
   },
   {
     "date": "2026-01-21",
-    "composite_score": 45.0,
-    "stage": "B",
+    "composite_score": 55.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.7,
+      "liquidity": 50.5,
       "equity_bond": 43.5,
-      "capital_flow": 56.9,
-      "sentiment": 80.6,
+      "capital_flow": 65.4,
+      "sentiment": 83.2,
       "micro_structure": 29.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2041,20 +2109,21 @@
   },
   {
     "date": "2026-01-22",
-    "composite_score": 45.6,
-    "stage": "B",
+    "composite_score": 56.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.7,
+      "liquidity": 50.5,
       "equity_bond": 46.4,
-      "capital_flow": 56.8,
-      "sentiment": 80.6,
+      "capital_flow": 65.4,
+      "sentiment": 83.2,
       "micro_structure": 29.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2071,20 +2140,21 @@
   },
   {
     "date": "2026-01-23",
-    "composite_score": 44.4,
-    "stage": "B",
+    "composite_score": 55.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.7,
+      "liquidity": 50.5,
       "equity_bond": 40.1,
-      "capital_flow": 56.8,
-      "sentiment": 82.5,
+      "capital_flow": 65.4,
+      "sentiment": 84.1,
       "micro_structure": 29.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2101,20 +2171,21 @@
   },
   {
     "date": "2026-01-26",
-    "composite_score": 48.2,
-    "stage": "B",
+    "composite_score": 57.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 34.0,
+      "valuation": 62.7,
+      "liquidity": 53.7,
       "equity_bond": 37.6,
-      "capital_flow": 56.8,
-      "sentiment": 82.5,
+      "capital_flow": 65.4,
+      "sentiment": 84.1,
       "micro_structure": 42.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2131,20 +2202,21 @@
   },
   {
     "date": "2026-01-27",
-    "composite_score": 48.2,
-    "stage": "B",
+    "composite_score": 57.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 34.0,
+      "valuation": 62.7,
+      "liquidity": 53.7,
       "equity_bond": 37.6,
-      "capital_flow": 56.8,
-      "sentiment": 82.5,
+      "capital_flow": 65.4,
+      "sentiment": 84.1,
       "micro_structure": 42.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2161,20 +2233,21 @@
   },
   {
     "date": "2026-01-28",
-    "composite_score": 47.3,
-    "stage": "B",
+    "composite_score": 57.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 34.0,
+      "valuation": 62.7,
+      "liquidity": 53.7,
       "equity_bond": 33.0,
-      "capital_flow": 57.0,
-      "sentiment": 82.5,
+      "capital_flow": 65.5,
+      "sentiment": 84.1,
       "micro_structure": 42.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2191,20 +2264,21 @@
   },
   {
     "date": "2026-01-29",
-    "composite_score": 47.2,
-    "stage": "B",
+    "composite_score": 57.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 34.0,
+      "valuation": 62.7,
+      "liquidity": 53.7,
       "equity_bond": 33.0,
-      "capital_flow": 56.8,
-      "sentiment": 82.5,
+      "capital_flow": 65.4,
+      "sentiment": 84.1,
       "micro_structure": 42.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2221,20 +2295,21 @@
   },
   {
     "date": "2026-01-30",
-    "composite_score": 46.4,
-    "stage": "B",
+    "composite_score": 57.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 34.0,
+      "valuation": 63.2,
+      "liquidity": 51.1,
       "equity_bond": 29.9,
-      "capital_flow": 56.5,
-      "sentiment": 81.6,
+      "capital_flow": 70.1,
+      "sentiment": 89.4,
       "micro_structure": 42.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2251,20 +2326,21 @@
   },
   {
     "date": "2026-02-02",
-    "composite_score": 52.3,
+    "composite_score": 61.3,
     "stage": "C",
     "dimensions": {
-      "liquidity": 42.0,
+      "valuation": 63.2,
+      "liquidity": 53.9,
       "equity_bond": 36.5,
-      "capital_flow": 56.6,
-      "sentiment": 81.6,
+      "capital_flow": 70.1,
+      "sentiment": 89.4,
       "micro_structure": 56.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2281,20 +2357,21 @@
   },
   {
     "date": "2026-02-03",
-    "composite_score": 53.3,
+    "composite_score": 61.9,
     "stage": "C",
     "dimensions": {
-      "liquidity": 42.0,
+      "valuation": 63.2,
+      "liquidity": 53.9,
       "equity_bond": 41.1,
-      "capital_flow": 56.7,
-      "sentiment": 81.6,
+      "capital_flow": 70.2,
+      "sentiment": 89.4,
       "micro_structure": 56.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2311,20 +2388,21 @@
   },
   {
     "date": "2026-02-04",
-    "composite_score": 53.2,
+    "composite_score": 61.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 42.0,
+      "valuation": 63.2,
+      "liquidity": 53.9,
       "equity_bond": 41.1,
-      "capital_flow": 56.3,
-      "sentiment": 81.6,
+      "capital_flow": 69.9,
+      "sentiment": 89.4,
       "micro_structure": 56.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2341,20 +2419,21 @@
   },
   {
     "date": "2026-02-05",
-    "composite_score": 53.2,
+    "composite_score": 61.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 42.0,
+      "valuation": 63.2,
+      "liquidity": 53.9,
       "equity_bond": 41.1,
-      "capital_flow": 56.4,
-      "sentiment": 81.6,
+      "capital_flow": 70.0,
+      "sentiment": 89.4,
       "micro_structure": 56.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2371,20 +2450,21 @@
   },
   {
     "date": "2026-02-06",
-    "composite_score": 52.6,
+    "composite_score": 61.4,
     "stage": "C",
     "dimensions": {
-      "liquidity": 42.0,
+      "valuation": 63.2,
+      "liquidity": 53.9,
       "equity_bond": 36.5,
-      "capital_flow": 56.3,
-      "sentiment": 85.6,
+      "capital_flow": 70.0,
+      "sentiment": 91.4,
       "micro_structure": 56.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2401,20 +2481,21 @@
   },
   {
     "date": "2026-02-09",
-    "composite_score": 53.5,
+    "composite_score": 61.9,
     "stage": "C",
     "dimensions": {
-      "liquidity": 44.0,
+      "valuation": 63.2,
+      "liquidity": 54.6,
       "equity_bond": 34.5,
-      "capital_flow": 56.6,
-      "sentiment": 85.6,
+      "capital_flow": 70.1,
+      "sentiment": 91.4,
       "micro_structure": 61.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2431,20 +2512,21 @@
   },
   {
     "date": "2026-02-10",
-    "composite_score": 53.4,
+    "composite_score": 61.9,
     "stage": "C",
     "dimensions": {
-      "liquidity": 44.0,
+      "valuation": 63.2,
+      "liquidity": 54.6,
       "equity_bond": 34.5,
-      "capital_flow": 56.4,
-      "sentiment": 85.6,
+      "capital_flow": 70.0,
+      "sentiment": 91.4,
       "micro_structure": 61.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2461,20 +2543,21 @@
   },
   {
     "date": "2026-02-11",
-    "composite_score": 52.5,
+    "composite_score": 61.4,
     "stage": "C",
     "dimensions": {
-      "liquidity": 44.0,
+      "valuation": 63.2,
+      "liquidity": 54.6,
       "equity_bond": 30.4,
-      "capital_flow": 56.4,
-      "sentiment": 85.6,
+      "capital_flow": 70.0,
+      "sentiment": 91.4,
       "micro_structure": 61.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2491,20 +2574,21 @@
   },
   {
     "date": "2026-02-12",
-    "composite_score": 52.3,
+    "composite_score": 61.2,
     "stage": "C",
     "dimensions": {
-      "liquidity": 44.0,
+      "valuation": 63.2,
+      "liquidity": 54.6,
       "equity_bond": 28.9,
-      "capital_flow": 56.8,
-      "sentiment": 85.6,
+      "capital_flow": 70.3,
+      "sentiment": 91.4,
       "micro_structure": 61.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2521,20 +2605,21 @@
   },
   {
     "date": "2026-02-13",
-    "composite_score": 54.0,
+    "composite_score": 62.3,
     "stage": "C",
     "dimensions": {
-      "liquidity": 44.0,
+      "valuation": 63.2,
+      "liquidity": 54.6,
       "equity_bond": 34.5,
-      "capital_flow": 59.0,
-      "sentiment": 84.1,
+      "capital_flow": 71.7,
+      "sentiment": 90.6,
       "micro_structure": 61.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2551,20 +2636,21 @@
   },
   {
     "date": "2026-02-24",
-    "composite_score": 49.9,
+    "composite_score": 59.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 56.0,
+      "valuation": 63.2,
+      "liquidity": 58.8,
       "equity_bond": 12.4,
-      "capital_flow": 59.3,
-      "sentiment": 84.1,
+      "capital_flow": 71.9,
+      "sentiment": 90.6,
       "micro_structure": 56.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2581,20 +2667,21 @@
   },
   {
     "date": "2026-02-25",
-    "composite_score": 50.5,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "liquidity": 56.0,
+      "valuation": 63.2,
+      "liquidity": 58.8,
       "equity_bond": 15.5,
-      "capital_flow": 59.1,
-      "sentiment": 84.1,
+      "capital_flow": 71.8,
+      "sentiment": 90.6,
       "micro_structure": 56.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2611,20 +2698,21 @@
   },
   {
     "date": "2026-02-26",
-    "composite_score": 51.5,
+    "composite_score": 60.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 56.0,
+      "valuation": 63.2,
+      "liquidity": 58.8,
       "equity_bond": 20.1,
-      "capital_flow": 59.2,
-      "sentiment": 84.1,
+      "capital_flow": 71.8,
+      "sentiment": 90.6,
       "micro_structure": 56.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2641,20 +2729,21 @@
   },
   {
     "date": "2026-02-27",
-    "composite_score": 52.2,
+    "composite_score": 59.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 56.0,
+      "valuation": 62.2,
+      "liquidity": 58.8,
       "equity_bond": 23.5,
-      "capital_flow": 60.2,
-      "sentiment": 80.0,
+      "capital_flow": 67.2,
+      "sentiment": 82.1,
       "micro_structure": 56.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2671,20 +2760,21 @@
   },
   {
     "date": "2026-03-02",
-    "composite_score": 47.0,
-    "stage": "B",
+    "composite_score": 56.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 50.0,
+      "valuation": 62.2,
+      "liquidity": 56.7,
       "equity_bond": 12.4,
-      "capital_flow": 60.1,
-      "sentiment": 80.0,
+      "capital_flow": 67.1,
+      "sentiment": 82.1,
       "micro_structure": 48.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2701,20 +2791,21 @@
   },
   {
     "date": "2026-03-03",
-    "composite_score": 45.7,
-    "stage": "B",
+    "composite_score": 55.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 50.0,
+      "valuation": 62.2,
+      "liquidity": 56.7,
       "equity_bond": 6.5,
-      "capital_flow": 60.0,
-      "sentiment": 80.0,
+      "capital_flow": 67.1,
+      "sentiment": 82.1,
       "micro_structure": 48.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2731,20 +2822,21 @@
   },
   {
     "date": "2026-03-04",
-    "composite_score": 46.8,
-    "stage": "B",
+    "composite_score": 55.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 50.0,
+      "valuation": 62.2,
+      "liquidity": 56.7,
       "equity_bond": 11.4,
-      "capital_flow": 60.0,
-      "sentiment": 80.0,
+      "capital_flow": 67.1,
+      "sentiment": 82.1,
       "micro_structure": 48.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2761,20 +2853,21 @@
   },
   {
     "date": "2026-03-05",
-    "composite_score": 46.8,
-    "stage": "B",
+    "composite_score": 55.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 50.0,
+      "valuation": 62.2,
+      "liquidity": 56.7,
       "equity_bond": 11.4,
-      "capital_flow": 60.1,
-      "sentiment": 80.0,
+      "capital_flow": 67.1,
+      "sentiment": 82.1,
       "micro_structure": 48.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2791,20 +2884,21 @@
   },
   {
     "date": "2026-03-06",
-    "composite_score": 47.3,
-    "stage": "B",
+    "composite_score": 56.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 50.0,
+      "valuation": 62.2,
+      "liquidity": 56.7,
       "equity_bond": 11.4,
-      "capital_flow": 62.6,
-      "sentiment": 76.9,
+      "capital_flow": 68.7,
+      "sentiment": 80.6,
       "micro_structure": 48.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2821,20 +2915,21 @@
   },
   {
     "date": "2026-03-09",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 53.8,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 2.0,
+      "valuation": 62.2,
+      "liquidity": 39.9,
       "equity_bond": 29.3,
-      "capital_flow": 62.6,
-      "sentiment": 76.9,
+      "capital_flow": 68.8,
+      "sentiment": 80.6,
       "micro_structure": 44.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2851,20 +2946,21 @@
   },
   {
     "date": "2026-03-10",
-    "composite_score": 39.7,
-    "stage": "B",
+    "composite_score": 51.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 2.0,
+      "valuation": 62.2,
+      "liquidity": 39.9,
       "equity_bond": 13.0,
-      "capital_flow": 62.8,
-      "sentiment": 76.9,
+      "capital_flow": 68.9,
+      "sentiment": 80.6,
       "micro_structure": 44.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2881,20 +2977,21 @@
   },
   {
     "date": "2026-03-11",
-    "composite_score": 42.0,
-    "stage": "B",
+    "composite_score": 53.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 2.0,
+      "valuation": 62.2,
+      "liquidity": 39.9,
       "equity_bond": 23.9,
-      "capital_flow": 62.7,
-      "sentiment": 76.9,
+      "capital_flow": 68.8,
+      "sentiment": 80.6,
       "micro_structure": 44.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2911,20 +3008,21 @@
   },
   {
     "date": "2026-03-12",
-    "composite_score": 38.9,
-    "stage": "B",
+    "composite_score": 51.3,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 2.0,
+      "valuation": 62.2,
+      "liquidity": 39.9,
       "equity_bond": 9.9,
-      "capital_flow": 62.6,
-      "sentiment": 76.9,
+      "capital_flow": 68.7,
+      "sentiment": 80.6,
       "micro_structure": 44.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2941,20 +3039,21 @@
   },
   {
     "date": "2026-03-13",
-    "composite_score": 41.4,
-    "stage": "B",
+    "composite_score": 52.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 2.0,
+      "valuation": 62.2,
+      "liquidity": 39.9,
       "equity_bond": 21.0,
-      "capital_flow": 63.7,
-      "sentiment": 73.1,
+      "capital_flow": 69.5,
+      "sentiment": 78.7,
       "micro_structure": 44.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -2971,20 +3070,21 @@
   },
   {
     "date": "2026-03-16",
-    "composite_score": 50.6,
+    "composite_score": 58.1,
     "stage": "C",
     "dimensions": {
-      "liquidity": 22.0,
+      "valuation": 62.2,
+      "liquidity": 46.9,
       "equity_bond": 41.0,
-      "capital_flow": 63.9,
-      "sentiment": 73.1,
+      "capital_flow": 69.6,
+      "sentiment": 78.7,
       "micro_structure": 51.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3001,20 +3101,21 @@
   },
   {
     "date": "2026-03-17",
-    "composite_score": 50.6,
+    "composite_score": 58.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 22.0,
+      "valuation": 62.2,
+      "liquidity": 46.9,
       "equity_bond": 41.0,
-      "capital_flow": 63.7,
-      "sentiment": 73.1,
+      "capital_flow": 69.4,
+      "sentiment": 78.7,
       "micro_structure": 51.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3031,20 +3132,21 @@
   },
   {
     "date": "2026-03-18",
-    "composite_score": 49.9,
+    "composite_score": 57.6,
     "stage": "C",
     "dimensions": {
-      "liquidity": 22.0,
+      "valuation": 62.2,
+      "liquidity": 46.9,
       "equity_bond": 37.6,
-      "capital_flow": 63.8,
-      "sentiment": 73.1,
+      "capital_flow": 69.5,
+      "sentiment": 78.7,
       "micro_structure": 51.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3061,20 +3163,21 @@
   },
   {
     "date": "2026-03-19",
-    "composite_score": 50.6,
+    "composite_score": 58.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 22.0,
+      "valuation": 62.2,
+      "liquidity": 46.9,
       "equity_bond": 41.0,
-      "capital_flow": 63.7,
-      "sentiment": 73.1,
+      "capital_flow": 69.5,
+      "sentiment": 78.7,
       "micro_structure": 51.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3091,20 +3194,21 @@
   },
   {
     "date": "2026-03-20",
-    "composite_score": 50.4,
+    "composite_score": 58.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 22.0,
+      "valuation": 62.2,
+      "liquidity": 46.9,
       "equity_bond": 41.0,
-      "capital_flow": 64.3,
-      "sentiment": 69.4,
+      "capital_flow": 69.9,
+      "sentiment": 76.8,
       "micro_structure": 51.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3121,20 +3225,21 @@
   },
   {
     "date": "2026-03-23",
-    "composite_score": 46.1,
-    "stage": "B",
+    "composite_score": 55.5,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.2,
+      "liquidity": 47.9,
       "equity_bond": 47.0,
-      "capital_flow": 64.2,
-      "sentiment": 69.4,
+      "capital_flow": 69.8,
+      "sentiment": 76.8,
       "micro_structure": 26.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3151,20 +3256,21 @@
   },
   {
     "date": "2026-03-24",
-    "composite_score": 45.4,
-    "stage": "B",
+    "composite_score": 55.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.2,
+      "liquidity": 47.9,
       "equity_bond": 43.6,
-      "capital_flow": 64.2,
-      "sentiment": 69.4,
+      "capital_flow": 69.8,
+      "sentiment": 76.8,
       "micro_structure": 26.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3181,20 +3287,21 @@
   },
   {
     "date": "2026-03-25",
-    "composite_score": 45.4,
-    "stage": "B",
+    "composite_score": 55.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.2,
+      "liquidity": 47.9,
       "equity_bond": 43.6,
-      "capital_flow": 64.4,
-      "sentiment": 69.4,
+      "capital_flow": 69.9,
+      "sentiment": 76.8,
       "micro_structure": 26.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3211,20 +3318,21 @@
   },
   {
     "date": "2026-03-26",
-    "composite_score": 45.4,
-    "stage": "B",
+    "composite_score": 55.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.2,
+      "liquidity": 47.9,
       "equity_bond": 43.6,
-      "capital_flow": 64.2,
-      "sentiment": 69.4,
+      "capital_flow": 69.8,
+      "sentiment": 76.8,
       "micro_structure": 26.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3241,20 +3349,21 @@
   },
   {
     "date": "2026-03-27",
-    "composite_score": 45.2,
-    "stage": "B",
+    "composite_score": 54.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 25.0,
+      "valuation": 62.2,
+      "liquidity": 47.9,
       "equity_bond": 43.6,
-      "capital_flow": 63.5,
-      "sentiment": 70.0,
+      "capital_flow": 69.3,
+      "sentiment": 77.1,
       "micro_structure": 26.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3271,20 +3380,21 @@
   },
   {
     "date": "2026-03-30",
-    "composite_score": 52.2,
+    "composite_score": 59.0,
     "stage": "C",
     "dimensions": {
-      "liquidity": 46.0,
+      "valuation": 62.2,
+      "liquidity": 55.3,
       "equity_bond": 41.5,
-      "capital_flow": 63.5,
-      "sentiment": 70.0,
+      "capital_flow": 69.3,
+      "sentiment": 77.1,
       "micro_structure": 44.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3301,20 +3411,21 @@
   },
   {
     "date": "2026-03-31",
-    "composite_score": 52.3,
+    "composite_score": 58.1,
     "stage": "C",
     "dimensions": {
-      "liquidity": 46.0,
+      "valuation": 61.5,
+      "liquidity": 47.2,
       "equity_bond": 41.5,
-      "capital_flow": 63.7,
-      "sentiment": 70.0,
+      "capital_flow": 71.4,
+      "sentiment": 83.2,
       "micro_structure": 44.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3331,20 +3442,21 @@
   },
   {
     "date": "2026-04-01",
-    "composite_score": 53.3,
+    "composite_score": 58.8,
     "stage": "C",
     "dimensions": {
-      "liquidity": 46.0,
+      "valuation": 61.5,
+      "liquidity": 47.2,
       "equity_bond": 46.1,
-      "capital_flow": 63.9,
-      "sentiment": 70.0,
+      "capital_flow": 71.5,
+      "sentiment": 83.2,
       "micro_structure": 44.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3361,20 +3473,21 @@
   },
   {
     "date": "2026-04-02",
-    "composite_score": 53.3,
+    "composite_score": 58.7,
     "stage": "C",
     "dimensions": {
-      "liquidity": 46.0,
+      "valuation": 61.5,
+      "liquidity": 47.2,
       "equity_bond": 46.1,
-      "capital_flow": 63.6,
-      "sentiment": 70.0,
+      "capital_flow": 71.4,
+      "sentiment": 83.2,
       "micro_structure": 44.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3391,20 +3504,21 @@
   },
   {
     "date": "2026-04-03",
-    "composite_score": 52.6,
+    "composite_score": 58.3,
     "stage": "C",
     "dimensions": {
-      "liquidity": 46.0,
+      "valuation": 61.5,
+      "liquidity": 47.2,
       "equity_bond": 46.1,
-      "capital_flow": 61.2,
-      "sentiment": 71.2,
+      "capital_flow": 69.8,
+      "sentiment": 83.8,
       "micro_structure": 44.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3421,20 +3535,21 @@
   },
   {
     "date": "2026-04-07",
-    "composite_score": 49.4,
+    "composite_score": 56.4,
     "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 44.0,
       "equity_bond": 40.5,
-      "capital_flow": 61.3,
-      "sentiment": 71.2,
+      "capital_flow": 69.8,
+      "sentiment": 83.8,
       "micro_structure": 41.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3451,20 +3566,21 @@
   },
   {
     "date": "2026-04-08",
-    "composite_score": 49.5,
+    "composite_score": 56.5,
     "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 44.0,
       "equity_bond": 40.5,
-      "capital_flow": 61.7,
-      "sentiment": 71.2,
+      "capital_flow": 70.1,
+      "sentiment": 83.8,
       "micro_structure": 41.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3481,20 +3597,21 @@
   },
   {
     "date": "2026-04-09",
-    "composite_score": 49.4,
+    "composite_score": 56.5,
     "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 44.0,
       "equity_bond": 40.5,
-      "capital_flow": 61.5,
-      "sentiment": 71.2,
+      "capital_flow": 70.0,
+      "sentiment": 83.8,
       "micro_structure": 41.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3511,20 +3628,21 @@
   },
   {
     "date": "2026-04-10",
-    "composite_score": 49.4,
+    "composite_score": 56.5,
     "stage": "C",
     "dimensions": {
-      "liquidity": 37.0,
+      "valuation": 61.5,
+      "liquidity": 44.0,
       "equity_bond": 40.5,
-      "capital_flow": 60.0,
-      "sentiment": 76.2,
+      "capital_flow": 69.0,
+      "sentiment": 86.3,
       "micro_structure": 41.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3541,20 +3659,21 @@
   },
   {
     "date": "2026-04-13",
-    "composite_score": 43.4,
-    "stage": "B",
+    "composite_score": 53.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 52.0,
+      "valuation": 61.5,
+      "liquidity": 49.3,
       "equity_bond": 34.9,
-      "capital_flow": 59.9,
-      "sentiment": 76.2,
+      "capital_flow": 68.9,
+      "sentiment": 86.3,
       "micro_structure": 12.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3571,20 +3690,21 @@
   },
   {
     "date": "2026-04-14",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 52.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 52.0,
+      "valuation": 61.5,
+      "liquidity": 49.3,
       "equity_bond": 33.4,
-      "capital_flow": 60.1,
-      "sentiment": 76.2,
+      "capital_flow": 69.1,
+      "sentiment": 86.3,
       "micro_structure": 12.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3601,20 +3721,21 @@
   },
   {
     "date": "2026-04-15",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 52.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 52.0,
+      "valuation": 61.5,
+      "liquidity": 49.3,
       "equity_bond": 33.4,
-      "capital_flow": 60.2,
-      "sentiment": 76.2,
+      "capital_flow": 69.1,
+      "sentiment": 86.3,
       "micro_structure": 12.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3631,20 +3752,21 @@
   },
   {
     "date": "2026-04-16",
-    "composite_score": 42.9,
-    "stage": "B",
+    "composite_score": 52.7,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 52.0,
+      "valuation": 61.5,
+      "liquidity": 49.3,
       "equity_bond": 32.3,
-      "capital_flow": 60.1,
-      "sentiment": 76.2,
+      "capital_flow": 69.0,
+      "sentiment": 86.3,
       "micro_structure": 12.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3661,20 +3783,21 @@
   },
   {
     "date": "2026-04-17",
-    "composite_score": 43.2,
-    "stage": "B",
+    "composite_score": 52.9,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 52.0,
+      "valuation": 61.5,
+      "liquidity": 49.3,
       "equity_bond": 31.9,
-      "capital_flow": 60.6,
-      "sentiment": 78.8,
+      "capital_flow": 69.4,
+      "sentiment": 87.6,
       "micro_structure": 12.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3691,20 +3814,21 @@
   },
   {
     "date": "2026-04-20",
-    "composite_score": 45.6,
-    "stage": "B",
+    "composite_score": 54.2,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 66.0,
+      "valuation": 61.5,
+      "liquidity": 54.2,
       "equity_bond": 30.4,
-      "capital_flow": 60.8,
-      "sentiment": 78.8,
+      "capital_flow": 69.5,
+      "sentiment": 87.6,
       "micro_structure": 14.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3721,20 +3845,21 @@
   },
   {
     "date": "2026-04-21",
-    "composite_score": 45.2,
-    "stage": "B",
+    "composite_score": 54.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 66.0,
+      "valuation": 61.5,
+      "liquidity": 54.2,
       "equity_bond": 29.4,
-      "capital_flow": 60.5,
-      "sentiment": 78.8,
+      "capital_flow": 69.3,
+      "sentiment": 87.6,
       "micro_structure": 14.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3751,20 +3876,21 @@
   },
   {
     "date": "2026-04-22",
-    "composite_score": 45.2,
-    "stage": "B",
+    "composite_score": 54.0,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 66.0,
+      "valuation": 61.5,
+      "liquidity": 54.2,
       "equity_bond": 28.5,
-      "capital_flow": 60.8,
-      "sentiment": 78.8,
+      "capital_flow": 69.5,
+      "sentiment": 87.6,
       "micro_structure": 14.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3781,20 +3907,21 @@
   },
   {
     "date": "2026-04-23",
-    "composite_score": 45.3,
-    "stage": "B",
+    "composite_score": 54.1,
+    "stage": "C",
     "dimensions": {
-      "liquidity": 66.0,
+      "valuation": 61.5,
+      "liquidity": 54.2,
       "equity_bond": 29.4,
-      "capital_flow": 60.8,
-      "sentiment": 78.8,
+      "capital_flow": 69.5,
+      "sentiment": 87.6,
       "micro_structure": 14.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 9,
+      "coverage_n": 15,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3811,21 +3938,21 @@
   },
   {
     "date": "2026-04-24",
-    "composite_score": 56.8,
+    "composite_score": 60.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 59.8,
-      "liquidity": 66.0,
+      "valuation": 60.5,
+      "liquidity": 54.2,
       "equity_bond": 68.9,
-      "capital_flow": 60.3,
-      "sentiment": 85.0,
+      "capital_flow": 69.2,
+      "sentiment": 90.7,
       "micro_structure": 14.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3842,21 +3969,21 @@
   },
   {
     "date": "2026-04-27",
-    "composite_score": 56.4,
+    "composite_score": 59.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 60.3,
-      "liquidity": 64.0,
+      "valuation": 60.8,
+      "liquidity": 53.5,
       "equity_bond": 71.4,
-      "capital_flow": 60.4,
-      "sentiment": 85.0,
+      "capital_flow": 69.3,
+      "sentiment": 90.7,
       "micro_structure": 9.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3873,21 +4000,21 @@
   },
   {
     "date": "2026-04-28",
-    "composite_score": 55.5,
+    "composite_score": 59.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 58.6,
-      "liquidity": 64.0,
+      "valuation": 59.8,
+      "liquidity": 53.5,
       "equity_bond": 69.1,
-      "capital_flow": 60.3,
-      "sentiment": 85.0,
+      "capital_flow": 69.2,
+      "sentiment": 90.7,
       "micro_structure": 9.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3904,21 +4031,21 @@
   },
   {
     "date": "2026-04-29",
-    "composite_score": 58.1,
+    "composite_score": 60.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 67.9,
-      "liquidity": 64.0,
+      "valuation": 65.3,
+      "liquidity": 53.5,
       "equity_bond": 71.8,
-      "capital_flow": 60.4,
-      "sentiment": 85.0,
+      "capital_flow": 69.3,
+      "sentiment": 90.7,
       "micro_structure": 9.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3935,21 +4062,21 @@
   },
   {
     "date": "2026-04-30",
-    "composite_score": 58.6,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 67.4,
-      "liquidity": 64.0,
+      "valuation": 68.0,
+      "liquidity": 49.7,
       "equity_bond": 72.7,
-      "capital_flow": 61.5,
-      "sentiment": 87.5,
+      "capital_flow": 68.4,
+      "sentiment": 85.2,
       "micro_structure": 9.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3966,21 +4093,21 @@
   },
   {
     "date": "2026-05-06",
-    "composite_score": 65.0,
+    "composite_score": 64.5,
     "stage": "C",
     "dimensions": {
-      "valuation": 79.5,
-      "liquidity": 70.0,
+      "valuation": 75.2,
+      "liquidity": 51.8,
       "equity_bond": 82.6,
-      "capital_flow": 62.0,
-      "sentiment": 87.5,
+      "capital_flow": 68.8,
+      "sentiment": 85.2,
       "micro_structure": 13.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -3997,21 +4124,21 @@
   },
   {
     "date": "2026-05-07",
-    "composite_score": 65.7,
+    "composite_score": 64.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 83.2,
-      "liquidity": 70.0,
+      "valuation": 77.4,
+      "liquidity": 51.8,
       "equity_bond": 82.6,
-      "capital_flow": 61.7,
-      "sentiment": 87.5,
+      "capital_flow": 68.5,
+      "sentiment": 85.2,
       "micro_structure": 13.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4028,21 +4155,21 @@
   },
   {
     "date": "2026-05-08",
-    "composite_score": 65.4,
+    "composite_score": 64.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 78.5,
-      "liquidity": 70.0,
+      "valuation": 74.6,
+      "liquidity": 51.8,
       "equity_bond": 82.1,
-      "capital_flow": 62.6,
-      "sentiment": 96.9,
+      "capital_flow": 69.1,
+      "sentiment": 89.9,
       "micro_structure": 13.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4059,21 +4186,21 @@
   },
   {
     "date": "2026-05-11",
-    "composite_score": 69.3,
+    "composite_score": 67.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 95.8,
-      "liquidity": 68.0,
+      "valuation": 85.0,
+      "liquidity": 51.1,
       "equity_bond": 85.9,
-      "capital_flow": 63.0,
-      "sentiment": 96.9,
+      "capital_flow": 69.4,
+      "sentiment": 89.9,
       "micro_structure": 9.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4090,21 +4217,21 @@
   },
   {
     "date": "2026-05-12",
-    "composite_score": 69.6,
+    "composite_score": 67.5,
     "stage": "C",
     "dimensions": {
-      "valuation": 94.4,
-      "liquidity": 68.0,
+      "valuation": 84.2,
+      "liquidity": 51.1,
       "equity_bond": 88.7,
-      "capital_flow": 62.8,
-      "sentiment": 96.9,
+      "capital_flow": 69.3,
+      "sentiment": 89.9,
       "micro_structure": 9.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4121,21 +4248,21 @@
   },
   {
     "date": "2026-05-13",
-    "composite_score": 70.6,
+    "composite_score": 68.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 98.3,
-      "liquidity": 68.0,
+      "valuation": 86.5,
+      "liquidity": 51.1,
       "equity_bond": 89.3,
-      "capital_flow": 63.0,
-      "sentiment": 96.9,
+      "capital_flow": 69.4,
+      "sentiment": 89.9,
       "micro_structure": 9.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4152,21 +4279,21 @@
   },
   {
     "date": "2026-05-14",
-    "composite_score": 66.8,
+    "composite_score": 65.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 86.8,
-      "liquidity": 68.0,
+      "valuation": 79.6,
+      "liquidity": 51.1,
       "equity_bond": 83.7,
-      "capital_flow": 62.8,
-      "sentiment": 96.9,
+      "capital_flow": 69.3,
+      "sentiment": 89.9,
       "micro_structure": 9.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4183,21 +4310,21 @@
   },
   {
     "date": "2026-05-15",
-    "composite_score": 63.5,
+    "composite_score": 63.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 76.5,
-      "liquidity": 68.0,
+      "valuation": 73.4,
+      "liquidity": 51.1,
       "equity_bond": 80.7,
-      "capital_flow": 62.4,
-      "sentiment": 91.9,
+      "capital_flow": 69.1,
+      "sentiment": 87.4,
       "micro_structure": 9.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4214,21 +4341,21 @@
   },
   {
     "date": "2026-05-18",
-    "composite_score": 59.7,
+    "composite_score": 61.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 70.6,
-      "liquidity": 28.0,
+      "valuation": 69.9,
+      "liquidity": 37.1,
       "equity_bond": 90.8,
-      "capital_flow": 62.5,
-      "sentiment": 91.9,
+      "capital_flow": 69.1,
+      "sentiment": 87.4,
       "micro_structure": 5.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4245,21 +4372,21 @@
   },
   {
     "date": "2026-05-19",
-    "composite_score": 58.5,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 75.5,
-      "liquidity": 28.0,
+      "valuation": 72.8,
+      "liquidity": 37.1,
       "equity_bond": 81.5,
-      "capital_flow": 62.5,
-      "sentiment": 91.9,
+      "capital_flow": 69.1,
+      "sentiment": 87.4,
       "micro_structure": 5.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4276,21 +4403,21 @@
   },
   {
     "date": "2026-05-20",
-    "composite_score": 58.1,
+    "composite_score": 59.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 75.0,
-      "liquidity": 28.0,
+      "valuation": 72.5,
+      "liquidity": 37.1,
       "equity_bond": 79.9,
-      "capital_flow": 62.7,
-      "sentiment": 91.9,
+      "capital_flow": 69.2,
+      "sentiment": 87.4,
       "micro_structure": 5.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4307,21 +4434,21 @@
   },
   {
     "date": "2026-05-21",
-    "composite_score": 56.5,
+    "composite_score": 58.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 63.2,
-      "liquidity": 28.0,
+      "valuation": 65.4,
+      "liquidity": 37.1,
       "equity_bond": 83.7,
-      "capital_flow": 62.6,
-      "sentiment": 91.9,
+      "capital_flow": 69.2,
+      "sentiment": 87.4,
       "micro_structure": 5.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4338,21 +4465,21 @@
   },
   {
     "date": "2026-05-22",
-    "composite_score": 58.5,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 73.4,
-      "liquidity": 28.0,
+      "valuation": 71.6,
+      "liquidity": 37.1,
       "equity_bond": 81.5,
-      "capital_flow": 64.5,
-      "sentiment": 91.2,
+      "capital_flow": 70.4,
+      "sentiment": 87.1,
       "micro_structure": 5.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4369,21 +4496,21 @@
   },
   {
     "date": "2026-05-25",
-    "composite_score": 64.4,
+    "composite_score": 64.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 88.9,
-      "liquidity": 31.0,
+      "valuation": 80.9,
+      "liquidity": 38.2,
       "equity_bond": 92.8,
-      "capital_flow": 65.1,
-      "sentiment": 91.2,
+      "capital_flow": 70.8,
+      "sentiment": 87.1,
       "micro_structure": 1.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4400,21 +4527,21 @@
   },
   {
     "date": "2026-05-26",
-    "composite_score": 63.9,
+    "composite_score": 63.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 93.9,
-      "liquidity": 31.0,
+      "valuation": 83.9,
+      "liquidity": 38.2,
       "equity_bond": 86.9,
-      "capital_flow": 64.7,
-      "sentiment": 91.2,
+      "capital_flow": 70.5,
+      "sentiment": 87.1,
       "micro_structure": 1.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4431,21 +4558,21 @@
   },
   {
     "date": "2026-05-27",
-    "composite_score": 60.9,
+    "composite_score": 61.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 84.7,
-      "liquidity": 31.0,
+      "valuation": 78.3,
+      "liquidity": 38.2,
       "equity_bond": 82.6,
-      "capital_flow": 64.7,
-      "sentiment": 91.2,
+      "capital_flow": 70.5,
+      "sentiment": 87.1,
       "micro_structure": 1.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4462,21 +4589,21 @@
   },
   {
     "date": "2026-05-28",
-    "composite_score": 60.8,
+    "composite_score": 61.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 86.1,
-      "liquidity": 31.0,
+      "valuation": 79.2,
+      "liquidity": 38.2,
       "equity_bond": 80.7,
-      "capital_flow": 64.6,
-      "sentiment": 91.2,
+      "capital_flow": 70.5,
+      "sentiment": 87.1,
       "micro_structure": 1.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4493,21 +4620,21 @@
   },
   {
     "date": "2026-05-29",
-    "composite_score": 60.1,
+    "composite_score": 62.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 82.2,
-      "liquidity": 31.0,
+      "valuation": 76.1,
+      "liquidity": 39.8,
       "equity_bond": 80.3,
-      "capital_flow": 66.0,
-      "sentiment": 90.0,
+      "capital_flow": 76.1,
+      "sentiment": 89.3,
       "micro_structure": 1.7
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4524,21 +4651,21 @@
   },
   {
     "date": "2026-06-01",
-    "composite_score": 62.8,
+    "composite_score": 64.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 72.9,
-      "liquidity": 92.0,
+      "valuation": 70.5,
+      "liquidity": 61.1,
       "equity_bond": 73.1,
-      "capital_flow": 65.8,
-      "sentiment": 90.0,
+      "capital_flow": 76.0,
+      "sentiment": 89.3,
       "micro_structure": 2.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4555,21 +4682,21 @@
   },
   {
     "date": "2026-06-02",
-    "composite_score": 67.3,
+    "composite_score": 67.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 86.8,
-      "liquidity": 92.0,
+      "valuation": 78.8,
+      "liquidity": 61.1,
       "equity_bond": 79.7,
-      "capital_flow": 65.9,
-      "sentiment": 90.0,
+      "capital_flow": 76.0,
+      "sentiment": 89.3,
       "micro_structure": 2.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4586,21 +4713,21 @@
   },
   {
     "date": "2026-06-03",
-    "composite_score": 70.3,
+    "composite_score": 69.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 91.6,
-      "liquidity": 92.0,
+      "valuation": 81.7,
+      "liquidity": 61.1,
       "equity_bond": 87.5,
-      "capital_flow": 66.3,
-      "sentiment": 90.0,
+      "capital_flow": 76.3,
+      "sentiment": 89.3,
       "micro_structure": 2.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4617,21 +4744,21 @@
   },
   {
     "date": "2026-06-04",
-    "composite_score": 66.8,
+    "composite_score": 67.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 84.2,
-      "liquidity": 92.0,
+      "valuation": 77.3,
+      "liquidity": 61.1,
       "equity_bond": 79.7,
-      "capital_flow": 66.2,
-      "sentiment": 90.0,
+      "capital_flow": 76.2,
+      "sentiment": 89.3,
       "micro_structure": 2.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4648,21 +4775,21 @@
   },
   {
     "date": "2026-06-05",
-    "composite_score": 61.9,
+    "composite_score": 63.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 69.6,
-      "liquidity": 92.0,
+      "valuation": 68.5,
+      "liquidity": 61.1,
       "equity_bond": 72.6,
-      "capital_flow": 66.8,
-      "sentiment": 86.2,
+      "capital_flow": 76.6,
+      "sentiment": 87.4,
       "micro_structure": 2.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4679,21 +4806,21 @@
   },
   {
     "date": "2026-06-08",
-    "composite_score": 57.1,
+    "composite_score": 60.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 51.3,
-      "liquidity": 86.0,
+      "valuation": 57.5,
+      "liquidity": 59.0,
       "equity_bond": 70.7,
-      "capital_flow": 66.6,
-      "sentiment": 86.2,
+      "capital_flow": 76.5,
+      "sentiment": 87.4,
       "micro_structure": 3.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4710,21 +4837,21 @@
   },
   {
     "date": "2026-06-09",
-    "composite_score": 61.8,
+    "composite_score": 63.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 66.2,
-      "liquidity": 86.0,
+      "valuation": 66.5,
+      "liquidity": 59.0,
       "equity_bond": 76.8,
-      "capital_flow": 66.8,
-      "sentiment": 86.2,
+      "capital_flow": 76.6,
+      "sentiment": 87.4,
       "micro_structure": 3.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4741,21 +4868,21 @@
   },
   {
     "date": "2026-06-10",
-    "composite_score": 59.1,
+    "composite_score": 62.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 57.1,
-      "liquidity": 86.0,
+      "valuation": 61.0,
+      "liquidity": 59.0,
       "equity_bond": 73.8,
-      "capital_flow": 66.8,
-      "sentiment": 86.2,
+      "capital_flow": 76.6,
+      "sentiment": 87.4,
       "micro_structure": 3.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4772,21 +4899,21 @@
   },
   {
     "date": "2026-06-11",
-    "composite_score": 58.6,
+    "composite_score": 61.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 52.8,
-      "liquidity": 86.0,
+      "valuation": 58.4,
+      "liquidity": 59.0,
       "equity_bond": 75.5,
-      "capital_flow": 66.9,
-      "sentiment": 86.2,
+      "capital_flow": 76.7,
+      "sentiment": 87.4,
       "micro_structure": 3.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4803,21 +4930,21 @@
   },
   {
     "date": "2026-06-12",
-    "composite_score": 60.6,
+    "composite_score": 62.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 61.5,
-      "liquidity": 86.0,
+      "valuation": 63.7,
+      "liquidity": 59.0,
       "equity_bond": 75.8,
-      "capital_flow": 64.4,
-      "sentiment": 95.0,
+      "capital_flow": 75.0,
+      "sentiment": 91.8,
       "micro_structure": 3.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4834,21 +4961,21 @@
   },
   {
     "date": "2026-06-15",
-    "composite_score": 65.0,
+    "composite_score": 65.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 81.7,
-      "liquidity": 74.0,
+      "valuation": 75.8,
+      "liquidity": 54.8,
       "equity_bond": 81.2,
-      "capital_flow": 64.6,
-      "sentiment": 95.0,
+      "capital_flow": 75.2,
+      "sentiment": 91.8,
       "micro_structure": 4.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4865,21 +4992,21 @@
   },
   {
     "date": "2026-06-16",
-    "composite_score": 64.3,
+    "composite_score": 65.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 80.7,
-      "liquidity": 74.0,
+      "valuation": 75.2,
+      "liquidity": 54.8,
       "equity_bond": 78.9,
-      "capital_flow": 64.8,
-      "sentiment": 95.0,
+      "capital_flow": 75.3,
+      "sentiment": 91.8,
       "micro_structure": 4.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4896,21 +5023,21 @@
   },
   {
     "date": "2026-06-17",
-    "composite_score": 67.9,
+    "composite_score": 67.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 90.6,
-      "liquidity": 74.0,
+      "valuation": 81.1,
+      "liquidity": 54.8,
       "equity_bond": 85.1,
-      "capital_flow": 65.1,
-      "sentiment": 95.0,
+      "capital_flow": 75.5,
+      "sentiment": 91.8,
       "micro_structure": 4.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4927,21 +5054,21 @@
   },
   {
     "date": "2026-06-18",
-    "composite_score": 68.9,
+    "composite_score": 68.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 93.0,
-      "liquidity": 74.0,
+      "valuation": 82.5,
+      "liquidity": 54.8,
       "equity_bond": 85.5,
-      "capital_flow": 65.6,
-      "sentiment": 98.1,
+      "capital_flow": 75.8,
+      "sentiment": 93.3,
       "micro_structure": 4.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4958,21 +5085,21 @@
   },
   {
     "date": "2026-06-22",
-    "composite_score": 72.4,
+    "composite_score": 70.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 100.0,
-      "liquidity": 83.0,
+      "valuation": 86.8,
+      "liquidity": 58.0,
       "equity_bond": 92.6,
-      "capital_flow": 65.4,
-      "sentiment": 98.1,
+      "capital_flow": 75.7,
+      "sentiment": 93.3,
       "micro_structure": 0.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -4989,21 +5116,21 @@
   },
   {
     "date": "2026-06-23",
-    "composite_score": 69.6,
+    "composite_score": 68.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 88.4,
-      "liquidity": 83.0,
+      "valuation": 79.8,
+      "liquidity": 58.0,
       "equity_bond": 91.5,
-      "capital_flow": 65.2,
-      "sentiment": 98.1,
+      "capital_flow": 75.6,
+      "sentiment": 93.3,
       "micro_structure": 0.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5020,21 +5147,21 @@
   },
   {
     "date": "2026-06-24",
-    "composite_score": 70.7,
+    "composite_score": 69.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 93.5,
-      "liquidity": 83.0,
+      "valuation": 82.8,
+      "liquidity": 58.0,
       "equity_bond": 91.6,
-      "capital_flow": 65.3,
-      "sentiment": 98.1,
+      "capital_flow": 75.6,
+      "sentiment": 93.3,
       "micro_structure": 0.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5051,21 +5178,21 @@
   },
   {
     "date": "2026-06-25",
-    "composite_score": 71.9,
+    "composite_score": 70.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 99.2,
-      "liquidity": 83.0,
+      "valuation": 86.3,
+      "liquidity": 58.0,
       "equity_bond": 91.2,
-      "capital_flow": 65.6,
-      "sentiment": 98.1,
+      "capital_flow": 75.8,
+      "sentiment": 93.3,
       "micro_structure": 0.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5082,21 +5209,21 @@
   },
   {
     "date": "2026-06-26",
-    "composite_score": 66.7,
+    "composite_score": 67.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 77.3,
-      "liquidity": 83.0,
+      "valuation": 73.1,
+      "liquidity": 58.0,
       "equity_bond": 89.1,
-      "capital_flow": 64.6,
-      "sentiment": 100.0,
+      "capital_flow": 75.2,
+      "sentiment": 94.3,
       "micro_structure": 0.8
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5116,18 +5243,18 @@
     "composite_score": 67.5,
     "stage": "C",
     "dimensions": {
-      "valuation": 90.1,
-      "liquidity": 88.0,
+      "valuation": 80.8,
+      "liquidity": 59.7,
       "equity_bond": 79.2,
-      "capital_flow": 64.5,
-      "sentiment": 100.0,
+      "capital_flow": 75.1,
+      "sentiment": 94.3,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5144,21 +5271,21 @@
   },
   {
     "date": "2026-06-30",
-    "composite_score": 70.2,
+    "composite_score": 68.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 97.5,
-      "liquidity": 88.0,
+      "valuation": 85.0,
+      "liquidity": 57.2,
       "equity_bond": 84.0,
-      "capital_flow": 64.9,
-      "sentiment": 100.0,
+      "capital_flow": 73.3,
+      "sentiment": 95.4,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5175,21 +5302,21 @@
   },
   {
     "date": "2026-07-01",
-    "composite_score": 70.0,
+    "composite_score": 68.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 96.6,
-      "liquidity": 88.0,
+      "valuation": 84.5,
+      "liquidity": 57.2,
       "equity_bond": 83.5,
-      "capital_flow": 64.9,
-      "sentiment": 100.0,
+      "capital_flow": 73.3,
+      "sentiment": 95.4,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5206,21 +5333,21 @@
   },
   {
     "date": "2026-07-02",
-    "composite_score": 62.2,
+    "composite_score": 63.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 69.1,
-      "liquidity": 88.0,
+      "valuation": 68.0,
+      "liquidity": 57.2,
       "equity_bond": 76.1,
-      "capital_flow": 64.2,
-      "sentiment": 100.0,
+      "capital_flow": 72.9,
+      "sentiment": 95.4,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5237,21 +5364,21 @@
   },
   {
     "date": "2026-07-03",
-    "composite_score": 62.6,
+    "composite_score": 63.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 72.4,
-      "liquidity": 88.0,
+      "valuation": 70.0,
+      "liquidity": 57.2,
       "equity_bond": 73.6,
-      "capital_flow": 65.6,
-      "sentiment": 99.4,
+      "capital_flow": 73.7,
+      "sentiment": 95.0,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5268,21 +5395,21 @@
   },
   {
     "date": "2026-07-06",
-    "composite_score": 62.4,
+    "composite_score": 63.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 72.0,
-      "liquidity": 80.0,
+      "valuation": 69.7,
+      "liquidity": 54.4,
       "equity_bond": 76.3,
-      "capital_flow": 65.5,
-      "sentiment": 99.4,
+      "capital_flow": 73.7,
+      "sentiment": 95.0,
       "micro_structure": 1.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5299,21 +5426,21 @@
   },
   {
     "date": "2026-07-07",
-    "composite_score": 60.1,
+    "composite_score": 61.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 64.7,
-      "liquidity": 80.0,
+      "valuation": 65.3,
+      "liquidity": 54.4,
       "equity_bond": 72.9,
-      "capital_flow": 65.4,
-      "sentiment": 99.4,
+      "capital_flow": 73.6,
+      "sentiment": 95.0,
       "micro_structure": 1.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5330,21 +5457,21 @@
   },
   {
     "date": "2026-07-08",
-    "composite_score": 57.8,
+    "composite_score": 60.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 58.2,
-      "liquidity": 80.0,
+      "valuation": 61.4,
+      "liquidity": 54.4,
       "equity_bond": 69.3,
-      "capital_flow": 65.5,
-      "sentiment": 99.4,
+      "capital_flow": 73.7,
+      "sentiment": 95.0,
       "micro_structure": 1.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5361,21 +5488,21 @@
   },
   {
     "date": "2026-07-09",
-    "composite_score": 65.2,
+    "composite_score": 65.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 79.0,
-      "liquidity": 80.0,
+      "valuation": 73.9,
+      "liquidity": 54.4,
       "equity_bond": 81.4,
-      "capital_flow": 65.9,
-      "sentiment": 99.4,
+      "capital_flow": 73.9,
+      "sentiment": 95.0,
       "micro_structure": 1.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5392,21 +5519,21 @@
   },
   {
     "date": "2026-07-10",
-    "composite_score": 59.3,
+    "composite_score": 61.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 62.0,
-      "liquidity": 80.0,
+      "valuation": 63.7,
+      "liquidity": 54.4,
       "equity_bond": 70.8,
-      "capital_flow": 67.0,
-      "sentiment": 98.8,
+      "capital_flow": 74.6,
+      "sentiment": 94.7,
       "micro_structure": 1.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5423,21 +5550,21 @@
   },
   {
     "date": "2026-07-13",
-    "composite_score": 55.9,
+    "composite_score": 58.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 48.2,
-      "liquidity": 74.0,
+      "valuation": 55.5,
+      "liquidity": 52.3,
       "equity_bond": 72.8,
-      "capital_flow": 66.4,
-      "sentiment": 98.8,
+      "capital_flow": 74.3,
+      "sentiment": 94.7,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 12,
+      "coverage_n": 18,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5454,21 +5581,21 @@
   },
   {
     "date": "2026-07-14",
-    "composite_score": 62.7,
+    "composite_score": 63.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 65.7,
-      "liquidity": 74.0,
+      "valuation": 66.0,
+      "liquidity": 52.3,
       "equity_bond": 77.6,
-      "capital_flow": 66.7,
-      "sentiment": 91.9,
+      "capital_flow": 74.4,
+      "sentiment": 91.5,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5485,21 +5612,21 @@
   },
   {
     "date": "2026-07-15",
-    "composite_score": 62.0,
+    "composite_score": 62.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 63.7,
-      "liquidity": 74.0,
+      "valuation": 64.7,
+      "liquidity": 52.3,
       "equity_bond": 77.6,
-      "capital_flow": 66.6,
-      "sentiment": 90.0,
+      "capital_flow": 74.4,
+      "sentiment": 90.2,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5516,21 +5643,21 @@
   },
   {
     "date": "2026-07-16",
-    "composite_score": 56.5,
+    "composite_score": 59.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 48.7,
-      "liquidity": 74.0,
+      "valuation": 55.8,
+      "liquidity": 52.3,
       "equity_bond": 72.8,
-      "capital_flow": 66.4,
-      "sentiment": 79.2,
+      "capital_flow": 74.2,
+      "sentiment": 82.7,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5547,21 +5674,21 @@
   },
   {
     "date": "2026-07-17",
-    "composite_score": 49.9,
+    "composite_score": 54.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 18.5,
-      "liquidity": 74.0,
+      "valuation": 37.6,
+      "liquidity": 52.3,
       "equity_bond": 61.9,
-      "capital_flow": 65.5,
-      "sentiment": 93.4,
+      "capital_flow": 73.7,
+      "sentiment": 92.6,
       "micro_structure": 0.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5578,21 +5705,21 @@
   },
   {
     "date": "2026-07-20",
-    "composite_score": 54.6,
+    "composite_score": 57.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 34.3,
-      "liquidity": 74.0,
+      "valuation": 47.1,
+      "liquidity": 52.3,
       "equity_bond": 66.7,
-      "capital_flow": 65.4,
-      "sentiment": 94.3,
+      "capital_flow": 73.6,
+      "sentiment": 93.2,
       "micro_structure": 3.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5609,21 +5736,21 @@
   },
   {
     "date": "2026-07-21",
-    "composite_score": 60.4,
+    "composite_score": 61.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 55.6,
-      "liquidity": 74.0,
+      "valuation": 59.9,
+      "liquidity": 52.3,
       "equity_bond": 72.9,
-      "capital_flow": 65.8,
-      "sentiment": 95.3,
+      "capital_flow": 73.9,
+      "sentiment": 93.9,
       "micro_structure": 3.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5640,21 +5767,21 @@
   },
   {
     "date": "2026-07-22",
-    "composite_score": 59.1,
+    "composite_score": 60.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 52.3,
-      "liquidity": 74.0,
+      "valuation": 57.9,
+      "liquidity": 52.3,
       "equity_bond": 71.4,
-      "capital_flow": 66.1,
-      "sentiment": 92.5,
+      "capital_flow": 74.1,
+      "sentiment": 91.9,
       "micro_structure": 3.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5671,21 +5798,21 @@
   },
   {
     "date": "2026-07-23",
-    "composite_score": 58.3,
+    "composite_score": 60.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 54.4,
-      "liquidity": 74.0,
+      "valuation": 59.2,
+      "liquidity": 52.3,
       "equity_bond": 74.2,
-      "capital_flow": 65.6,
-      "sentiment": 79.3,
+      "capital_flow": 73.8,
+      "sentiment": 82.8,
       "micro_structure": 3.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5702,21 +5829,21 @@
   },
   {
     "date": "2026-07-24",
-    "composite_score": 52.7,
+    "composite_score": 56.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 41.4,
-      "liquidity": 74.0,
+      "valuation": 51.3,
+      "liquidity": 52.3,
       "equity_bond": 69.1,
-      "capital_flow": 64.3,
-      "sentiment": 67.3,
+      "capital_flow": 72.9,
+      "sentiment": 74.5,
       "micro_structure": 3.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5733,21 +5860,21 @@
   },
   {
     "date": "2026-07-27",
-    "composite_score": 56.1,
+    "composite_score": 58.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 50.4,
-      "liquidity": 83.0,
+      "valuation": 56.8,
+      "liquidity": 55.5,
       "equity_bond": 72.4,
-      "capital_flow": 64.8,
-      "sentiment": 64.9,
+      "capital_flow": 73.3,
+      "sentiment": 72.9,
       "micro_structure": 4.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5764,21 +5891,21 @@
   },
   {
     "date": "2026-07-28",
-    "composite_score": 49.3,
+    "composite_score": 54.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 28.6,
-      "liquidity": 83.0,
+      "valuation": 43.7,
+      "liquidity": 55.5,
       "equity_bond": 64.2,
-      "capital_flow": 64.4,
-      "sentiment": 60.2,
+      "capital_flow": 73.0,
+      "sentiment": 69.6,
       "micro_structure": 4.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5795,21 +5922,21 @@
   },
   {
     "date": "2026-07-29",
-    "composite_score": 54.6,
+    "composite_score": 57.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 35.5,
-      "liquidity": 83.0,
+      "valuation": 47.8,
+      "liquidity": 55.5,
       "equity_bond": 68.5,
-      "capital_flow": 64.3,
-      "sentiment": 83.3,
+      "capital_flow": 72.9,
+      "sentiment": 85.6,
       "micro_structure": 4.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5826,21 +5953,21 @@
   },
   {
     "date": "2026-07-30",
-    "composite_score": 53.6,
+    "composite_score": 57.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 23.8,
-      "liquidity": 83.0,
+      "valuation": 40.8,
+      "liquidity": 55.5,
       "equity_bond": 69.4,
-      "capital_flow": 64.2,
-      "sentiment": 91.8,
+      "capital_flow": 72.9,
+      "sentiment": 91.4,
       "micro_structure": 4.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5857,21 +5984,21 @@
   },
   {
     "date": "2026-07-31",
-    "composite_score": 53.2,
+    "composite_score": 55.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 31.4,
-      "liquidity": 83.0,
+      "valuation": 45.3,
+      "liquidity": 56.7,
       "equity_bond": 62.0,
-      "capital_flow": 64.6,
-      "sentiment": 89.2,
+      "capital_flow": 67.0,
+      "sentiment": 88.5,
       "micro_structure": 4.1
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5888,21 +6015,21 @@
   },
   {
     "date": "2026-08-03",
-    "composite_score": 48.9,
+    "composite_score": 52.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 20.2,
-      "liquidity": 90.0,
+      "valuation": 38.5,
+      "liquidity": 59.2,
       "equity_bond": 61.2,
-      "capital_flow": 63.9,
-      "sentiment": 69.4,
+      "capital_flow": 66.5,
+      "sentiment": 74.8,
       "micro_structure": 5.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5919,21 +6046,21 @@
   },
   {
     "date": "2026-08-04",
-    "composite_score": 53.5,
+    "composite_score": 55.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 36.0,
-      "liquidity": 90.0,
+      "valuation": 48.0,
+      "liquidity": 59.2,
       "equity_bond": 63.9,
-      "capital_flow": 64.3,
-      "sentiment": 75.5,
+      "capital_flow": 66.8,
+      "sentiment": 79.1,
       "micro_structure": 5.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5950,21 +6077,21 @@
   },
   {
     "date": "2026-08-05",
-    "composite_score": 57.5,
+    "composite_score": 58.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 42.9,
-      "liquidity": 90.0,
+      "valuation": 52.1,
+      "liquidity": 59.2,
       "equity_bond": 68.5,
-      "capital_flow": 64.6,
-      "sentiment": 87.7,
+      "capital_flow": 67.0,
+      "sentiment": 87.6,
       "micro_structure": 5.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -5981,21 +6108,21 @@
   },
   {
     "date": "2026-08-06",
-    "composite_score": 56.9,
+    "composite_score": 58.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 41.8,
-      "liquidity": 90.0,
+      "valuation": 51.5,
+      "liquidity": 59.2,
       "equity_bond": 67.6,
-      "capital_flow": 64.4,
-      "sentiment": 86.3,
+      "capital_flow": 66.8,
+      "sentiment": 86.6,
       "micro_structure": 5.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6012,21 +6139,21 @@
   },
   {
     "date": "2026-08-07",
-    "composite_score": 58.6,
+    "composite_score": 59.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 46.9,
-      "liquidity": 90.0,
+      "valuation": 54.5,
+      "liquidity": 59.2,
       "equity_bond": 71.5,
-      "capital_flow": 65.2,
-      "sentiment": 83.8,
+      "capital_flow": 67.4,
+      "sentiment": 84.8,
       "micro_structure": 5.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6043,21 +6170,21 @@
   },
   {
     "date": "2026-08-10",
-    "composite_score": 59.1,
+    "composite_score": 59.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 49.2,
-      "liquidity": 94.0,
+      "valuation": 55.9,
+      "liquidity": 60.6,
       "equity_bond": 72.5,
-      "capital_flow": 65.2,
-      "sentiment": 81.5,
+      "capital_flow": 67.4,
+      "sentiment": 83.2,
       "micro_structure": 3.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6074,21 +6201,21 @@
   },
   {
     "date": "2026-08-11",
-    "composite_score": 56.7,
+    "composite_score": 58.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 44.3,
-      "liquidity": 94.0,
+      "valuation": 53.0,
+      "liquidity": 60.6,
       "equity_bond": 69.5,
-      "capital_flow": 65.1,
-      "sentiment": 76.3,
+      "capital_flow": 67.3,
+      "sentiment": 79.6,
       "micro_structure": 3.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6105,21 +6232,21 @@
   },
   {
     "date": "2026-08-12",
-    "composite_score": 56.2,
+    "composite_score": 57.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 46.4,
-      "liquidity": 94.0,
+      "valuation": 54.2,
+      "liquidity": 60.6,
       "equity_bond": 70.8,
-      "capital_flow": 65.0,
-      "sentiment": 66.9,
+      "capital_flow": 67.2,
+      "sentiment": 73.1,
       "micro_structure": 3.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6136,13 +6263,13 @@
   },
   {
     "date": "2026-08-13",
-    "composite_score": 57.9,
+    "composite_score": 59.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 44.3,
-      "liquidity": 94.0,
+      "valuation": 53.0,
+      "liquidity": 60.6,
       "equity_bond": 68.6,
-      "capital_flow": 65.0,
+      "capital_flow": 67.3,
       "sentiment": 87.1,
       "micro_structure": 3.4
     },
@@ -6150,7 +6277,7 @@
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6167,21 +6294,21 @@
   },
   {
     "date": "2026-08-14",
-    "composite_score": 54.7,
+    "composite_score": 56.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 45.0,
-      "liquidity": 94.0,
+      "valuation": 53.4,
+      "liquidity": 60.6,
       "equity_bond": 67.6,
-      "capital_flow": 65.6,
-      "sentiment": 62.2,
+      "capital_flow": 67.6,
+      "sentiment": 69.9,
       "micro_structure": 3.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6198,21 +6325,21 @@
   },
   {
     "date": "2026-08-17",
-    "composite_score": 59.0,
+    "composite_score": 59.7,
     "stage": "C",
     "dimensions": {
-      "valuation": 56.1,
-      "liquidity": 100.0,
+      "valuation": 60.1,
+      "liquidity": 62.7,
       "equity_bond": 73.8,
-      "capital_flow": 66.2,
-      "sentiment": 58.9,
+      "capital_flow": 68.0,
+      "sentiment": 67.6,
       "micro_structure": 6.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6229,21 +6356,21 @@
   },
   {
     "date": "2026-08-18",
-    "composite_score": 59.6,
+    "composite_score": 60.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 54.0,
-      "liquidity": 100.0,
+      "valuation": 58.8,
+      "liquidity": 62.7,
       "equity_bond": 72.1,
-      "capital_flow": 66.0,
-      "sentiment": 69.7,
+      "capital_flow": 67.9,
+      "sentiment": 75.1,
       "micro_structure": 6.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6260,21 +6387,21 @@
   },
   {
     "date": "2026-08-19",
-    "composite_score": 55.1,
+    "composite_score": 57.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 31.9,
-      "liquidity": 100.0,
+      "valuation": 45.6,
+      "liquidity": 62.7,
       "equity_bond": 63.5,
-      "capital_flow": 65.7,
-      "sentiment": 83.8,
+      "capital_flow": 67.7,
+      "sentiment": 84.9,
       "micro_structure": 6.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6291,21 +6418,21 @@
   },
   {
     "date": "2026-08-20",
-    "composite_score": 53.5,
+    "composite_score": 55.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 33.8,
-      "liquidity": 100.0,
+      "valuation": 46.7,
+      "liquidity": 62.7,
       "equity_bond": 63.7,
-      "capital_flow": 65.8,
-      "sentiment": 67.8,
+      "capital_flow": 67.8,
+      "sentiment": 73.8,
       "micro_structure": 6.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6322,21 +6449,21 @@
   },
   {
     "date": "2026-08-21",
-    "composite_score": 52.6,
+    "composite_score": 55.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 38.8,
-      "liquidity": 100.0,
+      "valuation": 49.7,
+      "liquidity": 62.7,
       "equity_bond": 66.3,
-      "capital_flow": 67.5,
-      "sentiment": 46.5,
+      "capital_flow": 68.9,
+      "sentiment": 59.0,
       "micro_structure": 6.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6353,21 +6480,21 @@
   },
   {
     "date": "2026-08-24",
-    "composite_score": 51.0,
+    "composite_score": 54.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 27.6,
-      "liquidity": 98.0,
+      "valuation": 42.9,
+      "liquidity": 62.0,
       "equity_bond": 61.1,
-      "capital_flow": 67.4,
-      "sentiment": 59.7,
+      "capital_flow": 68.8,
+      "sentiment": 68.2,
       "micro_structure": 8.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6384,21 +6511,21 @@
   },
   {
     "date": "2026-08-25",
-    "composite_score": 49.3,
+    "composite_score": 53.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 25.4,
-      "liquidity": 98.0,
+      "valuation": 41.6,
+      "liquidity": 62.0,
       "equity_bond": 59.5,
-      "capital_flow": 67.2,
-      "sentiment": 52.7,
+      "capital_flow": 68.7,
+      "sentiment": 63.3,
       "micro_structure": 8.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6415,21 +6542,21 @@
   },
   {
     "date": "2026-08-26",
-    "composite_score": 53.9,
+    "composite_score": 56.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 32.4,
-      "liquidity": 98.0,
+      "valuation": 45.9,
+      "liquidity": 62.0,
       "equity_bond": 69.7,
-      "capital_flow": 67.2,
-      "sentiment": 59.7,
+      "capital_flow": 68.7,
+      "sentiment": 68.2,
       "micro_structure": 8.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6446,21 +6573,21 @@
   },
   {
     "date": "2026-08-27",
-    "composite_score": 56.7,
+    "composite_score": 58.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 40.3,
-      "liquidity": 98.0,
+      "valuation": 50.6,
+      "liquidity": 62.0,
       "equity_bond": 67.2,
-      "capital_flow": 67.7,
-      "sentiment": 72.9,
+      "capital_flow": 69.0,
+      "sentiment": 77.3,
       "micro_structure": 8.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6477,21 +6604,21 @@
   },
   {
     "date": "2026-08-28",
-    "composite_score": 55.5,
+    "composite_score": 57.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 37.1,
-      "liquidity": 98.0,
+      "valuation": 48.7,
+      "liquidity": 62.0,
       "equity_bond": 66.3,
-      "capital_flow": 67.3,
-      "sentiment": 70.3,
+      "capital_flow": 68.8,
+      "sentiment": 75.5,
       "micro_structure": 8.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6508,21 +6635,21 @@
   },
   {
     "date": "2026-08-31",
-    "composite_score": 58.6,
+    "composite_score": 57.0,
     "stage": "C",
     "dimensions": {
-      "valuation": 39.3,
-      "liquidity": 96.0,
+      "valuation": 47.0,
+      "liquidity": 58.8,
       "equity_bond": 67.9,
-      "capital_flow": 67.3,
-      "sentiment": 88.6,
+      "capital_flow": 63.6,
+      "sentiment": 86.6,
       "micro_structure": 9.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6539,21 +6666,21 @@
   },
   {
     "date": "2026-09-01",
-    "composite_score": 57.4,
+    "composite_score": 56.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 37.6,
-      "liquidity": 96.0,
+      "valuation": 45.9,
+      "liquidity": 58.8,
       "equity_bond": 65.7,
-      "capital_flow": 66.9,
-      "sentiment": 86.3,
+      "capital_flow": 63.4,
+      "sentiment": 85.0,
       "micro_structure": 9.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6570,21 +6697,21 @@
   },
   {
     "date": "2026-09-02",
-    "composite_score": 51.8,
+    "composite_score": 52.4,
     "stage": "C",
     "dimensions": {
-      "valuation": 22.4,
-      "liquidity": 96.0,
+      "valuation": 36.8,
+      "liquidity": 58.8,
       "equity_bond": 62.3,
-      "capital_flow": 66.9,
-      "sentiment": 72.6,
+      "capital_flow": 63.3,
+      "sentiment": 75.6,
       "micro_structure": 9.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6601,21 +6728,21 @@
   },
   {
     "date": "2026-09-03",
-    "composite_score": 52.1,
+    "composite_score": 52.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 25.9,
-      "liquidity": 96.0,
+      "valuation": 38.9,
+      "liquidity": 58.8,
       "equity_bond": 66.2,
-      "capital_flow": 67.0,
-      "sentiment": 62.7,
+      "capital_flow": 63.4,
+      "sentiment": 68.7,
       "micro_structure": 9.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6632,21 +6759,21 @@
   },
   {
     "date": "2026-09-04",
-    "composite_score": 52.2,
+    "composite_score": 52.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 23.1,
-      "liquidity": 96.0,
+      "valuation": 37.2,
+      "liquidity": 58.8,
       "equity_bond": 60.8,
-      "capital_flow": 67.4,
-      "sentiment": 75.9,
+      "capital_flow": 63.7,
+      "sentiment": 77.8,
       "micro_structure": 9.4
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6663,21 +6790,21 @@
   },
   {
     "date": "2026-09-07",
-    "composite_score": 55.5,
+    "composite_score": 54.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 30.1,
-      "liquidity": 96.0,
+      "valuation": 41.4,
+      "liquidity": 58.8,
       "equity_bond": 62.7,
-      "capital_flow": 67.9,
-      "sentiment": 50.5,
+      "capital_flow": 64.0,
+      "sentiment": 60.2,
       "micro_structure": 40.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6694,21 +6821,21 @@
   },
   {
     "date": "2026-09-08",
-    "composite_score": 57.4,
+    "composite_score": 56.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 27.1,
-      "liquidity": 96.0,
+      "valuation": 39.6,
+      "liquidity": 58.8,
       "equity_bond": 60.8,
-      "capital_flow": 67.6,
-      "sentiment": 73.1,
+      "capital_flow": 63.8,
+      "sentiment": 75.9,
       "micro_structure": 40.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6725,21 +6852,21 @@
   },
   {
     "date": "2026-09-09",
-    "composite_score": 57.8,
+    "composite_score": 56.5,
     "stage": "C",
     "dimensions": {
-      "valuation": 29.6,
-      "liquidity": 96.0,
+      "valuation": 41.1,
+      "liquidity": 58.8,
       "equity_bond": 62.7,
-      "capital_flow": 67.4,
-      "sentiment": 69.3,
+      "capital_flow": 63.7,
+      "sentiment": 73.3,
       "micro_structure": 40.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6756,21 +6883,21 @@
   },
   {
     "date": "2026-09-10",
-    "composite_score": 54.4,
+    "composite_score": 54.1,
     "stage": "C",
     "dimensions": {
-      "valuation": 23.1,
-      "liquidity": 96.0,
+      "valuation": 37.2,
+      "liquidity": 58.8,
       "equity_bond": 62.3,
-      "capital_flow": 67.4,
-      "sentiment": 53.8,
+      "capital_flow": 63.7,
+      "sentiment": 62.5,
       "micro_structure": 40.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6787,21 +6914,21 @@
   },
   {
     "date": "2026-09-11",
-    "composite_score": 56.6,
+    "composite_score": 55.6,
     "stage": "C",
     "dimensions": {
-      "valuation": 16.6,
-      "liquidity": 96.0,
+      "valuation": 33.3,
+      "liquidity": 58.8,
       "equity_bond": 59.5,
-      "capital_flow": 67.5,
-      "sentiment": 84.8,
+      "capital_flow": 63.8,
+      "sentiment": 83.9,
       "micro_structure": 40.9
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6818,21 +6945,21 @@
   },
   {
     "date": "2026-09-14",
-    "composite_score": 48.5,
+    "composite_score": 50.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 14.5,
-      "liquidity": 96.0,
+      "valuation": 32.0,
+      "liquidity": 58.8,
       "equity_bond": 57.5,
-      "capital_flow": 67.6,
-      "sentiment": 45.7,
+      "capital_flow": 63.8,
+      "sentiment": 56.9,
       "micro_structure": 27.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6849,21 +6976,21 @@
   },
   {
     "date": "2026-09-15",
-    "composite_score": 47.5,
-    "stage": "B",
+    "composite_score": 49.4,
+    "stage": "C",
     "dimensions": {
-      "valuation": 12.6,
-      "liquidity": 96.0,
+      "valuation": 30.9,
+      "liquidity": 58.8,
       "equity_bond": 56.7,
-      "capital_flow": 67.7,
-      "sentiment": 41.4,
+      "capital_flow": 63.8,
+      "sentiment": 54.0,
       "micro_structure": 27.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6880,21 +7007,21 @@
   },
   {
     "date": "2026-09-16",
-    "composite_score": 48.9,
-    "stage": "B",
+    "composite_score": 50.4,
+    "stage": "C",
     "dimensions": {
-      "valuation": 15.0,
-      "liquidity": 96.0,
+      "valuation": 32.3,
+      "liquidity": 58.8,
       "equity_bond": 58.2,
-      "capital_flow": 68.2,
-      "sentiment": 45.7,
+      "capital_flow": 64.2,
+      "sentiment": 56.9,
       "micro_structure": 27.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6911,21 +7038,21 @@
   },
   {
     "date": "2026-09-17",
-    "composite_score": 48.1,
-    "stage": "B",
+    "composite_score": 49.9,
+    "stage": "C",
     "dimensions": {
-      "valuation": 13.4,
-      "liquidity": 96.0,
+      "valuation": 31.4,
+      "liquidity": 58.8,
       "equity_bond": 57.3,
-      "capital_flow": 68.0,
-      "sentiment": 43.8,
+      "capital_flow": 64.1,
+      "sentiment": 55.6,
       "micro_structure": 27.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6942,21 +7069,21 @@
   },
   {
     "date": "2026-09-18",
-    "composite_score": 50.1,
+    "composite_score": 51.2,
     "stage": "C",
     "dimensions": {
-      "valuation": 16.1,
-      "liquidity": 96.0,
+      "valuation": 33.0,
+      "liquidity": 58.8,
       "equity_bond": 58.4,
-      "capital_flow": 65.9,
-      "sentiment": 55.7,
+      "capital_flow": 62.7,
+      "sentiment": 63.8,
       "micro_structure": 27.3
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -6973,21 +7100,21 @@
   },
   {
     "date": "2026-09-21",
-    "composite_score": 48.2,
+    "composite_score": 49.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 19.7,
-      "liquidity": 96.0,
+      "valuation": 35.2,
+      "liquidity": 58.8,
       "equity_bond": 59.7,
-      "capital_flow": 65.6,
-      "sentiment": 62.8,
+      "capital_flow": 62.5,
+      "sentiment": 68.7,
       "micro_structure": 3.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7004,21 +7131,21 @@
   },
   {
     "date": "2026-09-22",
-    "composite_score": 48.7,
+    "composite_score": 50.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 20.7,
-      "liquidity": 96.0,
+      "valuation": 35.8,
+      "liquidity": 58.8,
       "equity_bond": 59.7,
-      "capital_flow": 66.1,
-      "sentiment": 64.7,
+      "capital_flow": 62.8,
+      "sentiment": 70.0,
       "micro_structure": 3.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7035,21 +7162,21 @@
   },
   {
     "date": "2026-09-23",
-    "composite_score": 46.0,
-    "stage": "B",
+    "composite_score": 48.4,
+    "stage": "C",
     "dimensions": {
-      "valuation": 17.6,
-      "liquidity": 96.0,
+      "valuation": 33.9,
+      "liquidity": 58.8,
       "equity_bond": 58.4,
-      "capital_flow": 65.6,
-      "sentiment": 51.0,
+      "capital_flow": 62.5,
+      "sentiment": 60.6,
       "micro_structure": 3.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7066,21 +7193,21 @@
   },
   {
     "date": "2026-09-24",
-    "composite_score": 43.4,
+    "composite_score": 46.7,
     "stage": "B",
     "dimensions": {
-      "valuation": 11.8,
-      "liquidity": 96.0,
+      "valuation": 30.4,
+      "liquidity": 58.8,
       "equity_bond": 56.3,
-      "capital_flow": 65.9,
-      "sentiment": 43.5,
+      "capital_flow": 62.7,
+      "sentiment": 55.4,
       "micro_structure": 3.2
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7097,21 +7224,21 @@
   },
   {
     "date": "2026-09-28",
-    "composite_score": 47.9,
+    "composite_score": 49.7,
     "stage": "B",
     "dimensions": {
-      "valuation": 9.2,
-      "liquidity": 96.0,
+      "valuation": 28.9,
+      "liquidity": 58.8,
       "equity_bond": 55.1,
-      "capital_flow": 65.8,
-      "sentiment": 46.8,
+      "capital_flow": 62.6,
+      "sentiment": 57.7,
       "micro_structure": 34.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7128,21 +7255,21 @@
   },
   {
     "date": "2026-09-29",
-    "composite_score": 47.2,
+    "composite_score": 49.3,
     "stage": "B",
     "dimensions": {
-      "valuation": 10.1,
-      "liquidity": 96.0,
+      "valuation": 29.4,
+      "liquidity": 58.8,
       "equity_bond": 54.3,
-      "capital_flow": 65.9,
-      "sentiment": 41.7,
+      "capital_flow": 62.7,
+      "sentiment": 54.1,
       "micro_structure": 34.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7159,21 +7286,21 @@
   },
   {
     "date": "2026-09-30",
-    "composite_score": 47.4,
+    "composite_score": 48.8,
     "stage": "B",
     "dimensions": {
-      "valuation": 10.9,
-      "liquidity": 96.0,
+      "valuation": 26.2,
+      "liquidity": 57.5,
       "equity_bond": 55.6,
-      "capital_flow": 65.1,
-      "sentiment": 41.2,
+      "capital_flow": 67.2,
+      "sentiment": 48.8,
       "micro_structure": 34.5
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7190,21 +7317,21 @@
   },
   {
     "date": "2026-10-08",
-    "composite_score": 49.8,
-    "stage": "B",
+    "composite_score": 50.3,
+    "stage": "C",
     "dimensions": {
-      "valuation": 7.6,
-      "liquidity": 96.0,
+      "valuation": 24.2,
+      "liquidity": 57.5,
       "equity_bond": 54.2,
-      "capital_flow": 65.3,
-      "sentiment": 53.0,
+      "capital_flow": 67.3,
+      "sentiment": 56.9,
       "micro_structure": 45.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7221,21 +7348,21 @@
   },
   {
     "date": "2026-10-09",
-    "composite_score": 53.4,
+    "composite_score": 52.8,
     "stage": "C",
     "dimensions": {
-      "valuation": 8.4,
-      "liquidity": 96.0,
+      "valuation": 24.7,
+      "liquidity": 57.5,
       "equity_bond": 55.7,
-      "capital_flow": 66.6,
-      "sentiment": 74.8,
+      "capital_flow": 68.2,
+      "sentiment": 72.0,
       "micro_structure": 45.6
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7252,21 +7379,21 @@
   },
   {
     "date": "2026-10-12",
-    "composite_score": 49.1,
+    "composite_score": 49.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 6.7,
-      "liquidity": 96.0,
+      "valuation": 23.7,
+      "liquidity": 57.5,
       "equity_bond": 53.4,
-      "capital_flow": 66.5,
-      "sentiment": 47.9,
+      "capital_flow": 68.1,
+      "sentiment": 53.4,
       "micro_structure": 46.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7283,21 +7410,21 @@
   },
   {
     "date": "2026-10-13",
-    "composite_score": 49.6,
+    "composite_score": 50.3,
     "stage": "C",
     "dimensions": {
-      "valuation": 5.9,
-      "liquidity": 96.0,
+      "valuation": 23.2,
+      "liquidity": 57.5,
       "equity_bond": 54.1,
-      "capital_flow": 66.7,
-      "sentiment": 52.2,
+      "capital_flow": 68.2,
+      "sentiment": 56.3,
       "micro_structure": 46.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7314,21 +7441,21 @@
   },
   {
     "date": "2026-10-14",
-    "composite_score": 49.1,
+    "composite_score": 49.9,
     "stage": "C",
     "dimensions": {
-      "valuation": 5.0,
-      "liquidity": 96.0,
+      "valuation": 22.7,
+      "liquidity": 57.5,
       "equity_bond": 52.6,
-      "capital_flow": 66.5,
-      "sentiment": 52.2,
+      "capital_flow": 68.1,
+      "sentiment": 56.3,
       "micro_structure": 46.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },
@@ -7345,21 +7472,21 @@
   },
   {
     "date": "2026-10-15",
-    "composite_score": 45.7,
+    "composite_score": 47.3,
     "stage": "B",
     "dimensions": {
-      "valuation": 2.5,
-      "liquidity": 96.0,
+      "valuation": 19.6,
+      "liquidity": 57.5,
       "equity_bond": 41.4,
-      "capital_flow": 66.5,
-      "sentiment": 49.0,
+      "capital_flow": 68.1,
+      "sentiment": 54.1,
       "micro_structure": 46.0
     },
     "reconstructed": true,
     "reconstruction": {
       "method": "F2 rebuild v1 (backtest口径交易日频扩展: 可用指标集权重归一化+月末可用性+全样本分位)",
       "at": "2026-10-23",
-      "coverage_n": 13,
+      "coverage_n": 19,
       "watermark": "重建数据",
       "caveats": "分数为全样本分位近似(后视),非当日可得口径; 无triggers/P1-7/P1-8/P1-9状态"
     },

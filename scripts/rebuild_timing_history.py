@@ -40,14 +40,18 @@ def parse_date(s):
 
 
 def month_last_grid_day(y, m, grid_set):
+    """返回该月最后一个网格交易日(ISO字符串)。
+    [F2-D1 fix 2026-10-23 CIO打回] grid_set 为 ISO 字符串集合,
+    原实现用 date 对象做 in 判断恒 False → 月度指标静默缺席(6路32.3%权重)。
+    统一返回 d.isoformat() 字符串, 与网格/avail 键类型一致。"""
     if m == 12:
         nxt = date(y + 1, 1, 1)
     else:
         nxt = date(y, m + 1, 1)
     d = nxt - timedelta(days=1)
     while d >= date(y, m, 1):
-        if d in grid_set:
-            return d
+        if d.isoformat() in grid_set:
+            return d.isoformat()
         d -= timedelta(days=1)
     return None
 
@@ -151,8 +155,13 @@ def main():
     # ---- 交易日网格 ----
     grid = sorted(d for d in raw_series["capital_flow.margin_buying_ratio"]["dates"]
                   if window_start <= date.fromisoformat(d) <= window_end)
-    grid_set = set(grid)
-    log(f"交易日网格 {len(grid)} 天")
+    # [F2-D1b fix] 可用性网格须前伸: 月度指标"上月末可用"的映射目标日常落在窗口起点之前
+    # (如 2025-09 值 → 09-30), 原用窗口内网格致前 11 天月度指标被丢(估值缺席, CIO 复验清单
+    # 要求 valuation 242 全勤)。前伸 120 天覆盖月度映射, 重建网格本身不变。
+    avail_start = (window_start - timedelta(days=120)).isoformat()
+    grid_set = {d for d in raw_series["capital_flow.margin_buying_ratio"]["dates"]
+                if avail_start <= d <= window_end.isoformat()}
+    log(f"交易日网格 {len(grid)} 天(可用性网格前伸至 {avail_start}, {len(grid_set)} 天)")
 
     # ---- 可用性映射（防前视）----
     for key, s in raw_series.items():
@@ -174,6 +183,10 @@ def main():
             avail[ad] = sc  # 同日取最后值
         s["avail"] = sorted(avail.items())
         s["monthly"] = is_monthly
+        # [F2-D1 护栏] 月度指标可用性映射不得为空(静默缺席即口径缺损,打回教训)
+        if is_monthly:
+            assert s["avail"], f"月度指标 {key} 可用性映射为空(疑似类型/网格bug)"
+            assert any(a >= grid[0] for a, _ in s["avail"]), f"月度指标 {key} 窗口内无可用点"
 
     # ---- 趋势（P1-6 同口径）----
     log("拉取中证全指日K ...")
