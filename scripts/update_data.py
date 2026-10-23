@@ -662,7 +662,7 @@ P18_COOLDOWN_DAYS = 180          # Fed_D* 冷却：层解除后 180 天内不重
 P18_STALE_DAYS = 4               # fed_watch.json 超过 N 天未更新视为 stale → 继承前日状态
 
 # F3①: 加息周期检测（投资分析 2026-10-23 裁决）
-# hiking_cycle：fed_funds 当前值 > 3个月前 + 12.5bp（0.125%）
+# hiking_cycle：fed_funds 当前值 > 3个月前 + 10bp（月均半步容差，9/16 实例 +12bp 可检出）
 F3_HIKING_CYCLE_WINDOW_MONTHS = 3   # 对比窗口
 F3_HIKING_CYCLE_THRESHOLD_BP = 10.0 # 加息阈值（基点）——[松子 F3 联调] 月均口径容差：单次25bp加息的月均仅+12bp半步，12.5 会漏检（9/16 实例 3.63→3.75），10 吸收半步且高于平台期噪声(±3bp)
 # FOMC 双保险：会议已过 + CME 加息概率 > 90% → 自动置位
