@@ -2185,6 +2185,33 @@ function renderStatusTriple() {
       warnHtml = `<div class="status-triple-warn">⚠️ 距 ${stageName(c.b)} 边界 ${c.d.toFixed(1)} 分${tail}</div>`;
     }
   }
+  // —— [R1b 2026-10-23] 文档 R1 原口径：近4周/近12周 composite 变化（周频聚合=每周取末条；趋势层只作上下文不作扳机 §四.1）
+  let wkTxt = '';
+  if (Array.isArray(hist) && hist.length >= 10) {
+    const wks = {}; // ISO 周键 -> 该周末条记录
+    hist.forEach(r => {
+      if (typeof r.composite_score !== 'number') return;
+      const d = new Date(r.date + 'T00:00:00Z');
+      const day = (d.getUTCDay() + 6) % 7; // 周一=0
+      d.setUTCDate(d.getUTCDate() - day + 3); // 本周周四定 ISO 周
+      const wkKey = d.toISOString().slice(0, 10);
+      wks[wkKey] = r;
+    });
+    const wkList = Object.keys(wks).sort().map(k => wks[k]);
+    const lastW = wkList[wkList.length - 1];
+    const delta = n => {
+      if (wkList.length < n + 1) return null;
+      const past = wkList[wkList.length - 1 - n];
+      const dv = lastW.composite_score - past.composite_score;
+      return { dv, from: past.composite_score, to: lastW.composite_score, pastDate: past.date };
+    };
+    const fmt = (o, label) => o ? `${label} ${o.dv >= 0 ? '+' : ''}${o.dv.toFixed(1)}` : `${label} --`;
+    const d4 = delta(4), d12 = delta(12);
+    if (d4 || d12) {
+      wkTxt = `${fmt(d4, '近4周')} · ${fmt(d12, '近12周')}（周频）`;
+      if (d4) wkTxt += ` [${d4.pastDate.slice(5)}起 ${d4.from}→${d4.to}]`;
+    }
+  }
   const stageTxt = sMeta ? sMeta.name : (ssotStage || '未知'); // STAGES.name 已含字母+emoji，勿重复拼接
   el.innerHTML = `<div class="status-triple-card">
     <div class="status-triple-item">
@@ -2201,6 +2228,7 @@ function renderStatusTriple() {
       <div class="st-label">趋势（P1-6）</div>
       <div class="st-value" style="color:${trendColor};">${trendTxt}</div>
       <div class="st-sub">${trendSub}</div>
+      <div class="st-sub" title="composite 周频变化（含重建段，仅上下文展示）">${wkTxt}</div>
     </div>
     ${warnHtml}
   </div>`;
