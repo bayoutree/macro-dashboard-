@@ -34,6 +34,8 @@ import traceback
 # 口径=单次 socket 阻塞操作无响应时长（非整体下载限时），慢速大数据下载不受影响。
 import socket as _socket
 _socket.setdefaulttimeout(int(os.environ.get("AK_NET_TIMEOUT_SECONDS", "60")))
+import signal as _signal
+import threading as _threading
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
@@ -241,15 +243,39 @@ def load_json(filename: str) -> dict:
         return json.load(f)
 
 
+# [F1 2026-10-23] 单路墙钟硬超时（秒，env 可调）——socket 不活动超时只覆盖"挂死"，
+# 不覆盖"慢滴"（CI 实证：stock_share_hold_change_szse 在 runner 上 6205 页×1.5it/s
+# ≈69 分钟，数据持续流动 socket 超时永不触发，拖死 update 步骤致 timing_history 断流）。
+_AK_CALL_TIMEOUT = int(os.environ.get("AK_CALL_TIMEOUT_SECONDS", "180"))
+
+
+class _AkCallTimeout(Exception):
+    """safe_ak_call 墙钟超时（慢滴拦截）"""
+
+
+def _ak_alarm_handler(signum, frame):
+    raise _AkCallTimeout()
+
+
 def safe_ak_call(func, *args, **kwargs):
-    """安全调用 AKShare 接口（2026-10-18 加固：逐路起始+耗时日志）。
+    """安全调用 AKShare 接口（10-18 加固：逐路起始/耗时日志；10-23 加固：墙钟硬超时）。
 
     起始日志（⟳）配合 CI 的 PYTHONUNBUFFERED=1 实时输出——runner 再挂死时，
     日志中最后一条 ⟳ 即为挂死数据源，直接定位无需复现。
+    墙钟超时用 SIGALRM 实现，仅主线程生效（子线程/非 POSIX 自动退化为仅日志）。
     """
     fname = getattr(func, "__name__", str(func))
     t0 = time.time()
     logger.info(f"    ⟳ ak.{fname} ...")
+    use_alarm = (
+        _AK_CALL_TIMEOUT > 0
+        and hasattr(_signal, "SIGALRM")
+        and _threading.current_thread() is _threading.main_thread()
+    )
+    old_handler = None
+    if use_alarm:
+        old_handler = _signal.signal(_signal.SIGALRM, _ak_alarm_handler)
+        _signal.setitimer(_signal.ITIMER_REAL, _AK_CALL_TIMEOUT)
     try:
         result = func(*args, **kwargs)
         el = time.time() - t0
@@ -258,9 +284,17 @@ def safe_ak_call(func, *args, **kwargs):
         else:
             logger.info(f"    ✓ ak.{fname}: OK ({el:.1f}s)")
         return result
+    except _AkCallTimeout:
+        logger.warning(
+            f"    ✗ ak.{fname} ({time.time() - t0:.1f}s): AkCallTimeout(>{_AK_CALL_TIMEOUT}s 慢滴拦截)")
+        return pd.DataFrame() if hasattr(func, '__name__') and 'stock' in fname else None
     except Exception as e:
         logger.warning(f"    ✗ ak.{fname} ({time.time() - t0:.1f}s): {type(e).__name__}: {e}")
         return pd.DataFrame() if hasattr(func, '__name__') and 'stock' in func.__name__ else None
+    finally:
+        if use_alarm:
+            _signal.setitimer(_signal.ITIMER_REAL, 0)
+            _signal.signal(_signal.SIGALRM, old_handler)
 
 
 def _ak_industry_capital_df(ak):
@@ -269,9 +303,12 @@ def _ak_industry_capital_df(ak):
     P2-2(2026-10-10)：旧代码调用 akshare 不存在的 `stock_share_change` 导致
     AttributeError，产业资本信号长期缺失。此处改为可用的交易所/东财接口链。
     """
+    # [F1 2026-10-23] 顺序对调：ggcg_em(东财) 实证 ~90s/295页 全量可用（10-18 本地）；
+    # szse 在 GitHub runner 上 6205 页×1.5it/s ≈69min 慢滴（F1 断流根因），降为备用，
+    # 且每路均有 safe_ak_call 180s 墙钟硬超时兜底。
     for name, kwargs in (
-        ("stock_share_hold_change_szse", {"symbol": "全部"}),
         ("stock_ggcg_em", {"symbol": "全部"}),
+        ("stock_share_hold_change_szse", {"symbol": "全部"}),
     ):
         fn = getattr(ak, name, None)
         if fn is None:
@@ -4373,19 +4410,22 @@ def main():
     logger.info("\n" + "🔥" * 30)
     logger.info("Step 1b: 右侧趋势确认 (timing_right_scores.json)")
     logger.info("🔥" * 30)
+    right_data = None
     try:
         right_engine = TimingRightEngine()
         right_data = right_engine.compute_all()
         save_json(right_data, "timing_right_scores.json")
-        # [P0-1 2026-10-16] 追加决策态日志
-        try:
-            append_timing_history(timing_data, right_data)
-        except Exception as e:
-            logger.warning(f"⚠️ timing_history.json 追加失败: {e}")
         script_results["timing_right_scores"] = True
     except Exception as e:
         logger.error(f"❌ timing_right_scores 失败: {e}", exc_info=True)
         script_results["timing_right_scores"] = False
+
+    # [F1 fix 2026-10-23] 决策态日志独立于右侧引擎成败（原嵌套在 Step1b try 内——
+    # 右侧被慢滴拖死/步骤 kill 时日志断流，10-19~10-22 四天缺口根因之一）
+    try:
+        append_timing_history(timing_data, right_data)
+    except Exception as e:
+        logger.warning(f"⚠️ timing_history.json 追加失败: {e}")
 
     # Step 2-6: 运行子脚本
     subscripts = [
