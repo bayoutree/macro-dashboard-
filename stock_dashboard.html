@@ -119,6 +119,37 @@ body::before {
   margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
 }
 .stage-bar-container { margin-bottom: var(--gap-lg); }
+/* [R5 2026-10-23] 5 分桶分布状态 */
+.bucket-dist-card {
+  margin-top: var(--gap-sm); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px var(--gap-md);
+}
+.bucket-dist-card .bd-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.bd-buckets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.bd-bucket { text-align: center; }
+.bd-bucket .bd-bar-wrap { height: 46px; display: flex; align-items: flex-end; justify-content: center; }
+.bd-bucket .bd-bar {
+  width: 100%; border-radius: 4px 4px 0 0; background: var(--surface-3, rgba(255,255,255,0.08));
+  border: 1px solid var(--border); border-bottom: none; min-height: 2px;
+  display: flex; align-items: flex-start; justify-content: center;
+  font-size: 10px; color: var(--text-muted); padding-top: 2px;
+}
+.bd-bucket.current .bd-bar { background: rgba(103,232,249,0.18); border-color: var(--cyan); color: var(--cyan); font-weight: 600; }
+.bd-bucket .bd-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.bd-bucket.current .bd-label { color: var(--cyan); }
+.bd-summary { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+.bd-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+/* [R4 2026-10-23] 斜率时间预告 */
+.slope-forecast-card {
+  margin-top: var(--gap-sm); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px var(--gap-md); font-size: 12px; color: var(--text-secondary);
+  display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;
+}
+.slope-forecast-card .sf-tag { color: var(--cyan); font-weight: 600; flex-shrink: 0; }
+.slope-forecast-card .sf-main { color: var(--text-primary); }
+.slope-forecast-card .sf-note { color: var(--text-muted); font-size: 10px; flex-basis: 100%; }
 /* [R3 2026-10-23] 决策态走势图 */
 .timing-chart-wrap {
   margin-top: var(--gap-md); background: var(--surface);
@@ -131,7 +162,7 @@ body::before {
 .tc-threshold { stroke: var(--border-strong); stroke-dasharray: 3 4; stroke-width: 1; }
 .tc-line-real { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .tc-line-rec { fill: none; stroke: var(--cyan); stroke-width: 1.6; stroke-dasharray: 5 4; opacity: 0.55; stroke-linejoin: round; }
-.tc-watermark { font-size: 22px; fill: var(--text-muted); opacity: 0.35; letter-spacing: 6px; }
+.tc-watermark { font-size: 22px; fill: var(--text-muted); opacity: 0.5; letter-spacing: 6px; }
 .tc-transition { stroke: var(--yellow); stroke-dasharray: 2 3; stroke-width: 1; opacity: 0.7; }
 .tc-xlabel { font-size: 10px; fill: var(--text-muted); }
 .tc-ylabel { font-size: 10px; fill: var(--text-muted); }
@@ -537,6 +568,8 @@ body::before {
     <div id="cycle-freshness" class="cycle-freshness-badge">全球周期: --</div>
     <div class="section-title"><span class="emoji">🎯</span> 阶段概率分布 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(v3.2引擎驱动)</span></div>
     <div id="status-triple"></div>
+    <!-- [R4 2026-10-23] 斜率时间预告：仅用真实日志点，样本不足显形积累中 -->
+    <div id="slope-forecast"></div>
     <div class="stage-bar-container">
       <div class="stage-bar" id="stage-bar"></div>
       <div class="stage-labels">
@@ -548,6 +581,8 @@ body::before {
     <div class="stage-cards" id="stage-cards"></div>
     <!-- [R3 2026-10-23] 决策态走势图：四阶段色带+重建段水印+覆盖跃迁标记 -->
     <div id="timing-chart" class="timing-chart-wrap"></div>
+    <!-- [R5 2026-10-23] 5 分桶分布状态：细化四季概率分布呈现粒度 -->
+    <div id="bucket-dist"></div>
   </section>
 
   <!-- ===== 2. MACRO LIQUIDITY ===== -->
@@ -1885,6 +1920,100 @@ function fmtDateLabel(d) {
   return d;
 }
 
+// [R5 2026-10-23 v2呈现层升级] 5 分桶分布状态（细化四季概率分布呈现粒度）
+// composite 0-100 按 20 分桶×5：极冷/偏冷/中性/偏热/极热；各桶近12月时间占比+当前桶高亮
+function renderBucketDist() {
+  const el = document.getElementById('bucket-dist');
+  if (!el) return;
+  const hist = StageEngine._timingHistory;
+  const td = StageEngine._timingData || {};
+  const comp = (typeof td.composite_score === 'number') ? td.composite_score : null;
+  if (!Array.isArray(hist) || hist.length < 5 || comp === null) { el.innerHTML = ''; return; }
+  const BUCKETS = [
+    { lo: 0,  hi: 20,  name: '极冷' }, { lo: 20, hi: 40, name: '偏冷' },
+    { lo: 40, hi: 60,  name: '中性' }, { lo: 60, hi: 80, name: '偏热' },
+    { lo: 80, hi: 101, name: '极热' }];
+  const counts = BUCKETS.map(() => 0);
+  let total = 0;
+  hist.forEach(r => {
+    if (typeof r.composite_score !== 'number') return;
+    total++;
+    const bi = BUCKETS.findIndex(b => r.composite_score >= b.lo && r.composite_score < b.hi);
+    if (bi >= 0) counts[bi]++;
+  });
+  const curB = BUCKETS.findIndex(b => comp >= b.lo && comp < b.hi);
+  const maxC = Math.max(...counts, 1);
+  const nRec = hist.filter(r => r.reconstructed).length;
+  let bars = '';
+  BUCKETS.forEach((b, i) => {
+    const pct = total ? Math.round(counts[i] / total * 100) : 0;
+    const h = Math.max(2, Math.round(counts[i] / maxC * 100));
+    bars += `<div class="bd-bucket${i === curB ? ' current' : ''}">` +
+      `<div class="bd-bar-wrap"><div class="bd-bar" style="height:${h}%">${pct > 0 ? pct + '%' : ''}</div></div>` +
+      `<div class="bd-label">${b.lo}-${b.hi > 100 ? 100 : b.hi} ${b.name}${i === curB ? ' ◄' : ''}</div></div>`;
+  });
+  const curPct = total && curB >= 0 ? Math.round(counts[curB] / total * 100) : 0;
+  const curName = curB >= 0 ? BUCKETS[curB].name : '-';
+  el.innerHTML = `<div class="bucket-dist-card">` +
+    `<div class="bd-title">🪣 5 分桶分布状态 · 近12个月（${total} 个记录）</div>` +
+    `<div class="bd-buckets">${bars}</div>` +
+    `<div class="bd-summary">当前 <b>${comp}</b> 分 · <b>${curName}桶</b> · 近12月 <b>${curPct}%</b> 时间处于该桶</div>` +
+    `<div class="bd-note">分布含重建数据段 ${nRec} 条（水印显形，仅展示用途）；桶占比为该分数区间的历史时间分布，不构成未来概率预测。</div></div>`;
+}
+
+// [R4 2026-10-23 v2呈现层升级] 斜率时间预告
+// 口径: 仅用真实日志点(剔除 reconstructed 重建段[CIO:后视分位禁入信号] + backfilled.quality==inherited_snapshot 继承快照[CIO F1 验收建议]);
+// 4周平滑=最近20个真实点 OLS 斜率; 样本<15 显形"积累中"; "按当前斜率"限定+拐点失效免责
+function renderSlopeForecast() {
+  const el = document.getElementById('slope-forecast');
+  if (!el) return;
+  const hist = StageEngine._timingHistory;
+  if (!Array.isArray(hist) || !hist.length) { el.innerHTML = ''; return; }
+  const pts = hist.filter(r => !r.reconstructed &&
+    !(r.backfilled && r.backfilled.quality === 'inherited_snapshot') &&
+    typeof r.composite_score === 'number');
+  const MIN_PTS = 15, WIN = 20;
+  const td = StageEngine._timingData || {};
+  const comp = (typeof td.composite_score === 'number') ? td.composite_score
+    : (pts.length ? pts[pts.length - 1].composite_score : null);
+  if (comp === null) { el.innerHTML = ''; return; }
+  if (pts.length < MIN_PTS) {
+    el.innerHTML = `<div class="slope-forecast-card"><span class="sf-tag">📐 斜率预告</span>` +
+      `<span class="sf-main">真实日志样本积累中（${pts.length}/${MIN_PTS}）</span>` +
+      `<span>满 ${MIN_PTS} 个真实点后给出到达下一阶段的时间预告</span>` +
+      `<span class="sf-note">口径：仅真实日志点（重建段与继承快照不入算，防后视分位污染信号）；4 周平滑斜率外推。</span></div>`;
+    return;
+  }
+  const win = pts.slice(-WIN);
+  const n = win.length;
+  let sx = 0, sy = 0;
+  win.forEach((r, i) => { sx += i; sy += r.composite_score; });
+  const mx = sx / n, my = sy / n;
+  let num = 0, den = 0;
+  win.forEach((r, i) => { num += (i - mx) * (r.composite_score - my); den += (i - mx) * (i - mx); });
+  const slope = den ? num / den : 0;
+  const TH = [25, 50, 75];
+  const above = TH.find(t => comp < t), below = [...TH].reverse().find(t => comp >= t);
+  const sTxt = (slope >= 0 ? '+' : '') + slope.toFixed(2);
+  let main;
+  if (slope > 0.02 && above !== undefined) {
+    const days = Math.ceil((above - comp) / slope);
+    main = days <= 60
+      ? `按当前斜率（近${n}点日均 ${sTxt} 分），约 <b>${days}</b> 个交易日触及 ${above} 分界（升越即入下一阶段）`
+      : `按当前斜率（日均 ${sTxt} 分），触及 ${above} 分界需 60+ 个交易日（远期，参考意义有限）`;
+  } else if (slope < -0.02 && below !== undefined) {
+    const days = Math.ceil((comp - below) / -slope);
+    main = days <= 60
+      ? `按当前斜率（近${n}点日均 ${sTxt} 分），约 <b>${days}</b> 个交易日触及 ${below} 分界（降温确认需穿越至 ${below - 2}）`
+      : `按当前斜率（日均 ${sTxt} 分），触及 ${below} 分界需 60+ 个交易日（远期，参考意义有限）`;
+  } else {
+    main = `当前斜率 ${sTxt} 分/日，近似走平，无边界接近预告`;
+  }
+  el.innerHTML = `<div class="slope-forecast-card"><span class="sf-tag">📐 斜率预告</span>` +
+    `<span class="sf-main">${main}</span>` +
+    `<span class="sf-note">口径：近 ${n} 个真实日志点（已剔除重建段与继承快照）OLS 斜率；"按当前斜率"为线性外推，拐点处失效，不构成择时信号。</span></div>`;
+}
+
 // [R3 2026-10-23 v2呈现层升级] 决策态走势图
 // 四阶段色带(25/50/75)+真实/重建双线型+重建段"重建数据"水印+coverage跃迁日标记
 // 口径: 重建段为全样本分位近似(后视), 仅作趋势展示不作信号回测依据(CIO F2验收约束)
@@ -1930,7 +2059,12 @@ function renderTimingChart() {
   hist.forEach((r, i) => {
     const rec = !!r.reconstructed;
     if (segRec === null) segRec = rec;
-    if (rec !== segRec) { flush(); segRec = rec; seg.push([x(i), y(r.composite_score)]); }
+    if (rec !== segRec) {
+      seg.push([x(i), y(r.composite_score)]); // [CIO R3 复验] 衔接点并入旧段再 flush，消除段间缝隙
+      flush();
+      segRec = rec;
+      seg.push([x(i), y(r.composite_score)]); // 新段同点起笔，双线衔接重合
+    }
     else seg.push([x(i), y(r.composite_score)]);
   });
   flush();
@@ -1940,7 +2074,7 @@ function renderTimingChart() {
     const midX = (x(0) + x(firstReal - 1)) / 2;
     svg += `<text class="tc-watermark" x="${midX - 90}" y="${PT + ih * 0.42}">重 建 数 据</text>`;
     svg += `<line x1="${x(firstReal)}" y1="${PT}" x2="${x(firstReal)}" y2="${PT+ih}" stroke="var(--border-strong)" stroke-width="1"/>`;
-    svg += `<text class="tc-xlabel" x="${x(firstReal)+4}" y="${PT+10}">← 重建段 | 真实日志 →</text>`;
+    svg += `<text class="tc-xlabel" text-anchor="end" x="${W-PR-2}" y="${PT-8}">← 重建段 | 真实日志 →</text>`; // [CIO R3 P2] 原起笔 1131 超右缘截断，改右对齐置顶
   }
   // coverage 跃迁日标记（动态识别）
   for (let i = 1; i < hist.length; i++) {
@@ -1986,13 +2120,19 @@ function renderStatusTriple() {
   let pctTxt = '', pctTitle = '';
   const hist = StageEngine._timingHistory;
   if (comp != null && Array.isArray(hist) && hist.length >= 5) {
-    const vals = hist.map(r => r.composite_score).filter(v => typeof v === 'number');
+    // [CIO 观察项] 窗口化：以末条记录日期回推 365 天，防真实段超 12 个月后分母漂移
+    const _lastD = hist[hist.length - 1].date;
+    const _cut = new Date(_lastD + 'T00:00:00');
+    _cut.setDate(_cut.getDate() - 365);
+    const _cutISO = _cut.toISOString().slice(0, 10);
+    const win = hist.filter(r => r.date >= _cutISO);
+    const vals = win.map(r => r.composite_score).filter(v => typeof v === 'number');
     if (vals.length >= 5) {
       const le = vals.filter(v => v <= comp).length;
       const pct = Math.round(le / vals.length * 100);
-      const nRec = hist.filter(r => r.reconstructed).length;
+      const nRec = win.filter(r => r.reconstructed).length;
       pctTxt = `近12月分位 ${pct}%`;
-      pctTitle = `基于 ${vals.length} 个决策态记录（含重建数据段 ${nRec} 条，走势图水印显形）`;
+      pctTitle = `近12月窗口 ${_cutISO}~${_lastD} 共 ${vals.length} 个决策态记录（含重建数据段 ${nRec} 条，走势图水印显形）`;
     }
   }
   // —— 趋势：P1-6 四态
@@ -2018,10 +2158,21 @@ function renderStatusTriple() {
     cands.sort((x, y) => x.d - y.d);
     if (cands.length && cands[0].d < 5) {
       const c = cands[0];
-      warnHtml = `<div class="status-triple-warn">⚠️ 距 ${stageName(c.b)} 边界 ${c.d.toFixed(1)} 分` +
-        (c.dir === 'up'
-          ? ` · 升越 ${c.b} 即入 ${upStage(c.b)}（升温一碰即走）`
-          : ` · 降温确认线 ${c.b - BAND}（穿越才确认入 ${dnStage(c.b)}，防边界横跳）`) + `</div>`;
+      // [CIO R1R2 P2] 迟滞保持窗：SSOT 阶段已在边界上侧（降温未确认出离），"升越即入"与实况不符，改迟滞保持文案
+      const ssotIdx = ['A','B','C','D'].indexOf(ssotStage);
+      const upIdx = {25:1, 50:2, 75:3}[c.b];  // 边界上侧阶段序号
+      const dnIdx = {25:0, 50:1, 75:2}[c.b];  // 边界下侧阶段序号
+      let tail;
+      if (c.dir === 'up' && ssotIdx >= upIdx) {
+        tail = ` · 迟滞保持 ${upStage(c.b)}（仍处该阶段，降至 ${c.b - BAND} 才确认入 ${dnStage(c.b)}）`;
+      } else if (c.dir === 'down' && ssotIdx <= dnIdx) {
+        tail = ` · 迟滞保持 ${dnStage(c.b)}（仍处该阶段，升越 ${c.b} 即确认回归 ${upStage(c.b)}）`;
+      } else if (c.dir === 'up') {
+        tail = ` · 升越 ${c.b} 即入 ${upStage(c.b)}（升温一碰即走）`;
+      } else {
+        tail = ` · 降温确认线 ${c.b - BAND}（穿越才确认入 ${dnStage(c.b)}，防边界横跳）`;
+      }
+      warnHtml = `<div class="status-triple-warn">⚠️ 距 ${stageName(c.b)} 边界 ${c.d.toFixed(1)} 分${tail}</div>`;
     }
   }
   const stageTxt = sMeta ? sMeta.name : (ssotStage || '未知'); // STAGES.name 已含字母+emoji，勿重复拼接
@@ -3825,6 +3976,8 @@ async function init() {
   safeRender('renderStageCards', renderStageCards);
   safeRender('renderStatusTriple', renderStatusTriple); // [R1/R2 2026-10-23]
   safeRender('renderTimingChart', renderTimingChart); // [R3 2026-10-23]
+  safeRender('renderSlopeForecast', renderSlopeForecast); // [R4 2026-10-23]
+  safeRender('renderBucketDist', renderBucketDist); // [R5 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
   safeRender('renderRangeInfoBar', renderRangeInfoBar);
