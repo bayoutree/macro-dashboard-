@@ -91,6 +91,41 @@ jobs:
           PYTHONUNBUFFERED: '1'
 
       # ----------------------------------------------------------
+      # 3c. [F3① 采集层 2026-10-23] FOMC 会议日历 + DFEDTAR 日频目标区间
+      # 产出 data/fomc_calendar.json (upcoming/past meetings + target_range_history)
+      # 松子分工：采集层归 Codex，判定逻辑归松子 (update_data.py)
+      # ----------------------------------------------------------
+      - name: Collect FOMC calendar + DFEDTAR daily target range (F3①)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        continue-on-error: true
+        run: python scripts/collect_fomc_calendar.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      # ----------------------------------------------------------
+      # 3d. [F3① 采集层 2026-10-23] 中国宏观补充：外储(SAFE月频) + M1同比 + M1-M2剪刀差
+      # 产出 data/cn_macro_supplement.json
+      # ----------------------------------------------------------
+      - name: Collect CN macro supplement: FX reserves + M1/M2 scissors (F3①)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        continue-on-error: true
+        run: python scripts/collect_cn_macro_supplement.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      # ----------------------------------------------------------
+      # 3e. [F3① 采集层 2026-10-23] USDCNY/USDCNH 实时快照自积累 (新浪源)
+      # 产出 data/fx_rates_sina.json (每日追加，中值+spread_bp)
+      # CIO 10-23 定夺：免费历史源全无，改自积累日频序列
+      # ----------------------------------------------------------
+      - name: Collect USDCNY/USDCNH daily snapshot from Sina (F3①)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
+        continue-on-error: true
+        run: python scripts/collect_fx_rates_sina.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      # ----------------------------------------------------------
       # 4. 运行数据更新
       # ----------------------------------------------------------
       - name: Run data update (full)
