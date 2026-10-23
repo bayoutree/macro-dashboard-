@@ -103,9 +103,9 @@ def main():
         return
     
     today = cny["date"]
-    spread_bp = (cnh["mid"] - cny["mid"]) * 10000
+    spread_bp = (cnh["mid"] - cny["mid"]) / cny["mid"] * 10000  # 相对 bp（投分判定式：(USDCNH-USDCNY)/USDCNY>0.4%/0.7%）
     
-    print(f"  ✅ {today}: CNY={cny['mid']}, CNH={cnh['mid']}, spread={spread_bp:.1f}bp")
+    print(f"  ✅ {today}: CNY={cny['mid']}, CNH={cnh['mid']}, spread={spread_bp:.2f}bp (相对口径)")
     
     # 读取现有数据
     existing_data = []
