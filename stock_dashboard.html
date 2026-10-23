@@ -119,6 +119,22 @@ body::before {
   margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
 }
 .stage-bar-container { margin-bottom: var(--gap-lg); }
+/* [R1/R2 2026-10-23] 三元组状态卡 */
+.status-triple-card {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap-sm);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--gap-md);
+  margin-bottom: var(--gap-md);
+}
+.status-triple-item { text-align: center; }
+.status-triple-item .st-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.status-triple-item .st-value { font-size: 17px; font-weight: 700; }
+.status-triple-item .st-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.status-triple-warn {
+  grid-column: 1 / -1; text-align: center; font-size: 12px; font-weight: 600;
+  color: var(--yellow); border-top: 1px dashed var(--border); padding-top: 6px;
+}
+@media (max-width: 640px) { .status-triple-card { grid-template-columns: 1fr; } }
 .stage-bar {
   display: flex; height: 32px; border-radius: var(--radius-md); overflow: hidden;
   border: 1px solid var(--border);
@@ -500,6 +516,7 @@ body::before {
   <section class="stage-gauge" id="stage-section" style="position:relative;">
     <div id="cycle-freshness" class="cycle-freshness-badge">全球周期: --</div>
     <div class="section-title"><span class="emoji">🎯</span> 阶段概率分布 <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(v3.2引擎驱动)</span></div>
+    <div id="status-triple"></div>
     <div class="stage-bar-container">
       <div class="stage-bar" id="stage-bar"></div>
       <div class="stage-labels">
@@ -1014,6 +1031,17 @@ const StageEngine = {
       }
     } catch(e) {
       console.log('[StageEngine] timing_right_scores.json 未加载');
+    }
+    // [R1 2026-10-23] 加载决策态日志（近期分位用；含 F2 重建段，分位展示用途经 CIO 口径认可）
+    try {
+      const resp3 = await fetch('data/timing_history.json?v=' + Date.now());
+      if (resp3.ok) {
+        const _h = await resp3.json();
+        this._timingHistory = Array.isArray(_h) ? _h : null;
+      }
+    } catch(e) {
+      console.log('[StageEngine] timing_history.json 未加载（分位降级不显示）');
+      this._timingHistory = null;
     }
   },
 
@@ -1833,6 +1861,80 @@ function fmtDateLabel(d) {
   if (parts.length === 3) return parts[0] + '.' + parts[1] + '.' + parts[2];
   if (parts.length === 2) return parts[0] + '.' + parts[1];
   return d;
+}
+
+// [R1 2026-10-23 v2呈现层升级] 三元组状态卡：阶段(SSOT迟滞)·分数(近12月分位)·趋势(P1-6)
+// [R2] 边界距离预警：距阶段边界<5分显形⚠️，边界25/50/75与P2-11迟滞/P2-13同口径
+function renderStatusTriple() {
+  const el = document.getElementById('status-triple');
+  if (!el) return;
+  const td = StageEngine._timingData || {};
+  // —— 阶段：读 SSOT timing_scores.stage（P2-11 单链路），无效值降级引擎当前阶段（裸映射 fallback）
+  const ssotStage = ['A','B','C','D'].includes(td.stage) ? td.stage
+                    : (engineOutput && engineOutput.current_stage) || null;
+  const sMeta = (typeof STAGES !== 'undefined' && ssotStage) ? STAGES[ssotStage] : null;
+  // —— 分数 + 近12月分位（timing_history 全序列，含 F2 重建段——展示用途 CIO 口径认可，重建段水印显形）
+  const comp = (typeof td.composite_score === 'number') ? td.composite_score : null;
+  let pctTxt = '', pctTitle = '';
+  const hist = StageEngine._timingHistory;
+  if (comp != null && Array.isArray(hist) && hist.length >= 5) {
+    const vals = hist.map(r => r.composite_score).filter(v => typeof v === 'number');
+    if (vals.length >= 5) {
+      const le = vals.filter(v => v <= comp).length;
+      const pct = Math.round(le / vals.length * 100);
+      const nRec = hist.filter(r => r.reconstructed).length;
+      pctTxt = `近12月分位 ${pct}%`;
+      pctTitle = `基于 ${vals.length} 个决策态记录（含重建数据段 ${nRec} 条，走势图水印显形）`;
+    }
+  }
+  // —— 趋势：P1-6 四态
+  const p16 = td.p1_6_state || {};
+  const trendMap = { strong_bull: ['强多头', 'var(--green)'], weak_bull: ['弱多头', 'var(--green)'],
+                     weak_bear: ['弱空头', 'var(--red)'], strong_bear: ['强空头', 'var(--red)'] };
+  const [trendTxt, trendColor] = trendMap[p16.trend] || ['未知', 'var(--text-muted)'];
+  const trendSub = (p16.close && p16.ma120)
+    ? `指数 ${p16.close} vs MA120 ${p16.ma120}${p16.annotation ? ' · ' + p16.annotation : ''}`
+    : (p16.annotation || '');
+  // —— R2 边界距离预警（P2-11 口径：升温 h=0 一碰即走；降温 h=2 确认线=边界-2）
+  let warnHtml = '';
+  if (comp != null) {
+    const TH = [25, 50, 75], BAND = 2;
+    const stageName = b => ({25:'A/B', 50:'B/C', 75:'C/D'}[b]);
+    const upStage = b => ({25:'B 夏长', 50:'C 秋收', 75:'D 冬藏'}[b]); // 升越边界进入的阶段(边界=该阶段下沿)
+    const dnStage = b => ({25:'A 春播', 50:'B 夏长', 75:'C 秋收'}[b]); // 降温确认进入的阶段(边界=该阶段上沿)
+    const above = TH.find(t => comp < t);           // 升温方向下一边界
+    const below = [...TH].reverse().find(t => comp >= t); // 降温方向下一边界
+    const cands = [];
+    if (above != null) cands.push({ b: above, d: above - comp, dir: 'up' });
+    if (below != null) cands.push({ b: below, d: comp - below, dir: 'down' });
+    cands.sort((x, y) => x.d - y.d);
+    if (cands.length && cands[0].d < 5) {
+      const c = cands[0];
+      warnHtml = `<div class="status-triple-warn">⚠️ 距 ${stageName(c.b)} 边界 ${c.d.toFixed(1)} 分` +
+        (c.dir === 'up'
+          ? ` · 升越 ${c.b} 即入 ${upStage(c.b)}（升温一碰即走）`
+          : ` · 降温确认线 ${c.b - BAND}（穿越才确认入 ${dnStage(c.b)}，防边界横跳）`) + `</div>`;
+    }
+  }
+  const stageTxt = sMeta ? sMeta.name : (ssotStage || '未知'); // STAGES.name 已含字母+emoji，勿重复拼接
+  el.innerHTML = `<div class="status-triple-card">
+    <div class="status-triple-item">
+      <div class="st-label">阶段（迟滞后）</div>
+      <div class="st-value" style="color:var(--stage-${(ssotStage||'').toLowerCase()},var(--text-primary));">${stageTxt}</div>
+      <div class="st-sub">${sMeta ? sMeta.desc : ''}</div>
+    </div>
+    <div class="status-triple-item">
+      <div class="st-label">综合得分</div>
+      <div class="st-value">${comp != null ? comp + ' 分' : '未知'}</div>
+      <div class="st-sub" title="${pctTitle}">${pctTxt}</div>
+    </div>
+    <div class="status-triple-item">
+      <div class="st-label">趋势（P1-6）</div>
+      <div class="st-value" style="color:${trendColor};">${trendTxt}</div>
+      <div class="st-sub">${trendSub}</div>
+    </div>
+    ${warnHtml}
+  </div>`;
 }
 
 function renderStageBar() {
@@ -3613,6 +3715,7 @@ async function init() {
   safeRender('applyTimingDataToMockData', () => applyTimingDataToMockData());
   safeRender('renderStageBar', renderStageBar);
   safeRender('renderStageCards', renderStageCards);
+  safeRender('renderStatusTriple', renderStatusTriple); // [R1/R2 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
   safeRender('renderRangeInfoBar', renderRangeInfoBar);
