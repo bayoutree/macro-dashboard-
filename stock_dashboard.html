@@ -119,6 +119,26 @@ body::before {
   margin-bottom: var(--gap-lg); backdrop-filter: blur(20px);
 }
 .stage-bar-container { margin-bottom: var(--gap-lg); }
+/* [R3 2026-10-23] 决策态走势图 */
+.timing-chart-wrap {
+  margin-top: var(--gap-md); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--gap-md);
+}
+.timing-chart-wrap .tc-title { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.timing-chart-wrap svg { width: 100%; display: block; }
+.tc-band { opacity: 0.07; }
+.tc-threshold { stroke: var(--border-strong); stroke-dasharray: 3 4; stroke-width: 1; }
+.tc-line-real { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.tc-line-rec { fill: none; stroke: var(--cyan); stroke-width: 1.6; stroke-dasharray: 5 4; opacity: 0.55; stroke-linejoin: round; }
+.tc-watermark { font-size: 22px; fill: var(--text-muted); opacity: 0.35; letter-spacing: 6px; }
+.tc-transition { stroke: var(--yellow); stroke-dasharray: 2 3; stroke-width: 1; opacity: 0.7; }
+.tc-xlabel { font-size: 10px; fill: var(--text-muted); }
+.tc-ylabel { font-size: 10px; fill: var(--text-muted); }
+.tc-hit { fill: transparent; cursor: crosshair; }
+.tc-hit:hover { fill: var(--cyan); opacity: 0.9; }
+.tc-legend { display: flex; gap: 14px; font-size: 10px; color: var(--text-muted); margin-top: 6px; flex-wrap: wrap; }
+.tc-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; opacity: 0.8; }
 /* [R1/R2 2026-10-23] 三元组状态卡 */
 .status-triple-card {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap-sm);
@@ -526,6 +546,8 @@ body::before {
       </div>
     </div>
     <div class="stage-cards" id="stage-cards"></div>
+    <!-- [R3 2026-10-23] 决策态走势图：四阶段色带+重建段水印+覆盖跃迁标记 -->
+    <div id="timing-chart" class="timing-chart-wrap"></div>
   </section>
 
   <!-- ===== 2. MACRO LIQUIDITY ===== -->
@@ -1861,6 +1883,92 @@ function fmtDateLabel(d) {
   if (parts.length === 3) return parts[0] + '.' + parts[1] + '.' + parts[2];
   if (parts.length === 2) return parts[0] + '.' + parts[1];
   return d;
+}
+
+// [R3 2026-10-23 v2呈现层升级] 决策态走势图
+// 四阶段色带(25/50/75)+真实/重建双线型+重建段"重建数据"水印+coverage跃迁日标记
+// 口径: 重建段为全样本分位近似(后视), 仅作趋势展示不作信号回测依据(CIO F2验收约束)
+function renderTimingChart() {
+  const el = document.getElementById('timing-chart');
+  if (!el) return;
+  const hist = (StageEngine._timingHistory || []).filter(r => typeof r.composite_score === 'number');
+  if (hist.length < 10) { el.innerHTML = ''; return; }
+  const W = 1160, H = 280, PL = 38, PR = 10, PT = 26, PB = 24;
+  const iw = W - PL - PR, ih = H - PT - PB;
+  const dates = hist.map(r => r.date);
+  const x = i => PL + (i / (hist.length - 1)) * iw;
+  const y = v => PT + (1 - v / 100) * ih;
+  const stageOf = v => v < 25 ? 'a' : (v < 50 ? 'b' : (v < 75 ? 'c' : 'd'));
+  // 分段：连续 reconstructed 段 vs 真实段（各自一条 path）
+  let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:280px;">`;
+  // 四阶段色带
+  const bands = [[0,25,'a'],[25,50,'b'],[50,75,'c'],[75,100,'d']];
+  bands.forEach(([lo, hi, cls]) => {
+    svg += `<rect class="tc-band" x="${PL}" y="${y(hi)}" width="${iw}" height="${y(lo)-y(hi)}" fill="var(--stage-${cls}, #888)"/>`;
+  });
+  [25,50,75].forEach(t => {
+    svg += `<line class="tc-threshold" x1="${PL}" y1="${y(t)}" x2="${W-PR}" y2="${y(t)}"/>`;
+    svg += `<text class="tc-ylabel" x="6" y="${y(t)+3}">${t}</text>`;
+  });
+  // X 轴月度刻度
+  let lastM = '';
+  dates.forEach((d, i) => {
+    const m = d.slice(0, 7);
+    if (m !== lastM) {
+      lastM = m;
+      svg += `<text class="tc-xlabel" x="${x(i)-14}" y="${H-6}">${m.slice(2)}</text>`;
+    }
+  });
+  // 分段折线
+  let seg = [], segRec = null;
+  const flush = () => {
+    if (seg.length < 2) { seg = []; return; }
+    const dstr = seg.map((p, k) => (k ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
+    svg += `<path class="${segRec ? 'tc-line-rec' : 'tc-line-real'}" d="${dstr}"/>`;
+    seg = [];
+  };
+  hist.forEach((r, i) => {
+    const rec = !!r.reconstructed;
+    if (segRec === null) segRec = rec;
+    if (rec !== segRec) { flush(); segRec = rec; seg.push([x(i), y(r.composite_score)]); }
+    else seg.push([x(i), y(r.composite_score)]);
+  });
+  flush();
+  // 重建段水印（首段为重建段时）
+  const firstReal = hist.findIndex(r => !r.reconstructed);
+  if (firstReal > 10) {
+    const midX = (x(0) + x(firstReal - 1)) / 2;
+    svg += `<text class="tc-watermark" x="${midX - 90}" y="${PT + ih * 0.42}">重 建 数 据</text>`;
+    svg += `<line x1="${x(firstReal)}" y1="${PT}" x2="${x(firstReal)}" y2="${PT+ih}" stroke="var(--border-strong)" stroke-width="1"/>`;
+    svg += `<text class="tc-xlabel" x="${x(firstReal)+4}" y="${PT+10}">← 重建段 | 真实日志 →</text>`;
+  }
+  // coverage 跃迁日标记（动态识别）
+  for (let i = 1; i < hist.length; i++) {
+    const a = hist[i-1].reconstruction, b = hist[i].reconstruction;
+    if (a && b && a.coverage_n !== b.coverage_n) {
+      svg += `<line class="tc-transition" x1="${x(i)}" y1="${PT}" x2="${x(i)}" y2="${PT+ih}">` +
+             `<title>覆盖跃迁 ${hist[i].date}: ${a.coverage_n}→${b.coverage_n} 路指标</title></line>`;
+      svg += `<text class="tc-xlabel" x="${x(i)-10}" y="${PT-8}" fill="var(--yellow)">⚡<title>覆盖跃迁 ${hist[i].date}: ${a.coverage_n}→${b.coverage_n} 路指标</title></text>`;
+    }
+  }
+  // 数据点命中区（原生 tooltip）
+  hist.forEach((r, i) => {
+    const tip = `${r.date}  ${r.composite_score}分  ${r.stage||''}阶段` +
+      (r.reconstructed ? `  [重建数据·覆盖${r.reconstruction.coverage_n}路]` : '  [真实日志]') +
+      (r.trend_state && r.trend_state.trend ? `  趋势:${r.trend_state.trend}` : '');
+    svg += `<circle class="tc-hit" cx="${x(i)}" cy="${y(r.composite_score)}" r="5"><title>${tip}</title></circle>`;
+  });
+  // 最新点高亮
+  const li = hist.length - 1;
+  svg += `<circle cx="${x(li)}" cy="${y(hist[li].composite_score)}" r="3.5" fill="var(--cyan)"/>`;
+  svg += `</svg>`;
+  el.innerHTML = `<div class="tc-title">📈 决策态走势 · 近12个月（${hist.length} 个记录）</div>` + svg +
+    `<div class="tc-legend"><span><b style="color:var(--cyan)">—</b> 真实日志</span>` +
+    `<span><b style="color:var(--cyan);opacity:.55">┄</b> 重建数据段（可复算口径）</span>` +
+    `<span><b style="color:var(--yellow)">⚡</b> 指标覆盖跃迁</span>` +
+    `<span>色带: A&lt;25≤B&lt;50≤C&lt;75≤D</span></div>` +
+    `<div class="tc-note">重建段为全样本分位近似（后视口径），仅作趋势展示，不构成信号回测依据；` +
+    `趋势层只作上下文，执行仍以月线级信号为准。</div>`;
 }
 
 // [R1 2026-10-23 v2呈现层升级] 三元组状态卡：阶段(SSOT迟滞)·分数(近12月分位)·趋势(P1-6)
@@ -3716,6 +3824,7 @@ async function init() {
   safeRender('renderStageBar', renderStageBar);
   safeRender('renderStageCards', renderStageCards);
   safeRender('renderStatusTriple', renderStatusTriple); // [R1/R2 2026-10-23]
+  safeRender('renderTimingChart', renderTimingChart); // [R3 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
   safeRender('renderRangeInfoBar', renderRangeInfoBar);
