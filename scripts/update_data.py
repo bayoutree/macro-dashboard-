@@ -2568,17 +2568,36 @@ class TimingScoreEngine:
         # 卡位腾给两融余额变化（沪市融资余额，杠杆资金情绪，免费日频衔接①修复）；
         # 原 northbound sub_weight=0 → 本指标同 0（换子指标不动权重，不进 composite）
         mb_balance, mb_w_chg, mb_asof, mb_hist = self._calc_margin_balance()
-        indicators["margin_balance"] = {
-            "name": "两融余额（沪市）",
-            "value": f"{mb_balance:.2f}万亿" if mb_balance else "数据待更新",
-            "week_change": f"{mb_w_chg:+.0f}亿" if mb_w_chg is not None else None,
-            "score": 50,
-            "sub_weight": 0,
-            "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
-            "as_of": mb_asof,
-            "freq": "日频",
-            "history": mb_hist or []
-        }
+        if mb_balance is None:
+            # [2026-10-24 删史防线] stock_margin_sse 源断（CI 限流 JSONDecodeError）时整体继承上期，
+            # history 绝不写空数组（history_guard 阻断项）；stale_inherited 显形标记可观测。
+            _prev_mb = (((load_json("timing_scores.json") or {}).get("dimensions") or {})
+                        .get("capital_flow", {}).get("indicators", {}) or {}).get("margin_balance")
+            if isinstance(_prev_mb, dict) and _prev_mb.get("history"):
+                _mb = dict(_prev_mb)
+                _mb["stale_inherited"] = True
+                _mb["note"] = (str(_prev_mb.get("note", "")) + "｜源暂断·继承上期").strip("｜")
+                indicators["margin_balance"] = _mb
+                logger.warning(f"      两融余额源断 → 整体继承上期（history {len(_prev_mb['history'])}点保留）")
+            else:
+                indicators["margin_balance"] = {
+                    "name": "两融余额（沪市）", "value": "数据待更新", "week_change": None,
+                    "score": 50, "sub_weight": 0,
+                    "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+                    "as_of": None, "freq": "日频", "history": []
+                }
+        else:
+            indicators["margin_balance"] = {
+                "name": "两融余额（沪市）",
+                "value": f"{mb_balance:.2f}万亿",
+                "week_change": f"{mb_w_chg:+.0f}亿" if mb_w_chg is not None else None,
+                "score": 50,
+                "sub_weight": 0,
+                "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+                "as_of": mb_asof,
+                "freq": "日频",
+                "history": mb_hist or []
+            }
 
         # --- 新发基金热度 ---
         fund_score, fund_val = self._calc_new_fund()
