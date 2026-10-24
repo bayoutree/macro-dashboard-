@@ -1,0 +1,2711 @@
+{
+  "as_of": "2026-10-24",
+  "source": "akshare (macro_china_fx_gold + macro_china_money_supply)",
+  "fx_reserves": [
+    {
+      "date": "2008-01",
+      "value_billion_usd": 15898.1
+    },
+    {
+      "date": "2008-02",
+      "value_billion_usd": 16471.34
+    },
+    {
+      "date": "2008-03",
+      "value_billion_usd": 16821.77
+    },
+    {
+      "date": "2008-04",
+      "value_billion_usd": 17566.55
+    },
+    {
+      "date": "2008-05",
+      "value_billion_usd": 17969.61
+    },
+    {
+      "date": "2008-06",
+      "value_billion_usd": 18088.28
+    },
+    {
+      "date": "2008-07",
+      "value_billion_usd": 18451.64
+    },
+    {
+      "date": "2008-08",
+      "value_billion_usd": 18841.53
+    },
+    {
+      "date": "2008-09",
+      "value_billion_usd": 19055.85
+    },
+    {
+      "date": "2008-10",
+      "value_billion_usd": 18796.88
+    },
+    {
+      "date": "2008-11",
+      "value_billion_usd": 18847.17
+    },
+    {
+      "date": "2008-12",
+      "value_billion_usd": 19460.3
+    },
+    {
+      "date": "2009-01",
+      "value_billion_usd": 19134.56
+    },
+    {
+      "date": "2009-02",
+      "value_billion_usd": 19120.66
+    },
+    {
+      "date": "2009-03",
+      "value_billion_usd": 19537.41
+    },
+    {
+      "date": "2009-04",
+      "value_billion_usd": 20088.8
+    },
+    {
+      "date": "2009-05",
+      "value_billion_usd": 20894.91
+    },
+    {
+      "date": "2009-06",
+      "value_billion_usd": 21316.06
+    },
+    {
+      "date": "2009-07",
+      "value_billion_usd": 21746.18
+    },
+    {
+      "date": "2009-08",
+      "value_billion_usd": 22108.27
+    },
+    {
+      "date": "2009-09",
+      "value_billion_usd": 22725.95
+    },
+    {
+      "date": "2009-10",
+      "value_billion_usd": 23282.72
+    },
+    {
+      "date": "2009-11",
+      "value_billion_usd": 23887.88
+    },
+    {
+      "date": "2009-12",
+      "value_billion_usd": 23991.52
+    },
+    {
+      "date": "2010-01",
+      "value_billion_usd": 24152.21
+    },
+    {
+      "date": "2010-02",
+      "value_billion_usd": 24245.91
+    },
+    {
+      "date": "2010-03",
+      "value_billion_usd": 24470.84
+    },
+    {
+      "date": "2010-04",
+      "value_billion_usd": 24905.12
+    },
+    {
+      "date": "2010-05",
+      "value_billion_usd": 24395.06
+    },
+    {
+      "date": "2010-06",
+      "value_billion_usd": 24542.75
+    },
+    {
+      "date": "2010-07",
+      "value_billion_usd": 25388.94
+    },
+    {
+      "date": "2010-08",
+      "value_billion_usd": 25478.38
+    },
+    {
+      "date": "2010-09",
+      "value_billion_usd": 26483.03
+    },
+    {
+      "date": "2010-10",
+      "value_billion_usd": 27608.99
+    },
+    {
+      "date": "2010-11",
+      "value_billion_usd": 27678.09
+    },
+    {
+      "date": "2010-12",
+      "value_billion_usd": 28473.38
+    },
+    {
+      "date": "2011-01",
+      "value_billion_usd": 29316.74
+    },
+    {
+      "date": "2011-02",
+      "value_billion_usd": 29913.86
+    },
+    {
+      "date": "2011-03",
+      "value_billion_usd": 30446.74
+    },
+    {
+      "date": "2011-04",
+      "value_billion_usd": 31458.43
+    },
+    {
+      "date": "2011-05",
+      "value_billion_usd": 31659.97
+    },
+    {
+      "date": "2011-06",
+      "value_billion_usd": 31974.91
+    },
+    {
+      "date": "2011-07",
+      "value_billion_usd": 32452.83
+    },
+    {
+      "date": "2011-08",
+      "value_billion_usd": 32624.99
+    },
+    {
+      "date": "2011-09",
+      "value_billion_usd": 32016.83
+    },
+    {
+      "date": "2011-10",
+      "value_billion_usd": 32737.96
+    },
+    {
+      "date": "2011-11",
+      "value_billion_usd": 32209.07
+    },
+    {
+      "date": "2011-12",
+      "value_billion_usd": 31811.48
+    },
+    {
+      "date": "2012-01",
+      "value_billion_usd": 32536.31
+    },
+    {
+      "date": "2012-02",
+      "value_billion_usd": 33096.57
+    },
+    {
+      "date": "2012-03",
+      "value_billion_usd": 33049.71
+    },
+    {
+      "date": "2012-04",
+      "value_billion_usd": 32989.13
+    },
+    {
+      "date": "2012-05",
+      "value_billion_usd": 32061.09
+    },
+    {
+      "date": "2012-06",
+      "value_billion_usd": 32400.05
+    },
+    {
+      "date": "2012-07",
+      "value_billion_usd": 32399.52
+    },
+    {
+      "date": "2012-08",
+      "value_billion_usd": 32729.01
+    },
+    {
+      "date": "2012-09",
+      "value_billion_usd": 32850.95
+    },
+    {
+      "date": "2012-10",
+      "value_billion_usd": 32874.26
+    },
+    {
+      "date": "2012-11",
+      "value_billion_usd": 32976.71
+    },
+    {
+      "date": "2012-12",
+      "value_billion_usd": 33115.89
+    },
+    {
+      "date": "2013-01",
+      "value_billion_usd": 34100.61
+    },
+    {
+      "date": "2013-02",
+      "value_billion_usd": 33954.18
+    },
+    {
+      "date": "2013-03",
+      "value_billion_usd": 34426.49
+    },
+    {
+      "date": "2013-04",
+      "value_billion_usd": 35344.82
+    },
+    {
+      "date": "2013-05",
+      "value_billion_usd": 35148.07
+    },
+    {
+      "date": "2013-06",
+      "value_billion_usd": 34966.86
+    },
+    {
+      "date": "2013-07",
+      "value_billion_usd": 35478.1
+    },
+    {
+      "date": "2013-08",
+      "value_billion_usd": 35530.43
+    },
+    {
+      "date": "2013-09",
+      "value_billion_usd": 36626.62
+    },
+    {
+      "date": "2013-10",
+      "value_billion_usd": 37365.87
+    },
+    {
+      "date": "2013-11",
+      "value_billion_usd": 37894.51
+    },
+    {
+      "date": "2013-12",
+      "value_billion_usd": 38213.15
+    },
+    {
+      "date": "2014-01",
+      "value_billion_usd": 38666.41
+    },
+    {
+      "date": "2014-02",
+      "value_billion_usd": 39137.39
+    },
+    {
+      "date": "2014-03",
+      "value_billion_usd": 39480.97
+    },
+    {
+      "date": "2014-04",
+      "value_billion_usd": 39787.95
+    },
+    {
+      "date": "2014-05",
+      "value_billion_usd": 39838.9
+    },
+    {
+      "date": "2014-06",
+      "value_billion_usd": 39932.13
+    },
+    {
+      "date": "2014-07",
+      "value_billion_usd": 39662.67
+    },
+    {
+      "date": "2014-08",
+      "value_billion_usd": 39688.25
+    },
+    {
+      "date": "2014-09",
+      "value_billion_usd": 38877.0
+    },
+    {
+      "date": "2014-10",
+      "value_billion_usd": 38529.18
+    },
+    {
+      "date": "2014-11",
+      "value_billion_usd": 38473.54
+    },
+    {
+      "date": "2014-12",
+      "value_billion_usd": 38430.18
+    },
+    {
+      "date": "2015-01",
+      "value_billion_usd": 38134.14
+    },
+    {
+      "date": "2015-02",
+      "value_billion_usd": 38015.03
+    },
+    {
+      "date": "2015-03",
+      "value_billion_usd": 37300.38
+    },
+    {
+      "date": "2015-04",
+      "value_billion_usd": 37481.42
+    },
+    {
+      "date": "2015-05",
+      "value_billion_usd": 37111.43
+    },
+    {
+      "date": "2015-06",
+      "value_billion_usd": 36938.38
+    },
+    {
+      "date": "2015-07",
+      "value_billion_usd": 36513.1
+    },
+    {
+      "date": "2015-08",
+      "value_billion_usd": 35573.81
+    },
+    {
+      "date": "2015-09",
+      "value_billion_usd": 35141.2
+    },
+    {
+      "date": "2015-10",
+      "value_billion_usd": 35255.07
+    },
+    {
+      "date": "2015-11",
+      "value_billion_usd": 34382.84
+    },
+    {
+      "date": "2015-12",
+      "value_billion_usd": 33303.62
+    },
+    {
+      "date": "2016-01",
+      "value_billion_usd": 32308.93
+    },
+    {
+      "date": "2016-02",
+      "value_billion_usd": 32023.21
+    },
+    {
+      "date": "2016-03",
+      "value_billion_usd": 32125.79
+    },
+    {
+      "date": "2016-04",
+      "value_billion_usd": 32196.68
+    },
+    {
+      "date": "2016-05",
+      "value_billion_usd": 31917.36
+    },
+    {
+      "date": "2016-06",
+      "value_billion_usd": 32051.62
+    },
+    {
+      "date": "2016-07",
+      "value_billion_usd": 32010.57
+    },
+    {
+      "date": "2016-08",
+      "value_billion_usd": 31851.67
+    },
+    {
+      "date": "2016-09",
+      "value_billion_usd": 31663.82
+    },
+    {
+      "date": "2016-10",
+      "value_billion_usd": 31206.55
+    },
+    {
+      "date": "2016-11",
+      "value_billion_usd": 30515.98
+    },
+    {
+      "date": "2016-12",
+      "value_billion_usd": 30105.17
+    },
+    {
+      "date": "2017-01",
+      "value_billion_usd": 29982.04
+    },
+    {
+      "date": "2017-02",
+      "value_billion_usd": 30051.24
+    },
+    {
+      "date": "2017-03",
+      "value_billion_usd": 30090.88
+    },
+    {
+      "date": "2017-04",
+      "value_billion_usd": 30295.33
+    },
+    {
+      "date": "2017-05",
+      "value_billion_usd": 30535.67
+    },
+    {
+      "date": "2017-06",
+      "value_billion_usd": 30567.89
+    },
+    {
+      "date": "2017-07",
+      "value_billion_usd": 30807.2
+    },
+    {
+      "date": "2017-08",
+      "value_billion_usd": 30915.27
+    },
+    {
+      "date": "2017-09",
+      "value_billion_usd": 31085.1
+    },
+    {
+      "date": "2017-10",
+      "value_billion_usd": 31092.13
+    },
+    {
+      "date": "2017-11",
+      "value_billion_usd": 31192.77
+    },
+    {
+      "date": "2017-12",
+      "value_billion_usd": 31399.49
+    },
+    {
+      "date": "2018-01",
+      "value_billion_usd": 31614.57
+    },
+    {
+      "date": "2018-02",
+      "value_billion_usd": 31344.82
+    },
+    {
+      "date": "2018-03",
+      "value_billion_usd": 31428.2
+    },
+    {
+      "date": "2018-04",
+      "value_billion_usd": 31248.52
+    },
+    {
+      "date": "2018-05",
+      "value_billion_usd": 31106.23
+    },
+    {
+      "date": "2018-06",
+      "value_billion_usd": 31121.29
+    },
+    {
+      "date": "2018-07",
+      "value_billion_usd": 31179.46
+    },
+    {
+      "date": "2018-08",
+      "value_billion_usd": 31097.16
+    },
+    {
+      "date": "2018-09",
+      "value_billion_usd": 30870.25
+    },
+    {
+      "date": "2018-10",
+      "value_billion_usd": 30530.98
+    },
+    {
+      "date": "2018-11",
+      "value_billion_usd": 30616.97
+    },
+    {
+      "date": "2018-12",
+      "value_billion_usd": 30727.12
+    },
+    {
+      "date": "2019-01",
+      "value_billion_usd": 30879.24
+    },
+    {
+      "date": "2019-02",
+      "value_billion_usd": 30901.8
+    },
+    {
+      "date": "2019-03",
+      "value_billion_usd": 30987.61
+    },
+    {
+      "date": "2019-04",
+      "value_billion_usd": 30949.53
+    },
+    {
+      "date": "2019-05",
+      "value_billion_usd": 31010.04
+    },
+    {
+      "date": "2019-06",
+      "value_billion_usd": 31192.34
+    },
+    {
+      "date": "2019-07",
+      "value_billion_usd": 31036.97
+    },
+    {
+      "date": "2019-08",
+      "value_billion_usd": 31071.76
+    },
+    {
+      "date": "2019-09",
+      "value_billion_usd": 30924.31
+    },
+    {
+      "date": "2019-10",
+      "value_billion_usd": 31051.61
+    },
+    {
+      "date": "2019-11",
+      "value_billion_usd": 30955.91
+    },
+    {
+      "date": "2019-12",
+      "value_billion_usd": 31079.24
+    },
+    {
+      "date": "2020-01",
+      "value_billion_usd": 31154.97
+    },
+    {
+      "date": "2020-02",
+      "value_billion_usd": 31067.18
+    },
+    {
+      "date": "2020-03",
+      "value_billion_usd": 30606.33
+    },
+    {
+      "date": "2020-04",
+      "value_billion_usd": 30914.59
+    },
+    {
+      "date": "2020-05",
+      "value_billion_usd": 31016.92
+    },
+    {
+      "date": "2020-06",
+      "value_billion_usd": 31123.28
+    },
+    {
+      "date": "2020-07",
+      "value_billion_usd": 31543.91
+    },
+    {
+      "date": "2020-08",
+      "value_billion_usd": 31646.09
+    },
+    {
+      "date": "2020-09",
+      "value_billion_usd": 31425.62
+    },
+    {
+      "date": "2020-10",
+      "value_billion_usd": 31279.82
+    },
+    {
+      "date": "2020-11",
+      "value_billion_usd": 31784.9
+    },
+    {
+      "date": "2020-12",
+      "value_billion_usd": 32165.22
+    },
+    {
+      "date": "2021-01",
+      "value_billion_usd": 32106.71
+    },
+    {
+      "date": "2021-02",
+      "value_billion_usd": 32049.94
+    },
+    {
+      "date": "2021-03",
+      "value_billion_usd": 31700.29
+    },
+    {
+      "date": "2021-04",
+      "value_billion_usd": 31981.8
+    },
+    {
+      "date": "2021-05",
+      "value_billion_usd": 32218.03
+    },
+    {
+      "date": "2021-06",
+      "value_billion_usd": 32140.1
+    },
+    {
+      "date": "2021-07",
+      "value_billion_usd": 32358.9
+    },
+    {
+      "date": "2021-08",
+      "value_billion_usd": 32321.16
+    },
+    {
+      "date": "2021-09",
+      "value_billion_usd": 32006.26
+    },
+    {
+      "date": "2021-10",
+      "value_billion_usd": 32176.14
+    },
+    {
+      "date": "2021-11",
+      "value_billion_usd": 32223.86
+    },
+    {
+      "date": "2021-12",
+      "value_billion_usd": 32501.66
+    },
+    {
+      "date": "2022-01",
+      "value_billion_usd": 32216.32
+    },
+    {
+      "date": "2022-02",
+      "value_billion_usd": 32138.27
+    },
+    {
+      "date": "2022-03",
+      "value_billion_usd": 31879.94
+    },
+    {
+      "date": "2022-04",
+      "value_billion_usd": 31197.2
+    },
+    {
+      "date": "2022-05",
+      "value_billion_usd": 31277.8
+    },
+    {
+      "date": "2022-06",
+      "value_billion_usd": 30712.72
+    },
+    {
+      "date": "2022-07",
+      "value_billion_usd": 31040.71
+    },
+    {
+      "date": "2022-08",
+      "value_billion_usd": 30548.81
+    },
+    {
+      "date": "2022-09",
+      "value_billion_usd": 30289.55
+    },
+    {
+      "date": "2022-10",
+      "value_billion_usd": 30524.27
+    },
+    {
+      "date": "2022-11",
+      "value_billion_usd": 31174.88
+    },
+    {
+      "date": "2022-12",
+      "value_billion_usd": 31276.91
+    },
+    {
+      "date": "2023-01",
+      "value_billion_usd": 31844.62
+    },
+    {
+      "date": "2023-02",
+      "value_billion_usd": 31331.53
+    },
+    {
+      "date": "2023-03",
+      "value_billion_usd": 31838.72
+    },
+    {
+      "date": "2023-04",
+      "value_billion_usd": 32047.66
+    },
+    {
+      "date": "2023-05",
+      "value_billion_usd": 31765.08
+    },
+    {
+      "date": "2023-06",
+      "value_billion_usd": 31929.98
+    },
+    {
+      "date": "2023-07",
+      "value_billion_usd": 32042.7
+    },
+    {
+      "date": "2023-08",
+      "value_billion_usd": 31600.98
+    },
+    {
+      "date": "2023-09",
+      "value_billion_usd": 31150.7
+    },
+    {
+      "date": "2023-10",
+      "value_billion_usd": 31012.24
+    },
+    {
+      "date": "2023-11",
+      "value_billion_usd": 31718.07
+    },
+    {
+      "date": "2023-12",
+      "value_billion_usd": 32379.77
+    },
+    {
+      "date": "2024-01",
+      "value_billion_usd": 32193.2
+    },
+    {
+      "date": "2024-02",
+      "value_billion_usd": 32258.17
+    },
+    {
+      "date": "2024-03",
+      "value_billion_usd": 32456.57
+    },
+    {
+      "date": "2024-04",
+      "value_billion_usd": 32008.31
+    },
+    {
+      "date": "2024-05",
+      "value_billion_usd": 32320.39
+    },
+    {
+      "date": "2024-06",
+      "value_billion_usd": 32223.58
+    },
+    {
+      "date": "2024-07",
+      "value_billion_usd": 32563.72
+    },
+    {
+      "date": "2024-08",
+      "value_billion_usd": 32882.15
+    },
+    {
+      "date": "2024-09",
+      "value_billion_usd": 33163.67
+    },
+    {
+      "date": "2024-10",
+      "value_billion_usd": 32610.5
+    },
+    {
+      "date": "2024-11",
+      "value_billion_usd": 32658.6
+    },
+    {
+      "date": "2024-12",
+      "value_billion_usd": 32023.57
+    },
+    {
+      "date": "2025-01",
+      "value_billion_usd": 32090.36
+    },
+    {
+      "date": "2025-02",
+      "value_billion_usd": 32272.24
+    },
+    {
+      "date": "2025-03",
+      "value_billion_usd": 32406.65
+    },
+    {
+      "date": "2025-04",
+      "value_billion_usd": 32816.62
+    },
+    {
+      "date": "2025-05",
+      "value_billion_usd": 32852.55
+    },
+    {
+      "date": "2025-06",
+      "value_billion_usd": 33174.22
+    },
+    {
+      "date": "2025-07",
+      "value_billion_usd": 32922.35
+    },
+    {
+      "date": "2025-08",
+      "value_billion_usd": 33221.54
+    },
+    {
+      "date": "2025-09",
+      "value_billion_usd": 33386.58
+    },
+    {
+      "date": "2025-10",
+      "value_billion_usd": 33433.43
+    },
+    {
+      "date": "2025-11",
+      "value_billion_usd": 33463.72
+    },
+    {
+      "date": "2025-12",
+      "value_billion_usd": 33578.69
+    },
+    {
+      "date": "2026-01",
+      "value_billion_usd": 33990.78
+    },
+    {
+      "date": "2026-02",
+      "value_billion_usd": 34278.07
+    },
+    {
+      "date": "2026-03",
+      "value_billion_usd": 33421.23
+    },
+    {
+      "date": "2026-04",
+      "value_billion_usd": 34105.47
+    },
+    {
+      "date": "2026-05",
+      "value_billion_usd": 34422.38
+    },
+    {
+      "date": "2026-06",
+      "value_billion_usd": 34162.62
+    },
+    {
+      "date": "2026-07",
+      "value_billion_usd": 34187.76
+    },
+    {
+      "date": "2026-08",
+      "value_billion_usd": 34383.25
+    },
+    {
+      "date": "2026-09",
+      "value_billion_usd": 34002.51
+    }
+  ],
+  "m1_yoy": [
+    {
+      "date": "2008-01",
+      "value_pct": 20.54
+    },
+    {
+      "date": "2008-02",
+      "value_pct": 18.95
+    },
+    {
+      "date": "2008-03",
+      "value_pct": 17.97
+    },
+    {
+      "date": "2008-04",
+      "value_pct": 19.05
+    },
+    {
+      "date": "2008-05",
+      "value_pct": 17.93
+    },
+    {
+      "date": "2008-06",
+      "value_pct": 14.19
+    },
+    {
+      "date": "2008-07",
+      "value_pct": 13.96
+    },
+    {
+      "date": "2008-08",
+      "value_pct": 11.48
+    },
+    {
+      "date": "2008-09",
+      "value_pct": 9.43
+    },
+    {
+      "date": "2008-10",
+      "value_pct": 8.85
+    },
+    {
+      "date": "2008-11",
+      "value_pct": 6.8
+    },
+    {
+      "date": "2008-12",
+      "value_pct": 9.06
+    },
+    {
+      "date": "2009-01",
+      "value_pct": 6.68
+    },
+    {
+      "date": "2009-02",
+      "value_pct": 10.87
+    },
+    {
+      "date": "2009-03",
+      "value_pct": 17.04
+    },
+    {
+      "date": "2009-04",
+      "value_pct": 17.48
+    },
+    {
+      "date": "2009-05",
+      "value_pct": 18.69
+    },
+    {
+      "date": "2009-06",
+      "value_pct": 24.79
+    },
+    {
+      "date": "2009-07",
+      "value_pct": 26.37
+    },
+    {
+      "date": "2009-08",
+      "value_pct": 27.72
+    },
+    {
+      "date": "2009-09",
+      "value_pct": 29.51
+    },
+    {
+      "date": "2009-10",
+      "value_pct": 32.03
+    },
+    {
+      "date": "2009-11",
+      "value_pct": 34.63
+    },
+    {
+      "date": "2009-12",
+      "value_pct": 32.35
+    },
+    {
+      "date": "2010-01",
+      "value_pct": 38.96
+    },
+    {
+      "date": "2010-02",
+      "value_pct": 34.99
+    },
+    {
+      "date": "2010-03",
+      "value_pct": 29.94
+    },
+    {
+      "date": "2010-04",
+      "value_pct": 31.25
+    },
+    {
+      "date": "2010-05",
+      "value_pct": 29.9
+    },
+    {
+      "date": "2010-06",
+      "value_pct": 24.6
+    },
+    {
+      "date": "2010-07",
+      "value_pct": 22.9
+    },
+    {
+      "date": "2010-08",
+      "value_pct": 21.9
+    },
+    {
+      "date": "2010-09",
+      "value_pct": 20.9
+    },
+    {
+      "date": "2010-10",
+      "value_pct": 22.1
+    },
+    {
+      "date": "2010-11",
+      "value_pct": 22.1
+    },
+    {
+      "date": "2010-12",
+      "value_pct": 21.2
+    },
+    {
+      "date": "2011-01",
+      "value_pct": 13.6
+    },
+    {
+      "date": "2011-02",
+      "value_pct": 14.5
+    },
+    {
+      "date": "2011-03",
+      "value_pct": 15.0
+    },
+    {
+      "date": "2011-04",
+      "value_pct": 12.9
+    },
+    {
+      "date": "2011-05",
+      "value_pct": 12.7
+    },
+    {
+      "date": "2011-06",
+      "value_pct": 13.1
+    },
+    {
+      "date": "2011-07",
+      "value_pct": 11.6
+    },
+    {
+      "date": "2011-08",
+      "value_pct": 11.2
+    },
+    {
+      "date": "2011-09",
+      "value_pct": 8.85
+    },
+    {
+      "date": "2011-10",
+      "value_pct": 8.4
+    },
+    {
+      "date": "2011-11",
+      "value_pct": 7.8
+    },
+    {
+      "date": "2011-12",
+      "value_pct": 7.9
+    },
+    {
+      "date": "2012-01",
+      "value_pct": 3.1
+    },
+    {
+      "date": "2012-02",
+      "value_pct": 4.3
+    },
+    {
+      "date": "2012-03",
+      "value_pct": 4.4
+    },
+    {
+      "date": "2012-04",
+      "value_pct": 3.1
+    },
+    {
+      "date": "2012-05",
+      "value_pct": 3.5
+    },
+    {
+      "date": "2012-06",
+      "value_pct": 4.7
+    },
+    {
+      "date": "2012-07",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2012-08",
+      "value_pct": 4.5
+    },
+    {
+      "date": "2012-09",
+      "value_pct": 7.3
+    },
+    {
+      "date": "2012-10",
+      "value_pct": 6.1
+    },
+    {
+      "date": "2012-11",
+      "value_pct": 5.5
+    },
+    {
+      "date": "2012-12",
+      "value_pct": 6.5
+    },
+    {
+      "date": "2013-01",
+      "value_pct": 15.3
+    },
+    {
+      "date": "2013-02",
+      "value_pct": 9.5
+    },
+    {
+      "date": "2013-03",
+      "value_pct": 11.9
+    },
+    {
+      "date": "2013-04",
+      "value_pct": 11.9
+    },
+    {
+      "date": "2013-05",
+      "value_pct": 11.3
+    },
+    {
+      "date": "2013-06",
+      "value_pct": 9.1
+    },
+    {
+      "date": "2013-07",
+      "value_pct": 9.7
+    },
+    {
+      "date": "2013-08",
+      "value_pct": 9.9
+    },
+    {
+      "date": "2013-09",
+      "value_pct": 8.9
+    },
+    {
+      "date": "2013-10",
+      "value_pct": 8.9
+    },
+    {
+      "date": "2013-11",
+      "value_pct": 9.4
+    },
+    {
+      "date": "2013-12",
+      "value_pct": 9.3
+    },
+    {
+      "date": "2014-01",
+      "value_pct": 1.2
+    },
+    {
+      "date": "2014-02",
+      "value_pct": 6.9
+    },
+    {
+      "date": "2014-03",
+      "value_pct": 5.4
+    },
+    {
+      "date": "2014-04",
+      "value_pct": 5.5
+    },
+    {
+      "date": "2014-05",
+      "value_pct": 5.7
+    },
+    {
+      "date": "2014-06",
+      "value_pct": 8.9
+    },
+    {
+      "date": "2014-07",
+      "value_pct": 6.7
+    },
+    {
+      "date": "2014-08",
+      "value_pct": 5.7
+    },
+    {
+      "date": "2014-09",
+      "value_pct": 4.8
+    },
+    {
+      "date": "2014-10",
+      "value_pct": 3.2
+    },
+    {
+      "date": "2014-11",
+      "value_pct": 3.2
+    },
+    {
+      "date": "2014-12",
+      "value_pct": 3.2
+    },
+    {
+      "date": "2015-01",
+      "value_pct": 10.6
+    },
+    {
+      "date": "2015-02",
+      "value_pct": 5.6
+    },
+    {
+      "date": "2015-03",
+      "value_pct": 2.9
+    },
+    {
+      "date": "2015-04",
+      "value_pct": 3.7
+    },
+    {
+      "date": "2015-05",
+      "value_pct": 4.7
+    },
+    {
+      "date": "2015-06",
+      "value_pct": 4.3
+    },
+    {
+      "date": "2015-07",
+      "value_pct": 6.6
+    },
+    {
+      "date": "2015-08",
+      "value_pct": 9.3
+    },
+    {
+      "date": "2015-09",
+      "value_pct": 11.4
+    },
+    {
+      "date": "2015-10",
+      "value_pct": 14.0
+    },
+    {
+      "date": "2015-11",
+      "value_pct": 15.7
+    },
+    {
+      "date": "2015-12",
+      "value_pct": 15.2
+    },
+    {
+      "date": "2016-01",
+      "value_pct": 18.6
+    },
+    {
+      "date": "2016-02",
+      "value_pct": 17.4
+    },
+    {
+      "date": "2016-03",
+      "value_pct": 22.1
+    },
+    {
+      "date": "2016-04",
+      "value_pct": 22.9
+    },
+    {
+      "date": "2016-05",
+      "value_pct": 23.7
+    },
+    {
+      "date": "2016-06",
+      "value_pct": 24.6
+    },
+    {
+      "date": "2016-07",
+      "value_pct": 25.4
+    },
+    {
+      "date": "2016-08",
+      "value_pct": 25.3
+    },
+    {
+      "date": "2016-09",
+      "value_pct": 24.7
+    },
+    {
+      "date": "2016-10",
+      "value_pct": 23.9
+    },
+    {
+      "date": "2016-11",
+      "value_pct": 22.7
+    },
+    {
+      "date": "2016-12",
+      "value_pct": 21.4
+    },
+    {
+      "date": "2017-01",
+      "value_pct": 14.5
+    },
+    {
+      "date": "2017-02",
+      "value_pct": 21.4
+    },
+    {
+      "date": "2017-03",
+      "value_pct": 18.8
+    },
+    {
+      "date": "2017-04",
+      "value_pct": 18.5
+    },
+    {
+      "date": "2017-05",
+      "value_pct": 17.0
+    },
+    {
+      "date": "2017-06",
+      "value_pct": 15.0
+    },
+    {
+      "date": "2017-07",
+      "value_pct": 15.3
+    },
+    {
+      "date": "2017-08",
+      "value_pct": 14.0
+    },
+    {
+      "date": "2017-09",
+      "value_pct": 14.0
+    },
+    {
+      "date": "2017-10",
+      "value_pct": 13.0
+    },
+    {
+      "date": "2017-11",
+      "value_pct": 12.7
+    },
+    {
+      "date": "2017-12",
+      "value_pct": 11.8
+    },
+    {
+      "date": "2018-01",
+      "value_pct": 15.0
+    },
+    {
+      "date": "2018-02",
+      "value_pct": 8.5
+    },
+    {
+      "date": "2018-03",
+      "value_pct": 7.1
+    },
+    {
+      "date": "2018-04",
+      "value_pct": 7.2
+    },
+    {
+      "date": "2018-05",
+      "value_pct": 6.0
+    },
+    {
+      "date": "2018-06",
+      "value_pct": 6.6
+    },
+    {
+      "date": "2018-07",
+      "value_pct": 5.1
+    },
+    {
+      "date": "2018-08",
+      "value_pct": 3.9
+    },
+    {
+      "date": "2018-09",
+      "value_pct": 4.0
+    },
+    {
+      "date": "2018-10",
+      "value_pct": 2.7
+    },
+    {
+      "date": "2018-11",
+      "value_pct": 1.5
+    },
+    {
+      "date": "2018-12",
+      "value_pct": 1.5
+    },
+    {
+      "date": "2019-01",
+      "value_pct": 0.4
+    },
+    {
+      "date": "2019-02",
+      "value_pct": 1.6
+    },
+    {
+      "date": "2019-03",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2019-04",
+      "value_pct": 2.9
+    },
+    {
+      "date": "2019-05",
+      "value_pct": 3.4
+    },
+    {
+      "date": "2019-06",
+      "value_pct": 4.4
+    },
+    {
+      "date": "2019-07",
+      "value_pct": 3.1
+    },
+    {
+      "date": "2019-08",
+      "value_pct": 3.4
+    },
+    {
+      "date": "2019-09",
+      "value_pct": 3.4
+    },
+    {
+      "date": "2019-10",
+      "value_pct": 3.3
+    },
+    {
+      "date": "2019-11",
+      "value_pct": 3.5
+    },
+    {
+      "date": "2019-12",
+      "value_pct": 4.4
+    },
+    {
+      "date": "2020-01",
+      "value_pct": 0.0
+    },
+    {
+      "date": "2020-02",
+      "value_pct": 4.8
+    },
+    {
+      "date": "2020-03",
+      "value_pct": 5.0
+    },
+    {
+      "date": "2020-04",
+      "value_pct": 5.5
+    },
+    {
+      "date": "2020-05",
+      "value_pct": 6.8
+    },
+    {
+      "date": "2020-06",
+      "value_pct": 6.5
+    },
+    {
+      "date": "2020-07",
+      "value_pct": 6.9
+    },
+    {
+      "date": "2020-08",
+      "value_pct": 8.0
+    },
+    {
+      "date": "2020-09",
+      "value_pct": 8.1
+    },
+    {
+      "date": "2020-10",
+      "value_pct": 9.1
+    },
+    {
+      "date": "2020-11",
+      "value_pct": 10.0
+    },
+    {
+      "date": "2020-12",
+      "value_pct": 8.6
+    },
+    {
+      "date": "2021-01",
+      "value_pct": 14.7
+    },
+    {
+      "date": "2021-02",
+      "value_pct": 7.4
+    },
+    {
+      "date": "2021-03",
+      "value_pct": 7.1
+    },
+    {
+      "date": "2021-04",
+      "value_pct": 6.2
+    },
+    {
+      "date": "2021-05",
+      "value_pct": 6.1
+    },
+    {
+      "date": "2021-06",
+      "value_pct": 5.5
+    },
+    {
+      "date": "2021-07",
+      "value_pct": 4.9
+    },
+    {
+      "date": "2021-08",
+      "value_pct": 4.2
+    },
+    {
+      "date": "2021-09",
+      "value_pct": 3.7
+    },
+    {
+      "date": "2021-10",
+      "value_pct": 2.8
+    },
+    {
+      "date": "2021-11",
+      "value_pct": 3.0
+    },
+    {
+      "date": "2021-12",
+      "value_pct": 3.5
+    },
+    {
+      "date": "2022-01",
+      "value_pct": -1.9
+    },
+    {
+      "date": "2022-02",
+      "value_pct": 4.7
+    },
+    {
+      "date": "2022-03",
+      "value_pct": 4.7
+    },
+    {
+      "date": "2022-04",
+      "value_pct": 5.1
+    },
+    {
+      "date": "2022-05",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2022-06",
+      "value_pct": 5.8
+    },
+    {
+      "date": "2022-07",
+      "value_pct": 6.7
+    },
+    {
+      "date": "2022-08",
+      "value_pct": 6.1
+    },
+    {
+      "date": "2022-09",
+      "value_pct": 6.4
+    },
+    {
+      "date": "2022-10",
+      "value_pct": 5.8
+    },
+    {
+      "date": "2022-11",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2022-12",
+      "value_pct": 3.7
+    },
+    {
+      "date": "2023-01",
+      "value_pct": 6.7
+    },
+    {
+      "date": "2023-02",
+      "value_pct": 5.8
+    },
+    {
+      "date": "2023-03",
+      "value_pct": 5.1
+    },
+    {
+      "date": "2023-04",
+      "value_pct": 5.3
+    },
+    {
+      "date": "2023-05",
+      "value_pct": 4.7
+    },
+    {
+      "date": "2023-06",
+      "value_pct": 3.1
+    },
+    {
+      "date": "2023-07",
+      "value_pct": 2.3
+    },
+    {
+      "date": "2023-08",
+      "value_pct": 2.2
+    },
+    {
+      "date": "2023-09",
+      "value_pct": 2.1
+    },
+    {
+      "date": "2023-10",
+      "value_pct": 1.9
+    },
+    {
+      "date": "2023-11",
+      "value_pct": 1.3
+    },
+    {
+      "date": "2023-12",
+      "value_pct": 1.3
+    },
+    {
+      "date": "2024-01",
+      "value_pct": 5.9
+    },
+    {
+      "date": "2024-02",
+      "value_pct": 1.2
+    },
+    {
+      "date": "2024-03",
+      "value_pct": 1.1
+    },
+    {
+      "date": "2024-04",
+      "value_pct": -1.4
+    },
+    {
+      "date": "2024-05",
+      "value_pct": -4.2
+    },
+    {
+      "date": "2024-06",
+      "value_pct": -5.0
+    },
+    {
+      "date": "2024-07",
+      "value_pct": -6.6
+    },
+    {
+      "date": "2024-08",
+      "value_pct": -7.3
+    },
+    {
+      "date": "2024-09",
+      "value_pct": -7.4
+    },
+    {
+      "date": "2024-10",
+      "value_pct": -6.1
+    },
+    {
+      "date": "2024-11",
+      "value_pct": -3.7
+    },
+    {
+      "date": "2024-12",
+      "value_pct": -1.4
+    },
+    {
+      "date": "2025-01",
+      "value_pct": 0.4
+    },
+    {
+      "date": "2025-02",
+      "value_pct": 0.1
+    },
+    {
+      "date": "2025-03",
+      "value_pct": 1.6
+    },
+    {
+      "date": "2025-04",
+      "value_pct": 1.5
+    },
+    {
+      "date": "2025-05",
+      "value_pct": 2.3
+    },
+    {
+      "date": "2025-06",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2025-07",
+      "value_pct": 5.6
+    },
+    {
+      "date": "2025-08",
+      "value_pct": 6.0
+    },
+    {
+      "date": "2025-09",
+      "value_pct": 7.2
+    },
+    {
+      "date": "2025-10",
+      "value_pct": 6.2
+    },
+    {
+      "date": "2025-11",
+      "value_pct": 4.9
+    },
+    {
+      "date": "2025-12",
+      "value_pct": 3.8
+    },
+    {
+      "date": "2026-01",
+      "value_pct": 4.9
+    },
+    {
+      "date": "2026-02",
+      "value_pct": 5.9
+    },
+    {
+      "date": "2026-03",
+      "value_pct": 5.1
+    },
+    {
+      "date": "2026-04",
+      "value_pct": 5.0
+    },
+    {
+      "date": "2026-05",
+      "value_pct": 5.5
+    },
+    {
+      "date": "2026-06",
+      "value_pct": 4.0
+    },
+    {
+      "date": "2026-07",
+      "value_pct": 4.0
+    },
+    {
+      "date": "2026-08",
+      "value_pct": 4.1
+    },
+    {
+      "date": "2026-09",
+      "value_pct": 3.2
+    }
+  ],
+  "m1_m2_scissors": [
+    {
+      "date": "2008-01",
+      "value_pct": 1.66
+    },
+    {
+      "date": "2008-02",
+      "value_pct": 1.56
+    },
+    {
+      "date": "2008-03",
+      "value_pct": 1.78
+    },
+    {
+      "date": "2008-04",
+      "value_pct": 2.11
+    },
+    {
+      "date": "2008-05",
+      "value_pct": -0.14
+    },
+    {
+      "date": "2008-06",
+      "value_pct": -3.18
+    },
+    {
+      "date": "2008-07",
+      "value_pct": -2.39
+    },
+    {
+      "date": "2008-08",
+      "value_pct": -4.52
+    },
+    {
+      "date": "2008-09",
+      "value_pct": -5.86
+    },
+    {
+      "date": "2008-10",
+      "value_pct": -6.17
+    },
+    {
+      "date": "2008-11",
+      "value_pct": -8.0
+    },
+    {
+      "date": "2008-12",
+      "value_pct": -8.76
+    },
+    {
+      "date": "2009-01",
+      "value_pct": -12.11
+    },
+    {
+      "date": "2009-02",
+      "value_pct": -9.61
+    },
+    {
+      "date": "2009-03",
+      "value_pct": -8.47
+    },
+    {
+      "date": "2009-04",
+      "value_pct": -8.47
+    },
+    {
+      "date": "2009-05",
+      "value_pct": -7.05
+    },
+    {
+      "date": "2009-06",
+      "value_pct": -3.67
+    },
+    {
+      "date": "2009-07",
+      "value_pct": -2.05
+    },
+    {
+      "date": "2009-08",
+      "value_pct": -0.81
+    },
+    {
+      "date": "2009-09",
+      "value_pct": 0.2
+    },
+    {
+      "date": "2009-10",
+      "value_pct": 2.61
+    },
+    {
+      "date": "2009-11",
+      "value_pct": 4.89
+    },
+    {
+      "date": "2009-12",
+      "value_pct": 4.67
+    },
+    {
+      "date": "2010-01",
+      "value_pct": 12.98
+    },
+    {
+      "date": "2010-02",
+      "value_pct": 9.47
+    },
+    {
+      "date": "2010-03",
+      "value_pct": 7.44
+    },
+    {
+      "date": "2010-04",
+      "value_pct": 9.77
+    },
+    {
+      "date": "2010-05",
+      "value_pct": 8.9
+    },
+    {
+      "date": "2010-06",
+      "value_pct": 6.1
+    },
+    {
+      "date": "2010-07",
+      "value_pct": 5.3
+    },
+    {
+      "date": "2010-08",
+      "value_pct": 2.7
+    },
+    {
+      "date": "2010-09",
+      "value_pct": 1.9
+    },
+    {
+      "date": "2010-10",
+      "value_pct": 2.8
+    },
+    {
+      "date": "2010-11",
+      "value_pct": 2.6
+    },
+    {
+      "date": "2010-12",
+      "value_pct": 1.5
+    },
+    {
+      "date": "2011-01",
+      "value_pct": -3.6
+    },
+    {
+      "date": "2011-02",
+      "value_pct": -1.2
+    },
+    {
+      "date": "2011-03",
+      "value_pct": -1.6
+    },
+    {
+      "date": "2011-04",
+      "value_pct": -2.4
+    },
+    {
+      "date": "2011-05",
+      "value_pct": -2.4
+    },
+    {
+      "date": "2011-06",
+      "value_pct": -2.8
+    },
+    {
+      "date": "2011-07",
+      "value_pct": -3.1
+    },
+    {
+      "date": "2011-08",
+      "value_pct": -2.3
+    },
+    {
+      "date": "2011-09",
+      "value_pct": -4.19
+    },
+    {
+      "date": "2011-10",
+      "value_pct": -4.5
+    },
+    {
+      "date": "2011-11",
+      "value_pct": -4.9
+    },
+    {
+      "date": "2011-12",
+      "value_pct": -5.7
+    },
+    {
+      "date": "2012-01",
+      "value_pct": -9.3
+    },
+    {
+      "date": "2012-02",
+      "value_pct": -8.7
+    },
+    {
+      "date": "2012-03",
+      "value_pct": -9.0
+    },
+    {
+      "date": "2012-04",
+      "value_pct": -9.7
+    },
+    {
+      "date": "2012-05",
+      "value_pct": -9.7
+    },
+    {
+      "date": "2012-06",
+      "value_pct": -8.9
+    },
+    {
+      "date": "2012-07",
+      "value_pct": -9.3
+    },
+    {
+      "date": "2012-08",
+      "value_pct": -9.0
+    },
+    {
+      "date": "2012-09",
+      "value_pct": -7.5
+    },
+    {
+      "date": "2012-10",
+      "value_pct": -8.0
+    },
+    {
+      "date": "2012-11",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2012-12",
+      "value_pct": -7.3
+    },
+    {
+      "date": "2013-01",
+      "value_pct": -0.6
+    },
+    {
+      "date": "2013-02",
+      "value_pct": -5.7
+    },
+    {
+      "date": "2013-03",
+      "value_pct": -3.8
+    },
+    {
+      "date": "2013-04",
+      "value_pct": -4.2
+    },
+    {
+      "date": "2013-05",
+      "value_pct": -4.5
+    },
+    {
+      "date": "2013-06",
+      "value_pct": -4.9
+    },
+    {
+      "date": "2013-07",
+      "value_pct": -4.8
+    },
+    {
+      "date": "2013-08",
+      "value_pct": -4.8
+    },
+    {
+      "date": "2013-09",
+      "value_pct": -5.3
+    },
+    {
+      "date": "2013-10",
+      "value_pct": -5.4
+    },
+    {
+      "date": "2013-11",
+      "value_pct": -4.8
+    },
+    {
+      "date": "2013-12",
+      "value_pct": -4.3
+    },
+    {
+      "date": "2014-01",
+      "value_pct": -12.0
+    },
+    {
+      "date": "2014-02",
+      "value_pct": -6.4
+    },
+    {
+      "date": "2014-03",
+      "value_pct": -6.7
+    },
+    {
+      "date": "2014-04",
+      "value_pct": -7.7
+    },
+    {
+      "date": "2014-05",
+      "value_pct": -7.7
+    },
+    {
+      "date": "2014-06",
+      "value_pct": -5.8
+    },
+    {
+      "date": "2014-07",
+      "value_pct": -6.8
+    },
+    {
+      "date": "2014-08",
+      "value_pct": -7.1
+    },
+    {
+      "date": "2014-09",
+      "value_pct": -8.1
+    },
+    {
+      "date": "2014-10",
+      "value_pct": -9.4
+    },
+    {
+      "date": "2014-11",
+      "value_pct": -9.1
+    },
+    {
+      "date": "2014-12",
+      "value_pct": -9.0
+    },
+    {
+      "date": "2015-01",
+      "value_pct": -0.2
+    },
+    {
+      "date": "2015-02",
+      "value_pct": -6.9
+    },
+    {
+      "date": "2015-03",
+      "value_pct": -8.7
+    },
+    {
+      "date": "2015-04",
+      "value_pct": -6.4
+    },
+    {
+      "date": "2015-05",
+      "value_pct": -6.1
+    },
+    {
+      "date": "2015-06",
+      "value_pct": -7.5
+    },
+    {
+      "date": "2015-07",
+      "value_pct": -6.7
+    },
+    {
+      "date": "2015-08",
+      "value_pct": -4.0
+    },
+    {
+      "date": "2015-09",
+      "value_pct": -1.7
+    },
+    {
+      "date": "2015-10",
+      "value_pct": 0.5
+    },
+    {
+      "date": "2015-11",
+      "value_pct": 2.0
+    },
+    {
+      "date": "2015-12",
+      "value_pct": 1.9
+    },
+    {
+      "date": "2016-01",
+      "value_pct": 4.6
+    },
+    {
+      "date": "2016-02",
+      "value_pct": 4.1
+    },
+    {
+      "date": "2016-03",
+      "value_pct": 8.7
+    },
+    {
+      "date": "2016-04",
+      "value_pct": 10.1
+    },
+    {
+      "date": "2016-05",
+      "value_pct": 11.9
+    },
+    {
+      "date": "2016-06",
+      "value_pct": 12.8
+    },
+    {
+      "date": "2016-07",
+      "value_pct": 15.2
+    },
+    {
+      "date": "2016-08",
+      "value_pct": 13.9
+    },
+    {
+      "date": "2016-09",
+      "value_pct": 13.2
+    },
+    {
+      "date": "2016-10",
+      "value_pct": 12.3
+    },
+    {
+      "date": "2016-11",
+      "value_pct": 11.3
+    },
+    {
+      "date": "2016-12",
+      "value_pct": 10.1
+    },
+    {
+      "date": "2017-01",
+      "value_pct": 3.8
+    },
+    {
+      "date": "2017-02",
+      "value_pct": 10.95
+    },
+    {
+      "date": "2017-03",
+      "value_pct": 8.68
+    },
+    {
+      "date": "2017-04",
+      "value_pct": 8.66
+    },
+    {
+      "date": "2017-05",
+      "value_pct": 7.87
+    },
+    {
+      "date": "2017-06",
+      "value_pct": 5.9
+    },
+    {
+      "date": "2017-07",
+      "value_pct": 6.41
+    },
+    {
+      "date": "2017-08",
+      "value_pct": 5.44
+    },
+    {
+      "date": "2017-09",
+      "value_pct": 5.02
+    },
+    {
+      "date": "2017-10",
+      "value_pct": 4.12
+    },
+    {
+      "date": "2017-11",
+      "value_pct": 3.59
+    },
+    {
+      "date": "2017-12",
+      "value_pct": 3.73
+    },
+    {
+      "date": "2018-01",
+      "value_pct": 6.4
+    },
+    {
+      "date": "2018-02",
+      "value_pct": -0.3
+    },
+    {
+      "date": "2018-03",
+      "value_pct": -1.1
+    },
+    {
+      "date": "2018-04",
+      "value_pct": -1.1
+    },
+    {
+      "date": "2018-05",
+      "value_pct": -2.3
+    },
+    {
+      "date": "2018-06",
+      "value_pct": -1.4
+    },
+    {
+      "date": "2018-07",
+      "value_pct": -3.4
+    },
+    {
+      "date": "2018-08",
+      "value_pct": -4.3
+    },
+    {
+      "date": "2018-09",
+      "value_pct": -4.3
+    },
+    {
+      "date": "2018-10",
+      "value_pct": -5.3
+    },
+    {
+      "date": "2018-11",
+      "value_pct": -6.5
+    },
+    {
+      "date": "2018-12",
+      "value_pct": -6.6
+    },
+    {
+      "date": "2019-01",
+      "value_pct": -8.0
+    },
+    {
+      "date": "2019-02",
+      "value_pct": -6.4
+    },
+    {
+      "date": "2019-03",
+      "value_pct": -4.0
+    },
+    {
+      "date": "2019-04",
+      "value_pct": -5.6
+    },
+    {
+      "date": "2019-05",
+      "value_pct": -5.1
+    },
+    {
+      "date": "2019-06",
+      "value_pct": -4.1
+    },
+    {
+      "date": "2019-07",
+      "value_pct": -5.0
+    },
+    {
+      "date": "2019-08",
+      "value_pct": -4.8
+    },
+    {
+      "date": "2019-09",
+      "value_pct": -5.0
+    },
+    {
+      "date": "2019-10",
+      "value_pct": -5.1
+    },
+    {
+      "date": "2019-11",
+      "value_pct": -4.7
+    },
+    {
+      "date": "2019-12",
+      "value_pct": -4.3
+    },
+    {
+      "date": "2020-01",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2020-02",
+      "value_pct": -4.0
+    },
+    {
+      "date": "2020-03",
+      "value_pct": -5.1
+    },
+    {
+      "date": "2020-04",
+      "value_pct": -5.6
+    },
+    {
+      "date": "2020-05",
+      "value_pct": -4.3
+    },
+    {
+      "date": "2020-06",
+      "value_pct": -4.6
+    },
+    {
+      "date": "2020-07",
+      "value_pct": -3.8
+    },
+    {
+      "date": "2020-08",
+      "value_pct": -2.4
+    },
+    {
+      "date": "2020-09",
+      "value_pct": -2.8
+    },
+    {
+      "date": "2020-10",
+      "value_pct": -1.4
+    },
+    {
+      "date": "2020-11",
+      "value_pct": -0.7
+    },
+    {
+      "date": "2020-12",
+      "value_pct": -1.5
+    },
+    {
+      "date": "2021-01",
+      "value_pct": 5.3
+    },
+    {
+      "date": "2021-02",
+      "value_pct": -2.7
+    },
+    {
+      "date": "2021-03",
+      "value_pct": -2.3
+    },
+    {
+      "date": "2021-04",
+      "value_pct": -1.9
+    },
+    {
+      "date": "2021-05",
+      "value_pct": -2.2
+    },
+    {
+      "date": "2021-06",
+      "value_pct": -3.1
+    },
+    {
+      "date": "2021-07",
+      "value_pct": -3.4
+    },
+    {
+      "date": "2021-08",
+      "value_pct": -4.0
+    },
+    {
+      "date": "2021-09",
+      "value_pct": -4.6
+    },
+    {
+      "date": "2021-10",
+      "value_pct": -5.9
+    },
+    {
+      "date": "2021-11",
+      "value_pct": -5.5
+    },
+    {
+      "date": "2021-12",
+      "value_pct": -5.5
+    },
+    {
+      "date": "2022-01",
+      "value_pct": -11.7
+    },
+    {
+      "date": "2022-02",
+      "value_pct": -4.5
+    },
+    {
+      "date": "2022-03",
+      "value_pct": -5.0
+    },
+    {
+      "date": "2022-04",
+      "value_pct": -5.4
+    },
+    {
+      "date": "2022-05",
+      "value_pct": -6.5
+    },
+    {
+      "date": "2022-06",
+      "value_pct": -5.6
+    },
+    {
+      "date": "2022-07",
+      "value_pct": -5.3
+    },
+    {
+      "date": "2022-08",
+      "value_pct": -6.1
+    },
+    {
+      "date": "2022-09",
+      "value_pct": -5.7
+    },
+    {
+      "date": "2022-10",
+      "value_pct": -6.0
+    },
+    {
+      "date": "2022-11",
+      "value_pct": -7.8
+    },
+    {
+      "date": "2022-12",
+      "value_pct": -8.1
+    },
+    {
+      "date": "2023-01",
+      "value_pct": -5.9
+    },
+    {
+      "date": "2023-02",
+      "value_pct": -7.1
+    },
+    {
+      "date": "2023-03",
+      "value_pct": -7.6
+    },
+    {
+      "date": "2023-04",
+      "value_pct": -7.1
+    },
+    {
+      "date": "2023-05",
+      "value_pct": -6.9
+    },
+    {
+      "date": "2023-06",
+      "value_pct": -8.2
+    },
+    {
+      "date": "2023-07",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2023-08",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2023-09",
+      "value_pct": -8.2
+    },
+    {
+      "date": "2023-10",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2023-11",
+      "value_pct": -8.7
+    },
+    {
+      "date": "2023-12",
+      "value_pct": -8.4
+    },
+    {
+      "date": "2024-01",
+      "value_pct": -2.8
+    },
+    {
+      "date": "2024-02",
+      "value_pct": -7.5
+    },
+    {
+      "date": "2024-03",
+      "value_pct": -7.2
+    },
+    {
+      "date": "2024-04",
+      "value_pct": -8.6
+    },
+    {
+      "date": "2024-05",
+      "value_pct": -11.2
+    },
+    {
+      "date": "2024-06",
+      "value_pct": -11.2
+    },
+    {
+      "date": "2024-07",
+      "value_pct": -12.9
+    },
+    {
+      "date": "2024-08",
+      "value_pct": -13.6
+    },
+    {
+      "date": "2024-09",
+      "value_pct": -14.2
+    },
+    {
+      "date": "2024-10",
+      "value_pct": -13.6
+    },
+    {
+      "date": "2024-11",
+      "value_pct": -10.8
+    },
+    {
+      "date": "2024-12",
+      "value_pct": -8.7
+    },
+    {
+      "date": "2025-01",
+      "value_pct": -6.6
+    },
+    {
+      "date": "2025-02",
+      "value_pct": -6.9
+    },
+    {
+      "date": "2025-03",
+      "value_pct": -5.4
+    },
+    {
+      "date": "2025-04",
+      "value_pct": -6.5
+    },
+    {
+      "date": "2025-05",
+      "value_pct": -5.6
+    },
+    {
+      "date": "2025-06",
+      "value_pct": -3.7
+    },
+    {
+      "date": "2025-07",
+      "value_pct": -3.2
+    },
+    {
+      "date": "2025-08",
+      "value_pct": -2.8
+    },
+    {
+      "date": "2025-09",
+      "value_pct": -1.2
+    },
+    {
+      "date": "2025-10",
+      "value_pct": -2.0
+    },
+    {
+      "date": "2025-11",
+      "value_pct": -3.1
+    },
+    {
+      "date": "2025-12",
+      "value_pct": -4.7
+    },
+    {
+      "date": "2026-01",
+      "value_pct": -4.1
+    },
+    {
+      "date": "2026-02",
+      "value_pct": -3.1
+    },
+    {
+      "date": "2026-03",
+      "value_pct": -3.4
+    },
+    {
+      "date": "2026-04",
+      "value_pct": -3.6
+    },
+    {
+      "date": "2026-05",
+      "value_pct": -3.1
+    },
+    {
+      "date": "2026-06",
+      "value_pct": -4.0
+    },
+    {
+      "date": "2026-07",
+      "value_pct": -3.7
+    },
+    {
+      "date": "2026-08",
+      "value_pct": -3.4
+    },
+    {
+      "date": "2026-09",
+      "value_pct": -4.0
+    }
+  ],
+  "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差"
+}

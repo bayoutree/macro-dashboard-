@@ -1,23 +1,23 @@
 {
-  "update_date": "2026-10-23",
+  "update_date": "2026-10-24",
   "version": "v4.1",
-  "composite_score": 48.0,
+  "composite_score": 48.1,
   "stage": "B",
-  "position_range": "40%-55%",
+  "position_range": "32%",
   "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 45.6,
+      "score": 46.0,
       "weight": 18,
-      "weighted_score": 8.21,
+      "weighted_score": 8.28,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 40.9,
+          "value": 42.5,
           "unit": "%分位",
-          "score": 41.0,
+          "score": 42.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -839,9 +839,9 @@
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
-          "value": 15.8,
+          "value": 17.0,
           "unit": "%分位",
-          "score": 16.0,
+          "score": 17.0,
           "sub_weight": 0,
           "note": "【参考】PB分位仅作辅助参考",
           "bottom_threshold": "<10%",
@@ -1815,7 +1815,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "buffett_ratio": {
@@ -2311,14 +2311,14 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.7,
+          "value": 9.3,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2807,10 +2807,8 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-23T13:17:45"
+            "synced_at": "2026-10-24"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -3032,12 +3030,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.63%)",
+          "value": "极低/偏热(1.61%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -3508,7 +3506,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "fed_policy": {
@@ -3682,8 +3680,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.6%",
-          "percentile": "78.0%",
+          "value": "6.62%",
+          "percentile": "79.3%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为中证800 ERP（全A代理）",
@@ -4689,18 +4687,18 @@
             },
             {
               "date": "2026-10-23",
-              "value": 6.6
+              "value": 6.62
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "wanda_erp": {
           "name": "中证800 ERP ★主指标（全A代理）",
-          "value": "5.90%",
-          "percentile": "52.9%",
+          "value": "5.85%",
+          "percentile": "50.8%",
           "score": 20,
           "sub_weight": 40,
           "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
@@ -4709,17 +4707,13 @@
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
-          "value": "2.97%",
+          "value": "2.99%",
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
           "top_threshold": "<0.5%",
           "description": "全A股息率 - 10Y国债收益率，日频",
           "history": [
-            {
-              "date": "2025-11-07",
-              "value": 2.79
-            },
             {
               "date": "2025-11-10",
               "value": 2.79
@@ -5715,16 +5709,20 @@
             {
               "date": "2026-10-22",
               "value": 3.05
+            },
+            {
+              "date": "2026-10-23",
+              "value": 2.99
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率-国债利差(沪深300)",
-          "value": "1.18%",
+          "value": "1.20%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -6206,11 +6204,15 @@
             {
               "date": "2026-10-22",
               "value": 1.23
+            },
+            {
+              "date": "2026-10-23",
+              "value": 1.2
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-23"
+            "synced_at": "2026-10-24"
           }
         },
         "cn_us_spread": {
@@ -39186,7 +39188,7 @@
           "week_change": "-228亿",
           "score": 50,
           "sub_weight": 0,
-          "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+          "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向｜源暂断·继承上期",
           "as_of": "2026-10-21",
           "freq": "日频",
           "history": [
@@ -40190,7 +40192,8 @@
               "date": "2026-10-21",
               "value": 12573.0
             }
-          ]
+          ],
+          "stale_inherited": true
         },
         "new_fund": {
           "name": "新发基金热度",
@@ -40926,7 +40929,7 @@
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
-          "value": "5.41%",
+          "value": "4.24%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": "<-10%",
@@ -41854,16 +41857,16 @@
         },
         "margin_buying_ratio": {
           "name": "融资买入占比",
-          "value": 7.42,
-          "score": 84.9,
+          "value": 6.96,
+          "score": 78.8,
           "sub_weight": 0,
           "note": "【已移至资金面】",
           "bottom_threshold": "<7%",
           "top_threshold": ">11%",
           "tier": "watch",
-          "ma20": 7.98,
-          "pctile_2016": 84.9,
-          "as_of": "2026-10-21",
+          "ma20": 7.77,
+          "pctile_2016": 78.8,
+          "as_of": "2026-10-23",
           "freq": "日频",
           "source": "沪市stock_margin_sse/全A成交额(腾讯sh000985)",
           "history": [
@@ -56427,13 +56430,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-10-23T13:17:45"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58361,13 +58362,11 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-23T13:17:45"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.30)",
+          "value": "小盘中性(%B=0.34)",
           "score": 45,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
@@ -61267,10 +61266,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.30)",
+        "current_value": "小盘中性(%B=0.34)",
         "status": "大小盘均衡",
         "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.30)"
+        "detail": "小盘风格小盘中性(%B=0.34)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -61291,10 +61290,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.30)",
+      "current_value": "小盘中性(%B=0.34)",
       "status": "大小盘均衡",
       "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.30)"
+      "detail": "小盘风格小盘中性(%B=0.34)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
@@ -61453,8 +61452,7 @@
       },
       {
         "condition": "美联储重启加息",
-        "met": true,
-        "note": "F3 回补：hiking_cycle 确认（fed_funds 3.75% > 3月前 3.63% +10bp），触发器已解硬编码改数据驱动"
+        "met": true
       },
       {
         "condition": "股息率-国债利差(沪深300)降至0.3%以下",
@@ -61463,7 +61461,7 @@
     ]
   },
   "position_advice": {
-    "equity_range": "40%-55%",
+    "equity_range": "32%",
     "breakdown": {
       "红利_高股息": {
         "range": "25%-35%",
@@ -61485,7 +61483,16 @@
         "range": "48%-63%",
         "note": "防御配置"
       }
-    }
+    },
+    "base_equity": 32,
+    "anchor_override": true,
+    "fed_override": true,
+    "fed_layer": "event_soft",
+    "fed_growth_ban": [
+      "创业板指",
+      "科创50"
+    ],
+    "fed_note": "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）"
   },
   "p1_7_state": {
     "hysteresis": {
@@ -61525,38 +61532,140 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": 0,
+    "weekly_change": 0.1,
     "trigger_reason": ""
   },
   "p1_6_state": {
     "trend": "strong_bear",
     "annotation": "",
-    "close": 5154.03,
-    "ma120": 6050.54,
+    "close": 5253.73,
+    "ma120": 6042.06,
     "ma120_direction": "down",
-    "momentum_12m": -0.1198,
-    "as_of": "2026-10-22",
+    "momentum_12m": -0.0995,
+    "as_of": "2026-10-23",
     "source": "tencent_tx sh000985"
   },
   "p1_8_state": {
     "layer": "event_soft",
     "cap": 32,
-    "cumulative_hike_prob": 0.913,
-    "yield_10y": 5.12,
+    "cumulative_hike_prob": 0.7874,
+    "yield_10y": 5.13,
     "triggers": [
-      "fed_funds 3.75% > 3月前 3.63% + 10.0bp（加息周期确认）",
-      "累计加息概率91%>85%（概率单路·A1）"
+      "fed_funds 3.75% > 3月前 3.63% + 10.0bp（加息周期确认）"
     ],
-    "as_of": "2026-10-23",
+    "as_of": "2026-10-24",
     "cooldown_until": null,
     "growth_ban": [
       "创业板指",
       "科创50"
     ],
-    "note": "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）。【F3 回补注记 2026-10-23】事件层已由 edge 改 level 化（hiking_cycle：fed_funds 月均 3.75 > 3.63+10bp）；9/16 加息后 P1-8 本应持续 event_soft/32%，因触发器硬编码+事件层 edge 语义漏检，9/16~10-22 实际未激活，现按裁决回补当前态；7 条真实历史日志保持原值不追溯改写。仓位建议层以今晚 CI 全链重算为准。",
+    "note": "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）",
     "source": "cme-fedwatch + FRED DGS10 + us_macro fed_funds（F3①加息周期检测）",
     "hiking_cycle": true,
     "fomc_auto": false
+  },
+  "global_dominance": {
+    "as_of": "2026-10-24",
+    "thresholds": {
+      "a_hike_slope_or_qt": {
+        "met": false,
+        "slope_bp_annualized": 48.0,
+        "qt_3m_pct": 0.092,
+        "detail": "加息斜率年化 48bp（阈值 300bp）；fed_balance 近3月 +0.09%（QT 阈值 -0.5%）"
+      },
+      "b_fx_valve": {
+        "met": false,
+        "data_status": "ok",
+        "valve_open": false,
+        "usdcny_annual_deprec_pct": -6.178,
+        "threshold_deprec_pct": 4.5,
+        "usdcny_source": "us_macro.history.usdcny",
+        "fx_reserve_3m_decline": false,
+        "cnh_cny_spread_latest_bp": -1.8,
+        "cnh_cny_spread_triggered": false,
+        "cnh_cny_params": {
+          "streak_bp": 40,
+          "streak_days": 5,
+          "single_bp": 70
+        },
+        "cnh_cny_detail": "最新价差 -2bp（阈值：单日>70bp 或 连续5日>40bp）；序列 2 日（不足5日，连判暂不可判）",
+        "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；北向代理已废弃（无数据源）"
+      },
+      "c_credit_form": {
+        "met": false,
+        "m2_yoy_2m_up": false,
+        "m2_sf_gap_pp": 0.09,
+        "threshold_gap_pp": 2.0
+      }
+    },
+    "satisfied_n": 0,
+    "veto": false,
+    "veto_cap": null,
+    "r7_has_catalyst": false,
+    "exemption_active": false,
+    "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
+  },
+  "catalyst_state": {
+    "asof": "2026-10-24",
+    "policy": {
+      "pass": false,
+      "manual_pivot": false,
+      "pivot_date": null,
+      "expires": null,
+      "note": "默认 false（保守）；落地工具才算、喊话不算"
+    },
+    "liquidity": {
+      "pass": false,
+      "m1_turn": false,
+      "spread_narrow": false,
+      "latest_m1_yoy": 3.2
+    },
+    "earnings": {
+      "pass": true,
+      "profit_turn": null,
+      "ppi_turn": true
+    },
+    "catalyst_score": 1,
+    "has_catalyst": false,
+    "params": {
+      "k_liq": 2,
+      "k_ern": 2,
+      "m": 2,
+      "policy_ttl_months": 6
+    }
+  },
+  "r7_state": {
+    "as_of": "2026-10-24",
+    "position_pct": 1.6,
+    "position_zone": "extreme",
+    "window_n": 245,
+    "trend": "strong_bear",
+    "trend_negative": true,
+    "bear_form": "none",
+    "bear_detail": {
+      "decline_3m_pct": -6.8,
+      "monthly_neg_streak": 2
+    },
+    "conflict": "A",
+    "verdict": "按既有框架（P1-7/P1-9 信号）",
+    "verdict_ref": "非冲突分档区",
+    "catalyst_coupling": {
+      "zone_active": true,
+      "has_catalyst": false,
+      "mode": "rebound_only",
+      "cap_pct": 55,
+      "note": "极端区+催化剂≤1路=仅反弹（2012 型）：交易性仓位 ≤55%，需 trend 确认方可延续，反弹高度有限"
+    },
+    "params": {
+      "extreme_pct": 15.0,
+      "normal_hi_pct": 50.0,
+      "fast_bear_3m_pct": -15.0,
+      "slow_bear_min_months": 3,
+      "rebound_cap": 55,
+      "reversal_target": 70,
+      "window_days": 365
+    },
+    "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核"
   },
   "confirm_signals": {
     "ma_arrangement": {
@@ -62358,7 +62467,7 @@
         245.906,
         229.801,
         193.228,
-        136.739
+        142.246
       ],
       "dea": [
         -105.808,
@@ -62568,7 +62677,7 @@
         210.983,
         214.747,
         210.443,
-        195.702
+        196.804
       ],
       "histogram": [
         112.218,
@@ -62778,7 +62887,7 @@
         69.845,
         30.109,
         -34.43,
-        -117.926
+        -109.115
       ],
       "source": "沪深300月K线·腾讯",
       "caliber": "标准MACD(12,26,9)"
@@ -63251,7 +63360,7 @@
         64072.0,
         44333.0,
         36184.0,
-        19590.0
+        21903.0
       ],
       "historyMA": [
         13375.0,
@@ -63484,115 +63593,23 @@
         50221.0,
         49658.0,
         48064.0,
-        45982.0
+        46175.0
       ],
       "source": "沪深300月K线·腾讯",
       "caliber": "月成交额(亿)+12月均线"
     }
   },
-  "global_dominance": {
-    "as_of": "2026-10-23",
-    "thresholds": {
-      "a_hike_slope_or_qt": {
-        "met": false,
-        "slope_bp_annualized": 48.0,
-        "qt_3m_pct": 0.187,
-        "detail": "加息斜率年化 48bp（阈值 300bp）；fed_balance 近3月 +0.19%（QT 阈值 -0.5%）"
-      },
-      "b_fx_valve": {
-        "met": false,
-        "data_status": "ok",
-        "valve_open": false,
-        "usdcny_annual_deprec_pct": -6.178,
-        "threshold_deprec_pct": 4.5,
-        "usdcny_source": "us_macro.history.usdcny",
-        "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -5.0,
-        "cnh_cny_spread_triggered": false,
-        "cnh_cny_params": {
-          "streak_bp": 40,
-          "streak_days": 5,
-          "single_bp": 70
-        },
-        "cnh_cny_detail": "最新价差 -5bp（阈值：单日>70bp 或 连续5日>40bp）；序列 1 日（不足5日，连判暂不可判）",
-        "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；北向代理已废弃（无数据源）"
-      },
-      "c_credit_form": {
-        "met": false,
-        "m2_yoy_2m_up": false,
-        "m2_sf_gap_pp": 0.09,
-        "threshold_gap_pp": 2.0
-      }
+  "p2_13_state": {
+    "total_signals": 0,
+    "by_type": {},
+    "ic": {
+      "ic20": null,
+      "ic20_n": 0,
+      "ic60": null,
+      "ic60_n": 0
     },
-    "satisfied_n": 0,
-    "veto": false,
-    "veto_cap": null,
-    "r7_has_catalyst": null,
-    "exemption_active": false,
-    "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
-  },
-  "f3_backfill_note": "2026-10-23 F3 修复回补（松子）：①触发器解硬编码（hiking_cycle 数据驱动）②事件层 edge→level 化③预期层 A1（概率>85% 单路 或 10Y>5.2%+趋势确认）④全球主导权仲裁三阈值上线（当前 0/3 未否决）。本次仅回补当前态与注记，真实历史日志不动；dimensions/position_advice 等其余字段保持 10-22 流水线原值，今晚 CI 全链重算。",
-  "catalyst_state": {
-    "asof": "2026-10-23",
-    "policy": {
-      "pass": false,
-      "manual_pivot": false,
-      "pivot_date": null,
-      "expires": null,
-      "note": "默认 false（保守）；落地工具才算、喊话不算"
-    },
-    "liquidity": {
-      "pass": false,
-      "m1_turn": false,
-      "spread_narrow": false,
-      "latest_m1_yoy": 3.2
-    },
-    "earnings": {
-      "pass": true,
-      "profit_turn": null,
-      "ppi_turn": true
-    },
-    "catalyst_score": 1,
-    "has_catalyst": false,
-    "params": {
-      "k_liq": 2,
-      "k_ern": 2,
-      "m": 2,
-      "policy_ttl_months": 6
-    }
-  },
-  "r7_state": {
-    "as_of": "2026-10-23",
-    "position_pct": 1.6,
-    "position_zone": "extreme",
-    "window_n": 245,
-    "trend": "strong_bear",
-    "trend_negative": true,
-    "bear_form": "none",
-    "bear_detail": {
-      "decline_3m_pct": -6.8,
-      "monthly_neg_streak": 2
-    },
-    "conflict": "A",
-    "verdict": "按既有框架（P1-7/P1-9 信号）",
-    "verdict_ref": "非冲突分档区",
-    "catalyst_coupling": {
-      "zone_active": true,
-      "has_catalyst": false,
-      "mode": "rebound_only",
-      "cap_pct": 55,
-      "note": "极端区+催化剂≤1路=仅反弹（2012 型）：交易性仓位 ≤55%，需 trend 确认方可延续，反弹高度有限"
-    },
-    "params": {
-      "extreme_pct": 15.0,
-      "normal_hi_pct": 50.0,
-      "fast_bear_3m_pct": -15.0,
-      "slow_bear_min_months": 3,
-      "rebound_cap": 55,
-      "reversal_target": 70,
-      "window_days": 365
-    },
-    "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核"
-  },
-  "r7_backfill_note": "R7 冲突状态卡 2026-10-23 回补：catalyst_state/r7_state 两键为今日离线重算真实值（数据源：cn_macro_supplement m1/剪刀差、cn_macro ppi_yoy、timing_history 365天窗口、sh000985 日K腾讯源）。政策路人工位默认 false（config_overrides.json policy_pivot 未配置）。今晚 CI 全链重算起转为日常产出。"
+    "disclose_min_n": 20,
+    "cite_min_n": 50,
+    "note": "P2-13 样本外信号统计（2026-10-18起累积；n<10只显示累积中，n≥20显示百分比，n≥50方可研报引用）"
+  }
 }
