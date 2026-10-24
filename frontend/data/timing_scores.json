@@ -61636,9 +61636,11 @@
   },
   "r7_state": {
     "as_of": "2026-10-24",
-    "position_pct": 1.6,
-    "position_zone": "extreme",
-    "window_n": 245,
+    "position_pct": 47.2,
+    "position_zone": "normal",
+    "window_n": 36,
+    "ref_anchor": "rolling_36m_completed",
+    "ref_span": "2023-10→2026-09",
     "trend": "strong_bear",
     "trend_negative": true,
     "bear_form": "none",
@@ -61647,14 +61649,14 @@
       "monthly_neg_streak": 2
     },
     "conflict": "A",
-    "verdict": "按既有框架（P1-7/P1-9 信号）",
-    "verdict_ref": "非冲突分档区",
+    "verdict": "趋势优先（价值陷阱）",
+    "verdict_ref": "2021-22 趋势空仓避过 -41%",
     "catalyst_coupling": {
-      "zone_active": true,
+      "zone_active": false,
       "has_catalyst": false,
-      "mode": "rebound_only",
-      "cap_pct": 55,
-      "note": "极端区+催化剂≤1路=仅反弹（2012 型）：交易性仓位 ≤55%，需 trend 确认方可延续，反弹高度有限"
+      "mode": "display_only",
+      "cap_pct": null,
+      "note": "普通区催化剂不参与裁决（权重 0 仅展示），防与 composite 加分双重计数"
     },
     "params": {
       "extreme_pct": 15.0,
@@ -61663,7 +61665,8 @@
       "slow_bear_min_months": 3,
       "rebound_cap": 55,
       "reversal_target": 70,
-      "window_days": 365
+      "ref_anchor": "rolling_36m_completed（同构段≈滚动36月·已完成月·月频月末采样）",
+      "ref_span": "2023-10→2026-09"
     },
     "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核"
   },

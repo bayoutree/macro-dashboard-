@@ -2026,7 +2026,7 @@ function renderR7Conflict() {
   const BEAR = { fast_bear: '快熊', slow_bear: '阴熊', none: '无', unknown: '未知' };
   const zone = r7.position_zone, trend = r7.trend || 'unknown';
   const bearD = r7.bear_detail || {};
-  let chips = `<span class="r7-chip r7-zone-${zone}" title="近365天窗口分位（含重建段，与分桶同口径）：当前 composite 仅高于窗口内 ${r7.position_pct}% 的记录（n=${r7.window_n}）">位置 <b>${ZONE[zone] || zone}</b> ${r7.position_pct}%</span>`;
+  let chips = `<span class="r7-chip r7-zone-${zone}" title="同构段≈滚动36月锚（月频·最近36个已完成月，P2-12裁决Q4口径生产化）：当前 composite 仅高于其中 ${r7.position_pct}%（n=${r7.window_n} 个月，参照 ${r7.ref_span || '--'}；CIO初核①a 主人裁决 2026-10-24 改锚，废365天日频短窗）">位置 <b>${ZONE[zone] || zone}</b> ${r7.position_pct}%</span>`;
   chips += `<span class="r7-chip ${r7.trend_negative ? 'r7-trend-neg' : 'r7-trend-pos'}">趋势 <b>${TREND[trend] || trend}</b></span>`;
   const bearTitle = `近3月(63交易日)跌幅 ${bearD.decline_3m_pct === null || bearD.decline_3m_pct === undefined ? '--' : bearD.decline_3m_pct + '%'}（快熊阈值≤-15%）· 月负动量连续 ${bearD.monthly_neg_streak === undefined ? '--' : bearD.monthly_neg_streak} 月（阴熊阈值≥3）`;
   chips += `<span class="r7-chip r7-bear-${r7.bear_form}" title="${bearTitle}">熊形态 <b>${BEAR[r7.bear_form] || r7.bear_form}</b></span>`;
@@ -2245,7 +2245,7 @@ function renderTimingChart() {
     `趋势层只作上下文，执行仍以月线级信号为准。</div>`;
 }
 
-// [R1 2026-10-23 v2呈现层升级] 三元组状态卡：阶段(SSOT迟滞)·分数(近12月分位)·趋势(P1-6)
+// [R1 2026-10-23 v2呈现层升级] 三元组状态卡：阶段(SSOT迟滞)·分数(36月分位·①a改锚 2026-10-24)·趋势(P1-6)
 // [R2] 边界距离预警：距阶段边界<5分显形⚠️，边界25/50/75与P2-11迟滞/P2-13同口径
 function renderStatusTriple() {
   const el = document.getElementById('status-triple');
@@ -2255,16 +2255,16 @@ function renderStatusTriple() {
   const ssotStage = ['A','B','C','D'].includes(td.stage) ? td.stage
                     : (engineOutput && engineOutput.current_stage) || null;
   const sMeta = (typeof STAGES !== 'undefined' && ssotStage) ? STAGES[ssotStage] : null;
-  // —— 分数 + 近12月分位（[CIO初核①b 2026-10-24] 单源化：读后端 r7_state.position_pct，
-  //     口径=严格< / prev_history 不含当日新条 / 1位小数，与 R7 卡同值；前端不再自算，消除双算法双真相。
-  //     分位描述的是窗口最新决策记录（prev 末条），紧邻的 composite 为本次新值——as_of 见 title）
+  // —— 分数 + 36月分位（[CIO初核①a 改锚 2026-10-24 主人裁决] 单源化：读后端 r7_state.position_pct，
+  //     锚=同构段≈滚动36月·月频已完成月参照分布（composite_reference_dist.json），与 R7 卡同值同源。
+  //     分位描述的是 prev 末条决策记录对参照分布的严格<占比，紧邻的 composite 为本次新值——as_of 见 title）
   const comp = (typeof td.composite_score === 'number') ? td.composite_score : null;
   const hist = StageEngine._timingHistory; // 下方 R1b 周频段仍用
   let pctTxt = '', pctTitle = '';
   const _r7s = td.r7_state || null;
   if (comp != null && _r7s && typeof _r7s.position_pct === 'number') {
-    pctTxt = `近12月分位 ${_r7s.position_pct}%`;
-    pctTitle = `近12月窗口分位：窗口 ${_r7s.window_n} 条决策态记录（含重建数据段，走势图水印显形），当前 composite 仅高于其中 ${_r7s.position_pct}%（口径：严格< / prev_history 不含当日新条 / 1位小数，与 R7 冲突状态卡同源，as_of ${_r7s.as_of || '--'}）`;
+    pctTxt = `36月分位 ${_r7s.position_pct}%`;
+    pctTitle = `同构段≈滚动36月锚分位：最近 ${_r7s.window_n} 个已完成月的月频 composite 参照分布（${_r7s.ref_span || '--'}，P2-12裁决Q4口径），当前 composite 仅高于其中 ${_r7s.position_pct}%（口径：严格< / prev_history 末条 / 1位小数，与 R7 冲突状态卡同源，as_of ${_r7s.as_of || '--'}）`;
   }
   // —— 趋势：P1-6 四态
   const p16 = td.p1_6_state || {};

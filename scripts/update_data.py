@@ -691,7 +691,11 @@ R7_FAST_BEAR_3M_PCT = -15.0      # 快熊：近3月跌幅 ≥15%（63 交易日�
 R7_SLOW_BEAR_MIN_MONTHS = 3      # 阴熊：连续 ≥3 月负动量（未达快熊）
 R7_REBOUND_ONLY_CAP = 55         # 极端区无催化剂：交易性仓位上限 %（2012 型反弹）
 R7_REVERSAL_TARGET = 70          # 极端区有催化剂：反转候选目标 %（2018Q4/2024.9 型）
-R7_PCT_WINDOW_DAYS = 365         # 位置分位窗口（与前端 R1/R5 同口径：含重建段）
+# [CIO初核①a 改锚 2026-10-24 主人裁决] 位置分位锚定=同构段≈滚动36月（最近36个已完成月·月频，P2-12 裁决Q4 口径生产化）
+# 参照分布=data/composite_reference_dist.json（scripts/build_composite_reference.py 生成，每月/校准时刷新）
+# 废案=近365天日频窗：近12月为历史最热段（均值57.5），高位回落初期短窗误报"极端便宜→左侧买"
+R7_REF_FILE = "composite_reference_dist.json"
+R7_REF_MIN_N = 20                # 参照分布最少月数（不足则 zone=unknown 诚实降级）
 CATALYST_K_LIQ = 2               # 流动性路连续月数
 CATALYST_K_ERN = 2               # 盈利路连续月数
 CATALYST_M = 2                   # 有/无判定：≥2 路=有（反转候选）
@@ -1092,7 +1096,7 @@ def compute_catalyst_state(cn_supplement=None, cn_macro_data=None, manual_cfg=No
 def compute_r7_state(timing_history, trend_state, trend_df, catalyst_state, today=None):
     """R7 冲突状态卡（v2 P1，2026-10-23 主人确认；裁决表证据=CIO 197 月回测+投分 4 案例）
 
-    状态识别：位置分位区（近365天窗口，与前端 R1 同口径含重建段）× 趋势（P1-6 四态）× 熊形态
+    状态识别：位置分位区（同构段≈滚动36月月频参照锚，CIO初核①a 主人裁决 2026-10-24）× 趋势（P1-6 四态）× 熊形态
     （快熊=近3月跌幅≥15%；阴熊=连续≥3月负动量未达快熊）→ 信号优先级裁决。
     冲突A（便宜+跌势）/冲突B（贵+涨势）自动点亮。催化剂耦合：仅极端区作定性开关
     （有→反转候选目标 70%；无→仅反弹 ≤55% 需 trend 确认），普通区权重 0 仅展示。
@@ -1100,18 +1104,18 @@ def compute_r7_state(timing_history, trend_state, trend_df, catalyst_state, toda
     from datetime import datetime as _dt, timedelta as _td
     today = today or _dt.now().date()
 
-    # --- 位置分位（近 365 天窗口，含重建段，与 R1/R5 前端口径一致）---
+    # --- 位置分位（同构段≈滚动36月·月频参照锚；[①a 2026-10-24 主人裁决] 废 365 天日频短窗）---
     position_pct = None
     window_n = 0
+    ref_span = None
     hist = [r for r in (timing_history or []) if isinstance(r, dict) and isinstance(r.get("composite_score"), (int, float)) and r.get("date")]
-    if len(hist) >= 20:
-        last_d = _dt.strptime(str(hist[-1]["date"])[:10], "%Y-%m-%d").date()
-        cut = (last_d - _td(days=R7_PCT_WINDOW_DAYS)).isoformat()
-        window = [r for r in hist if str(r["date"])[:10] >= cut]
-        window_n = len(window)
-        if window_n >= 20:
-            cur = float(window[-1]["composite_score"])
-            position_pct = round(sum(1 for r in window if float(r["composite_score"]) < cur) / window_n * 100, 1)
+    _ref = load_json(R7_REF_FILE) or {}
+    _ref_vals = [float(v) for v in (_ref.get("values") or []) if isinstance(v, (int, float))]
+    if hist and len(_ref_vals) >= R7_REF_MIN_N:
+        cur = float(hist[-1]["composite_score"])   # prev_history 末条（不含当日新条，CIO 10-24 厘清口径保留）
+        window_n = len(_ref_vals)
+        ref_span = _ref.get("span")
+        position_pct = round(sum(1 for v in _ref_vals if v < cur) / window_n * 100, 1)
     if position_pct is None:
         zone = "unknown"
     elif position_pct < R7_EXTREME_PCT:
@@ -1188,6 +1192,7 @@ def compute_r7_state(timing_history, trend_state, trend_df, catalyst_state, toda
     return {
         "as_of": today.isoformat() if hasattr(today, "isoformat") else str(today),
         "position_pct": position_pct, "position_zone": zone, "window_n": window_n,
+        "ref_anchor": "rolling_36m_completed", "ref_span": ref_span,
         "trend": trend, "trend_negative": trend_negative,
         "bear_form": bear_form, "bear_detail": bear_detail,
         "conflict": conflict,
@@ -1196,7 +1201,8 @@ def compute_r7_state(timing_history, trend_state, trend_df, catalyst_state, toda
         "params": {"extreme_pct": R7_EXTREME_PCT, "normal_hi_pct": R7_NORMAL_HI_PCT,
                    "fast_bear_3m_pct": R7_FAST_BEAR_3M_PCT, "slow_bear_min_months": R7_SLOW_BEAR_MIN_MONTHS,
                    "rebound_cap": R7_REBOUND_ONLY_CAP, "reversal_target": R7_REVERSAL_TARGET,
-                   "window_days": R7_PCT_WINDOW_DAYS},
+                   "ref_anchor": "rolling_36m_completed（同构段≈滚动36月·已完成月·月频月末采样）",
+                   "ref_span": ref_span},
         "note": "R7 冲突状态卡（v2 P1）：位置分位区×趋势×熊形态→信号优先级；参数未经样本外验证，待 P2-12 校准，首批 2 次真实触发人工复核",
     }
 
