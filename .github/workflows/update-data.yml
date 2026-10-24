@@ -106,7 +106,7 @@ jobs:
       # 3d. [F3① 采集层 2026-10-23] 中国宏观补充：外储(SAFE月频) + M1同比 + M1-M2剪刀差
       # 产出 data/cn_macro_supplement.json
       # ----------------------------------------------------------
-      - name: Collect CN macro supplement: FX reserves + M1/M2 scissors (F3①)
+      - name: "Collect CN macro supplement (F3①): FX reserves + M1/M2 scissors"
         if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full' || github.event.inputs.mode == 'timing'
         continue-on-error: true
         run: python scripts/collect_cn_macro_supplement.py
