@@ -262,3 +262,32 @@ jobs:
           else
             gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/block_body.md
           fi
+
+      # ----------------------------------------------------------
+      # 8. [CIO 复核建议③ 2026-10-24] 任意 step 失败 → 开 issue 告警（防静默失效）
+      #    覆盖 history_guard 阻断等 job 内失败；YAML 解析级失败无 run 产生，无法自覆盖
+      # ----------------------------------------------------------
+      - name: Open CI failure alert issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          TITLE="[ci-failure] $TODAY update-data 全链失败"
+          {
+            echo "## 🚨 update-data.yml 全链失败"
+            echo ""
+            echo "- **Run**：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- **Commit**：$GITHUB_SHA"
+            echo "- **触发**：$GITHUB_EVENT_NAME"
+            echo ""
+            echo "请排查失败 step 日志（如 history_guard 拦截属设计生效，先确认源再处理）。"
+          } > /tmp/ci_fail_body.md
+          EXISTING=$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" -R "$GITHUB_REPOSITORY" \
+              --body "update-data 再次失败（$TODAY run $GITHUB_RUN_ID）。"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/ci_fail_body.md
+          fi

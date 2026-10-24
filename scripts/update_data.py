@@ -2576,7 +2576,9 @@ class TimingScoreEngine:
             if isinstance(_prev_mb, dict) and _prev_mb.get("history"):
                 _mb = dict(_prev_mb)
                 _mb["stale_inherited"] = True
-                _mb["note"] = (str(_prev_mb.get("note", "")) + "｜源暂断·继承上期").strip("｜")
+                _base_note = str(_prev_mb.get("note", ""))
+                # [CIO 复核建议② 2026-10-24] 幂等：多日源断不重复追加注记
+                _mb["note"] = _base_note if "源暂断·继承上期" in _base_note else (_base_note + "｜源暂断·继承上期").strip("｜")
                 indicators["margin_balance"] = _mb
                 logger.warning(f"      两融余额源断 → 整体继承上期（history {len(_prev_mb['history'])}点保留）")
             else:
