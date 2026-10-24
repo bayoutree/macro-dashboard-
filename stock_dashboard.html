@@ -2255,27 +2255,16 @@ function renderStatusTriple() {
   const ssotStage = ['A','B','C','D'].includes(td.stage) ? td.stage
                     : (engineOutput && engineOutput.current_stage) || null;
   const sMeta = (typeof STAGES !== 'undefined' && ssotStage) ? STAGES[ssotStage] : null;
-  // —— 分数 + 近12月分位（timing_history 全序列，含 F2 重建段——展示用途 CIO 口径认可，重建段水印显形）
+  // —— 分数 + 近12月分位（[CIO初核①b 2026-10-24] 单源化：读后端 r7_state.position_pct，
+  //     口径=严格< / prev_history 不含当日新条 / 1位小数，与 R7 卡同值；前端不再自算，消除双算法双真相。
+  //     分位描述的是窗口最新决策记录（prev 末条），紧邻的 composite 为本次新值——as_of 见 title）
   const comp = (typeof td.composite_score === 'number') ? td.composite_score : null;
+  const hist = StageEngine._timingHistory; // 下方 R1b 周频段仍用
   let pctTxt = '', pctTitle = '';
-  const hist = StageEngine._timingHistory;
-  if (comp != null && Array.isArray(hist) && hist.length >= 5) {
-    // [CIO 观察项] 窗口化：以末条记录日期回推 365 天，防真实段超 12 个月后分母漂移
-    const _lastD = hist[hist.length - 1].date;
-    // [CIO R4R5 观察项] 纯 UTC 日期运算：本地解析+toISOString 在 UTC+8 下 cut 偏 1 天
-    const _dp = _lastD.split('-').map(Number);
-    const _cut = new Date(Date.UTC(_dp[0], _dp[1] - 1, _dp[2]));
-    _cut.setUTCDate(_cut.getUTCDate() - 365);
-    const _cutISO = _cut.toISOString().slice(0, 10);
-    const win = hist.filter(r => r.date >= _cutISO);
-    const vals = win.map(r => r.composite_score).filter(v => typeof v === 'number');
-    if (vals.length >= 5) {
-      const le = vals.filter(v => v <= comp).length;
-      const pct = Math.round(le / vals.length * 100);
-      const nRec = win.filter(r => r.reconstructed).length;
-      pctTxt = `近12月分位 ${pct}%`;
-      pctTitle = `近12月窗口 ${_cutISO}~${_lastD} 共 ${vals.length} 个决策态记录（含重建数据段 ${nRec} 条，走势图水印显形）`;
-    }
+  const _r7s = td.r7_state || null;
+  if (comp != null && _r7s && typeof _r7s.position_pct === 'number') {
+    pctTxt = `近12月分位 ${_r7s.position_pct}%`;
+    pctTitle = `近12月窗口分位：窗口 ${_r7s.window_n} 条决策态记录（含重建数据段，走势图水印显形），当前 composite 仅高于其中 ${_r7s.position_pct}%（口径：严格< / prev_history 不含当日新条 / 1位小数，与 R7 冲突状态卡同源，as_of ${_r7s.as_of || '--'}）`;
   }
   // —— 趋势：P1-6 四态
   const p16 = td.p1_6_state || {};
