@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-10-24",
+  "update_date": "2026-10-25",
   "version": "v4.1",
   "composite_score": 48.1,
   "stage": "B",
@@ -1815,7 +1815,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "buffett_ratio": {
@@ -2311,7 +2311,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "break_net_rate": {
@@ -2807,10 +2807,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           },
           "data_source": "sina",
-          "collect_time": "2026-10-24T12:30:06"
+          "collect_time": "2026-10-25T12:58:58"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -3032,7 +3032,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "interest_rate": {
@@ -3508,7 +3508,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "fed_policy": {
@@ -4694,7 +4694,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "wanda_erp": {
@@ -5719,7 +5719,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -6214,7 +6214,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-24"
+            "synced_at": "2026-10-25"
           }
         },
         "cn_us_spread": {
@@ -21538,7 +21538,7 @@
         },
         "equity_fund_position": {
           "name": "股基仓位",
-          "value": 96.7,
+          "value": 96.95,
           "score": 85,
           "sub_weight": 25,
           "bottom_signal": "仓位极低(恐慌)",
@@ -23371,6 +23371,10 @@
             {
               "date": "2026-10-16",
               "value": 96.7
+            },
+            {
+              "date": "2026-10-23",
+              "value": 96.95
             }
           ],
           "_history_meta": {
@@ -37344,7 +37348,7 @@
         },
         "flexible_fund_position": {
           "name": "灵基仓位",
-          "value": 87.33,
+          "value": 86.86,
           "score": 75,
           "sub_weight": 20,
           "bottom_signal": "仓位极低",
@@ -39177,6 +39181,10 @@
             {
               "date": "2026-10-16",
               "value": 87.33
+            },
+            {
+              "date": "2026-10-23",
+              "value": 86.86
             }
           ],
           "_history_meta": {
@@ -56425,7 +56433,7 @@
               "value": 41.59
             },
             {
-              "date": "2026-10-24",
+              "date": "2026-10-25",
               "value": 43.23
             }
           ],
@@ -56434,7 +56442,7 @@
             "inherited_at": "2026-10-17"
           },
           "data_source": "sina",
-          "collect_time": "2026-10-24T12:30:06"
+          "collect_time": "2026-10-25T12:58:58"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -58368,7 +58376,7 @@
             "original_count": 228
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-10-24T12:30:06"
+          "collect_time": "2026-10-25T12:58:58"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
