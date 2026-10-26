@@ -1,10 +1,10 @@
 {
     "name": "恐贪指针",
-    "as_of": "2026-10-22",
-    "score": 64.68,
-    "zone_confirmed": "中性",
-    "qvix_close": 16.37,
-    "qvix_pctile_252": 35.32,
+    "as_of": "2026-10-26",
+    "score": 65.87,
+    "zone_confirmed": "贪婪",
+    "qvix_close": 16.31,
+    "qvix_pctile_252": 34.13,
     "method": "score = 100 - percentile_rank(QVIX close, rolling 252 trading days)",
     "thresholds": {
         "extreme_fear_below": 15,
@@ -15519,6 +15519,18 @@
             "value": 64.68,
             "qvix": 16.37,
             "zone": "中性"
+        },
+        {
+            "date": "2026-10-23",
+            "value": 63.1,
+            "qvix": 16.47,
+            "zone": "中性"
+        },
+        {
+            "date": "2026-10-26",
+            "value": 65.87,
+            "qvix": 16.31,
+            "zone": "贪婪"
         }
     ]
 }
