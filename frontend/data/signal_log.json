@@ -1,6 +1,14 @@
 {
   "signals": [],
-  "ic_points": [],
+  "ic_points": [
+    {
+      "date": "2026-10-26",
+      "composite": 48.0,
+      "price": 5213.98,
+      "ret20": null,
+      "ret60": null
+    }
+  ],
   "stats": {
     "by_type": {},
     "ic": {
@@ -13,5 +21,5 @@
     "disclose_min_n": 20,
     "cite_min_n": 50
   },
-  "updated": "2026-10-24"
+  "updated": "2026-10-26"
 }

@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-24",
+  "as_of": "2026-10-26",
   "source": "cme-fedwatch (FOMC_MEETINGS + FRED DFEDTARU/DFEDTARL)",
   "upcoming_meetings": [
     "2026-10-28",
@@ -31,16 +31,6 @@
     "2026-09-16"
   ],
   "target_range_history": [
-    {
-      "date": "2025-10-24",
-      "lower": 4.0,
-      "upper": 4.25
-    },
-    {
-      "date": "2025-10-25",
-      "lower": 4.0,
-      "upper": 4.25
-    },
     {
       "date": "2025-10-26",
       "lower": 4.0,
@@ -1853,6 +1843,21 @@
     },
     {
       "date": "2026-10-23",
+      "lower": 3.75,
+      "upper": 4.0
+    },
+    {
+      "date": "2026-10-24",
+      "lower": 3.75,
+      "upper": 4.0
+    },
+    {
+      "date": "2026-10-25",
+      "lower": 3.75,
+      "upper": 4.0
+    },
+    {
+      "date": "2026-10-26",
       "lower": 3.75,
       "upper": 4.0
     }
