@@ -8488,5 +8488,103 @@
       "hiking_cycle": true,
       "fomc_auto": false
     }
+  },
+  {
+    "date": "2026-10-28",
+    "composite_score": 48.7,
+    "stage": "B",
+    "dimensions": {
+      "valuation": 46.0,
+      "liquidity": 42.2,
+      "equity_bond": 31.0,
+      "capital_flow": 70.2,
+      "sentiment": 52.7,
+      "micro_structure": 53.4
+    },
+    "triggers": {
+      "add_position": {
+        "社融增速触底回升(连续3个月环比改善)": false,
+        "恐贪指数回落至20以下(极度恐惧)": false,
+        "交易拥挤度回落至40%以下": false,
+        "ERP突破6%": true
+      },
+      "reduce_position": {
+        "两融占比突破3.5%": false,
+        "恐贪指数>85且QVIX<14(极度贪婪双确认)": false,
+        "社融增速进一步下行": false,
+        "美联储重启加息": true,
+        "股息率-国债利差(沪深300)降至0.3%以下": false
+      },
+      "signal_light": "orange",
+      "signal_direction": "bear"
+    },
+    "hysteresis_state": {
+      "valuation": {
+        "active": false,
+        "direction": null
+      },
+      "liquidity": {
+        "active": false,
+        "direction": null
+      },
+      "equity_bond": {
+        "active": false,
+        "direction": null
+      },
+      "capital_flow": {
+        "active": false,
+        "direction": null
+      },
+      "sentiment": {
+        "active": false,
+        "direction": null
+      },
+      "micro_structure": {
+        "active": false,
+        "direction": null
+      }
+    },
+    "anchor_state": {
+      "current": "normal",
+      "since": null,
+      "cooldown_until": null,
+      "last_trigger": null
+    },
+    "warning_state": {
+      "current": "normal",
+      "since": null,
+      "target_equity": null,
+      "weekly_change": 0.7,
+      "trigger_reason": ""
+    },
+    "trend_state": {
+      "trend": "strong_bear",
+      "annotation": "",
+      "close": 5177.51,
+      "ma120": 6013.88,
+      "ma120_direction": "down",
+      "momentum_12m": -0.1074,
+      "as_of": "2026-10-28",
+      "source": "tencent_tx sh000985"
+    },
+    "fed_state": {
+      "layer": "event_soft",
+      "cap": 32,
+      "cumulative_hike_prob": 0.8487,
+      "yield_10y": 5.0,
+      "triggers": [
+        "fed_funds 3.75% > 3月前 3.63% + 10.0bp（加息周期确认）"
+      ],
+      "as_of": "2026-10-28",
+      "cooldown_until": null,
+      "growth_ban": [
+        "创业板指",
+        "科创50"
+      ],
+      "note": "事件层自动轨：检测到目标区间上移 → 软压 32%（不钉死）",
+      "source": "cme-fedwatch + FRED DGS10 + us_macro fed_funds（F3①加息周期检测）",
+      "hiking_cycle": true,
+      "fomc_auto": false
+    }
   }
 ]
