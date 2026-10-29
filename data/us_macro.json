@@ -22,8 +22,9 @@
   },
   "coincident": {
     "gdp_growth": {
-      "value": 6.3103,
-      "date": "2026Q2"
+      "value": 5.8676,
+      "date": "2026-07-01",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
     },
     "unemployment": {
       "value": 4.2,
