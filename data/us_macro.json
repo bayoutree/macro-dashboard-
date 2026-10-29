@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-10-28",
+  "update_time": "2026-10-29",
   "leading": {
     "ism_pmi": {
       "value": null,
@@ -12,8 +12,8 @@
       "stale": true
     },
     "yield_curve_10y_2y": {
-      "value": 0.32,
-      "date": "2026-10-26"
+      "value": 0.29,
+      "date": "2026-10-27"
     },
     "lei": {
       "value": 1.72,
@@ -23,8 +23,7 @@
   "coincident": {
     "gdp_growth": {
       "value": 5.8676,
-      "date": "2026-07-01",
-      "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
+      "date": "2026Q3"
     },
     "unemployment": {
       "value": 4.2,
@@ -56,20 +55,20 @@
   },
   "rates": {
     "yield_10y": {
-      "value": 5.0,
-      "date": "2026-10-26"
+      "value": 4.99,
+      "date": "2026-10-27"
     },
     "yield_2y": {
-      "value": 4.68,
-      "date": "2026-10-26"
+      "value": 4.7,
+      "date": "2026-10-27"
     },
     "real_rate_10y": {
-      "value": 2.66,
-      "date": "2026-10-26"
+      "value": 2.64,
+      "date": "2026-10-27"
     },
     "inflation_expectation": {
-      "value": 2.35,
-      "date": "2026-10-27"
+      "value": 2.38,
+      "date": "2026-10-28"
     },
     "term_premium": {
       "value": 0.9358,
@@ -78,12 +77,12 @@
   },
   "market": {
     "sp500": {
-      "value": 7722.6,
-      "date": "2026-10-27"
+      "value": 7743.98,
+      "date": "2026-10-28"
     },
     "vix": {
-      "value": 17.52,
-      "date": "2026-10-27"
+      "value": 16.91,
+      "date": "2026-10-28"
     },
     "fed_balance": {
       "value": 6753604.0,
@@ -96,10 +95,6 @@
   },
   "history": {
     "gdp_growth": [
-      {
-        "date": "2022Q3",
-        "value": 9.736
-      },
       {
         "date": "2022Q4",
         "value": 7.8593
@@ -159,6 +154,10 @@
       {
         "date": "2026Q2",
         "value": 6.3103
+      },
+      {
+        "date": "2026Q3",
+        "value": 5.8676
       }
     ],
     "cpi_yoy": [
@@ -1097,10 +1096,6 @@
       }
     ],
     "yield_10y": [
-      {
-        "date": "2025-10-27",
-        "value": 4.01
-      },
       {
         "date": "2025-10-28",
         "value": 3.99
@@ -2096,13 +2091,13 @@
       {
         "date": "2026-10-26",
         "value": 5.0
+      },
+      {
+        "date": "2026-10-27",
+        "value": 4.99
       }
     ],
     "yield_2y": [
-      {
-        "date": "2025-10-27",
-        "value": 3.48
-      },
       {
         "date": "2025-10-28",
         "value": 3.47
@@ -3098,6 +3093,10 @@
       {
         "date": "2026-10-26",
         "value": 4.68
+      },
+      {
+        "date": "2026-10-27",
+        "value": 4.7
       }
     ],
     "term_premium": [
@@ -4104,10 +4103,6 @@
     ],
     "inflation_expectation": [
       {
-        "date": "2025-10-28",
-        "value": 2.28
-      },
-      {
         "date": "2025-10-29",
         "value": 2.3
       },
@@ -5102,13 +5097,13 @@
       {
         "date": "2026-10-27",
         "value": 2.35
+      },
+      {
+        "date": "2026-10-28",
+        "value": 2.38
       }
     ],
     "real_rate_10y": [
-      {
-        "date": "2025-10-27",
-        "value": 1.73
-      },
       {
         "date": "2025-10-28",
         "value": 1.71
@@ -6104,13 +6099,13 @@
       {
         "date": "2026-10-26",
         "value": 2.66
+      },
+      {
+        "date": "2026-10-27",
+        "value": 2.64
       }
     ],
     "sp500": [
-      {
-        "date": "2025-10-29",
-        "value": 6890.59
-      },
       {
         "date": "2025-10-30",
         "value": 6822.34
@@ -7106,13 +7101,13 @@
       {
         "date": "2026-10-27",
         "value": 7722.6
+      },
+      {
+        "date": "2026-10-28",
+        "value": 7743.98
       }
     ],
     "vix": [
-      {
-        "date": "2025-11-07",
-        "value": 19.08
-      },
       {
         "date": "2025-11-10",
         "value": 17.6
@@ -8108,6 +8103,10 @@
       {
         "date": "2026-10-27",
         "value": 17.52
+      },
+      {
+        "date": "2026-10-28",
+        "value": 16.91
       }
     ],
     "fed_balance": [
@@ -9114,10 +9113,6 @@
     ],
     "yield_spread_10y_2y": [
       {
-        "date": "2025-10-27",
-        "value": 0.53
-      },
-      {
         "date": "2025-10-28",
         "value": 0.52
       },
@@ -10112,6 +10107,10 @@
       {
         "date": "2026-10-26",
         "value": 0.32
+      },
+      {
+        "date": "2026-10-27",
+        "value": 0.29
       }
     ],
     "oecd_cli": [
