@@ -28,6 +28,13 @@
       "price": 5070.47,
       "ret20": null,
       "ret60": null
+    },
+    {
+      "date": "2026-10-30",
+      "composite": 48.0,
+      "price": 4952.5,
+      "ret20": null,
+      "ret60": null
     }
   ],
   "stats": {
@@ -42,5 +49,5 @@
     "disclose_min_n": 20,
     "cite_min_n": 50
   },
-  "updated": "2026-10-29"
+  "updated": "2026-10-30"
 }
