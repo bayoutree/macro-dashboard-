@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-10-30",
+  "update_time": "2026-10-31",
   "leading": {
     "pmi": {
-      "value": 50.1,
-      "date": "2026-09",
-      "trend": "expanding"
+      "value": 49.3,
+      "date": "2026-10",
+      "trend": "contracting"
     },
     "social_financing": {
       "value": 35476.0,
@@ -54,23 +54,23 @@
   },
   "bond": {
     "cn_10y_yield": {
-      "value": 1.609,
-      "date": "2026-10-29"
+      "value": 1.64,
+      "date": "2026-10-30"
     }
   },
   "valuation": {
     "hs300_pe": {
       "value": 12.17,
       "percentile": 42.471,
-      "date": "2026-10-30"
+      "date": "2026-10-31"
     },
     "hs300_pb": {
       "value": null,
-      "date": "2026-10-30"
+      "date": "2026-10-31"
     },
     "csi500_pe": {
       "value": 21.72,
-      "date": "2026-10-30"
+      "date": "2026-10-31"
     }
   },
   "history": {
@@ -1039,10 +1039,6 @@
       }
     ],
     "cn_10y_bond": [
-      {
-        "date": "2025-11-14",
-        "value": 1.807
-      },
       {
         "date": "2025-11-17",
         "value": 1.805
@@ -2038,6 +2034,10 @@
       {
         "date": "2026-10-29",
         "value": 1.609
+      },
+      {
+        "date": "2026-10-30",
+        "value": 1.64
       }
     ],
     "hs300_pe": [
@@ -3998,10 +3998,6 @@
     ],
     "pmi": [
       {
-        "date": "2022-10",
-        "value": 49.2
-      },
-      {
         "date": "2022-11",
         "value": 48.0
       },
@@ -4188,6 +4184,10 @@
       {
         "date": "2026-09",
         "value": 50.1
+      },
+      {
+        "date": "2026-10",
+        "value": 49.3
       }
     ],
     "social_financing": [

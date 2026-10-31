@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-10-30",
+  "update_date": "2026-10-31",
   "version": "v4.1",
   "composite_score": 48.0,
   "stage": "B",
@@ -1815,7 +1815,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "buffett_ratio": {
@@ -2311,14 +2311,14 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 10.3,
+          "value": 9.7,
           "unit": "%",
-          "score": 25,
+          "score": 35,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -2807,8 +2807,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
-          }
+            "synced_at": "2026-10-31"
+          },
+          "data_source": "sina",
+          "collect_time": "2026-10-31T14:18:30"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -3030,7 +3032,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "interest_rate": {
@@ -3506,7 +3508,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "fed_policy": {
@@ -3680,8 +3682,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.61%",
-          "percentile": "79.3%",
+          "value": "6.58%",
+          "percentile": "78.0%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为中证800 ERP（全A代理）",
@@ -4687,12 +4689,12 @@
             },
             {
               "date": "2026-10-30",
-              "value": 6.61
+              "value": 6.58
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "wanda_erp": {
@@ -4714,10 +4716,6 @@
           "top_threshold": "<0.5%",
           "description": "全A股息率 - 10Y国债收益率，日频",
           "history": [
-            {
-              "date": "2025-11-14",
-              "value": 2.79
-            },
             {
               "date": "2025-11-17",
               "value": 2.79
@@ -5713,11 +5711,15 @@
             {
               "date": "2026-10-29",
               "value": 2.93
+            },
+            {
+              "date": "2026-10-30",
+              "value": 2.96
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -6204,11 +6206,15 @@
             {
               "date": "2026-10-29",
               "value": 1.16
+            },
+            {
+              "date": "2026-10-30",
+              "value": 1.17
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-10-30"
+            "synced_at": "2026-10-31"
           }
         },
         "cn_us_spread": {
@@ -56431,18 +56437,20 @@
               "value": 43.23
             },
             {
-              "date": "2026-10-30",
+              "date": "2026-10-31",
               "value": 41.24
             }
           ],
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "sina",
+          "collect_time": "2026-10-31T14:18:30"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58370,7 +58378,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-10-31T14:18:30"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
