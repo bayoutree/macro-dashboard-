@@ -277,11 +277,11 @@ def get_us_groups():
         print("[us] FRED_API_KEY 未配置或 fredapi 未安装，全部美国指标降级为空")
         return groups, raw
 
-    def add(cat, key, points, unit="", label=""):
+    def add(cat, key, points, unit="", label="", hist_limit=120):
         if not points:
             fail.append(f"{cat}.{key}")
             return
-        ind = make_indicator(points, unit=unit)
+        ind = make_indicator(points, unit=unit, hist_limit=hist_limit)
         if ind is None:
             fail.append(f"{cat}.{key}")
             return
@@ -340,7 +340,8 @@ def get_us_groups():
     #   ig_spread = BAA − AAA（投资级，bps）
     #   hy_spread = FRED BAMLH0A0HYM2（ICE BofA 美国高收益债 OAS，%）
     add("financial", "ig_spread", spread_series(baa, aaa, as_bps=True), unit="bps")
-    add("financial", "hy_spread", _to_points(get_series(fred, "BAMLH0A0HYM2")), unit="%")
+    # hist_limit=1260：P0-3 U8「走阔至80分位以上」防抖需真实 5 年日频窗口反解阈值水平
+    add("financial", "hy_spread", _to_points(get_series(fred, "BAMLH0A0HYM2")), unit="%", hist_limit=1260)
     add("financial", "dxy", _to_points(get_series(fred, "DTWEXBGS")), unit="")
 
     # ---- 市场 ----

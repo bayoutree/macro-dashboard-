@@ -379,6 +379,26 @@ def get_china_groups():
 
     df = grab(ak.macro_china_shrzgm)
     add("leading", "shrzgm", extract_series(df, ["月份"], ["同比增速", "同比"]), unit="%")
+    # P0-3 C2 裁决（投资分析 2026-11-01）：akshare 社融存量同比断更 → 回退央行官方采集
+    # （存量序列自算同比；流量不可顶替存量）。来源 pbc.gov.cn。
+    if "shrzgm" not in groups.get("leading", {}):
+        try:
+            import os as _os, sys as _sys
+            _rs = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "scripts")
+            if _rs not in _sys.path:
+                _sys.path.insert(0, _rs)
+            from fetch_pbc_social_financing import fetch_social_financing
+            _stock = (fetch_social_financing() or {}).get("stock") or []
+            _by = {d["date"]: d["value"] for d in _stock}
+            _yoy = []
+            for d in _stock:
+                _y, _m = d["date"].split("-")
+                _pp = _by.get(f"{int(_y) - 1}-{_m}")
+                if _pp:
+                    _yoy.append((d["date"], round((d["value"] / _pp - 1) * 100, 2)))
+            add("leading", "shrzgm", _yoy, unit="%")
+        except Exception as _e:
+            print(f"[fetch_china] 社融央行回退失败(降级缺口): {_e}")
 
     df = grab(ak.macro_china_money_supply)
     add("leading", "m1", extract_series(df, ["月份"], ["货币(M1)-同比增长", "M1-同比增长"]), unit="%")

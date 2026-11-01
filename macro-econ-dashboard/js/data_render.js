@@ -291,7 +291,9 @@ function renderUsCycleDims(ec, countryData) {
           <div class="text-xs text-gray-500 uppercase tracking-wide">流动性第三轴</div>
           <span class="text-base">${l.icon} ${l.state}</span>
         </div>
-        <div class="text-xs text-gray-400 leading-relaxed mb-3">${l.desc}</div>
+        <div class="text-xs text-gray-400 leading-relaxed mb-2">${l.desc}</div>
+        ${l.caliber_note ? `<div class="text-[10px] text-gray-600 leading-relaxed mb-2">口径：${l.caliber_note}</div>` : ''}
+        ${l.divergence_note ? `<div class="text-[11px] text-amber-400/90 mb-2">${l.divergence_note}</div>` : ''}
         <div class="grid grid-cols-2 gap-2">
           ${l.target_rate_mid ? renderMiniMetricCard('Fed目标区间中值', l.target_rate_mid, 'us-l-trm') : ''}
           ${fed ? renderMiniMetricCard('2Y美债', fed, 'us-l-ff') : ''}
@@ -398,7 +400,7 @@ function renderMiniMetricCard(name, metric, prefix) {
         </div>
       </div>
       <div class="flex items-baseline gap-2 mb-2">
-        <span class="text-2xl font-bold text-white font-mono">${fmtNum(v)}</span>
+        <span class="text-2xl font-bold text-white font-mono">${fmtNum(v, metric.decimals != null ? metric.decimals : 1)}</span>
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>
@@ -741,6 +743,8 @@ function renderConclusion(countryData) {
         ${totalCount ? `<div class="text-[10px] text-gray-600 mb-0.5">条件满足 ${metCount}/${totalCount}${naCount ? ` · ${naCount}项数据缺口未评估` : ''}</div>` : (naCount ? `<div class="text-[10px] text-gray-600 mb-0.5">${naCount}项条件数据缺口未评估</div>` : '')}
         ${p.fail ? `<div class="text-[10px] text-red-400/70 mb-0.5">失效：${p.fail}</div>` : ''}
         ${p.confidence ? `<div class="text-[10px] text-gray-600">置信度：${p.confidence}</div>` : ''}
+        ${(p.data_gaps || []).map(g => `<div class="flex items-center gap-1.5 text-[11px] text-gray-500 mt-0.5"><span>◌</span><span>${g}</span></div>`).join('')}
+        ${(p.caliber_notes || []).map(n => `<div class="text-[10px] text-blue-400/70 mt-0.5">${n}</div>`).join('')}
       </div>`;
   }).join('');
 
@@ -924,7 +928,7 @@ function renderMetricCard(key, metric, prefix) {
         </div>
       </div>
       <div class="flex items-baseline gap-2 mb-2">
-        <span class="text-2xl font-bold text-white font-mono">${fmtNum(v)}</span>
+        <span class="text-2xl font-bold text-white font-mono">${fmtNum(v, metric.decimals != null ? metric.decimals : 1)}</span>
         ${unit ? `<span class="text-xs text-gray-500">${unit}</span>` : ''}
         ${change !== null ? `<span class="text-xs font-mono ${changeClass(change)}">${changeArrow(change)} ${fmtNum(Math.abs(change))}</span>` : ''}
       </div>

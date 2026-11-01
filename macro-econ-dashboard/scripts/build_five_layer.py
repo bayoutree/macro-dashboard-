@@ -67,7 +67,7 @@ NAME_MAP = {
     "tips_10y": "10Y实际利率",
     "hy_spread": "HY信用利差(HY OAS)",
     "ig_spread": "投资级信用利差(BAA−AAA)",
-    "fed_funds": "2Y美债(非政策利率)",
+    "fed_funds": "2Y美债收益率",  # P0-4 收尾（裁决2026-11-01）：展示名定稿
     "dxy": "美元指数",
     "vix": "VIX恐慌指数",
     "sp500": "标普500",
@@ -133,9 +133,10 @@ EVOLUTION_CN = [
         "conditions": [
             {"desc": "DR007反弹至40分位以上(货币边际收紧)"},
             {"desc": "PPI同比加速至4%以上"},
-            {"desc": "食品项推升CPI同比破2%"},
+            {"desc": "CPI同比破2%"},  # P0-3 C6：口径对齐 headline CPI；食品分项见 caliber_notes
         ],
         "fail": "若PPI回落至2%以下且DR007维持低位，回归复苏路径",
+        "caliber_notes": ["C6 口径注记：原「食品项推升CPI」食品分项无免费数据源，暂以 headline CPI 判定（P0-3 裁决）"],
         "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
     },
     {
@@ -156,7 +157,7 @@ EVOLUTION_US = [
         "from": "深度滞胀", "to": "典型衰退", "prob": 40,
         "conditions": [
             {"desc": "CPI同比回落至2.5%以下"},
-            {"desc": "Fed开始降息(联邦基金利率<4.5%)"},
+            {"desc": "Fed开始降息(目标区间上限≤4.5%)"},  # P0-3 U2 裁决：改接 fed_watch 真实目标区间
             {"desc": "失业率突破4.2%"},
         ],
         "fail": "若CPI回落且美联储开启降息周期，则向典型衰退/软着陆切换",
@@ -166,10 +167,10 @@ EVOLUTION_US = [
         "from": "深度滞胀", "to": "滞胀延续", "prob": 35,
         "conditions": [
             {"desc": "CPI维持3%以上"},
-            {"desc": "Fed维持高利率(联邦基金利率>5%)"},
-            {"desc": "薪资增速维持4%以上"},
+            {"desc": "Fed维持高利率(目标区间下限≥5.0%)"},  # P0-3 U5 裁决：目标区间下限
         ],
         "fail": "若通胀回落且美联储转鸽，滞胀延续概率下降",
+        "data_gaps": ["薪资增速：数据缺口（待接 FRED AHE CES0500000003）——已按 P0-3 裁决移除，不再参与判定"],
         "confidence": "满足3/3=85% · 2/3=60% · 1/3=30%",
     },
     {
@@ -287,6 +288,29 @@ def _consecutive_negative(metric, n):
     return all(v < 0 for v in vals)
 
 
+def _percentile(vals, pct):
+    """纯 Python 分位数（线性插值）。"""
+    if not vals:
+        return None
+    xs = sorted(vals)
+    k = (len(xs) - 1) * pct / 100.0
+    f = int(k)
+    c = min(f + 1, len(xs) - 1)
+    return xs[f] + (xs[c] - xs[f]) * (k - f)
+
+
+def _drawdown_from_peak(history, window=252, min_points=60):
+    """N 个观测窗口内的峰值回撤：(窗口峰值-最新)/峰值。数据不足返回 None（P0-3 U9）。"""
+    vals = [x.get("value") for x in (history or []) if x.get("value") is not None]
+    if len(vals) < min_points:
+        return None
+    win = vals[-window:]
+    peak = max(win)
+    if peak <= 0:
+        return None
+    return (peak - win[-1]) / peak
+
+
 def _eval_condition(desc, ctx):
     """根据条件文本 + 真实指标，确定性地返回 met 三态。
 
@@ -298,6 +322,33 @@ def _eval_condition(desc, ctx):
     """
     if not desc:
         return None
+
+    # P0-3 裁决①（投资分析 2026-11-01）：Fed 政策事实层条件改接 fed_watch 真实目标区间
+    # （与流动性「市场定价层」分工，禁止互套锚）。fed_watch 缺失 → None（数据缺口不落 False）。
+    if ("Fed" in desc or "联邦基金" in desc) and ("降息" in desc or "高利率" in desc):
+        fw = ctx.get("fed_watch")
+        tr = (fw or {}).get("range") or []
+        if len(tr) != 2 or tr[0] is None or tr[1] is None:
+            return None
+        thr_m = re.search(r"(\d+(?:\.\d+)?)\s*%", desc)
+        if not thr_m:
+            return None
+        thr = float(thr_m.group(1))
+        if "降息" in desc:
+            return tr[1] <= thr   # U2: 目标区间上限 ≤ 阈值
+        return tr[0] >= thr       # U5: 目标区间下限 ≥ 阈值
+
+    # P0-3 裁决②：美股回撤超20%（U9 接线，252 交易日窗口峰值回撤）
+    if "回撤" in desc and "美股" in desc:
+        sp = ctx.get("sp500")
+        if not sp:
+            return None
+        dd = _drawdown_from_peak(sp.get("history"))
+        if dd is None:
+            return None
+        thr_m = re.search(r"(\d+(?:\.\d+)?)\s*%", desc)
+        thr = float(thr_m.group(1)) / 100.0 if thr_m else 0.20
+        return dd >= thr
 
     metric = _detect_metric(desc, ctx)
 
@@ -331,6 +382,34 @@ def _eval_condition(desc, ctx):
         if len(vals) < n or any(v is None for v in vals):
             return None
         return bool(_consecutive_negative(metric, n))
+
+    # P0-3 裁决③：「突破 X%」防抖——连续 2 期 ≥ 阈值，或单期 ≥ 阈值+0.2pp
+    if "突破" in desc:
+        lm = re.search(r"突破\s*(\d+(?:\.\d+)?)\s*%", desc)
+        if not lm or metric is None:
+            return None
+        thr = float(lm.group(1))
+        vals = [x.get("value") for x in (metric.get("history") or []) if x.get("value") is not None]
+        if not vals:
+            return None
+        if vals[-1] >= thr + 0.2:
+            return True
+        return len(vals) >= 2 and vals[-1] >= thr and vals[-2] >= thr
+
+    # P0-3 裁决④：「走阔至 X 分位以上」防抖（日频贴线抖动）——阈值水平由 5 年窗口
+    # 分位数反解，要求最近 2 个观测均在阈值上方。
+    m_widen = re.search(r"走阔至\s*(\d+(?:\.\d+)?)\s*分位以上", desc)
+    if m_widen:
+        if metric is None:
+            return None
+        thr = float(m_widen.group(1))
+        vals = [x.get("value") for x in (metric.get("history") or []) if x.get("value") is not None]
+        if len(vals) < 30:
+            return None
+        level = _percentile(vals[-1260:], thr)
+        if level is None:
+            return None
+        return all(v > level for v in vals[-2:])
 
     if metric is None:
         return None  # 无指标映射 = 数据缺口
@@ -385,6 +464,8 @@ def _build_evolution_paths(tmpl, ctx, from_phase=None):
             "trigger": p.get("trigger"),
             "fail": p.get("fail"),
             "confidence": p.get("confidence"),
+            "data_gaps": p.get("data_gaps") or [],
+            "caliber_notes": p.get("caliber_notes") or [],
             # 同时暴露为场景字段，供前端 conclusion.scenarios 渲染
             "name": f"{from_label}→{p.get('to')}",
             "probability": p.get("prob"),
@@ -627,10 +708,10 @@ def _us_quadrant(gdp, cpi):
 
 
 # P0-4（2026-11-01 CIO）：政策利率口径修复。
-# 旧版把 2Y 美债冠名「政策利率代理」冒充政策利率——2Y 含降息预期，
+# 旧版把 2Y 美债冠名冒充政策利率——2Y 含降息预期，
 # 混用系统性高估紧缩（评估报告 P0-4：2Y=4.61% vs 目标区间中值 3.875%）。
 # 修复：流动性块并列展示「Fed 目标区间中值（引仓库 data/fed_watch.json
-# target_range）+ 2Y 美债」，命名不再出现「政策利率代理」。
+# target_range）+ 2Y 美债」，命名与文案不再混淆两层口径。
 def _load_fed_watch():
     """读取仓库根 data/fed_watch.json，返回 {mid, range, as_of}；失败 None。"""
     fw_path = os.path.join(os.path.dirname(PROJECT_ROOT), "data", "fed_watch.json")
@@ -675,6 +756,26 @@ _US_PHASE_TABLE = {
 
 def _us_phase(q_state, liq_state):
     return _US_PHASE_TABLE[(q_state, liq_state)]
+
+
+def _us_liq_caliber_note(fw):
+    """流动性判定口径文案（投资分析 2026-11-01 裁决定稿，事实层/定价层分工）。"""
+    rng_txt = (f"当前{fw['range'][0]}-{fw['range'][1]}%，中值{fw['mid']}%"
+               if fw else "目标区间数据缺失")
+    return ("流动性松紧按2Y美债收益率近5年分位判定，反映市场对政策路径的定价"
+            "（含降息/加息预期与期限溢价），非美联储当前政策利率；"
+            f"政策利率事实见联邦基金目标区间（{rng_txt}）。")
+
+
+def _us_liq_divergence_note(fed, fw):
+    """|2Y−目标区间中值|>75bp 时 🟡 提示背离（只提示不翻转）。当前 73.5bp 贴线不触发。"""
+    if not fw or not fed or fed.get("value") is None:
+        return None
+    gap_bp = abs(fed["value"] - fw["mid"]) * 100
+    if gap_bp > 75:
+        return (f"🟡 市场定价与政策利率背离较大（{gap_bp:.0f}bp>75bp，"
+                "定价深度降息/加息预期）")
+    return None
 
 
 def _us_liq_desc(fed, liq_state, fw=None):
@@ -770,7 +871,7 @@ def _build_us(g, evo_tmpl):
     gdp = g.get("coincident", {}).get("gdp")
     cpi = g.get("lagging", {}).get("cpi")
     ppi = g.get("lagging", {}).get("ppi")
-    fed = g.get("financial", {}).get("ust_2y")  # Fed 政策利率代理（2Y 美债）
+    fed = g.get("financial", {}).get("ust_2y")  # 流动性判定锚（2Y 美债，市场定价层）
     tips = g.get("financial", {}).get("tips_10y")
     ust10 = g.get("financial", {}).get("ust_10y")
     hy = g.get("financial", {}).get("hy_spread")
@@ -797,9 +898,12 @@ def _build_us(g, evo_tmpl):
             "reasons": [_us_liq_desc(fed, liq_state, fw)],
             # P0-4：真政策利率节点（目标区间中值），与 2Y 美债并列展示
             "target_rate_mid": ({"name": "Fed目标区间中值", "value": fw["mid"],
-                                 "unit": "%", "date": fw["as_of"],
+                                 "unit": "%", "date": fw["as_of"], "decimals": 2,
                                  "source": "data/fed_watch.json (CME FedWatch target_range)"}
                                 if fw else None),
+            # 口径文案与背离注记（投资分析裁决 2026-11-01 定稿）
+            "caliber_note": _us_liq_caliber_note(fw),
+            "divergence_note": _us_liq_divergence_note(fed, fw),
         },
         "quadrant_indicators": {
             "gdp": _named(gdp, "gdp"),
@@ -815,7 +919,9 @@ def _build_us(g, evo_tmpl):
         },
         "evolution_paths": _build_evolution_paths(
             evo_tmpl,
-            {"fed_funds": fed, "cpi": cpi, "unemployment": unemployment, "hy_spread": hy},
+            {"fed_funds": fed, "cpi": cpi, "unemployment": unemployment, "hy_spread": hy,
+             "fed_watch": fw,  # P0-3 U2/U5：政策事实层（降息/高利率判定）
+             "sp500": g.get("market", {}).get("sp500")},  # P0-3 U9：252日回撤
             from_phase=phase,
         ),
     }
