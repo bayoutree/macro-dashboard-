@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-01T10:18:33+08:00",
+    "update_time": "2026-11-01T22:43:35+08:00",
     "data_freshness_score": 13,
     "assessment_date": "2026-09-01",
     "version": "3.0",
@@ -61,7 +61,7 @@
       ]
     },
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-01T10:18:33+08:00",
+    "v4_built_at": "2026-11-01T14:43:35+08:00",
     "assessment_overdue": true
   },
   "cycle_layers": {
@@ -437,7 +437,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-10-31",
+            "last_updated": "2026-11-01",
             "history": [
               {
                 "date": "1947Q1",
@@ -3166,7 +3166,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-10-31"
+              "last_updated": "2026-11-01"
             },
             "cn": {
               "current": 0.36,
@@ -3266,7 +3266,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-10-31"
+              "last_updated": "2026-11-01"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -13682,7 +13682,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-10-31",
+            "last_updated": "2026-11-01",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
