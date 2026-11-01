@@ -6,9 +6,11 @@ bump_asset_versions.py — 静态资源版本串（?v=...）自动维护工具
 - 版本 token = 资源文件内容 SHA1 的前 8 位；内容不变则 token 不变，内容一变
   token 必变，浏览器/CDN 必然重新拉取，彻底消除 max-age=600 窗口内
   新旧 JS 并存的隐患。
-- 扫描仓库根目录下的 *.html（可传参数指定文件），将其中对 js/*.js、
+- 扫描仓库全部 *.html（含子目录，可传参数指定文件），将其中对 js/*.js、
   css/*.css、以及其它本地静态资源引用的 ?v=<token> 按文件实际内容重写；
-  原引用无 ?v= 也会补上。
+  原引用无 ?v= 也会补上。相对引用一律相对 HTML 文件所在目录解析
+  （修复：曾相对仓库根解析，导致子目录 HTML 的引用被跳过或错用根目录
+  同名文件哈希——CIO 打回#2，2026-11-01）。
 - 资源文件不存在（如外部 URL）时原样保留；HTML 无任何改动时退出码 0、
   不产生 diff。
 
@@ -38,10 +40,10 @@ def token_for(rel_path: Path):
     return hashlib.sha1(rel_path.read_bytes()).hexdigest()[:8]
 
 
-def resolve_resource(src: str) -> Path:
-    # 去掉 query/hash；HTML 在根目录，相对引用相对根目录解析
+def resolve_resource(src: str, html_dir: Path) -> Path:
+    # 去掉 query/hash；相对引用相对 HTML 文件所在目录解析
     clean = src.split("?", 1)[0].split("#", 1)[0]
-    return (ROOT / clean).resolve()
+    return (html_dir / clean).resolve()
 
 
 def bump_html(html_path: Path):
@@ -51,7 +53,7 @@ def bump_html(html_path: Path):
     def repl(m):
         nonlocal changes
         src = m.group("path")
-        res = resolve_resource(src)
+        res = resolve_resource(src, html_path.parent)
         tok = token_for(res)
         if tok is None:
             return m.group(0)
@@ -74,7 +76,9 @@ def main():
     if args:
         targets = [ROOT / a for a in args]
     else:
-        targets = sorted(ROOT.glob("*.html"))
+        targets = sorted(
+            p for p in ROOT.rglob("*.html") if ".git" not in p.parts
+        )
 
     total_changes = 0
     for html in targets:
