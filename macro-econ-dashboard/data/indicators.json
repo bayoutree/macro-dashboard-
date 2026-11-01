@@ -1594,15 +1594,18 @@
           "conditions": [
             {
               "desc": "M1同比连续3月回升且>5%",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "社融存量同比反弹至40分位以上",
-              "met": false
+              "met": null,
+              "evaluated": false
             },
             {
               "desc": "DR007维持40分位以下(宽货币延续)",
-              "met": true
+              "met": true,
+              "evaluated": true
             }
           ],
           "trigger": null,
@@ -1620,15 +1623,18 @@
           "conditions": [
             {
               "desc": "DR007反弹至40分位以上(货币边际收紧)",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "PPI同比加速至4%以上",
-              "met": true
+              "met": true,
+              "evaluated": true
             },
             {
               "desc": "食品项推升CPI同比破2%",
-              "met": false
+              "met": false,
+              "evaluated": true
             }
           ],
           "trigger": null,
@@ -1646,15 +1652,18 @@
           "conditions": [
             {
               "desc": "M1跌破30分位",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "GDP实际增速跌破4.5%",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "出口同比连续2月负增",
-              "met": false
+              "met": false,
+              "evaluated": true
             }
           ],
           "trigger": null,
@@ -15148,15 +15157,18 @@
           "conditions": [
             {
               "desc": "CPI同比回落至2.5%以下",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "Fed开始降息(联邦基金利率<4.5%)",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "失业率突破4.2%",
-              "met": false
+              "met": false,
+              "evaluated": true
             }
           ],
           "trigger": null,
@@ -15174,15 +15186,18 @@
           "conditions": [
             {
               "desc": "CPI维持3%以上",
-              "met": true
+              "met": true,
+              "evaluated": true
             },
             {
               "desc": "Fed维持高利率(联邦基金利率>5%)",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "薪资增速维持4%以上",
-              "met": false
+              "met": null,
+              "evaluated": false
             }
           ],
           "trigger": null,
@@ -15200,15 +15215,18 @@
           "conditions": [
             {
               "desc": "失业率突破4.5%",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "HY信用利差走阔至80分位以上",
-              "met": false
+              "met": false,
+              "evaluated": true
             },
             {
               "desc": "美股回撤超20%",
-              "met": false
+              "met": null,
+              "evaluated": false
             }
           ],
           "trigger": null,

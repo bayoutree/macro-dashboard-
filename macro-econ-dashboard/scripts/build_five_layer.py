@@ -288,31 +288,52 @@ def _consecutive_negative(metric, n):
 
 
 def _eval_condition(desc, ctx):
-    """根据条件文本 + 真实指标，确定性地返回 met (bool)。无法判定时返回 False。"""
+    """根据条件文本 + 真实指标，确定性地返回 met 三态。
+
+    P0-3 工程准备（2026-11-01 CIO）：
+      True  = 条件满足；False = 有真实数据且明确不满足；
+      None  = 数据缺口，无法评估（无指标映射 / 历史不足 / 关键字段缺失）。
+    旧版「无法判定→False」把数据缺口伪装成已评估的红灯
+    （如「薪资增速维持4%以上」无指标映射，恒显示 met=False 正在误导页面）。
+    """
     if not desc:
-        return False
+        return None
 
     metric = _detect_metric(desc, ctx)
 
     # 连续回升 且 >X%
     m_inc = re.search(r"连续\s*(\d+)\s*月\s*回升", desc)
     if m_inc:
+        if metric is None:
+            return None
         n = int(m_inc.group(1))
+        h = metric.get("history") or []
+        vals = [x.get("value") for x in h[-n:]] if len(h) >= n else []
+        if len(vals) < n or any(v is None for v in vals):
+            return None  # 历史不足 = 数据缺口，不是「不满足」
         ok = _consecutive_increase(metric, n)
         gt = re.search(r">\s*(\d+(?:\.\d+)?)\s*%", desc)
-        if gt and metric:
+        if gt:
             v = metric.get("value")
-            ok = ok and (v is not None and v > float(gt.group(1)))
+            if v is None:
+                return None
+            ok = ok and v > float(gt.group(1))
         return bool(ok)
 
     # 连续负增
     m_neg = re.search(r"连续\s*(\d+)\s*月\s*负增", desc)
     if m_neg:
+        if metric is None:
+            return None
         n = int(m_neg.group(1))
+        h = metric.get("history") or []
+        vals = [x.get("value") for x in h[-n:]] if len(h) >= n else []
+        if len(vals) < n or any(v is None for v in vals):
+            return None
         return bool(_consecutive_negative(metric, n))
 
     if metric is None:
-        return False
+        return None  # 无指标映射 = 数据缺口
 
     # 分位比较
     pm = re.search(r"(\d+(?:\.\d+)?)\s*分位", desc)
@@ -321,7 +342,7 @@ def _eval_condition(desc, ctx):
         op = "below" if ("以下" in desc or "跌破" in desc) else "above"
         p = metric.get("pct_5y")
         if p is None:
-            return False
+            return None
         return (p < thr) if op == "below" else (p > thr)
 
     # 水平值比较
@@ -331,10 +352,10 @@ def _eval_condition(desc, ctx):
         op = "below" if ("<" in desc or "以下" in desc or "回落至" in desc or "跌破" in desc) else "above"
         v = metric.get("value")
         if v is None:
-            return False
+            return None
         return (v < thr) if op == "below" else (v > thr)
 
-    return False
+    return None  # 条件文本无法解析 = 不假装评估
 
 
 def _build_evolution_paths(tmpl, ctx, from_phase=None):
@@ -349,7 +370,10 @@ def _build_evolution_paths(tmpl, ctx, from_phase=None):
         conds = []
         for c in p.get("conditions", []):
             met = _eval_condition(c.get("desc", ""), ctx)
-            conds.append({"desc": c.get("desc", ""), "met": bool(met)})
+            # P0-3：met 三态 True/False/None；evaluated=False 时前端灰灯「数据缺口·未评估」
+            conds.append({"desc": c.get("desc", ""),
+                          "met": met,
+                          "evaluated": met is not None})
         # from 由定位派生；未传入时回退模板值（保持向后兼容）
         from_label = from_phase or p.get("from")
         ep = {

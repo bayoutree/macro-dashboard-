@@ -712,12 +712,24 @@ function renderConclusion(countryData) {
   const paths = ec?.evolution_paths || [];
   const pathHtml = paths.map((p, i) => {
     const probColor = p.prob > 50 ? '#10b981' : p.prob > 30 ? '#f59e0b' : '#ef4444';
-    const conds = (p.conditions || []).map(c => `
+    // P0-3(2026-11-01)：三态渲染。met=null/evaluated=false = 数据缺口灰灯「未评估」，
+    // 不再伪装成已评估的 ○；满足计数分母只含已评估条件。
+    const conds = (p.conditions || []).map(c => {
+      if (c.evaluated === false || c.met === null || c.met === undefined) {
+        return `
+      <div class="flex items-center gap-1.5 text-[11px] text-gray-600">
+        <span>◌</span><span>${c.desc}</span><span class="text-[9px] px-1 rounded bg-gray-700/60 text-gray-500 whitespace-nowrap">数据缺口·未评估</span>
+      </div>`;
+      }
+      return `
       <div class="flex items-center gap-1.5 text-[11px] ${c.met ? 'text-green-400' : 'text-gray-500'}">
         <span>${c.met ? '✓' : '○'}</span><span>${c.desc}</span>
-      </div>`).join('');
-    const metCount = (p.conditions || []).filter(c => c.met).length;
-    const totalCount = (p.conditions || []).length;
+      </div>`;
+    }).join('');
+    const evaluatedConds = (p.conditions || []).filter(c => c.evaluated !== false && c.met !== null && c.met !== undefined);
+    const metCount = evaluatedConds.filter(c => c.met).length;
+    const totalCount = evaluatedConds.length;
+    const naCount = (p.conditions || []).length - evaluatedConds.length;
     return `
       <div class="scenario-card">
         <div class="flex items-center gap-2 mb-1">
@@ -726,7 +738,7 @@ function renderConclusion(countryData) {
           <span class="scenario-prob" style="color:${probColor}">${p.prob}%</span>
         </div>
         ${conds ? `<div class="mb-1.5 space-y-0.5">${conds}</div>` : (p.trigger ? `<p class="text-xs text-gray-500 mb-1.5">触发：${p.trigger}</p>` : '')}
-        ${totalCount ? `<div class="text-[10px] text-gray-600 mb-0.5">条件满足 ${metCount}/${totalCount}</div>` : ''}
+        ${totalCount ? `<div class="text-[10px] text-gray-600 mb-0.5">条件满足 ${metCount}/${totalCount}${naCount ? ` · ${naCount}项数据缺口未评估` : ''}</div>` : (naCount ? `<div class="text-[10px] text-gray-600 mb-0.5">${naCount}项条件数据缺口未评估</div>` : '')}
         ${p.fail ? `<div class="text-[10px] text-red-400/70 mb-0.5">失效：${p.fail}</div>` : ''}
         ${p.confidence ? `<div class="text-[10px] text-gray-600">置信度：${p.confidence}</div>` : ''}
       </div>`;
