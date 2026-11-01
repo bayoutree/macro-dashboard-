@@ -11502,11 +11502,18 @@
       "liquidity": {
         "state": "紧流动性",
         "icon": "🔴",
-        "desc": "政策利率代理（2Y美债）=4.61%，近5年分位79%（紧）",
+        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-10-30）；2Y美债=4.61%（近5年分位79%，紧）",
         "score": 1,
         "reasons": [
-          "政策利率代理（2Y美债）=4.61%，近5年分位79%（紧）"
-        ]
+          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-10-30）；2Y美债=4.61%（近5年分位79%，紧）"
+        ],
+        "target_rate_mid": {
+          "name": "Fed目标区间中值",
+          "value": 3.875,
+          "unit": "%",
+          "date": "2026-10-30",
+          "source": "data/fed_watch.json (CME FedWatch target_range)"
+        }
       },
       "quadrant_indicators": {
         "gdp": {
@@ -13155,9 +13162,9 @@
               "value": 4.61
             }
           ],
-          "name": "联邦基金(2Y代理)",
+          "name": "2Y美债(非政策利率)",
           "source": "FRED DGS2",
-          "caliber": "2Y 美债收益率作政策利率代理 %"
+          "caliber": "2Y 美债收益率 %（非政策利率；政策利率=Fed 目标区间中值，引 data/fed_watch.json）"
         },
         "tips_10y": {
           "value": 2.63,

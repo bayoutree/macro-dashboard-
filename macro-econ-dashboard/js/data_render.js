@@ -293,7 +293,8 @@ function renderUsCycleDims(ec, countryData) {
         </div>
         <div class="text-xs text-gray-400 leading-relaxed mb-3">${l.desc}</div>
         <div class="grid grid-cols-2 gap-2">
-          ${fed ? renderMiniMetricCard('Fed Funds', fed, 'us-l-ff') : ''}
+          ${l.target_rate_mid ? renderMiniMetricCard('Fed目标区间中值', l.target_rate_mid, 'us-l-trm') : ''}
+          ${fed ? renderMiniMetricCard('2Y美债', fed, 'us-l-ff') : ''}
           ${tips ? renderMiniMetricCard('10Y实际利率', tips, 'us-l-tips') : ''}
           ${ust10 ? renderMiniMetricCard('10Y美债', ust10, 'us-l-u10') : ''}
           ${hy ? renderMiniMetricCard('HY信用利差', hy, 'us-l-hy') : ''}

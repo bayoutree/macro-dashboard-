@@ -67,7 +67,7 @@ NAME_MAP = {
     "tips_10y": "10Y实际利率",
     "hy_spread": "HY信用利差(HY OAS)",
     "ig_spread": "投资级信用利差(BAA−AAA)",
-    "fed_funds": "联邦基金(2Y代理)",
+    "fed_funds": "2Y美债(非政策利率)",
     "dxy": "美元指数",
     "vix": "VIX恐慌指数",
     "sp500": "标普500",
@@ -602,6 +602,26 @@ def _us_quadrant(gdp, cpi):
     return "复苏", "🟢"
 
 
+# P0-4（2026-11-01 CIO）：政策利率口径修复。
+# 旧版把 2Y 美债冠名「政策利率代理」冒充政策利率——2Y 含降息预期，
+# 混用系统性高估紧缩（评估报告 P0-4：2Y=4.61% vs 目标区间中值 3.875%）。
+# 修复：流动性块并列展示「Fed 目标区间中值（引仓库 data/fed_watch.json
+# target_range）+ 2Y 美债」，命名不再出现「政策利率代理」。
+def _load_fed_watch():
+    """读取仓库根 data/fed_watch.json，返回 {mid, range, as_of}；失败 None。"""
+    fw_path = os.path.join(os.path.dirname(PROJECT_ROOT), "data", "fed_watch.json")
+    try:
+        with open(fw_path, encoding="utf-8") as f:
+            fw = json.load(f)
+        tr = fw.get("target_range") or []
+        if len(tr) != 2 or tr[0] is None or tr[1] is None:
+            return None
+        return {"mid": round((tr[0] + tr[1]) / 2, 4), "range": tr, "as_of": fw.get("as_of")}
+    except Exception as e:
+        print(f"[five-layer] fed_watch 读取失败（降级无双排）: {e}")
+        return None
+
+
 def _us_liquidity(fed):
     p = _pct(fed)
     if p is None:
@@ -633,15 +653,19 @@ def _us_phase(q_state, liq_state):
     return _US_PHASE_TABLE[(q_state, liq_state)]
 
 
-def _us_liq_desc(fed, liq_state):
-    if not fed:
-        return "政策利率（2Y美债代理）数据缺失"
-    v = fed.get("value")
-    p = fed.get("pct_5y")
-    if v is None:
-        return "政策利率数据缺失"
+def _us_liq_desc(fed, liq_state, fw=None):
+    """P0-4：目标区间中值（真政策利率）与 2Y 美债并列；2Y 不再冠名政策利率。"""
     tag = "紧" if "紧" in liq_state else ("宽" if "宽" in liq_state else "中性")
-    return f"政策利率代理（2Y美债）={v}%，近5年分位{p}%（{tag}）"
+    fw_txt = (f"Fed目标区间中值={fw['mid']}%（{fw['range'][0]}~{fw['range'][1]}%，"
+              f"fed_watch {fw['as_of']}）") if fw else None
+    if not fed or fed.get("value") is None:
+        ust_txt = "2Y美债数据缺失"
+    else:
+        v, p = fed.get("value"), fed.get("pct_5y")
+        ust_txt = f"2Y美债={v}%（近5年分位{p}%，{tag}）"
+    if fw_txt:
+        return f"{fw_txt}；{ust_txt}"
+    return f"{ust_txt}（fed_watch 目标区间数据缺失）"
 
 
 def _us_asset_desc(q_state, liq_state, phase, gdp, cpi, fed):
@@ -729,6 +753,7 @@ def _build_us(g, evo_tmpl):
     ig = g.get("financial", {}).get("ig_spread")
     unemployment = g.get("lagging", {}).get("unemployment")
 
+    fw = _load_fed_watch()  # P0-4：政策利率真值（目标区间中值）
     q_state, q_icon = _us_quadrant(gdp, cpi)
     liq_state, liq_icon = _us_liquidity(fed)
     phase, icon, asset_base = _us_phase(q_state, liq_state)
@@ -743,9 +768,14 @@ def _build_us(g, evo_tmpl):
         "liquidity": {
             "state": liq_state,
             "icon": liq_icon,
-            "desc": _us_liq_desc(fed, liq_state),
+            "desc": _us_liq_desc(fed, liq_state, fw),
             "score": {"宽流动性": -1, "中性流动性": 0, "紧流动性": 1}.get(liq_state, 0),
-            "reasons": [_us_liq_desc(fed, liq_state)],
+            "reasons": [_us_liq_desc(fed, liq_state, fw)],
+            # P0-4：真政策利率节点（目标区间中值），与 2Y 美债并列展示
+            "target_rate_mid": ({"name": "Fed目标区间中值", "value": fw["mid"],
+                                 "unit": "%", "date": fw["as_of"],
+                                 "source": "data/fed_watch.json (CME FedWatch target_range)"}
+                                if fw else None),
         },
         "quadrant_indicators": {
             "gdp": _named(gdp, "gdp"),
@@ -879,7 +909,7 @@ SOURCE_REGISTRY = {
     ("us", "ppi"): ("FRED PPIFIS", "最终服务 PPI 同比 %（核心 PPI 口径）"),
     ("us", "core_cpi"): ("FRED CPILFESL", "核心 CPI 同比 %"),
     ("us", "unemployment"): ("FRED UNRATE", "失业率 %、季调"),
-    ("us", "fed_funds"): ("FRED DGS2", "2Y 美债收益率作政策利率代理 %"),
+    ("us", "fed_funds"): ("FRED DGS2", "2Y 美债收益率 %（非政策利率；政策利率=Fed 目标区间中值，引 data/fed_watch.json）"),
     ("us", "ust_2y"): ("FRED DGS2", "2Y 美债收益率 %"),
     ("us", "ust_10y"): ("FRED DGS10", "10Y 美债收益率 %"),
     ("us", "tips_10y"): ("FRED DFII10", "10Y TIPS 实际利率 %"),
