@@ -66,6 +66,33 @@ async function loadData() {
     }
     statusEl.innerHTML = '<span class="text-green-400">✓ 数据已加载</span>';
 
+    // P0-2（2026-11-01 CIO）：资产价格序列超 10 个交易日未更新 → 信号灯强制置灰。
+    // 读取仓库根 data/asset_prices_monthly.json 的 series_meta（由
+    // scripts/build_asset_prices_monthly.py 日频聚合生成），交易日按 自然日×5/7
+    // 近似（与 freshness_gate.py 同口径），前端本地复算为准、文件标记兜底。
+    try {
+      const mr = await fetch('../data/asset_prices_monthly.json?v=' + Date.now());
+      if (mr.ok) {
+        const md = await mr.json();
+        const meta = (md.prices && md.prices.series_meta) || {};
+        const bySeries = {};
+        Object.keys(meta).forEach(function(k) {
+          const m = meta[k] || {};
+          const eff = m.effective_last_date || m.last_src_date;
+          if (!eff) return;
+          const td = Math.max(0, Math.round((Date.now() - new Date(eff).getTime()) / 86400000 * 5 / 7));
+          bySeries[k] = { stale: td > 10, tradingDays: td, lastDate: eff,
+                          seamMismatch: !!m.seam_mismatch };
+        });
+        const assetMap = { cn_stock: 'hs300', cn_bond: 'cn_10y_yield', us_stock: 'sp500',
+                           us_bond: 'us_10y_yield', usd: 'usd_index', gold: 'gold', commodity: 'copper' };
+        window.__assetSeriesStale = {};
+        Object.keys(assetMap).forEach(function(ak) {
+          if (bySeries[assetMap[ak]]) window.__assetSeriesStale[ak] = bySeries[assetMap[ak]];
+        });
+      }
+    } catch (e) { console.warn('P0-2 序列断更检查加载失败(不阻断):', e); }
+
     if (macroData.china) renderCountry(macroData.china, 'china');
     if (macroData.us) renderCountry(macroData.us, 'us');
 

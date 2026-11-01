@@ -676,6 +676,17 @@ function renderConclusion(countryData) {
     const opacity = dimmed ? 'opacity-40' : '';
     const valPct = valInfo ? valInfo.pct_5y : null;
 
+    // P0-2（2026-11-01 CIO）：底层价格序列超 10 个交易日未更新 → 强制置灰，
+    // 信号灯降级为「数据断更」，附断更时长与数据截止日，防止陈旧序列产出有效信号。
+    const staleInfo = (window.__assetSeriesStale || {})[a.key];
+    const isStale = !!(staleInfo && staleInfo.stale);
+    const cardCls = isStale ? 'opacity-40 grayscale' : opacity;
+    const sigColor = isStale ? '#6b7280' : sig.color;
+    const sigText = isStale ? '数据断更' : sig.text;
+    const staleTag = isStale
+      ? `<span class="text-[9px] font-mono text-gray-500" title="底层序列超10个交易日未更新${staleInfo.seamMismatch ? '（口径断点待裁决）' : ''}">⚠断更${staleInfo.tradingDays}交易日·截至${staleInfo.lastDate}</span>`
+      : '';
+
     // 基准方向小图标
     const baseIcon = base > 0 ? '▲' : base < 0 ? '▼' : '—';
     const baseColor = base > 0 ? '#10b981' : base < 0 ? '#ef4444' : '#6b7280';
@@ -683,13 +694,14 @@ function renderConclusion(countryData) {
     const valColor = val > 0 ? '#10b981' : val < 0 ? '#ef4444' : '#6b7280';
 
     return `
-      <div class="flex flex-col items-center gap-1 px-2 py-3 bg-dash-bg/50 rounded-lg border border-dash-border min-w-[120px] ${opacity}">
+      <div class="flex flex-col items-center gap-1 px-2 py-3 bg-dash-bg/50 rounded-lg border border-dash-border min-w-[120px] ${cardCls}">
         <span class="text-lg">${a.icon}</span>
         <span class="text-[11px] text-gray-400">${a.label}</span>
         <span class="text-[9px] font-mono" style="color:${baseColor}">周期${baseIcon}</span>
         <span class="text-[9px] font-mono" style="color:${valColor}">估值${valIcon}${valPct !== null ? ' P'+valPct : ''}</span>
-        <span class="signal-light text-[11px] mt-1" style="background:${sig.color}20; color:${sig.color}; border:1px solid ${sig.color}50;">
-          <span class="dot" style="background:${sig.color}"></span>${sig.text}
+        ${staleTag}
+        <span class="signal-light text-[11px] mt-1" style="background:${sigColor}20; color:${sigColor}; border:1px solid ${sigColor}50;">
+          <span class="dot" style="background:${sigColor}"></span>${sigText}
         </span>
       </div>
     `;
