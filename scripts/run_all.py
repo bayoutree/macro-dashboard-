@@ -19,6 +19,7 @@ SCRIPTS = [
     # P0-2（2026-11-01）：月频由日频聚合生成（含口径闸门），替代已断档的
     # fetch_fred_data_v2/fetch_cn_macro_v2 直采链
     ("build_asset_prices_monthly.py", "资产月频-日频聚合生成(P0-2)"),
+    ("build_direction_signals.py", "三看板方向信号归一化(P0-5通路)"),
     ("calc_valuations.py", "资产估值计算"),
     ("generate_summary.py", "看板综合结论"),
     # ---- V3 全球周期看板数据管道 ----
