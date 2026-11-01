@@ -320,7 +320,7 @@ function deriveAssetSignals(assetBase, country) {
     { key: 'us_bond', label: '美债', icon: '🇺🇸🏦' },
     { key: 'usd', label: '美元', icon: '💵' },
     { key: 'gold', label: '黄金', icon: '🥇' },
-    { key: 'commodity', label: '商品', icon: '🛢️' },
+    { key: 'commodity', label: '铜(COMEX)', icon: '🛢️' },
   ];
   // 解析 assetBase 字符串，找每类资产的位次
   // 例："现金>黄金>商品≈债券>股票" → 现金=1, 黄金=2, 商品≈债券=3.5, 股票=5
@@ -625,7 +625,8 @@ function renderConclusion(countryData) {
     { key: 'us_bond', label: '美债', icon: '🇺🇸🏦', dim_on: 'china' },
     { key: 'usd', label: '美元', icon: '💵', dim_on: 'china' },
     { key: 'gold', label: '黄金', icon: '🥇', dim_on: 'china' },
-    { key: 'commodity', label: '商品', icon: '🛢️', dim_on: 'china' },
+    { key: 'commodity', label: '铜(COMEX)', icon: '🛢️', dim_on: 'china',
+      note: '当前唯一数据源为 COMEX 铜价，非一揽子商品指数；后续接入真正商品指数后复名' },
   ];
 
   const country = countryData === window.macroData?.china ? 'china' : 'us';
@@ -706,6 +707,7 @@ function renderConclusion(countryData) {
         <span class="text-[9px] font-mono" style="color:${baseColor}">周期${baseIcon}</span>
         <span class="text-[9px] font-mono" style="color:${valColor}">估值${valIcon}${valPct !== null ? ' P'+valPct : ''}</span>
         ${staleTag}
+        ${a.note ? `<span class="text-[8px] text-gray-600 leading-tight text-center mt-0.5">${a.note}</span>` : ''}
         <span class="signal-light text-[11px] mt-1" style="background:${sigColor}20; color:${sigColor}; border:1px solid ${sigColor}50;">
           <span class="dot" style="background:${sigColor}"></span>${sigText}
         </span>
