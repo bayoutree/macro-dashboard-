@@ -722,7 +722,8 @@ def _load_fed_watch():
         tr = fw.get("target_range") or []
         if len(tr) != 2 or tr[0] is None or tr[1] is None:
             return None
-        return {"mid": round((tr[0] + tr[1]) / 2, 4), "range": tr, "as_of": fw.get("as_of")}
+        return {"mid": round((tr[0] + tr[1]) / 2, 4), "range": tr, "as_of": fw.get("as_of"),
+                "cumulative_hike_prob": fw.get("cumulative_hike_prob")}  # 裁决②加息定价注记用
     except Exception as e:
         print(f"[five-layer] fed_watch 读取失败（降级无双排）: {e}")
         return None
@@ -777,6 +778,42 @@ def _us_liq_divergence_note(fed, fw):
         return (f"🟡 市场定价与政策利率背离较大（{gap_bp:.0f}bp>75bp，"
                 "定价深度降息/加息预期）")
     return None
+
+
+# 投资分析《复核裁决_美元分位差与加息定价注记》2026-11-01 ②：
+# 政策事实层（U2：已降息）与市场定价层（期货累计加息定价）背离 → 主副双行注记。
+# 数值全部绑定实时字段（target_range/cumulative_hike_prob/2Y−区间上限），禁硬编码；
+# 副注记"解读"标由前端渲染。该背离不自动判输 v4，仅作复核输入项（裁决实现要求2）。
+HIKE_PRICING_NOTE_MIN_PROB = 0.5   # 累计加息定价≥50% 方构成"背离"（实现阈值，投资分析可调）
+
+
+def _us_hike_pricing_note(fed, fw):
+    """返回 (主注记, 副注记) 或 (None, None)。触发：U2 已触发（上限≤4.5%）且加息定价≥阈值。"""
+    if not fw:
+        return None, None
+    tr = fw.get("range") or []
+    hp = fw.get("cumulative_hike_prob")
+    if len(tr) != 2 or tr[0] is None or tr[1] is None or hp is None:
+        return None, None
+    if tr[1] > 4.5:            # 与 U2 判定同源（区间上限≤阈值即降息触发），未降息无背离
+        return None, None
+    if hp < HIKE_PRICING_NOTE_MIN_PROB:
+        return None, None
+    ust2y = (fed or {}).get("value")
+    if ust2y is None:
+        spread_clause = "2Y 美债数据缺失"
+    else:
+        spread_bp = round((ust2y - tr[1]) * 100)
+        if spread_bp >= 0:
+            spread_clause = f"2Y 美债高于区间上限约 {spread_bp}bp"
+        else:
+            spread_clause = f"2Y 美债低于区间上限约 {abs(spread_bp)}bp"
+    main = (f"政策事实与市场定价背离：联邦基金目标区间已降至 {tr[0]}-{tr[1]}%"
+            f"（“Fed开始降息”触发=true），但联邦基金期货累计加息定价 {hp * 100:.2f}%，"
+            f"{spread_clause}。")
+    sub = ("市场定价降息路径不可持续（通胀反复→政策反转风险），与“温和复苏”框架前提存在张力；"
+           "若加息定价兑现，宏观截面相位与周期看板情景需同步复核。")
+    return main, sub
 
 
 def _us_liq_desc(fed, liq_state, fw=None):
@@ -852,6 +889,9 @@ def _build_us_sectors(g):
     return {"household": household, "corporate": corporate, "government": government, "external": external}
 
 
+USD_DELTA_NOTE_THRESHOLD_PP = 10.0  # Δpct 注记阈值（暂固定；待1260日滚动分布P80复核后切换，裁决2026-11-01）
+
+
 def _build_us_policy(g):
     monetary = {}
     if g.get("financial", {}).get("ust_2y"):
@@ -861,6 +901,18 @@ def _build_us_policy(g):
     # P0-2 裁决：DTWEXBGS 保留为叙事参考序列（展示位=利率层/美元环流叙事）
     if g.get("financial", {}).get("usd_broad"):
         monetary["usd_broad"] = _named(g["financial"]["usd_broad"], "usd_broad")
+    # 投资分析裁决 2026-11-01 ①升级建议：Δpct=usd_broad−DXY（同 5 年分位窗）超阈值亮注记，
+    # 数值绑定实时分位字段，随刷新自动更新。
+    _dxy_m, _ub_m = monetary.get("dxy"), monetary.get("usd_broad")
+    if _dxy_m and _ub_m:
+        _p5_dxy, _p5_ub = _dxy_m.get("pct_5y"), _ub_m.get("pct_5y")
+        if _p5_dxy is not None and _p5_ub is not None:
+            _delta = round(_p5_ub - _p5_dxy, 1)
+            _ub_m["delta_vs_dxy_pp"] = _delta
+            if _delta > USD_DELTA_NOTE_THRESHOLD_PP:
+                _ub_m["delta_note"] = (
+                    f"广义美元相对 G10 偏强（5年分位差 {_delta:.0f}pp"
+                    f">{USD_DELTA_NOTE_THRESHOLD_PP:.0f}pp），新兴市场货币承压")
     fiscal = {}
     spending = g.get("fiscal", {}).get("fed_spending")
     if spending:
@@ -883,6 +935,7 @@ def _build_us(g, evo_tmpl):
     unemployment = g.get("lagging", {}).get("unemployment")
 
     fw = _load_fed_watch()  # P0-4：政策利率真值（目标区间中值）
+    _hike_note = _us_hike_pricing_note(fed, fw)  # 裁决②：(主注记, 副注记) 或 (None, None)
     q_state, q_icon = _us_quadrant(gdp, cpi)
     liq_state, liq_icon = _us_liquidity(fed)
     phase, icon, asset_base = _us_phase(q_state, liq_state)
@@ -908,6 +961,9 @@ def _build_us(g, evo_tmpl):
             # 口径文案与背离注记（投资分析裁决 2026-11-01 定稿）
             "caliber_note": _us_liq_caliber_note(fw),
             "divergence_note": _us_liq_divergence_note(fed, fw),
+            # 裁决②：加息定价背离双行注记（主=事实层；副=解读层，前端带"解读"标）
+            "hike_pricing_note": _hike_note[0],
+            "hike_pricing_note_sub": _hike_note[1],
         },
         "quadrant_indicators": {
             "gdp": _named(gdp, "gdp"),
@@ -929,6 +985,15 @@ def _build_us(g, evo_tmpl):
             from_phase=phase,
         ),
     }
+
+    # 裁决②：U2 条件旁精简注记（主副双行全文见「流动性第三轴」卡，避免长文重复）
+    if _hike_note[0] and fw and fw.get("cumulative_hike_prob") is not None:
+        _hp_txt = f"{fw['cumulative_hike_prob'] * 100:.2f}%"
+        for _p in economic_cycle["evolution_paths"]:
+            if any("Fed开始降息" in (c.get("desc") or "") for c in _p.get("conditions", [])):
+                _p.setdefault("caliber_notes", []).append(
+                    f"注：政策事实层已降息 vs 市场定价层累计加息定价 {_hp_txt} 存在背离，"
+                    "主副双行注记见「流动性第三轴」卡（裁决2026-11-01）。")
 
     sectors = _build_us_sectors(g)
     policy = _build_us_policy(g)

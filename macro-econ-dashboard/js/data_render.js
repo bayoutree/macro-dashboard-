@@ -294,6 +294,8 @@ function renderUsCycleDims(ec, countryData) {
         <div class="text-xs text-gray-400 leading-relaxed mb-2">${l.desc}</div>
         ${l.caliber_note ? `<div class="text-[10px] text-gray-600 leading-relaxed mb-2">口径：${l.caliber_note}</div>` : ''}
         ${l.divergence_note ? `<div class="text-[11px] text-amber-400/90 mb-2">${l.divergence_note}</div>` : ''}
+        ${l.hike_pricing_note ? `<div class="text-[11px] text-amber-400/90 leading-relaxed mb-1">${l.hike_pricing_note}</div>` : ''}
+        ${l.hike_pricing_note_sub ? `<div class="text-[10px] text-gray-500 leading-relaxed mb-2"><span class="text-blue-400/80 font-medium">解读：</span>${l.hike_pricing_note_sub}</div>` : ''}
         <div class="grid grid-cols-2 gap-2">
           ${l.target_rate_mid ? renderMiniMetricCard('Fed目标区间中值', l.target_rate_mid, 'us-l-trm') : ''}
           ${fed ? renderMiniMetricCard('2Y美债', fed, 'us-l-ff') : ''}
@@ -521,6 +523,7 @@ function renderPolicy(policyData) {
         <div class="dept-card">
           <div class="dept-header">🏦 货币政策 ${monetaryStance ? `<span class="text-xs font-normal ml-2">姿态：${monetaryStance}</span>` : ''}</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">${monetaryCards || '<p class="text-xs text-gray-600">数据加载中...</p>'}</div>
+          ${monetary.usd_broad?.delta_note ? `<div class="text-[11px] text-amber-400/90 leading-relaxed mt-2">💱 ${monetary.usd_broad.delta_note}</div>` : ''}
         </div>
         <div class="dept-card">
           <div class="dept-header">🏛️ 财政政策</div>
