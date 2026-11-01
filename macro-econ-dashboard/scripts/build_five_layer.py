@@ -889,7 +889,11 @@ def _build_us_sectors(g):
     return {"household": household, "corporate": corporate, "government": government, "external": external}
 
 
-USD_DELTA_NOTE_THRESHOLD_PP = 10.0  # Δpct 注记阈值（暂固定；待1260日滚动分布P80复核后切换，裁决2026-11-01）
+# 投资分析复裁 2026-11-01：Δpct 注记弃用固定阈值，改两档分布锚定
+# （1260日滚动 Δpct 分布，满5年窗子集 n=4217 实测：P75=14 / P90=24）。
+# 阈值年度随管道窗口重算并登记口径词典（看板改进11月/口径词典条目_铜与美元_20261101.md）。
+USD_DELTA_NOTE_WATCH_PP = 14.0   # 🟡 关注档（P75）
+USD_DELTA_NOTE_STRONG_PP = 24.0  # 🔴 强信号档（P90）
 
 
 def _build_us_policy(g):
@@ -909,10 +913,14 @@ def _build_us_policy(g):
         if _p5_dxy is not None and _p5_ub is not None:
             _delta = round(_p5_ub - _p5_dxy, 1)
             _ub_m["delta_vs_dxy_pp"] = _delta
-            if _delta > USD_DELTA_NOTE_THRESHOLD_PP:
+            if _delta > USD_DELTA_NOTE_STRONG_PP:
+                _ub_m["delta_note_level"] = "strong"
                 _ub_m["delta_note"] = (
-                    f"广义美元相对 G10 偏强（5年分位差 {_delta:.0f}pp"
-                    f">{USD_DELTA_NOTE_THRESHOLD_PP:.0f}pp），新兴市场货币承压")
+                    f"广义美元相对 G10 显著偏强（分位差 {_delta:.0f}pp>P90），新兴市场货币承压")
+            elif _delta > USD_DELTA_NOTE_WATCH_PP:
+                _ub_m["delta_note_level"] = "watch"
+                _ub_m["delta_note"] = (
+                    f"广义美元相对 G10 偏强（分位差 {_delta:.0f}pp>P75），新兴市场货币承压")
     fiscal = {}
     spending = g.get("fiscal", {}).get("fed_spending")
     if spending:

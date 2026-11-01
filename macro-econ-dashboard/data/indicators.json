@@ -31945,7 +31945,8 @@
           "source": "FRED DTWEXBGS",
           "caliber": "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）",
           "delta_vs_dxy_pp": 16,
-          "delta_note": "广义美元相对 G10 偏强（5年分位差 16pp>10pp），新兴市场货币承压"
+          "delta_note": "广义美元相对 G10 偏强（分位差 16pp>P75），新兴市场货币承压",
+          "delta_note_level": "watch"
         }
       },
       "fiscal": {

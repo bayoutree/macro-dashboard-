@@ -523,7 +523,7 @@ function renderPolicy(policyData) {
         <div class="dept-card">
           <div class="dept-header">🏦 货币政策 ${monetaryStance ? `<span class="text-xs font-normal ml-2">姿态：${monetaryStance}</span>` : ''}</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">${monetaryCards || '<p class="text-xs text-gray-600">数据加载中...</p>'}</div>
-          ${monetary.usd_broad?.delta_note ? `<div class="text-[11px] text-amber-400/90 leading-relaxed mt-2">💱 ${monetary.usd_broad.delta_note}</div>` : ''}
+          ${monetary.usd_broad?.delta_note ? `<div class="text-[11px] leading-relaxed mt-2 ${monetary.usd_broad.delta_note_level === 'strong' ? 'text-red-400/90' : 'text-amber-400/90'}">💱 ${monetary.usd_broad.delta_note}</div>` : ''}
         </div>
         <div class="dept-card">
           <div class="dept-header">🏛️ 财政政策</div>
