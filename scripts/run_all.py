@@ -20,6 +20,7 @@ SCRIPTS = [
     # fetch_fred_data_v2/fetch_cn_macro_v2 直采链
     ("build_asset_prices_monthly.py", "资产月频-日频聚合生成(P0-2)"),
     ("build_direction_signals.py", "三看板方向信号归一化(P0-5通路)"),
+    ("build_conflict_flags.py", "三看板冲突标注(P0-5契约)"),
     ("calc_valuations.py", "资产估值计算"),
     ("generate_summary.py", "看板综合结论"),
     # ---- V3 全球周期看板数据管道 ----
