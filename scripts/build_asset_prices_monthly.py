@@ -50,6 +50,14 @@ KEY_MAP = {
 }
 
 SEAM_TOLERANCE_PCT = 10.0   # 全部重叠月偏差 ≤10% 视为同尺度可合并
+BASIS_TOLERANCE_PCT = 5.0   # copper 专用：COMEX×2204.62 vs PCOPPUSDM(LME) 同月基差阈值（P0-2 裁决边界4）
+
+# P0-2 裁决（2026-11-01）口径四元组登记
+CALIBER_REGISTRY = {
+    "copper": "月频准绳=FRED PCOPPUSDM(IMF/LME, 美元/吨) | 日频延伸=COMEX 主力连续(yfinance HG=F)×2204.62(写库时换算美元/吨) | 同月基差超±5%亮灰灯注记、不静默对齐",
+    "usd_index": "主屏=DXY(ICE: EUR57.6/JPY13.6/GBP11.9/CAD9.1/SEK4.2/CHF3.6, 不含CNY/MXN, 1973起, 日频 yfinance DX-Y.NYB) | 月末最后交易日值",
+    "usd_broad": "叙事参考=DTWEXBGS(美联储广义贸易加权, 2006起, H.10周频) | 展示位=C2利率层/美元环流叙事，不进信号灯、不进 asset_valuation 分位",
+}
 SCALE_RATIO_RANGE = (0.5, 2.0)  # 无重叠时新旧首尾量级比安全区
 STALE_TRADING_DAYS = 10     # P0-2: 超 10 个交易日未更新 → 页面强制置灰
 
@@ -75,6 +83,40 @@ def month_end(month_str: str) -> date:
     return date.fromordinal(nxt.toordinal() - 1)
 
 
+def copper_basis_check(agg, prev_meta=None):
+    """P0-2 裁决边界4：copper 日频延伸(COMEX×2204.62) vs 准绳 FRED PCOPPUSDM(LME) 同月基差。
+
+    注意：合并后历史段同月已被日频覆盖，seam_check 重叠偏差恒 0、监控会失效——
+    基差必须由独立准绳源（FRED API）比对。返回 meta 补充 dict；取数失败保留旧记录。
+    """
+    prev = prev_meta or {}
+    keep = {k: prev[k] for k in ("basis_dev_pct", "basis_month", "basis_breach") if k in prev}
+    try:
+        import os
+        import urllib.request
+        key = os.environ.get("FRED_API_KEY", "")
+        if not key:
+            return keep
+        url = ("https://api.stlouisfed.org/fred/series/observations?series_id=PCOPPUSDM"
+               f"&api_key={key}&file_type=json&sort_order=desc&limit=8")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            obs = json.loads(r.read().decode()).get("observations", [])
+        bench = {o["date"][:7]: float(o["value"]) for o in obs if o["value"] not in ("", ".")}
+        overlaps = [(m, agg[m], bench[m]) for m in agg if m in bench]
+        if not overlaps:
+            return keep
+        devs = [(abs(cv - bv) / abs(bv) * 100, m) for m, cv, bv in overlaps]
+        max_dev, max_m = max(devs)
+        out = {"basis_dev_pct": round(max_dev, 2), "basis_month": max_m}
+        if max_dev > BASIS_TOLERANCE_PCT:
+            out["basis_breach"] = True
+        return out
+    except Exception as e:
+        print(f"  ⚠ copper 基差准绳(FRED PCOPPUSDM)取数失败，保留旧记录: {e}")
+        return keep
+
+
 def daily_to_monthly(daily):
     """日频 [{date,value}] → {YYYY-MM: 月末最后交易日值}（日频升序，后写即月末）。"""
     out = {}
@@ -85,8 +127,8 @@ def daily_to_monthly(daily):
     return out
 
 
-def seam_check(legacy_series, agg, field):
-    """口径闸门。返回 (ok, max_dev_pct 或 None, reason)。"""
+def seam_check(legacy_series, agg, field, tolerance_pct=SEAM_TOLERANCE_PCT):
+    """口径闸门。返回 (ok, max_dev_pct 或 None, reason)。tolerance_pct: 重叠月偏差阈值（copper 用 5%）。"""
     legacy = {p["date"]: p.get(field) for p in (legacy_series or [])
               if isinstance(p, dict) and p.get("date")}
     overlaps = [(m, legacy[m], v) for m, v in agg.items()
@@ -94,9 +136,9 @@ def seam_check(legacy_series, agg, field):
     if overlaps:
         devs = [abs(v - lv) / abs(lv) * 100 for _, lv, v in overlaps]
         max_dev = max(devs)
-        if max_dev <= SEAM_TOLERANCE_PCT:
-            return True, round(max_dev, 2), "同尺度(重叠月偏差≤10%)"
-        return False, round(max_dev, 2), f"重叠月系统性偏差 {max_dev:.1f}%>10%（疑口径/篮子不同）"
+        if max_dev <= tolerance_pct:
+            return True, round(max_dev, 2), f"同尺度(重叠月偏差≤{tolerance_pct:.0f}%)"
+        return False, round(max_dev, 2), f"重叠月系统性偏差 {max_dev:.1f}%>{tolerance_pct:.0f}%（疑口径/篮子不同）"
     # 无重叠：比量级（新序列首月值 vs 旧序列末月值）
     if legacy_series and agg:
         lv = legacy_series[-1].get(field)
@@ -184,7 +226,24 @@ def main():
             print(f"⚠ {dkey}: 日频无数据，{mkey} 保留旧值")
             continue
         old = prices.get(mkey)
-        ok, dev, reason = seam_check(old, agg, field)
+        # P0-2 裁决边界4：copper 同月基差阈值 ±5%（COMEX vs LME），超差仍接入但亮灰灯注记
+        tol = BASIS_TOLERANCE_PCT if mkey == "copper" else SEAM_TOLERANCE_PCT
+        ok, dev, reason = seam_check(old, agg, field, tolerance_pct=tol)
+        if not ok and mkey == "copper" and dev is not None:
+            series = merge_series(old, agg, field)
+            prices[mkey] = series
+            series_meta[mkey] = {
+                "last_month": series[-1]["date"],
+                "last_src_date": max(p["date"][:10] for p in d),
+                "source": "daily_aggregate(asset_prices.json)",
+                "seam": f"基差 {dev}%>±5%（COMEX×2204.62 vs PCOPPUSDM/LME，P0-2 裁决边界4：灰灯注记，不静默对齐）",
+                "seam_mismatch": True,
+                "basis_breach": True,
+                "basis_dev_pct": dev,
+                "caliber": CALIBER_REGISTRY.get(mkey),
+            }
+            print(f"⚠ {mkey}: COMEX-LME 基差 {dev}%>±5% → 已接入+灰灯注记（不静默对齐）")
+            continue
         if not ok:
             series_meta[mkey] = {
                 "last_month": old[-1]["date"] if old else None,
@@ -205,6 +264,18 @@ def main():
         }
         if dev is not None:
             series_meta[mkey]["seam_deviation_pct"] = dev
+        if mkey in CALIBER_REGISTRY:
+            series_meta[mkey]["caliber"] = CALIBER_REGISTRY[mkey]
+        if mkey == "copper":
+            basis = copper_basis_check(agg, prev_meta=(monthly_doc.get("prices", {}) or {}).get("series_meta", {}).get("copper"))
+            series_meta[mkey].update(basis)
+            if basis.get("basis_breach"):
+                series_meta[mkey]["seam_mismatch"] = True
+                series_meta[mkey]["seam"] = (f"基差 {basis['basis_dev_pct']}%>±5%（{basis.get('basis_month')}，"
+                                             "COMEX×2204.62 vs PCOPPUSDM/LME，P0-2 裁决边界4：灰灯注记，不静默对齐）")
+                print(f"⚠ copper: 基差 {basis['basis_dev_pct']}%>±5% → 灰灯注记")
+            elif basis.get("basis_dev_pct") is not None:
+                print(f"  copper 基差监控: {basis['basis_dev_pct']}%（{basis.get('basis_month')}）≤±5% ✅")
         print(f"✅ {mkey}: {len(series)} pts, tail={series[-1]['date']}（{reason}）")
 
     # ---- 2) gold 入主文件（与兜底文件同源全史）----
@@ -227,8 +298,13 @@ def main():
         print(f"✅ us_10y_price: {len(prices['us_10y_price'])} pts (derived)")
 
     # ---- 4) 遗留序列（hs300/cn_10y_yield 等中国源，日频文件不覆盖）标注 ----
+    old_meta = (monthly_doc.get("prices", {}) or {}).get("series_meta", {}) or {}
     for mkey, series in prices.items():
         if mkey in series_meta or mkey.endswith("_meta") or not isinstance(series, list) or not series:
+            continue
+        if mkey in CALIBER_REGISTRY:
+            if mkey in old_meta:  # P0-2: 保留已登记 meta（如 usd_broad 叙事参考降级注记）
+                series_meta[mkey] = dict(old_meta[mkey])
             continue
         series_meta[mkey] = {
             "last_month": series[-1].get("date"),

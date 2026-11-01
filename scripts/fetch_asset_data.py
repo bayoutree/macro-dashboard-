@@ -22,7 +22,7 @@ TICKERS = {
     "nasdaq": {"symbol": "^IXIC", "name": "Nasdaq Composite"},
     "gold": {"symbol": "GC=F", "name": "Gold Futures"},
     "crude_oil": {"symbol": "CL=F", "name": "WTI Crude Oil"},
-    "copper": {"symbol": "HG=F", "name": "Copper Futures"},
+    "copper": {"symbol": "HG=F", "name": "Copper Futures", "unit_factor": 2204.62},  # P0-2 裁决: 美元/磅×2204.62=美元/吨（写库时换算）
     "vix": {"symbol": "^VIX", "name": "VIX"},
     "usd_index": {"symbol": "DX-Y.NYB", "name": "US Dollar Index"},
     "us_10y": {"symbol": "^TNX", "name": "US 10Y Treasury"},
@@ -153,6 +153,12 @@ def main():
         logger.info(f"\n下载 {cfg['name']} ({cfg['symbol']})...")
         hist = download_with_retry(cfg['symbol'])
 
+        # P0-2 裁决（2026-11-01）：copper 换算在写库时完成（美元/磅×2204.62=美元/吨），
+        # 展示层不再换算；月频准绳=FRED PCOPPUSDM(IMF/LME)。
+        factor = cfg.get("unit_factor")
+        if factor and not hist.empty and 'Close' in hist.columns:
+            hist['Close'] = hist['Close'] * factor
+
         latest, ma200, drawdown = calc_metrics(hist)
 
         # 日频历史数据 (最近60个交易日)
@@ -218,7 +224,9 @@ def main():
                 "latest": prices.get("copper", {}).get("latest"),
                 "ma200": prices.get("copper", {}).get("ma200"),
                 "drawdown_from_high": prices.get("copper", {}).get("drawdown_from_high"),
-                "daily": prices.get("copper", {}).get("daily", [])
+                "daily": prices.get("copper", {}).get("daily", []),
+                "unit": "USD/t",
+                "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
             },
             "crude_oil": {
                 "latest": prices.get("crude_oil", {}).get("latest"),

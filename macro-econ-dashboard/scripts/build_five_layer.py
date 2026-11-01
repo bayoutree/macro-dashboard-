@@ -68,7 +68,8 @@ NAME_MAP = {
     "hy_spread": "HY信用利差(HY OAS)",
     "ig_spread": "投资级信用利差(BAA−AAA)",
     "fed_funds": "2Y美债收益率",  # P0-4 收尾（裁决2026-11-01）：展示名定稿
-    "dxy": "美元指数",
+    "dxy": "美元指数DXY",
+    "usd_broad": "广义美元指数(叙事参考)",
     "vix": "VIX恐慌指数",
     "sp500": "标普500",
     "csi300_pe": "沪深300PE",
@@ -857,6 +858,9 @@ def _build_us_policy(g):
         monetary["ust_2y"] = _named(g["financial"]["ust_2y"], "ust_2y")
     if g.get("financial", {}).get("dxy"):
         monetary["dxy"] = _named(g["financial"]["dxy"], "dxy")
+    # P0-2 裁决：DTWEXBGS 保留为叙事参考序列（展示位=利率层/美元环流叙事）
+    if g.get("financial", {}).get("usd_broad"):
+        monetary["usd_broad"] = _named(g["financial"]["usd_broad"], "usd_broad")
     fiscal = {}
     spending = g.get("fiscal", {}).get("fed_spending")
     if spending:
@@ -1045,7 +1049,8 @@ SOURCE_REGISTRY = {
     ("us", "tips_10y"): ("FRED DFII10", "10Y TIPS 实际利率 %"),
     ("us", "hy_spread"): ("FRED BAMLH0A0HYM2（ICE BofA 美国高收益债 OAS）", "OAS %（非 BAA−AAA；两口径禁止对齐）"),
     ("us", "ig_spread"): ("FRED BAA / AAA", "投资级信用利差 BAA−AAA、bps（月频）"),
-    ("us", "dxy"): ("FRED DTWEXBGS", "贸易加权美元指数（广义）"),
+    ("us", "dxy"): ("DXY 洲际交易所美元指数（yfinance DX-Y.NYB）", "ICE 六货币篮子 EUR57.6/JPY13.6/GBP11.9/CAD9.1/SEK4.2/CHF3.6、不含 CNY/MXN、1973 起、日频；主屏口径（P0-2 裁决 2026-11-01）"),
+    ("us", "usd_broad"): ("FRED DTWEXBGS", "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）"),
     ("us", "pce"): ("FRED PCEC96", "实际个人消费支出同比 %"),
     ("us", "dgorder_yoy"): ("FRED DGORDER", "耐用品新订单同比 %"),
     ("us", "industrial_prod"): ("FRED INDPRO", "工业生产指数同比 %"),

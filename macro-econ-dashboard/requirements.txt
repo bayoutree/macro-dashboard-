@@ -4,3 +4,4 @@ akshare>=1.13.0
 fredapi>=0.5.0
 pandas>=2.2.0
 requests>=2.31.0
+yfinance>=0.2.40  # P0-2: DXY(ICE) 主口径取数（DX-Y.NYB）

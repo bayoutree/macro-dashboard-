@@ -35,6 +35,55 @@ def run_with_timeout(fn, timeout=25, default=None):
             return default
 
 
+def _fetch_dxy_daily():
+    """P0-2 裁决（2026-11-01）：主屏美元指数 = DXY（ICE 六货币篮子，yfinance DX-Y.NYB 日频全史）。
+
+    DTWEXBGS 降为 usd_broad 叙事参考。取数失败返回 None——宁缺勿错，
+    禁止「名为 DXY 实为广义篮子」的口径漂移（裁决红线）。
+    """
+    try:
+        import yfinance as yf
+    except Exception:
+        return None
+    try:
+        hist = yf.Ticker("DX-Y.NYB").history(period="max")
+        if hist is None or hist.empty or "Close" not in hist.columns:
+            return None
+        close = hist["Close"].dropna()
+        return [(idx.strftime("%Y-%m-%d"), round(float(v), 4)) for idx, v in close.items()]
+    except Exception:
+        return None
+
+
+def _fetch_dxy_fred_synth(fred):
+    """DXY fallback：FRED 六货币对按 ICE 官方公式合成（日频，1999 起）。
+
+    DXY = 50.14348112 × EURUSD^-0.576 × USDJPY^0.136 × GBPUSD^-0.119
+          × USDCAD^0.091 × USDSEK^0.042 × USDCHF^0.036
+    精度实测（2026-11-01，54 个重叠交易日 vs DX-Y.NYB）：mean 0.07% / max 0.63%
+    （差异=FRED noon buying rates 与纽约收盘的时点差）。同为 DXY 口径，非篮子替换。
+    """
+    W = {"DEXUSEU": -0.576, "DEXJPUS": 0.136, "DEXUSUK": -0.119,
+         "DEXCAUS": 0.091, "DEXSDUS": 0.042, "DEXSZUS": 0.036}
+    K = 50.14348112
+    series = {}
+    for sid in W:
+        pts = _to_points(get_series(fred, sid, start="1999-01-01"))
+        if not pts:
+            return None
+        series[sid] = dict(pts)
+    common = sorted(set.intersection(*[set(v) for v in series.values()]))
+    if len(common) < 300:
+        return None
+    out = []
+    for d in common:
+        v = K
+        for sid, w in W.items():
+            v *= series[sid][d] ** w
+        out.append((d, round(v, 4)))
+    return out
+
+
 def _load_repo_gold_monthly():
     """P2-1: 从仓库 data/asset_prices_monthly_gold.json 读取月度金价 (date, close)。
 
@@ -342,7 +391,18 @@ def get_us_groups():
     add("financial", "ig_spread", spread_series(baa, aaa, as_bps=True), unit="bps")
     # hist_limit=1260：P0-3 U8「走阔至80分位以上」防抖需真实 5 年日频窗口反解阈值水平
     add("financial", "hy_spread", _to_points(get_series(fred, "BAMLH0A0HYM2")), unit="%", hist_limit=1260)
-    add("financial", "dxy", _to_points(get_series(fred, "DTWEXBGS")), unit="")
+    # P0-2 裁决（2026-11-01）：dxy 主口径=DXY(ICE, yfinance DX-Y.NYB, hist_limit=1260 保 5 年日频窗)；
+    # DTWEXBGS 降 usd_broad 叙事参考（C2 利率层/美元环流，不进信号灯、不进 asset_valuation 分位）；
+    # DXY 取数失败则 dxy 本期不产出（宁缺勿错，禁止广义篮子冒充）。
+    _dxy = run_with_timeout(_fetch_dxy_daily, timeout=90)
+    if not _dxy:
+        print("  ⚠ yfinance DX-Y.NYB 取数失败，fallback=FRED 六货币对 ICE 公式合成")
+        _dxy = run_with_timeout(lambda: _fetch_dxy_fred_synth(fred), timeout=120)
+    if _dxy:
+        add("financial", "dxy", _dxy, unit="", hist_limit=1260)
+    else:
+        print("  ⚠ DXY(ICE) 双源均失败：financial.dxy 本期不产出（禁止 DTWEXBGS 冒充）")
+    add("financial", "usd_broad", _to_points(get_series(fred, "DTWEXBGS")), unit="", hist_limit=1260)
 
     # ---- 市场 ----
     add("market", "vix", _to_points(get_series(fred, "VIXCLS")), unit="")
