@@ -148,8 +148,8 @@
     {
       "indicator": "data_freshness",
       "file": "stock_dashboard.html",
-      "static_value": 100,
-      "status": "已闭环（第4阶段 2026-10-11）：硬编码 78 → 100，对齐 cycle_position_v4._meta.data_freshness_score",
+      "static_value": null,
+      "status": "已重构（P0-1 2026-11-01）：废除静态硬编码 100（与真实数据年龄脱钩的造假值），renderCycleFreshness 动态读取 cycle_position_v4._meta（score=min(各层 last_updated 推算)，算法单一真值 scripts/freshness_score.py；展示评估日/数据截止日双时间戳 + 评估逾期标注）",
       "owner": "松子"
     }
   ],

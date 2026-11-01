@@ -4103,16 +4103,27 @@ function renderExtLiqCards() {
 function renderCycleFreshness() {
   const badge = document.getElementById('cycle-freshness');
   if (!badge) return;
-  const updateTime = '2026-09-01'; // Will be dynamically loaded
-  const data_freshness_score = 100; // Will be dynamically loaded from cycle_position_v4.json // from cycle_position_v3.json _meta.data_freshness_score
-  const freshnessScore = data_freshness_score;
-  const daysSince = Math.floor((Date.now() - new Date(updateTime).getTime()) / 86400000);
-  badge.textContent = `全球周期: ${updateTime} · 新鲜度 ${freshnessScore}`;
-  if (daysSince > 35) {
-    badge.classList.add('stale');
-  } else {
-    badge.classList.remove('stale');
-  }
+  // P0-1（2026-11-01 CIO）：废除硬编码「新鲜度 100」（与真实数据年龄脱钩的
+  // 造假值），动态读取 v4 契约 _meta：score=min(各层 last_updated 推算)，
+  // 双时间戳（评估日/数据截止日）+ 评估逾期标注。算法单一真值见
+  // scripts/freshness_score.py（后端）、js/cycle_v4_patch.js（周期看板展示）。
+  fetch('data/cycle_position_v4.json?v=' + Date.now())
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      const meta = (d && d._meta) || {};
+      const score = (typeof meta.data_freshness_score === 'number') ? meta.data_freshness_score : '--';
+      const cutoff = meta.data_cutoff_date || meta.assessment_date || '';
+      const nad = meta.next_assessment_date ? new Date(meta.next_assessment_date + 'T23:59:59') : null;
+      const overdueDays = (nad && Date.now() > nad.getTime()) ? Math.ceil((Date.now() - nad.getTime()) / 86400000) : 0;
+      badge.textContent = `全球周期: 评估日 ${meta.assessment_date || '--'} · 数据截至 ${cutoff || '--'} · 新鲜度 ${score}` +
+        (overdueDays > 0 ? ` · ⚠评估逾期${overdueDays}天` : '');
+      const daysSince = cutoff ? Math.floor((Date.now() - new Date(cutoff).getTime()) / 86400000) : 999;
+      badge.classList.toggle('stale', daysSince > 35 || overdueDays > 0);
+    })
+    .catch(() => {
+      badge.textContent = '全球周期: 新鲜度数据加载失败';
+      badge.classList.add('stale');
+    });
 }
 
 // ============================================================

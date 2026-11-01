@@ -285,6 +285,20 @@
     var dq = data.data_quality || {};
     var cq = dq.current_quality || {};
 
+    // P0-1（2026-11-01 CIO）：评估逾期显著标注。后端 _meta.assessment_overdue
+    // 为准；前端按 next_assessment_date 本地复算兜底（数据停更时依然准确）。
+    var overdueDays = 0;
+    if (meta.next_assessment_date) {
+      var nad = new Date(meta.next_assessment_date + 'T23:59:59');
+      if (Date.now() > nad.getTime()) overdueDays = Math.ceil((Date.now() - nad.getTime()) / 86400000);
+    }
+    var overdueBanner = (overdueDays > 0)
+      ? '<div style="background:#ef4444;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;margin-bottom:12px">' +
+        '⚠ 周期评估已逾期 ' + overdueDays + ' 天（下次评估日 ' + esc(meta.next_assessment_date) + ' 已过）。' +
+        '页面结论基于 ' + esc(meta.assessment_date || '--') + ' 评估、数据截至 ' + esc(meta.data_cutoff_date || '--') + '，请谨慎使用。' +
+        '</div>'
+      : '';
+
     var sourceCards = sources.map(function(s) {
       var isStale = s.status === 'stale';
       var statusColor = isStale ? '#ef4444' : '#10b981';
@@ -324,8 +338,10 @@
 
     return '<section class="v4-section v4-freshness-section" id="v4-data-quality">' +
       '<h2 class="v4-section-title">📡 数据质量与来源</h2>' +
+      overdueBanner +
       '<div class="v4-freshness-meta">' +
         '<span>评估日期: <strong>' + esc(meta.assessment_date || '--') + '</strong></span>' +
+        '<span>数据截止: <strong>' + esc(meta.data_cutoff_date || '--') + '</strong></span>' +
         '<span>新鲜度评分: <strong style="color:' + ((meta.data_freshness_score||0) >= 80 ? '#10b981' : (meta.data_freshness_score||0) >= 60 ? '#f59e0b' : '#ef4444') + '">' + (meta.data_freshness_score || '--') + '/100</strong></span>' +
         '<span>下次评估: ' + esc(meta.next_assessment_date || '--') + '</span>' +
       '</div>' +
@@ -461,11 +477,24 @@
   function addFreshnessTimestamps(data) {
     var meta = data._meta || {};
     var sources = meta.data_sources || [];
-    // Find most recent data source date
-    var latestDate = meta.assessment_date || '';
-    sources.forEach(function(s) {
-      if (s.last_fetch > latestDate) latestDate = s.last_fetch;
-    });
+    // P0-1（2026-11-01 CIO）：「数据截至」必须用真实数据截止日
+    // （_meta.data_cutoff_date = 各层 last_updated 最小值），不再用
+    // max(数据源抓取日) 掩盖陈旧框架层；评估逾期显著标注。
+    var cutoff = meta.data_cutoff_date || '';
+    if (!cutoff) {  // 旧数据兜底：退化为 max(assessment_date, 源抓取日)
+      cutoff = meta.assessment_date || '';
+      sources.forEach(function(s) {
+        if (s.last_fetch > cutoff) cutoff = s.last_fetch;
+      });
+    }
+    var overdueDays = 0;
+    if (meta.next_assessment_date) {
+      var nad = new Date(meta.next_assessment_date + 'T23:59:59');
+      if (Date.now() > nad.getTime()) overdueDays = Math.ceil((Date.now() - nad.getTime()) / 86400000);
+    }
+    var overdueHtml = overdueDays > 0
+      ? ' · <span style="background:#ef4444;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700">⚠ 评估逾期 ' + overdueDays + ' 天</span>'
+      : '';
 
     // Add data freshness to meta header if exists
     var metaHeader = document.querySelector('.meta-header');
@@ -473,7 +502,8 @@
       var freshnessDiv = document.createElement('div');
       freshnessDiv.className = 'v4-freshness-inline';
       freshnessDiv.innerHTML = '<span class="v4-freshness-dot" style="background:' + ((meta.data_freshness_score||0) >= 80 ? '#10b981' : (meta.data_freshness_score||0) >= 60 ? '#f59e0b' : '#ef4444') + '"></span>' +
-        '数据截至 ' + esc(latestDate) + ' · 新鲜度 ' + (meta.data_freshness_score || '--') + '/100';
+        '评估日 ' + esc(meta.assessment_date || '--') + ' · 数据截至 ' + esc(cutoff) +
+        ' · 新鲜度 ' + (meta.data_freshness_score || '--') + '/100' + overdueHtml;
       metaHeader.appendChild(freshnessDiv);
     }
   }

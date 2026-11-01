@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-10-31T22:17:04+08:00",
-    "data_freshness_score": 100,
+    "update_time": "2026-11-01T10:18:33+08:00",
+    "data_freshness_score": 13,
     "assessment_date": "2026-09-01",
     "version": "3.0",
     "next_assessment_date": "2026-10-01",
@@ -31,7 +31,35 @@
         "last_fetch": "2026-08-06",
         "status": "ok"
       }
-    ]
+    ],
+    "data_cutoff_date": "2026-08-06",
+    "freshness_detail": {
+      "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
+      "as_of": "2026-11-01",
+      "layers": {
+        "layer_0_debt_cycle": {
+          "last_updated": "2026-08-15",
+          "score": 22
+        },
+        "layer_1_kondratieff": {
+          "last_updated": "2026-08-06",
+          "score": 13
+        },
+        "layer_2_perez": {
+          "last_updated": "2026-08-06",
+          "score": 13
+        },
+        "layer_3_rate_regime": {
+          "last_updated": "2026-08-06",
+          "score": 13
+        }
+      },
+      "excluded_no_date": [
+        "layer_4_juglar",
+        "layer_5_kitchner",
+        "layer_6_merrill"
+      ]
+    }
   },
   "cycle_layers": {
     "layer_0_debt_cycle": {
@@ -14791,7 +14819,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.2,
-            "last_updated": "2026-10-31",
+            "last_updated": "2026-11-01",
             "history": [
               {
                 "date": "2015-01-01",

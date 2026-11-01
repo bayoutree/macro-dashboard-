@@ -41,6 +41,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))  # 保证任意 cwd 下可 import
+from freshness_score import compute_freshness, is_assessment_overdue  # P0-1 单一真值
+
 DATA_DIR = Path(__file__).parent.parent / "data"
 V3_FILE = DATA_DIR / "cycle_position_v3.json"
 V4_FILE = DATA_DIR / "cycle_position_v4.json"
@@ -881,6 +884,14 @@ def build():
     meta = dict(out.get("_meta", {}))
     meta["v4_builder"] = "scripts/build_cycle_position_v4.py"
     meta["v4_built_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
+    # P0-1（2026-11-01 CIO）：新鲜度按各层 last_updated 重算（min 口径），
+    # 废除上游 +5 封顶 100 的假新鲜度；补「数据截止日」与「评估逾期」标记，
+    # 前端按此双时间戳（assessment_date / data_cutoff_date）展示并显著标注逾期。
+    _score, _cutoff, _detail = compute_freshness(out.get("cycle_layers", {}))
+    meta["data_freshness_score"] = _score
+    meta["data_cutoff_date"] = _cutoff
+    meta["freshness_detail"] = _detail
+    meta["assessment_overdue"] = is_assessment_overdue(meta.get("next_assessment_date"))
     out["_meta"] = meta
 
     # ---- 5b. high_rate_tracker history 映射（constraint_rate_regime → 交叉分析） ----
