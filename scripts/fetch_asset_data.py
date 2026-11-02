@@ -54,13 +54,18 @@ def download_with_retry(symbol, period="5y", max_retries=MAX_RETRIES):
 
 
 def calc_metrics(hist):
-    """计算技术指标: 最新价、MA200、距52周高点回撤"""
+    """计算技术指标: 最新价、MA200、距52周高点回撤、3个月动量、MA200偏离度
+
+    P1-8（2026-11-02）：估值表趋势列需要 momentum_3m（63 个交易日）与
+    ma200_dev_pct（最新价相对 MA200 偏离 %），与 ma200/drawdown 同源同窗口，
+    从 5 年全历史计算（不受 daily 60 点存档窗口限制）。
+    """
     if hist.empty or 'Close' not in hist.columns:
-        return None, None, None
+        return None, None, None, None, None
 
     close = hist['Close'].dropna()
     if close.empty:
-        return None, None, None
+        return None, None, None, None, None
 
     latest = safe_float(close.iloc[-1])
 
@@ -76,7 +81,19 @@ def calc_metrics(hist):
         if high_52w > 0:
             drawdown = safe_float((latest - high_52w) / high_52w * 100)
 
-    return latest, ma200, drawdown
+    # P1-8: 3个月动量（63 个交易日 ≈ 3 个自然月）
+    momentum_3m = None
+    if len(close) >= 64:
+        base = close.iloc[-64]
+        if base and base > 0:
+            momentum_3m = safe_float((latest / base - 1) * 100)
+
+    # P1-8: MA200 偏离度 %
+    ma200_dev = None
+    if ma200:
+        ma200_dev = safe_float((latest - ma200) / ma200 * 100)
+
+    return latest, ma200, drawdown, momentum_3m, ma200_dev
 
 
 def fill_from_fred(prices):
@@ -112,6 +129,13 @@ def fill_from_fred(prices):
                             high_52w = s.tail(252).max()
                             if high_52w > 0:
                                 drawdown = safe_float((latest - high_52w) / high_52w * 100)
+                        # P1-8: 3个月动量（63 个交易日）+ MA200 偏离度
+                        momentum_3m = None
+                        if len(s) >= 64:
+                            base3m = s.iloc[-64]
+                            if base3m and base3m > 0:
+                                momentum_3m = safe_float((latest / base3m - 1) * 100)
+                        ma200_dev = safe_float((latest - ma200) / ma200 * 100) if ma200 else None
 
                         # 日频历史
                         close = s.tail(60)
@@ -124,6 +148,8 @@ def fill_from_fred(prices):
                             "latest": latest,
                             "ma200": ma200,
                             "drawdown_from_high": drawdown,
+                            "momentum_3m": momentum_3m,
+                            "ma200_dev_pct": ma200_dev,
                             "daily": daily_data,
                             "name": TICKERS.get(key, {}).get("name", fred_id),
                             "symbol": f"FRED:{fred_id}",
@@ -159,7 +185,7 @@ def main():
         if factor and not hist.empty and 'Close' in hist.columns:
             hist['Close'] = hist['Close'] * factor
 
-        latest, ma200, drawdown = calc_metrics(hist)
+        latest, ma200, drawdown, momentum_3m, ma200_dev = calc_metrics(hist)
 
         # 日频历史数据 (最近60个交易日)
         daily_data = []
@@ -174,6 +200,8 @@ def main():
             "latest": latest,
             "ma200": ma200,
             "drawdown_from_high": drawdown,
+            "momentum_3m": momentum_3m,
+            "ma200_dev_pct": ma200_dev,
             "daily": daily_data,
             "name": cfg["name"],
             "symbol": cfg["symbol"],
@@ -206,24 +234,32 @@ def main():
                 "latest": prices.get("sp500", {}).get("latest"),
                 "ma200": prices.get("sp500", {}).get("ma200"),
                 "drawdown_from_high": prices.get("sp500", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("sp500", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("sp500", {}).get("ma200_dev_pct"),
                 "daily": prices.get("sp500", {}).get("daily", [])
             },
             "nasdaq": {
                 "latest": prices.get("nasdaq", {}).get("latest"),
                 "ma200": prices.get("nasdaq", {}).get("ma200"),
                 "drawdown_from_high": prices.get("nasdaq", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("nasdaq", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("nasdaq", {}).get("ma200_dev_pct"),
                 "daily": prices.get("nasdaq", {}).get("daily", [])
             },
             "gold": {
                 "latest": prices.get("gold", {}).get("latest"),
                 "ma200": prices.get("gold", {}).get("ma200"),
                 "drawdown_from_high": prices.get("gold", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("gold", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("gold", {}).get("ma200_dev_pct"),
                 "daily": prices.get("gold", {}).get("daily", [])
             },
             "copper": {
                 "latest": prices.get("copper", {}).get("latest"),
                 "ma200": prices.get("copper", {}).get("ma200"),
                 "drawdown_from_high": prices.get("copper", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("copper", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("copper", {}).get("ma200_dev_pct"),
                 "daily": prices.get("copper", {}).get("daily", []),
                 "unit": "USD/t",
                 "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
@@ -232,22 +268,34 @@ def main():
                 "latest": prices.get("crude_oil", {}).get("latest"),
                 "ma200": prices.get("crude_oil", {}).get("ma200"),
                 "drawdown_from_high": prices.get("crude_oil", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("crude_oil", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("crude_oil", {}).get("ma200_dev_pct"),
                 "daily": prices.get("crude_oil", {}).get("daily", [])
             },
             "usd_index": {
                 "latest": prices.get("usd_index", {}).get("latest"),
                 "ma200": prices.get("usd_index", {}).get("ma200"),
                 "drawdown_from_high": prices.get("usd_index", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("usd_index", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("usd_index", {}).get("ma200_dev_pct"),
                 "daily": prices.get("usd_index", {}).get("daily", [])
             },
             "us_10y_bond": {
                 "latest": prices.get("us_10y", {}).get("latest"),
+                # P1-8（2026-11-02）：美债卡趋势列。口径=10Y 收益率本身（非价格）：
+                # 收益率↑=债价↓，前端以「收益率口径」标注，不与价格类资产混排解读。
+                "ma200": prices.get("us_10y", {}).get("ma200"),
+                "drawdown_from_high": prices.get("us_10y", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("us_10y", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("us_10y", {}).get("ma200_dev_pct"),
                 "daily": prices.get("us_10y", {}).get("daily", [])
             },
             "btc": {
                 "latest": prices.get("btc", {}).get("latest"),
                 "ma200": prices.get("btc", {}).get("ma200"),
                 "drawdown_from_high": prices.get("btc", {}).get("drawdown_from_high"),
+                "momentum_3m": prices.get("btc", {}).get("momentum_3m"),
+                "ma200_dev_pct": prices.get("btc", {}).get("ma200_dev_pct"),
                 "daily": prices.get("btc", {}).get("daily", [])
             }
         },

@@ -39,49 +39,92 @@
       "name": "A股(沪深300)",
       "pct_5y": 62,
       "pct_10y": 48,
-      "note": "近5年分位62%，中性区间"
+      "note": "近5年分位62%，中性区间",
+      "trend": null
     },
     "cn_bond": {
       "name": "中债(10Y国债)",
       "pct_5y": 33,
       "pct_10y": 40,
-      "note": "近5年分位33%，处相对低位"
+      "note": "近5年分位33%，处相对低位",
+      "trend": null
     },
     "cn_realestate": {
       "name": "中房地产(70城)",
       "pct_5y": 12,
       "pct_10y": 15,
-      "note": "近5年分位12%，处相对低位"
+      "note": "近5年分位12%，处相对低位",
+      "trend": null
     },
     "us_stock": {
       "name": "美股(标普500)",
       "pct_5y": 99,
       "pct_10y": 99,
-      "note": "近5年分位99%，处相对高位"
+      "note": "近5年分位99%，处相对高位",
+      "trend": {
+        "ma200_dev_pct": 3.698,
+        "dd_52w_pct": -3.0549,
+        "mom_3m_pct": -2.289,
+        "date": "2026-10-30",
+        "caliber": "price",
+        "approx": true
+      }
     },
     "us_bond": {
       "name": "美债(10Y)",
       "pct_5y": 98,
       "pct_10y": 99,
-      "note": "近5年分位98%，处相对高位"
+      "note": "近5年分位98%，处相对高位",
+      "trend": {
+        "ma200_dev_pct": 8.5253,
+        "dd_52w_pct": -7.1751,
+        "mom_3m_pct": 5.3205,
+        "date": "2026-10-30",
+        "caliber": "yield",
+        "approx": false
+      }
     },
     "usd": {
       "name": "美元指数DXY",
       "pct_5y": 46,
       "pct_10y": 72,
-      "note": "近5年分位46%，中性区间"
+      "note": "近5年分位46%，中性区间",
+      "trend": {
+        "ma200_dev_pct": 2.2568,
+        "dd_52w_pct": -0.6824,
+        "mom_3m_pct": 2.2892,
+        "date": "2026-10-30",
+        "caliber": "price",
+        "approx": true
+      }
     },
     "gold": {
       "name": "黄金",
       "pct_5y": 80,
       "pct_10y": 90,
-      "note": "近5年分位80%，处相对高位"
+      "note": "近5年分位80%，处相对高位",
+      "trend": {
+        "ma200_dev_pct": -13.7281,
+        "dd_52w_pct": -26.6904,
+        "mom_3m_pct": -11.3826,
+        "date": "2026-10-30",
+        "caliber": "price",
+        "approx": true
+      }
     },
     "commodity": {
       "name": "大宗商品(CRB)",
       "pct_5y": 100,
       "pct_10y": 100,
-      "note": "近5年分位100%，处相对高位"
+      "note": "近5年分位100%，处相对高位",
+      "trend": {
+        "ma200_dev_pct": 4.0603,
+        "dd_52w_pct": -4.7255,
+        "mom_3m_pct": -1.7046,
+        "date": "2026-10-30",
+        "caliber": "price",
+        "approx": true
+      }
     }
   },
   "china": {

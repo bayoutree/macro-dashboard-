@@ -246,7 +246,10 @@
           "date": "2026-10-30",
           "value": 7580.0698
         }
-      ]
+      ],
+      "momentum_3m": -2.289,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 3.698
     },
     "nasdaq": {
       "latest": 25437.0,
@@ -493,7 +496,10 @@
           "date": "2026-10-30",
           "value": 25437.0
         }
-      ]
+      ],
+      "momentum_3m": -4.6969,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 1.5216
     },
     "gold": {
       "latest": 3898.8999,
@@ -740,7 +746,10 @@
           "date": "2026-10-30",
           "value": 3898.8999
         }
-      ]
+      ],
+      "momentum_3m": -11.3826,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": -13.7281
     },
     "copper": {
       "latest": 14290.3466,
@@ -989,7 +998,10 @@
         }
       ],
       "unit": "USD/t",
-      "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
+      "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)",
+      "momentum_3m": -1.7046,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 4.0603
     },
     "crude_oil": {
       "latest": 104.12,
@@ -1236,7 +1248,10 @@
           "date": "2026-10-30",
           "value": 104.12
         }
-      ]
+      ],
+      "momentum_3m": 33.1798,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 20.5902
     },
     "usd_index": {
       "latest": 101.88,
@@ -1483,7 +1498,10 @@
           "date": "2026-10-30",
           "value": 101.88
         }
-      ]
+      ],
+      "momentum_3m": 2.2892,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 2.2568
     },
     "us_10y_bond": {
       "latest": 4.929,
@@ -1728,7 +1746,11 @@
           "date": "2026-10-30",
           "value": 4.929
         }
-      ]
+      ],
+      "ma200": 4.5418,
+      "drawdown_from_high": -7.1751,
+      "momentum_3m": 5.3205,
+      "ma200_dev_pct": 8.5253
     },
     "btc": {
       "latest": 77924.1797,
@@ -1975,7 +1997,10 @@
           "date": "2026-11-01",
           "value": 77924.1797
         }
-      ]
+      ],
+      "momentum_3m": 0.0342,
+      "mom_3m_source": "daily_window_60td≈3个月",
+      "ma200_dev_pct": 5.7374
     }
   },
   "volatility": {

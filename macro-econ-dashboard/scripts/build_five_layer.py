@@ -1049,6 +1049,54 @@ def _asset_note(key, p5):
     return f"近5年分位{p5}%，中性区间"
 
 
+# ============================================================================
+# P1-8（2026-11-02）：估值表趋势列 —— 位置（估值分位）与趋势同屏
+#
+# 数据源：仓库根 data/asset_prices.json（scripts/fetch_asset_data.py 产出，日频）。
+#   ma200 / drawdown_from_high 由采集端基于 5 年全历史计算；
+#   momentum_3m 为 63 个交易日动量（存档窗口不足时采集端以 mom_3m_source 标注近似口径）。
+# 映射：L5 资产卡 → asset_prices 键；us_bond 为收益率口径（收益率↑=债价↓）；
+#   cn_stock / cn_bond / cn_realestate 无日频价格序列 → trend=None（前端灰显「—」）。
+# ============================================================================
+_ASSET_TREND_MAP = {
+    "us_stock": ("sp500", "price"),
+    "us_bond": ("us_10y_bond", "yield"),
+    "usd": ("usd_index", "price"),
+    "gold": ("gold", "price"),
+    "commodity": ("copper", "price"),
+}
+_ASSET_PRICES_PATH = os.path.join(os.path.dirname(PROJECT_ROOT), "data", "asset_prices.json")
+
+
+def _load_asset_trends():
+    """读取 asset_prices.json，返回 {L5资产键: 趋势块|None}。读数失败返回 {}（不阻塞构建）。"""
+    try:
+        with open(_ASSET_PRICES_PATH, encoding="utf-8") as f:
+            prices = (json.load(f) or {}).get("prices") or {}
+    except Exception:
+        return {}
+    trends = {}
+    for asset_key, (price_key, caliber) in _ASSET_TREND_MAP.items():
+        node = prices.get(price_key) or {}
+        latest = node.get("latest")
+        ma200_dev = node.get("ma200_dev_pct")
+        dd52 = node.get("drawdown_from_high")
+        mom3 = node.get("momentum_3m")
+        if latest is None and ma200_dev is None and dd52 is None and mom3 is None:
+            trends[asset_key] = None
+            continue
+        daily = node.get("daily") or []
+        trends[asset_key] = {
+            "ma200_dev_pct": ma200_dev,   # 最新价相对 200 日均线偏离 %
+            "dd_52w_pct": dd52,           # 距 52 周高点回撤 %（价格口径恒 ≤0）
+            "mom_3m_pct": mom3,           # 3 个月动量 %（63 个交易日；窗口近似时见 approx）
+            "date": (daily[-1] or {}).get("date") if daily else None,
+            "caliber": caliber,           # price=价格口径 / yield=收益率口径（与债价反向）
+            "approx": bool(node.get("mom_3m_source")),  # 动量为存档窗口近似（CI 升级后消失）
+        }
+    return trends
+
+
 def _build_asset_valuation(cn_g, us_g, cross, av_tmpl):
     cn_stock_src = cn_g.get("valuation", {}).get("csi300_pe")
     cn_bond_src = cn_g.get("financial", {}).get("cn_10y")
@@ -1070,6 +1118,8 @@ def _build_asset_valuation(cn_g, us_g, cross, av_tmpl):
         "commodity": commodity_src,
     }
 
+    trends = _load_asset_trends()
+
     out = {}
     for key, src in mapping.items():
         p5 = src.get("pct_5y") if src else None
@@ -1080,6 +1130,8 @@ def _build_asset_valuation(cn_g, us_g, cross, av_tmpl):
             "pct_5y": p5,
             "pct_10y": p10,
             "note": _asset_note(key, p5),
+            # P1-8 趋势列（无日频序列资产为 None，前端灰显「—」）
+            "trend": trends.get(key),
         }
     return out
 

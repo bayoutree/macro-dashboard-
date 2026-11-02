@@ -674,6 +674,26 @@ function renderConclusion(countryData) {
     return { text: '中性', color: '#f59e0b', score: total };
   }
 
+  // P1-8（2026-11-02）：估值表趋势列 —— 位置（估值分位）与趋势同屏。
+  // 数据源 asset_prices.json（日频，经 build_five_layer 注入 asset_valuation[].trend）；
+  // us_bond 为收益率口径（收益率↑=债价↓），整行中性灰蓝着色，避免与价格类资产混排解读。
+  function trendColor(v) {        // 动量/MA200偏离：≥+2% 强=绿，≤-2% 弱=红，之间横盘=琥珀
+    if (v === null || v === undefined) return '#6b7280';
+    if (v >= 2) return '#10b981';
+    if (v <= -2) return '#ef4444';
+    return '#f59e0b';
+  }
+  function drawdownColor(v) {     // 距52周高点回撤：>-5% 贴顶=绿，-15~-5% 琥珀，<-15% 深回撤=红
+    if (v === null || v === undefined) return '#6b7280';
+    if (v >= -5) return '#10b981';
+    if (v >= -15) return '#f59e0b';
+    return '#ef4444';
+  }
+  function fmtSigned(v) {
+    if (v === null || v === undefined) return '—';
+    return (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+  }
+
   const signalHtml = ASSET_CONFIG.map(a => {
     const base = baseScore(a.key);
     const val = valScore(a.key);
@@ -700,6 +720,32 @@ function renderConclusion(countryData) {
     const valIcon = val > 0 ? '↑便宜' : val < 0 ? '↓偏贵' : '→中性';
     const valColor = val > 0 ? '#10b981' : val < 0 ? '#ef4444' : '#6b7280';
 
+    // P1-8 趋势行（MA200偏离 / 距52周高点回撤 / 3个月动量）
+    const tr = valInfo ? valInfo.trend : null;
+    let trendHtml;
+    const hasTrend = tr && (
+      (tr.ma200_dev_pct !== null && tr.ma200_dev_pct !== undefined) ||
+      (tr.dd_52w_pct !== null && tr.dd_52w_pct !== undefined) ||
+      (tr.mom_3m_pct !== null && tr.mom_3m_pct !== undefined)
+    );
+    if (hasTrend) {
+      const isYield = tr.caliber === 'yield';
+      const devColor = isYield ? '#64748b' : trendColor(tr.ma200_dev_pct);
+      const ddColor = isYield ? '#64748b' : drawdownColor(tr.dd_52w_pct);
+      const momColor = isYield ? '#64748b' : trendColor(tr.mom_3m_pct);
+      const caliberNote = isYield ? '收益率口径：收益率↑=债价↓，与价格类资产方向相反；' : '';
+      const approxNote = tr.approx ? '；3月动量为日频存档窗口（约60个交易日）近似，待采集端升级为63交易日精确值' : '';
+      const tip = `${caliberNote}MA200=最新价相对200日均线偏离%；52周=距52周高点回撤%；3月=3个月动量%${approxNote}（数据截至${tr.date || '—'}）`;
+      trendHtml = `<span class="text-[8px] font-mono leading-tight" title="${tip}">`
+        + `${isYield ? '收益率' : ''}趋势 `
+        + `<span style="color:${devColor}">MA200${fmtSigned(tr.ma200_dev_pct)}</span> · `
+        + `<span style="color:${ddColor}">52周${fmtSigned(tr.dd_52w_pct)}</span> · `
+        + `<span style="color:${momColor}">3月${fmtSigned(tr.mom_3m_pct)}</span>`
+        + `</span>`;
+    } else {
+      trendHtml = `<span class="text-[8px] font-mono text-gray-600" title="无日频价格序列，趋势未评估">趋势 —</span>`;
+    }
+
     return `
       <div class="flex flex-col items-center gap-1 px-2 py-3 bg-dash-bg/50 rounded-lg border border-dash-border min-w-[120px] ${cardCls}">
         <span class="text-lg">${a.icon}</span>
@@ -707,6 +753,7 @@ function renderConclusion(countryData) {
         <span class="text-[9px] font-mono" style="color:${baseColor}">周期${baseIcon}</span>
         <span class="text-[9px] font-mono" style="color:${valColor}">估值${valIcon}${valPct !== null ? ' P'+valPct : ''}</span>
         ${staleTag}
+        ${trendHtml}
         ${a.note ? `<span class="text-[8px] text-gray-600 leading-tight text-center mt-0.5">${a.note}</span>` : ''}
         <span class="signal-light text-[11px] mt-1" style="background:${sigColor}20; color:${sigColor}; border:1px solid ${sigColor}50;">
           <span class="dot" style="background:${sigColor}"></span>${sigText}
@@ -810,6 +857,7 @@ function renderConclusion(countryData) {
         <div class="text-[10px] text-gray-600 mt-2 leading-relaxed">
           📌 每个资产显示：<span style="color:#6b7280">周期▲/▼</span> = 经济周期定位的基准方向；
           <span style="color:#6b7280">估值↑便宜/↓偏贵</span> = 当前分位数修正；
+          <span style="color:#6b7280">趋势</span> = MA200偏离 · 距52周高点回撤 · 3个月动量（P1-8 2026-11-02，数据源 asset_prices 日频；美债为收益率口径，收益率↑=债价↓；A股/中债/中房暂无日频价格序列显示「—」）；
           综合信号灯 = 基准 + 估值。灰色=非本国视角资产（供参考）。
         </div>
       </div>
