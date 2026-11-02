@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-09-16T14:05:00",
+  "update_time": "2026-11-02T18:03:35",
   "prices": {
     "gold": [
       {
@@ -1040,8 +1040,21 @@
       },
       {
         "date": "2026-08",
-        "close": 4411.0
+        "close": 4481.5
+      },
+      {
+        "date": "2026-09",
+        "close": 4186.7002
+      },
+      {
+        "date": "2026-10",
+        "close": 3898.8999
+      },
+      {
+        "date": "2026-11",
+        "close": 3968.3
       }
     ]
-  }
+  },
+  "generated_by": "scripts/build_asset_prices_monthly.py (P0-2: 日频聚合)"
 }
