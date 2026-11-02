@@ -874,6 +874,76 @@ function renderConclusion(countryData) {
 
 // ==================== 中美联动（嵌在底部） ====================
 
+// ==================== P1-11（2026-11-02）：中美利差上主屏 + 汇率约束提示模块 ====================
+// 利差原仅渲染在中国 Tab 底部「中美联动」区，展示位过深。本模块将其提升到
+// 主屏（<main> 顶部、所有 Tab 常驻），并新增「汇率约束下的降息空间」提示模块。
+// 数据：cross.cn_us_10y_spread（中债10Y−美债10Y，bps）+ cross.usdcny，均现成。
+// 提示模块阈值档位 v0.1 —— 文案已送投资分析复核（页面如实标注「评审中」）。
+
+function _spreadAlertLevel(v) {
+  if (v === null || v === undefined || isNaN(v)) return null;
+  if (v <= -300) return { tag: '深度倒挂', icon: '🔴', color: '#ef4444',
+    text: '跨境资本流出压力大，人民币承压；若国内降息快于美联储，倒挂加深将放大贬值压力。央行总量型宽松（降息）空间显著受限，政策或更倚重结构性工具与财政发力。' };
+  if (v <= -100) return { tag: '显著倒挂', icon: '🟡', color: '#f59e0b',
+    text: '倒挂显著，人民币贬值压力存在，国内降息节奏受外部约束，宽松窗口需等待美联储路径进一步确认。' };
+  if (v < 0) return { tag: '轻度倒挂', icon: '🟡', color: '#eab308',
+    text: '轻度倒挂，汇率约束初步显现但压力可控，国内货币政策空间仍存，需持续跟踪利差走向。' };
+  return { tag: '正常区间', icon: '🟢', color: '#10b981',
+    text: '中美利差为正，汇率约束缓和，国内货币政策自主空间充裕。' };
+}
+
+function renderSpreadMainscreen(cross) {
+  const sp = cross && cross.cn_us_10y_spread;
+  if (!sp || sp.value === null || sp.value === undefined) return '';
+  const fx = (cross && cross.usdcny) || {};
+  const v = sp.value;
+  const lvl = _spreadAlertLevel(v);
+  if (!lvl) return '';
+
+  // 变动：正=利差走阔（倒挂收敛，约束缓和）；负=倒挂加深（约束收紧）
+  const chg = sp.change;
+  const hasChg = chg !== null && chg !== undefined && !isNaN(chg);
+  const chgArrow = !hasChg ? '' : chg > 0 ? '▲' : chg < 0 ? '▼' : '—';
+  const chgDir = !hasChg ? '' : chg > 0 ? '倒挂收敛' : chg < 0 ? '倒挂加深' : '持平';
+  const chgColor = !hasChg ? '#6b7280' : chg > 0 ? '#10b981' : chg < 0 ? '#ef4444' : '#6b7280';
+
+  const pct5 = (sp.pct_5y !== null && sp.pct_5y !== undefined) ? Math.round(sp.pct_5y) : null;
+  const pct10 = (sp.pct_10y !== null && sp.pct_10y !== undefined) ? Math.round(sp.pct_10y) : null;
+  const pctText = pct5 !== null
+    ? `当前利差处近5年 P${pct5} 分位：倒挂深度超过近5年 ${100 - pct5}% 的交易日`
+    : '';
+  const fxText = (fx.value !== null && fx.value !== undefined)
+    ? `USDCNY ${fmtNum(fx.value, 4)}${(fx.pct_5y !== null && fx.pct_5y !== undefined) ? `（5Y分位 P${Math.round(fx.pct_5y)}）` : ''}`
+    : '';
+
+  return `
+  <div class="bg-dash-card rounded-xl p-4 border border-dash-border mb-6" style="border-left:3px solid ${lvl.color}">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🌐</span>
+        <div>
+          <div class="text-[10px] text-gray-500 uppercase tracking-wide">中美10Y利差 · 主屏常驻（P1-11）</div>
+          <div class="flex items-baseline gap-2 flex-wrap">
+            <span class="text-2xl font-bold" style="color:${lvl.color}">${fmtNum(v)}</span>
+            <span class="text-xs text-gray-500">bps</span>
+            ${hasChg ? `<span class="text-xs font-mono" style="color:${chgColor}">${chgArrow} ${fmtNum(Math.abs(chg))}bps ${chgDir}</span>` : ''}
+          </div>
+          <div class="text-[10px] text-gray-600">中债10Y−美债10Y · 截至${sp.date || '—'}${pct5 !== null ? ` · 5Y分位 P${pct5}` : ''}${pct10 !== null ? ` · 10Y分位 P${pct10}` : ''}</div>
+        </div>
+      </div>
+      <div id="mini-spread-main" class="flex-1 min-w-[200px]" style="height:56px"></div>
+      <div class="w-full rounded-lg p-3" style="background:${lvl.color}0d; border:1px solid ${lvl.color}40;">
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <span>${lvl.icon}</span>
+          <span class="text-xs font-semibold" style="color:${lvl.color}">汇率约束下的降息空间 · ${lvl.tag}</span>
+        </div>
+        <p class="text-[11px] text-gray-400 leading-relaxed">${lvl.text}</p>
+        <p class="text-[9px] text-gray-600 mt-1 leading-relaxed">${[pctText, fxText].filter(Boolean).join(' · ')}${pctText || fxText ? '。' : ''}框架性提示，非政策预测；阈值档位 v0.1（评审中）。<a href="#cross-section" class="underline hover:text-gray-400">详见底部中美联动 ↓</a></p>
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderCrossSection(crossData) {
   if (!crossData) return '';
 
@@ -914,7 +984,7 @@ function renderCrossSection(crossData) {
   `).join('');
 
   return `
-    <div class="cross-highlight mb-6">
+    <div class="cross-highlight mb-6" id="cross-section">
       <div class="flex items-center gap-2 mb-4">
         <h2 class="group-title">🌐 中美联动</h2>
         <span class="text-xs text-gray-600">利差/汇率/资本流 — 双国看板的核心增量</span>

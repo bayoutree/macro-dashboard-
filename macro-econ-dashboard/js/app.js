@@ -96,6 +96,14 @@ async function loadData() {
     if (macroData.china) renderCountry(macroData.china, 'china');
     if (macroData.us) renderCountry(macroData.us, 'us');
 
+    // P1-11（2026-11-02）：中美利差上主屏 —— 常驻条渲染到所有 Tab 顶部容器
+    const spreadStrip = document.getElementById('spread-mainscreen');
+    if (spreadStrip && macroData.cross && macroData.cross.cn_us_10y_spread) {
+      spreadStrip.innerHTML = renderSpreadMainscreen(macroData.cross);
+      const _sp = macroData.cross.cn_us_10y_spread;
+      renderMiniChart('mini-spread-main', _sp.history, _sp.change, spreadStrip);
+    }
+
     if (!macroData.china && !macroData.us) showNoData();
 
   } catch (err) {
