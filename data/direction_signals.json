@@ -1,12 +1,12 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-01 14:43:09",
+  "generated_at": "2026-11-02 18:03:36",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {
       "board": "宏观截面",
       "file": "macro-econ-dashboard/data/indicators.json",
-      "as_of": "2026-11-01",
+      "as_of": "2026-11-02",
       "age_days": 0,
       "raw": {
         "cn_phase": "复苏酝酿",
@@ -21,7 +21,7 @@
       "board": "全球周期v4",
       "file": "data/cycle_position_v4.json",
       "as_of": "2026-09-01",
-      "age_days": 61,
+      "age_days": 62,
       "raw": {
         "overall_signal": "bullish",
         "overall_score": 68,
@@ -35,7 +35,7 @@
       "board": "A股择时",
       "file": "data/timing_scores.json + data/timing_right_scores.json",
       "as_of": "2026-10-30",
-      "age_days": 2,
+      "age_days": 3,
       "raw": {
         "composite_score": 48.0,
         "stage": "B",
