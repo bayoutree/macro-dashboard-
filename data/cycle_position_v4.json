@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-03T02:03:55+08:00",
-    "data_freshness_score": 12,
+    "update_time": "2026-11-04T00:04:47+08:00",
+    "data_freshness_score": 11,
     "assessment_date": "2026-09-01",
     "version": "3.0",
     "next_assessment_date": "2026-10-01",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-08-06",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-02",
+      "as_of": "2026-11-03",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-08-15",
-          "score": 21
+          "score": 20
         },
         "narrative_kondratieff": {
           "last_updated": "2026-08-06",
-          "score": 12
+          "score": 11
         },
         "narrative_perez": {
           "last_updated": "2026-08-06",
-          "score": 12
+          "score": 11
         },
         "constraint_rate_regime": {
           "last_updated": "2026-08-06",
-          "score": 12
+          "score": 11
         }
       },
       "excluded_no_date": [
@@ -60,9 +60,9 @@
         "cycle_merrill_3d"
       ]
     },
+    "assessment_overdue": true,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-02T18:03:55+08:00",
-    "assessment_overdue": true
+    "v4_built_at": "2026-11-03T16:04:48+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -437,7 +437,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-03",
+            "last_updated": "2026-11-04",
             "history": [
               {
                 "date": "1947Q1",
@@ -3166,7 +3166,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-03"
+              "last_updated": "2026-11-04"
             },
             "cn": {
               "current": 0.36,
@@ -3266,7 +3266,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-03"
+              "last_updated": "2026-11-04"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -13682,7 +13682,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-03",
+            "last_updated": "2026-11-04",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
@@ -14808,7 +14808,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.2,
-            "last_updated": "2026-11-02",
+            "last_updated": "2026-11-03",
             "history": [
               {
                 "date": "2015-01-01",
@@ -27290,7 +27290,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-02",
+    "last_updated": "2026-11-03",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=2 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:多周期共振上行(P1=2,P2=2); CN:扩张早期+被动补库(P1=2,P2=1)",
