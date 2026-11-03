@@ -14,15 +14,14 @@
   var DIR_TXT = { '1': '偏多', '0': '中性', '-1': '偏空' };
 
   function fetchFlags(cb) {
-    var paths = ['data/conflict_flags.json', '../data/conflict_flags.json'];
-    var i = 0;
-    (function tryNext() {
-      if (i >= paths.length) return cb(null);
-      fetch(paths[i] + '?v=' + Date.now())
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (j) { cb(j); })
-        .catch(function () { i++; tryNext(); });
-    })();
+    // 单一真源：物理文件仅根 data/conflict_flags.json 一份（CIO 2026-11-03 决策，不搞 CI 双拷贝）。
+    // 按页面位置定唯一相对路径：macro 页在子目录需 ../；此前双路径 fallback 首探必 404（噪音）。
+    var inSub = (typeof location !== 'undefined' && location.pathname.indexOf('/macro-econ-dashboard/') >= 0);
+    var url = (inSub ? '../data/conflict_flags.json' : 'data/conflict_flags.json') + '?v=' + Date.now();
+    fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { cb(j); })
+      .catch(function () { cb(null); });  // 缺源静默（展示规范铁律）
   }
 
   function el(tag, css, html) {
