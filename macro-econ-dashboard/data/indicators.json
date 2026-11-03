@@ -40,14 +40,28 @@
       "pct_5y": 77,
       "pct_10y": 64,
       "note": "近5年分位77%，处相对高位",
-      "trend": null
+      "trend": {
+        "ma200_dev_pct": -13.6239,
+        "dd_52w_pct": -20.6089,
+        "mom_3m_pct": -12.0933,
+        "date": "2026-11-02",
+        "caliber": "price",
+        "approx": false
+      }
     },
     "cn_bond": {
       "name": "中债(10Y国债)",
       "pct_5y": 30,
       "pct_10y": 38,
       "note": "近5年分位30%，处相对低位",
-      "trend": null
+      "trend": {
+        "ma200_dev_pct": -6.3599,
+        "dd_52w_pct": -14.0701,
+        "mom_3m_pct": -4.9605,
+        "date": "2026-11-02",
+        "caliber": "yield",
+        "approx": false
+      }
     },
     "cn_realestate": {
       "name": "中房地产(70城)",

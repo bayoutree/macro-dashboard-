@@ -7,6 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import json
 import time
 import pandas as pd
 import numpy as np
@@ -31,6 +32,130 @@ TICKERS = {
 
 MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
+
+
+# ============================================================
+# A股资产采集（akshare）—— P1 回填（2026-11-03 CIO 挂账①）
+# 估值表 cn_stock/cn_bond 趋势列数据源。本机已实测 akshare 1.18.94 双通：
+# 沪深300 stock_zh_index_daily 单次全历史（新浪源）；中债10Y bond_china_yield
+# 月批回填（中债登，筛「中债国债收益率曲线」取「10年」列），限流0.5s+重试3次。
+# 均不依赖东财。失败降级：仅告警不阻塞，对应 key 缺省→前端灰显「趋势 —」。
+# ============================================================
+def _month_ranges(n_months):
+    """近 n 个月的 (start,end) YYYYMMDD 列表（旧→新）；当月 end 截断至今日。"""
+    out = []
+    now = datetime.now()
+    for i in range(n_months - 1, -1, -1):
+        y, m = now.year, now.month - i
+        while m <= 0:
+            m += 12
+            y -= 1
+        start = f"{y}{m:02d}01"
+        nxt = pd.Timestamp(y + 1, 1, 1) if m == 12 else pd.Timestamp(y, m + 1, 1)
+        end_ts = min(nxt - pd.Timedelta(days=1), pd.Timestamp(now.date()))
+        if end_ts < pd.Timestamp(start):
+            continue
+        out.append((start, end_ts.strftime("%Y%m%d")))
+    return out
+
+
+def _hist_from_pairs(dates, values):
+    """规整 (日期, 数值) 为 calc_metrics 兼容 DataFrame（Close 列）。"""
+    return pd.DataFrame(
+        {"Close": pd.to_numeric(values, errors="coerce").values},
+        index=pd.to_datetime(dates).values,
+    )
+
+
+def _daily_tail(hist, n=60):
+    close = hist["Close"].dropna().tail(n)
+    return [{"date": idx.strftime("%Y-%m-%d"), "value": safe_float(v)} for idx, v in close.items()]
+
+
+def fill_cn_assets(prices):
+    """采集 hs300（沪深300 价格指数）+ cn_10y_yield（中债10Y收益率）写入 prices。"""
+    try:
+        import akshare as ak
+    except ImportError:
+        logger.warning("  akshare 不可用，跳过 A股资产采集")
+        return
+
+    # --- 沪深300：单次拉全历史切片 5 年 ---
+    try:
+        df = ak.stock_zh_index_daily(symbol="sh000300")
+        if df is not None and not df.empty:
+            df = df.copy()
+            df["date"] = pd.to_datetime(df["date"])
+            cutoff = pd.Timestamp.now() - pd.Timedelta(days=365 * 5 + 30)
+            df = df[df["date"] >= cutoff]
+            hist = _hist_from_pairs(df["date"], df["close"])
+            latest, ma200, dd, mom, dev = calc_metrics(hist)
+            prices["hs300"] = {
+                "latest": latest, "ma200": ma200, "drawdown_from_high": dd,
+                "momentum_3m": mom, "ma200_dev_pct": dev,
+                "daily": _daily_tail(hist),
+                "name": "沪深300", "symbol": "akshare:sh000300",
+                "update_time": today_str(), "_source": "akshare(新浪)",
+            }
+            logger.info(f"  ✓ 沪深300: {latest}（5年窗 {len(hist)} 点）")
+    except Exception as e:
+        logger.warning(f"  ✗ 沪深300 采集失败: {e}")
+
+    # --- 中债10Y：月批回填 62 个月（5年窗冗余），限流+重试 ---
+    try:
+        frames = []
+        for start, end in _month_ranges(62):
+            sub = None
+            for attempt in range(MAX_RETRIES):
+                try:
+                    sub = ak.bond_china_yield(start_date=start, end_date=end)
+                    break
+                except Exception as e:
+                    logger.warning(f"  ✗ 中债 {start}: {e} (attempt {attempt + 1})")
+                    if attempt < MAX_RETRIES - 1:
+                        time.sleep(RETRY_DELAY * (attempt + 1) / 5)
+            if sub is not None and not sub.empty:
+                gov = sub[sub["曲线名称"] == "中债国债收益率曲线"]
+                if not gov.empty:
+                    frames.append(gov[["日期", "10年"]])
+            time.sleep(0.5)  # 限流（回填限流方案，CIO 2026-11-01 批复）
+        if frames:
+            all_df = (pd.concat(frames)
+                      .drop_duplicates(subset=["日期"]).sort_values("日期"))
+            hist = _hist_from_pairs(all_df["日期"], all_df["10年"])
+            latest, ma200, dd, mom, dev = calc_metrics(hist)
+            prices["cn_10y_yield"] = {
+                "latest": latest, "ma200": ma200, "drawdown_from_high": dd,
+                "momentum_3m": mom, "ma200_dev_pct": dev,
+                "daily": _daily_tail(hist),
+                "name": "中国10Y国债收益率", "symbol": "akshare:bond_china_yield",
+                "unit": "%",
+                "unit_note": "收益率口径：收益率↑=债价↓（与价格类资产反向，同美债卡）",
+                "update_time": today_str(), "_source": "akshare(中债登)",
+            }
+            logger.info(f"  ✓ 中债10Y: {latest}%（{len(hist)} 点）")
+    except Exception as e:
+        logger.warning(f"  ✗ 中债10Y 采集失败: {e}")
+
+
+def main_cn_only():
+    """回填模式：仅采集 A股两序列 merge 进现有 asset_prices.json（保留 CI 产的其他序列原样）。
+    用法: python3 fetch_asset_data.py --cn-only —— 本机 yfinance 不可达时回填用。"""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "asset_prices.json")
+    with open(path, encoding="utf-8") as f:
+        output = json.load(f)
+    prices = {}
+    fill_cn_assets(prices)
+    merged = []
+    for k in ("hs300", "cn_10y_yield"):
+        if prices.get(k, {}).get("latest") is not None:
+            output.setdefault("prices", {})[k] = prices[k]
+            merged.append(k)
+    output["update_time"] = today_str()
+    save_json(output, "asset_prices.json")
+    logger.info(f"✅ --cn-only 回填完成: {merged}（其余序列原样保留）")
+    return output
+
 
 
 def download_with_retry(symbol, period="5y", max_retries=MAX_RETRIES):
@@ -218,6 +343,12 @@ def main():
     fill_from_fred(prices)
 
     # ============================================================
+    # A股资产采集（akshare：沪深300 + 中债10Y）
+    # ============================================================
+    logger.info("\n[A股资产] 采集沪深300/中债10Y（akshare）...")
+    fill_cn_assets(prices)
+
+    # ============================================================
     # VIX 单独处理 (history)
     # ============================================================
     vix_history = []
@@ -297,7 +428,9 @@ def main():
                 "momentum_3m": prices.get("btc", {}).get("momentum_3m"),
                 "ma200_dev_pct": prices.get("btc", {}).get("ma200_dev_pct"),
                 "daily": prices.get("btc", {}).get("daily", [])
-            }
+            },
+            "hs300": prices.get("hs300") or {"latest": None, "ma200": None, "drawdown_from_high": None, "momentum_3m": None, "ma200_dev_pct": None, "daily": []},
+            "cn_10y_yield": prices.get("cn_10y_yield") or {"latest": None, "ma200": None, "drawdown_from_high": None, "momentum_3m": None, "ma200_dev_pct": None, "daily": []}
         },
         "volatility": {
             "vix": {
@@ -314,7 +447,10 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        if "--cn-only" in sys.argv:
+            main_cn_only()
+        else:
+            main()
     except Exception as e:
         logger.error(f"❌ 获取资产价格数据失败: {e}", exc_info=True)
         sys.exit(1)

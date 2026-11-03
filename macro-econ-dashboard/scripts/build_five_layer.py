@@ -1064,6 +1064,9 @@ _ASSET_TREND_MAP = {
     "usd": ("usd_index", "price"),
     "gold": ("gold", "price"),
     "commodity": ("copper", "price"),
+    # P1 回填（2026-11-03）：A股两序列（akshare，fetch_asset_data.py）
+    "cn_stock": ("hs300", "price"),
+    "cn_bond": ("cn_10y_yield", "yield"),  # 收益率口径同美债（收益率↑=债价↓）
 }
 _ASSET_PRICES_PATH = os.path.join(os.path.dirname(PROJECT_ROOT), "data", "asset_prices.json")
 
