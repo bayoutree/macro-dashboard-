@@ -125,6 +125,65 @@ def _match_allow(allow: list, file: str, path: str):
     return None
 
 
+# ============================================================================
+# P1-9 归属表（2026-11-03）：唯一计算点（home_dimension）登记。
+# 规则：同一指标出现第二个写库脚本或第二个分位计算逻辑 = 拦截。
+# 校验：登记指标在指定 json 的全部出现节点中，非 home 节点必须 ref_only=true
+#       且 value/pct_5y 与 home 逐值一致（只读引用，禁二次加工）。
+# ============================================================================
+DEDUP_HOME = {
+    "macro-econ-dashboard/data/indicators.json": {
+        # M1 唯一计算点 = CN 货币-信用层（P1-9 归属表；双序列并行/双护栏均在此处）
+        "m1": "china.economic_cycle.credit_indicators.m1",
+    },
+}
+
+
+def _iter_key_nodes(obj, key, path, out):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            p = f"{path}.{k}" if path else str(k)
+            if k == key and isinstance(v, dict) and ("value" in v or "pct_5y" in v):
+                out.append((p, v))
+            _iter_key_nodes(v, key, p, out)
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            _iter_key_nodes(v, key, f"{path}[{i}]", out)
+
+
+def _check_duplicate_compute(root: Path) -> list:
+    """返回违规列表（空=通过）。只读检查，不依赖 git 基线。"""
+    problems = []
+    for rel, keys in DEDUP_HOME.items():
+        fp = root / rel
+        if not fp.exists():
+            continue
+        try:
+            data = json.loads(fp.read_text(encoding="utf-8"))
+        except Exception as e:
+            problems.append(f"DEDUP_PARSE {rel} 解析失败: {e}")
+            continue
+        for key, home in keys.items():
+            nodes = []
+            _iter_key_nodes(data, key, "", nodes)
+            home_node = _get(data, home)
+            for npath, node in nodes:
+                if npath == home:
+                    continue
+                if node.get("ref_only") is not True:
+                    problems.append(
+                        f"DEDUP      {rel}#{npath}  指标「{key}」第二计算点"
+                        f"（缺 ref_only 标记；唯一计算点={home}，P1-9 归属表）")
+                    continue
+                if isinstance(home_node, dict):
+                    for f in ("value", "pct_5y"):
+                        if node.get(f) != home_node.get(f):
+                            problems.append(
+                                f"DEDUP_DIFF {rel}#{npath}  引用值与 home 不一致: "
+                                f"{f}={node.get(f)} vs {home_node.get(f)}")
+    return problems
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="历史序列删史防线（pre-commit 阻断门禁）")
     ap.add_argument("--baseline-ref", default="HEAD", help="基线 ref（默认 HEAD）")
@@ -240,6 +299,10 @@ def main() -> int:
             for sk in subkeys:
                 if sk not in doc[section]:
                     violations.append(f"SUBKEY_MISSING  {path_v}#{section}.{sk}  (子节缺失)")
+
+    # [P1-9] 重复计算点拦截（不依赖 git 基线，直接查工作区/指定 ref）
+    for _msg in _check_duplicate_compute(root):
+        violations.append(_msg)
 
     print(f"[history-guard] 基线={args.baseline_ref} 当前={args.current_ref or '工作区'}；"
           f"扫描 {len(files)} 个数据文件 / {checked} 个历史数组")

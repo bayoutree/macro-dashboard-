@@ -8615,11 +8615,12 @@
           "caliber": "扩散指数、50 为荣枯线"
         },
         "m1": {
+          "name": "M1同比",
           "value": 3.2,
           "unit": "%",
           "change": -0.9,
-          "pct_5y": 45,
-          "pct_10y": 29,
+          "pct_5y": 29,
+          "pct_5y_caliber": "新口径段内（2025-01起, n=21）",
           "date": "2026-09",
           "history": [
             {
@@ -9523,7 +9524,33 @@
               "value": 3.2
             }
           ],
-          "name": "M1同比"
+          "double_guard": {
+            "spread_pp": -2.43,
+            "nominal_gdp_yoy": 5.63,
+            "m1_latest": {
+              "date": "2026-09",
+              "value": 3.2
+            },
+            "anchor": {
+              "red_pp": -5.0,
+              "center_pp": 1.0,
+              "loose_pp": 4.0,
+              "source": "NBS 实测 2015-2019 n=60 锁定（P1-10 裁决 2026-11-01）"
+            },
+            "anchor_zone": "中性",
+            "anchor_light": "yellow",
+            "quantile_zone": "分位偏低",
+            "quantile_light": "red",
+            "final_light": "yellow",
+            "conflict_note": "分位判定（分位偏低）与绝对锚（中性）背离——以绝对锚为准（口径变更期分位易失真，P1-10 冲突规则）",
+            "note": "利差=M1同比−名义GDP同比（现价累计同比，季频线性插值到月）；2025-01 前 M1 为旧口径、之后为新口径（新旧口径差约1.5-2pp，估算待复核；满12个月新口径样本后复核锚值）"
+          },
+          "caliber_note": "2025-01 起 M1 为人民银行修订口径（纳入个人活期存款+非银支付机构客户备付金）；分位段内计算，严禁跨口径混算（P1-10 裁决方案③）",
+          "ref": "china.economic_cycle.credit_indicators.m1",
+          "field": "m1",
+          "as_of": "2026-09",
+          "caliber": "NBS 货币供应量 M1（akshare macro_china_money_supply），同比%、月末；2025-01 起修订口径",
+          "ref_only": true
         }
       },
       "coincident": {

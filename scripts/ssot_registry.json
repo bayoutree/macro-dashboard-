@@ -20,7 +20,8 @@
           "file": "data/us_macro.json",
           "path": "coincident.gdp_growth"
         }
-      ]
+      ],
+      "home_dimension": "us.economic_cycle.quadrant_indicators"
     },
     {
       "id": "us_cpi_yoy",
@@ -35,7 +36,8 @@
           "file": "data/us_macro.json",
           "path": "lagging.cpi_yoy"
         }
-      ]
+      ],
+      "home_dimension": "us.validation.lagging"
     },
     {
       "id": "us_ppi_yoy",
@@ -50,7 +52,8 @@
           "file": "data/us_macro.json",
           "path": "lagging.ppi_yoy"
         }
-      ]
+      ],
+      "home_dimension": "us.validation.lagging"
     },
     {
       "id": "cn_gdp_yoy",
@@ -65,7 +68,8 @@
           "file": "data/cn_macro.json",
           "path": "coincident.gdp_growth"
         }
-      ]
+      ],
+      "home_dimension": "china.validation.coincident"
     },
     {
       "id": "cn_m2_yoy",
@@ -80,7 +84,8 @@
           "file": "data/cn_macro.json",
           "path": "lagging.m2_yoy"
         }
-      ]
+      ],
+      "home_dimension": "china.validation.lagging"
     },
     {
       "id": "all_a_turnover",
@@ -90,7 +95,8 @@
         "file": "data/timing_scores.json",
         "path": "dimensions.sentiment.indicators.turnover_rate"
       },
-      "secondaries": []
+      "secondaries": [],
+      "home_dimension": "dimensions.sentiment.indicators"
     },
     {
       "id": "cycle_consensus",
@@ -109,7 +115,39 @@
           "file": "data/cycle_position_v4.json",
           "path": "cross_analysis.consensus.score"
         }
-      ]
+      ],
+      "home_dimension": "cycle_consensus"
+    },
+    {
+      "id": "cn_m1_yoy",
+      "name": "中国 M1 同比",
+      "unit": "%",
+      "master": {
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "path": "china.economic_cycle.credit_indicators.m1"
+      },
+      "home_dimension": "china.economic_cycle.credit_indicators",
+      "caliber": "NBS 货币供应量 M1（akshare macro_china_money_supply），同比%、月末；2025-01 起修订口径（纳入个人活期+非银支付备付金）；双序列并行、段内分位（P1-10 方案③）",
+      "ref_sites": [
+        {
+          "file": "macro-econ-dashboard/data/indicators.json",
+          "path": "china.validation.leading.m1",
+          "mode": "ref_only"
+        }
+      ],
+      "derived_usage": [
+        {
+          "file": "data/timing_scores.json",
+          "path": "dimensions.liquidity.indicators.m1_m2_scissors",
+          "note": "M1-M2剪刀差为独立指标（投分评分管线），引用 M1 值；归属表未裁决剪刀差，挂账待 CIO/投分确认"
+        },
+        {
+          "file": "data/cn_macro_supplement.json",
+          "path": "m1_yoy",
+          "note": "采集层原始序列存档，非分位计算点"
+        }
+      ],
+      "secondaries": []
     }
   ],
   "unit_rules": [

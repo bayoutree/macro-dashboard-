@@ -683,6 +683,13 @@ def _build_china(g, evo_tmpl):
         "coincident": _name_group(g.get("coincident", {})),
         "lagging": _name_group(g.get("lagging", {})),
     }
+    # P1-9 归属表：M1 唯一计算点=信用维度（货币-信用层）；validation 领先组改只读引用
+    if validation["leading"].get("m1") and economic_cycle["credit_indicators"].get("m1"):
+        validation["leading"]["m1"] = _ref_copy(
+            economic_cycle["credit_indicators"]["m1"],
+            "china.economic_cycle.credit_indicators.m1",
+            "NBS 货币供应量 M1（akshare macro_china_money_supply），同比%、月末；2025-01 起修订口径",
+        )
     conclusion = _build_conclusion(economic_cycle, m_state, c_state, economic_cycle["evolution_paths"], "china")
     return {
         "economic_cycle": economic_cycle,
@@ -1166,6 +1173,23 @@ def _m1_double_guard(m1, nominal_gdp):
         "note": ("利差=M1同比−名义GDP同比（现价累计同比，季频线性插值到月）；2025-01 前 M1 为旧口径、"
                  "之后为新口径（新旧口径差约1.5-2pp，估算待复核；满12个月新口径样本后复核锚值）"),
     }
+
+
+def _ref_copy(home_node, home_path, caliber):
+    """P1-9 归属表（2026-11-03）：引用位只读拷贝——展示字段直引唯一计算点，
+    附 ref/as_of/caliber 元信息与 ref_only 标记；禁止二次加工（本地重算分位/趋势）。
+    history_guard「重复计算点」检查据此校验：非 home 节点必须 ref_only 且数值与 home 一致。"""
+    if not home_node:
+        return None
+    out = {k: home_node.get(k) for k in
+           ("name", "value", "unit", "change", "pct_5y", "pct_5y_caliber",
+            "date", "history", "double_guard", "caliber_note")}
+    out["ref"] = home_path
+    out["field"] = home_path.rsplit(".", 1)[-1]
+    out["as_of"] = home_node.get("date")
+    out["caliber"] = caliber
+    out["ref_only"] = True
+    return out
 
 
 def _m1_enhanced(m1_node, g):
