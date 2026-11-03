@@ -250,6 +250,7 @@ function renderCnCycleDims(ec) {
           <span class="text-base">${c.icon} ${c.state}</span>
         </div>
         <div class="text-xs text-gray-400 leading-relaxed mb-3">${c.desc}</div>
+        ${renderM1DoubleGuard(m1)}
         <div class="grid grid-cols-2 gap-2">
           ${m1 ? renderMiniMetricCard('M1同比', m1, 'cn-c-m1') : ''}
           ${shrzgm && shrzgm.value !== undefined ? renderMiniMetricCard('社融存量', shrzgm, 'cn-c-sf') : ''}
@@ -378,6 +379,35 @@ function parseAssetRanking(s, country) {
     });
   });
   return out;
+}
+
+// P1-10（2026-11-03）：M1 双护栏锚定块 + 口径节点永久标注（裁决方案③）
+function renderM1DoubleGuard(m1) {
+  if (!m1 || !m1.double_guard) return '';
+  const dg = m1.double_guard;
+  const lightMap = { red: '#ef4444', yellow: '#f59e0b', green: '#10b981' };
+  const lc = lightMap[dg.final_light] || '#6b7280';
+  const fmtPp = v => (v > 0 ? '+' : '') + Number(v).toFixed(2) + 'pp';
+  const anchor = dg.anchor || {};
+  const conflict = dg.conflict_note
+    ? `<div class="text-[8px] text-amber-400/90 leading-tight mt-1">⚠️ ${dg.conflict_note}</div>` : '';
+  const caliber = m1.caliber_note
+    ? `<div class="text-[8px] text-gray-500 leading-tight mt-1">📌 ${m1.caliber_note}</div>` : '';
+  const pctCaliber = m1.pct_5y_caliber
+    ? `<span class="text-gray-500">（${m1.pct_5y_caliber}）</span>` : '';
+  return `
+    <div class="mb-2 px-2 py-1.5 rounded border border-dash-border/60 bg-dash-bg/40" title="${dg.note || ''}">
+      <div class="text-[9px] font-mono leading-snug">
+        <span style="color:${lc}">●</span> 双护栏·M1利差锚
+        <span style="color:${lc}" class="font-semibold">${fmtPp(dg.spread_pp)} ${dg.anchor_zone}</span>
+        <span class="text-gray-500">（M1 ${dg.m1_latest?.value}% − 名义GDP ${dg.nominal_gdp_yoy}%）</span>
+      </div>
+      <div class="text-[8px] text-gray-500 font-mono mt-0.5">
+        锚：红线${anchor.red_pp}pp／中枢+${anchor.center_pp}pp／宽信用+${anchor.loose_pp}pp（${anchor.source || ''}）
+        ${dg.quantile_zone ? `｜分位：${dg.quantile_zone}` : ''}${pctCaliber}
+      </div>
+      ${conflict}${caliber}
+    </div>`;
 }
 
 function renderMiniMetricCard(name, metric, prefix) {

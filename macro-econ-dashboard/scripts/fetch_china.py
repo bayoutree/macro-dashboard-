@@ -95,6 +95,40 @@ def _find_col(cols, kws):
     return None
 
 
+def nominal_gdp_yoy_series(df):
+    """名义GDP同比（P1-10 双护栏锚定，2026-11-03）：现价累计值同期相比
+    （如 2026Q1-3 累计 / 2025Q1-3 累计 − 1），季频；日期=累计季度末月（YYYY-MM）。
+    算法经投资分析 NBS 实测验证（2015-2019：7.1-7.6/7.5-8.4/11.3-11.8/10.5-11.0/7.5-7.8%）。"""
+    if df is None or len(df) == 0:
+        return None
+    col_q = _find_col(df.columns, ["季度"])
+    col_v = _find_col(df.columns, ["国内生产总值-绝对值", "GDP-绝对值"])
+    if not col_q or not col_v:
+        return None
+    by_key = {}
+    rows = []
+    for i in range(len(df)):
+        m = re.search(r"(\d{4})年.*?第(\d+)(?:-(\d+))?季度", str(df.iloc[i][col_q]))
+        if not m:
+            continue
+        y, q = int(m.group(1)), int(m.group(3) or m.group(2))
+        try:
+            v = float(df.iloc[i][col_v])
+        except Exception:
+            continue
+        if math.isnan(v):
+            continue
+        by_key[(y, q)] = v
+        rows.append((y, q, v))
+    month_map = {1: "03", 2: "06", 3: "09", 4: "12"}
+    out = []
+    for y, q, v in rows:
+        prev = by_key.get((y - 1, q))
+        if prev and prev > 0:
+            out.append((f"{y}-{month_map.get(q, '12')}", (v / prev - 1) * 100))
+    return out or None
+
+
 def extract_series(df, date_kws, value_kws, date_fn=cn_date, index_as_date=False):
     if df is None or len(df) == 0:
         return None
@@ -359,11 +393,11 @@ def get_china_groups():
             print(f"[china-warn] {fn.__name__ if hasattr(fn, '__name__') else '<lambda>'} 连续 {retries} 次失败: {last}", file=sys.stderr)
         return None
 
-    def add(cat, key, points, unit=""):
+    def add(cat, key, points, unit="", hist_limit=120):
         if not points:
             fail.append(f"{cat}.{key}")
             return
-        ind = make_indicator(points, unit=unit)
+        ind = make_indicator(points, unit=unit, hist_limit=hist_limit)
         if ind is None:
             fail.append(f"{cat}.{key}")
             return
@@ -401,11 +435,15 @@ def get_china_groups():
             print(f"[fetch_china] 社融央行回退失败(降级缺口): {_e}")
 
     df = grab(ak.macro_china_money_supply)
-    add("leading", "m1", extract_series(df, ["月份"], ["货币(M1)-同比增长", "M1-同比增长"]), unit="%")
+    # P1-10 裁决方案③（2026-11-03）：M1 保留全历史（2008-01 起，hist_limit=300），
+    # 双序列并行/段内分位在 build_five_layer._m1_dual_caliber 处理，严禁跨口径混算分位
+    add("leading", "m1", extract_series(df, ["月份"], ["货币(M1)-同比增长", "M1-同比增长"]), unit="%", hist_limit=300)
 
     # ---- 同步指标 ----
     df = grab(ak.macro_china_gdp)
     add("coincident", "gdp", extract_series(df, ["季度"], ["国内生产总值-同比增长", "GDP-同比增长"]), unit="%")
+    # P1-10 双护栏（2026-11-03）：名义GDP同比=M1绝对锚的分母，季频→护栏内插值到月
+    add("coincident", "nominal_gdp_yoy", nominal_gdp_yoy_series(df), unit="%", hist_limit=120)
 
     df = grab(ak.macro_china_gyzjz)
     add("coincident", "industrial_prod",

@@ -28,6 +28,8 @@ import sys
 import json
 from datetime import datetime
 
+from normalize import quantile_rank  # P1-10: M1 段内分位（双序列并行）
+
 _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
@@ -664,7 +666,7 @@ def _build_china(g, evo_tmpl):
             "m2": _named(m2, "m2"),
         },
         "credit_indicators": {
-            "m1": _named(m1, "m1"),
+            "m1": _m1_enhanced(_named(m1, "m1"), g),  # P1-10：双序列并行+双护栏
             "shrzgm": _named(shrzgm, "shrzgm"),
         },
         "evolution_paths": _build_evolution_paths(
@@ -1058,6 +1060,124 @@ def _asset_note(key, p5):
 # 映射：L5 资产卡 → asset_prices 键；us_bond 为收益率口径（收益率↑=债价↓）；
 #   cn_stock / cn_bond / cn_realestate 无日频价格序列 → trend=None（前端灰显「—」）。
 # ============================================================================
+# ============================================================================
+# P1-10 · M1 双序列并行（裁决方案③）+ 双护栏锚定（2026-11-03）
+#   口径节点 2025-01（人民银行修订：纳入个人活期存款+非银支付机构客户备付金）；
+#   分位段内计算，严禁跨口径混算；绝对锚 NBS 实测 2015-2019 n=60 锁定；
+#   冲突规则：分位管常态相对位置、绝对锚管 regime 切换，冲突以绝对锚为准亮🟡注记。
+# ============================================================================
+M1_CALIBER_CHANGE = "2025-01"
+M1_ANCHOR_RED_PP = -5.0     # 红线：利差<−5pp→紧信用🔴（≈历史P20-25下沿，触发率约17%）
+M1_ANCHOR_CENTER_PP = 1.0   # 中枢 +1pp（中位数；替换早期+2pp估算，抗2016扭曲）
+M1_ANCHOR_LOOSE_PP = 4.0    # 宽信用确认 >+4pp🟢（中枢+3pp，≈P60-65）
+
+
+def _ym_to_idx(ym):
+    y, m = str(ym).split("-")[:2]
+    return int(y) * 12 + int(m)
+
+
+def _interp_monthly(qpts, target_ym):
+    """季频 [(YYYY-MM,value)] 线性插值到目标月；范围外取最近端点。"""
+    pts = sorted((_ym_to_idx(d), v) for d, v in qpts)
+    if not pts:
+        return None
+    ti = _ym_to_idx(target_ym)
+    if ti <= pts[0][0]:
+        return pts[0][1]
+    if ti >= pts[-1][0]:
+        return pts[-1][1]
+    for (x0, v0), (x1, v1) in zip(pts, pts[1:]):
+        if x0 <= ti <= x1:
+            return v0 + (v1 - v0) * (ti - x0) / (x1 - x0)
+    return pts[-1][1]
+
+
+def _m1_dual_caliber(m1):
+    """M1 双序列并行后处理（就地改 dict）：
+    - 旧口径段（2008-01(akshare可得)~2024-12）/ 新口径段（2025-01 起）分位各自段内计算；
+    - pct_5y 覆盖为新口径段内分位（样本 n 如实标注）；旧口径段内分位归档可查；
+    - 永久口径节点标注。重叠期（2025年内）双显窗口已过——当前主显新口径、旧口径归档。"""
+    if not m1 or not m1.get("history"):
+        return
+    hist = [(h["date"], h["value"]) for h in m1["history"]]
+    old_seg = [(d, v) for d, v in hist if d < M1_CALIBER_CHANGE]
+    new_seg = [(d, v) for d, v in hist if d >= M1_CALIBER_CHANGE]
+    if new_seg:
+        vals = [v for _, v in new_seg]
+        m1["pct_5y"] = quantile_rank(vals[-1], vals)
+        m1["pct_5y_caliber"] = f"新口径段内（{M1_CALIBER_CHANGE}起, n={len(vals)}）"
+    if old_seg:
+        cutoff_y = int(M1_CALIBER_CHANGE[:4]) - 5
+        win = [v for d, v in old_seg if d >= f"{cutoff_y}-01"]
+        m1["pct_5y_old_caliber"] = quantile_rank(old_seg[-1][1], win) if win else None
+        m1["old_caliber_latest"] = {"date": old_seg[-1][0], "value": old_seg[-1][1]}
+    m1["caliber_change_date"] = M1_CALIBER_CHANGE
+    m1["caliber_note"] = ("2025-01 起 M1 为人民银行修订口径（纳入个人活期存款+非银支付机构客户备付金）；"
+                          "分位段内计算，严禁跨口径混算（P1-10 裁决方案③）")
+
+
+def _m1_double_guard(m1, nominal_gdp):
+    """分位+绝对锚双护栏：利差=M1同比−名义GDP同比（现价累计同比，季频线性插值到月）。
+    档位：利差<−5pp→紧信用🔴；−5~+1pp→中性🟡；>+4pp→宽信用确认🟢。
+    冲突：分位判定与绝对锚背离→以绝对锚为准+🟡注记（不静默二选一）。"""
+    if not m1 or not nominal_gdp:
+        return None
+    m1h = m1.get("history") or []
+    gh = nominal_gdp.get("history") or []
+    if len(m1h) < 2 or len(gh) < 2:
+        return None
+    qpts = [(h["date"], h["value"]) for h in gh]
+    latest = m1h[-1]
+    gdp_at = _interp_monthly(qpts, latest["date"])
+    if gdp_at is None:
+        return None
+    spread = round(latest["value"] - gdp_at, 2)
+    if spread < M1_ANCHOR_RED_PP:
+        zone, light = "紧信用", "red"
+    elif spread > M1_ANCHOR_LOOSE_PP:
+        zone, light = "宽信用确认", "green"
+    else:
+        zone, light = "中性", "yellow"
+    pct = m1.get("pct_5y")
+    if pct is None:
+        qzone = qlight = None
+    elif pct < 30:
+        qzone, qlight = "分位偏低", "red"
+    elif pct > 60:
+        qzone, qlight = "分位偏高", "green"
+    else:
+        qzone, qlight = "分位中性", "yellow"
+    conflict = None
+    if qlight and qlight != light:
+        conflict = (f"分位判定（{qzone}）与绝对锚（{zone}）背离——以绝对锚为准"
+                    f"（口径变更期分位易失真，P1-10 冲突规则）")
+    return {
+        "spread_pp": spread,
+        "nominal_gdp_yoy": round(gdp_at, 2),
+        "m1_latest": {"date": latest["date"], "value": latest["value"]},
+        "anchor": {"red_pp": M1_ANCHOR_RED_PP, "center_pp": M1_ANCHOR_CENTER_PP,
+                   "loose_pp": M1_ANCHOR_LOOSE_PP,
+                   "source": "NBS 实测 2015-2019 n=60 锁定（P1-10 裁决 2026-11-01）"},
+        "anchor_zone": zone, "anchor_light": light,
+        "quantile_zone": qzone, "quantile_light": qlight,
+        "final_light": light,
+        "conflict_note": conflict,
+        "note": ("利差=M1同比−名义GDP同比（现价累计同比，季频线性插值到月）；2025-01 前 M1 为旧口径、"
+                 "之后为新口径（新旧口径差约1.5-2pp，估算待复核；满12个月新口径样本后复核锚值）"),
+    }
+
+
+def _m1_enhanced(m1_node, g):
+    """P1-10 挂载点：双序列并行（段内分位+口径标注）+ 双护栏锚定块。"""
+    if not m1_node:
+        return m1_node
+    _m1_dual_caliber(m1_node)
+    ng = ((g or {}).get("coincident") or {}).get("nominal_gdp_yoy")
+    m1_node["double_guard"] = _m1_double_guard(m1_node, ng)
+    return m1_node
+
+
 _ASSET_TREND_MAP = {
     "us_stock": ("sp500", "price"),
     "us_bond": ("us_10y_bond", "yield"),
