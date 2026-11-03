@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))  # 保证 run_all 以任意 cwd 调用时都能 import
-from freshness_score import compute_freshness  # P0-1: 新鲜度单一真值算法
+from freshness_score import compute_freshness, is_assessment_overdue  # P0-1: 新鲜度单一真值算法
 
 DATA_DIR = Path(__file__).parent.parent / 'data'
 RAW_FILE = DATA_DIR / 'fred_raw.json'
@@ -83,6 +83,7 @@ def update_v3_json(fred_raw):
     v3['_meta']['data_freshness_score'] = _score
     v3['_meta']['data_cutoff_date'] = _cutoff
     v3['_meta']['freshness_detail'] = _detail
+    v3['_meta']['assessment_overdue'] = is_assessment_overdue(v3['_meta'].get('next_assessment_date'))  # Codex评审建议: 与v4契约对称
     
     save_json(V3_FILE, v3)
     print(f"✅ Updated {updated} indicators in cycle_position_v3.json")

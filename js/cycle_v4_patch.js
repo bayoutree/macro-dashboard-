@@ -289,7 +289,7 @@
     // 为准；前端按 next_assessment_date 本地复算兜底（数据停更时依然准确）。
     var overdueDays = 0;
     if (meta.next_assessment_date) {
-      var nad = new Date(meta.next_assessment_date + 'T23:59:59');
+      var nad = new Date(meta.next_assessment_date + 'T23:59:59+08:00');
       if (Date.now() > nad.getTime()) overdueDays = Math.ceil((Date.now() - nad.getTime()) / 86400000);
     }
     var overdueBanner = (overdueDays > 0)
@@ -489,7 +489,7 @@
     }
     var overdueDays = 0;
     if (meta.next_assessment_date) {
-      var nad = new Date(meta.next_assessment_date + 'T23:59:59');
+      var nad = new Date(meta.next_assessment_date + 'T23:59:59+08:00');
       if (Date.now() > nad.getTime()) overdueDays = Math.ceil((Date.now() - nad.getTime()) / 86400000);
     }
     var overdueHtml = overdueDays > 0

@@ -4113,7 +4113,7 @@ function renderCycleFreshness() {
       const meta = (d && d._meta) || {};
       const score = (typeof meta.data_freshness_score === 'number') ? meta.data_freshness_score : '--';
       const cutoff = meta.data_cutoff_date || meta.assessment_date || '';
-      const nad = meta.next_assessment_date ? new Date(meta.next_assessment_date + 'T23:59:59') : null;
+      const nad = meta.next_assessment_date ? new Date(meta.next_assessment_date + 'T23:59:59+08:00') : null;
       const overdueDays = (nad && Date.now() > nad.getTime()) ? Math.ceil((Date.now() - nad.getTime()) / 86400000) : 0;
       badge.textContent = `全球周期: 评估日 ${meta.assessment_date || '--'} · 数据截至 ${cutoff || '--'} · 新鲜度 ${score}` +
         (overdueDays > 0 ? ` · ⚠评估逾期${overdueDays}天` : '');
