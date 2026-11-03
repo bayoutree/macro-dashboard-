@@ -76,7 +76,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r scripts/requirements.txt
           # 额外确保关键包
-          pip install akshare requests pandas numpy openpyxl
+          pip install akshare requests pandas numpy openpyxl xlrd
 
       # ----------------------------------------------------------
       # 3b. [P1-8 美联储双层 2026-10-18 裁决] 采集 FedWatch 加息概率+目标区间

@@ -667,7 +667,7 @@ def _build_china(g, evo_tmpl):
         },
         "credit_indicators": {
             "m1": _m1_enhanced(_named(m1, "m1"), g),  # P1-10：双序列并行+双护栏
-            "shrzgm": _named(shrzgm, "shrzgm"),
+            "shrzgm": _sf_enhanced(_named(shrzgm, "shrzgm"), g),  # P1-10b：社融缺口锚
         },
         "evolution_paths": _build_evolution_paths(
             evo_tmpl,
@@ -1200,6 +1200,57 @@ def _m1_enhanced(m1_node, g):
     ng = ((g or {}).get("coincident") or {}).get("nominal_gdp_yoy")
     m1_node["double_guard"] = _m1_double_guard(m1_node, ng)
     return m1_node
+
+
+# ---- P1-10b：社融缺口锚（红线<0 生效；中枢估算灰灯待投分复核）----
+SF_GAP_ANCHOR_RED_PP = 0.0
+SF_GAP_ANCHOR_CENTER_EST = "+1~+3"
+
+
+def _sf_gap_anchor(shrzgm_node, ng_node):
+    """社融缺口锚：缺口=社融存量同比−名义GDP同比（季频插值到月）。
+    红线 <0 生效（信用扩张跑输名义增长=收缩🔴）；中枢 +1~+3pp 为估算灰灯，
+    待投资分析复核锁定（P1-10 验收用例③）。
+    口径：社融同比=央行各年表自带官方增速列（2018-07/09、2019-12 口径完善
+    由官方衔接，避免跨年自算跨口径失真）；历史分位待中枢复核时一并定。"""
+    if not shrzgm_node or not ng_node:
+        return None
+    hist = shrzgm_node.get("history") or []
+    ng_hist = (ng_node or {}).get("history") or []
+    if not hist or not ng_hist:
+        return None
+    ng_pts = [(h["date"], h["value"]) for h in ng_hist if h.get("value") is not None]
+    if not ng_pts:
+        return None
+    latest = hist[-1]
+    ng_latest = _interp_monthly(ng_pts, latest["date"])
+    if ng_latest is None:
+        return None
+    gap = round(latest["value"] - ng_latest, 2)
+    breach = gap < SF_GAP_ANCHOR_RED_PP
+    return {
+        "gap_pp": gap,
+        "shrzgm_yoy": latest.get("value"),
+        "nominal_gdp_yoy": round(ng_latest, 2),
+        "anchor": {"red_pp": SF_GAP_ANCHOR_RED_PP,
+                   "center_est_pp": SF_GAP_ANCHOR_CENTER_EST,
+                   "center_status": "估算待回填"},
+        "light": "red" if breach else "gray",
+        "zone": ("红线触发·信用收缩（社融跑输名义增长）" if breach
+                 else "红线未触发·中枢估算待复核"),
+        "note": ("P1-10 社融缺口锚：红线<0生效；中枢+1~+3pp为估算灰灯，待投资分析复核锁定。"
+                 "口径：社融同比=央行官方增速列（2018-07/09、2019-12口径完善由官方衔接）；"
+                 "名义GDP=现价同比季频插值。历史分位待中枢复核时一并锁定。"),
+        "as_of": latest.get("date"),
+    }
+
+
+def _sf_enhanced(shrzgm_node, g):
+    if not shrzgm_node:
+        return shrzgm_node
+    ng = ((g or {}).get("coincident") or {}).get("nominal_gdp_yoy")
+    shrzgm_node["gap_anchor"] = _sf_gap_anchor(shrzgm_node, ng)
+    return shrzgm_node
 
 
 _ASSET_TREND_MAP = {

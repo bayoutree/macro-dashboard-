@@ -5,3 +5,5 @@ fredapi>=0.5.0
 pandas>=2.2.0
 requests>=2.31.0
 yfinance>=0.2.40  # P0-2: DXY(ICE) 主口径取数（DX-Y.NYB）
+openpyxl>=3.1.0  # P1-10b: 社融央行回退路径解析 .xlsx（此前缺失致 CI 回退静默失败）
+xlrd>=2.0.1  # P1-10b: 央行 2016-2019 存量表 .xls 旧格式

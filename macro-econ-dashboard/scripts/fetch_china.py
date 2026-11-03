@@ -11,6 +11,7 @@ fetch_china.py — 使用 akshare 抓取中国宏观数据
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 import sys
@@ -412,7 +413,7 @@ def get_china_groups():
     add("leading", "caixin_pmi", extract_series(df, ["月份"], ["制造业-指数", "制造业- PMI"]), unit="")
 
     df = grab(ak.macro_china_shrzgm)
-    add("leading", "shrzgm", extract_series(df, ["月份"], ["同比增速", "同比"]), unit="%")
+    add("leading", "shrzgm", extract_series(df, ["月份"], ["同比增速", "同比"]), unit="%", hist_limit=300)
     # P0-3 C2 裁决（投资分析 2026-11-01）：akshare 社融存量同比断更 → 回退央行官方采集
     # （存量序列自算同比；流量不可顶替存量）。来源 pbc.gov.cn。
     if "shrzgm" not in groups.get("leading", {}):
@@ -422,15 +423,34 @@ def get_china_groups():
             if _rs not in _sys.path:
                 _sys.path.insert(0, _rs)
             from fetch_pbc_social_financing import fetch_social_financing
-            _stock = (fetch_social_financing() or {}).get("stock") or []
+            _sf = fetch_social_financing() or {}
+            _stock = _sf.get("stock") or []
+            _yoy_off = {d["date"]: d["value"] for d in _sf.get("stock_yoy_official") or []}
+            # P1-10b：合并 supplement 社融存档（2016-2019 央行 .xls 回填，历史段不变，新抓优先）
+            try:
+                _sup_p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), "data", "cn_macro_supplement.json")
+                _sup = json.load(open(_sup_p, encoding="utf-8"))
+                _arc = {d["date"]: d["value"] for d in _sup.get("shrzgm_stock", [])}
+                _arc.update({d["date"]: d["value"] for d in _stock})
+                _stock = [{"date": k, "value": v} for k, v in sorted(_arc.items())]
+                _arcg = {d["date"]: d["value_pct"] for d in _sup.get("shrzgm_yoy_official", [])}
+                _arcg.update(_yoy_off)
+                _yoy_off = _arcg
+            except Exception as _ae:
+                print(f"[fetch_china] 社融存档合并跳过: {_ae}")
+            # P1-10b 口径：同比优先用各年表自带官方增速列（央行官方衔接口径：
+            # 2018-07/09 完善、2019-12 纳入国债等断点由官方处理）；缺失月自算兜底
             _by = {d["date"]: d["value"] for d in _stock}
             _yoy = []
             for d in _stock:
+                if d["date"] in _yoy_off:
+                    _yoy.append((d["date"], round(_yoy_off[d["date"]], 2)))
+                    continue
                 _y, _m = d["date"].split("-")
                 _pp = _by.get(f"{int(_y) - 1}-{_m}")
                 if _pp:
                     _yoy.append((d["date"], round((d["value"] / _pp - 1) * 100, 2)))
-            add("leading", "shrzgm", _yoy, unit="%")
+            add("leading", "shrzgm", _yoy, unit="%", hist_limit=300)
         except Exception as _e:
             print(f"[fetch_china] 社融央行回退失败(降级缺口): {_e}")
 

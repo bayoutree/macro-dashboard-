@@ -41,7 +41,8 @@ def main():
         "fx_reserves": [],
         "m1_yoy": [],
         "m1_m2_scissors": [],
-        "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差",
+        "shrzgm_stock": [],
+        "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差；P1-10b：社融存量存档（央行官方，自算同比见 fetch_china 回退路径）",
     }
 
     # 1. 外储（SAFE 月频）
@@ -78,12 +79,36 @@ def main():
     except Exception as e:
         print(f"FAIL m1/m2: {e}", file=sys.stderr)
 
+    # 3. 社融存量存档（P1-10b：央行官方存量表，2016-01 起；2016-2019 为 .xls 旧格式）
+    # 首次全量抓 2016 起；已有存档时仅抓最近 4 年并与存档合并（历史段不变，新抓优先）。
+    try:
+        _rs = str(Path(__file__).parent)
+        if _rs not in sys.path:
+            sys.path.insert(0, _rs)
+        from fetch_pbc_social_financing import fetch_social_financing
+        prev = {}
+        if OUT.exists():
+            try:
+                prev = {d["date"]: d["value"] for d in
+                        json.loads(OUT.read_text(encoding="utf-8")).get("shrzgm_stock", [])}
+            except Exception:
+                prev = {}
+        years = None if prev else list(range(2016, datetime.now().year + 1))
+        fresh = {d["date"]: d["value"] for d in (fetch_social_financing(years=years) or {}).get("stock") or []}
+        merged = dict(prev)
+        merged.update(fresh)
+        out["shrzgm_stock"] = [{"date": k, "value": round(v, 4)} for k, v in sorted(merged.items())]
+        print(f"OK shrzgm_stock: {len(out['shrzgm_stock'])} 条 "
+              f"(存档{len(prev)}+新抓{len(fresh)}，最新 {out['shrzgm_stock'][-1] if out['shrzgm_stock'] else 'N/A'})")
+    except Exception as e:
+        print(f"FAIL shrzgm_stock: {e}", file=sys.stderr)
+
     # 按日期升序排序
-    for key in ["fx_reserves", "m1_yoy", "m1_m2_scissors"]:
+    for key in ["fx_reserves", "m1_yoy", "m1_m2_scissors", "shrzgm_stock"]:
         out[key] = sorted(out[key], key=lambda x: x.get("date", ""))
 
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"OK cn_macro_supplement.json: reserves={len(out['fx_reserves'])} m1={len(out['m1_yoy'])} scissors={len(out['m1_m2_scissors'])}")
+    print(f"OK cn_macro_supplement.json: reserves={len(out['fx_reserves'])} m1={len(out['m1_yoy'])} scissors={len(out['m1_m2_scissors'])} shrzgm_stock={len(out.get('shrzgm_stock', []))}")
 
 
 if __name__ == "__main__":

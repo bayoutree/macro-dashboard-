@@ -255,6 +255,7 @@ function renderCnCycleDims(ec) {
           ${m1 ? renderMiniMetricCard('M1同比', m1, 'cn-c-m1') : ''}
           ${shrzgm && shrzgm.value !== undefined ? renderMiniMetricCard('社融存量', shrzgm, 'cn-c-sf') : ''}
         </div>
+        ${renderSfGapAnchor(shrzgm)}
       </div>
     </div>
   `;
@@ -382,6 +383,23 @@ function parseAssetRanking(s, country) {
 }
 
 // P1-10（2026-11-03）：M1 双护栏锚定块 + 口径节点永久标注（裁决方案③）
+function renderSfGapAnchor(shrzgm) {
+  // P1-10b：社融缺口锚（红线<0生效，中枢估算灰灯待复核）
+  const ga = shrzgm && shrzgm.gap_anchor;
+  if (!ga) return '';
+  const lightMap = { red: '#ef4444', yellow: '#f59e0b', green: '#10b981', gray: '#6b7280' };
+  const color = lightMap[ga.light] || '#6b7280';
+  const fmtPp = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2) + 'pp';
+  return `
+    <div class="mt-1 mb-2 px-2 py-1.5 rounded text-xs" style="background:rgba(107,114,128,0.08);border-left:3px solid ${color}">
+      <div class="flex items-center justify-between">
+        <span class="text-gray-300">社融缺口锚：社融 ${fmtPp(ga.shrzgm_yoy)}% − 名义GDP ${fmtPp(ga.nominal_gdp_yoy)}% = <b style="color:${color}">${fmtPp(ga.gap_pp)}</b></span>
+        <span style="color:${color}">● ${ga.zone}</span>
+      </div>
+      <div class="text-gray-500 mt-0.5">红线 ${fmtPp(ga.anchor.red_pp)}（生效）｜中枢 ${ga.anchor.center_est_pp}pp（${ga.anchor.center_status}）</div>
+    </div>`;
+}
+
 function renderM1DoubleGuard(m1) {
   if (!m1 || !m1.double_guard) return '';
   const dg = m1.double_guard;
