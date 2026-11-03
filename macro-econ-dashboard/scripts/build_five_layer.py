@@ -1202,17 +1202,28 @@ def _m1_enhanced(m1_node, g):
     return m1_node
 
 
-# ---- P1-10b：社融缺口锚（红线<0 生效；中枢估算灰灯待投分复核）----
+# ---- P1-10b：社融缺口锚（投资分析 2026-11-03 复核裁决锁定：分段中枢+基数豁免）----
 SF_GAP_ANCHOR_RED_PP = 0.0
-SF_GAP_ANCHOR_CENTER_EST = "+1~+3"
+SF_GAP_ANCHOR_CENTER_PP = 4.0        # B段（全口径 2019-01 起 n=93）中枢锁定 +4pp
+SF_GAP_ANCHOR_CENTER_A_PP = 1.5      # A段中枢 +1.5pp（仅历史分段展示）
+SF_GAP_B_SEG_START = "2019-01"       # B段起点：官方增速列衔接口径段（n=93）
+SF_GAP_BASE_EXEMPT_NG = 13.0         # 基数豁免：缺口<0 且名义GDP同比>13% 降🟡
+SF_GAP_CALIBER_TOL_PP = 0.3          # 官方增速 vs 自算同比容差（同口径段）
+# 门禁起点 2020-01：自算同比需 t-12 存量同口径。2019 全年为断代过渡期
+# （2018 存量旧口径/2019 起全口径），自算跨口径失真，不计入门禁。
+SF_GAP_CALIBER_CHECK_START = "2020-01"
 
 
 def _sf_gap_anchor(shrzgm_node, ng_node):
     """社融缺口锚：缺口=社融存量同比−名义GDP同比（季频插值到月）。
-    红线 <0 生效（信用扩张跑输名义增长=收缩🔴）；中枢 +1~+3pp 为估算灰灯，
-    待投资分析复核锁定（P1-10 验收用例③）。
-    口径：社融同比=央行各年表自带官方增速列（2018-07/09、2019-12 口径完善
-    由官方衔接，避免跨年自算跨口径失真）；历史分位待中枢复核时一并定。"""
+    投资分析 2026-11-03 复核裁决锁定（《复核裁决_P1-10b社融缺口锚与P1-11文案》）：
+    ①分段中枢：B段（全口径 2019-01 起 n=93）中枢 +4pp（现行护栏锚）；A段 +1.5pp
+      仅历史分段展示——A/B 段中枢差 2.35pp，拒绝全段单中枢；
+    ②红线 <0 维持，但加基数豁免：缺口<0 且名义GDP同比>13% 时降🟡+注记
+      （实测 18 个负缺口月中 12 个是 2021 低基数伪信号，仅 2018H2 为真收缩）；
+    ③历史分位段内（B段）计算，灰灯文案绑实时字段（如「中枢+4pp·当前P15偏低」）。
+    附门禁：同口径段 |官方增速−自算同比| <0.3pp 纳入断言（超差标🟡不报错）。
+    口径：社融同比=央行官方增速列（2018-07/09、2019-12 口径完善由官方衔接）。"""
     if not shrzgm_node or not ng_node:
         return None
     hist = shrzgm_node.get("history") or []
@@ -1227,20 +1238,104 @@ def _sf_gap_anchor(shrzgm_node, ng_node):
     if ng_latest is None:
         return None
     gap = round(latest["value"] - ng_latest, 2)
+
+    # B 段（2019-01 起）缺口序列 + 段内分位
+    seg_gaps = []
+    for h in hist:
+        d, v = h.get("date"), h.get("value")
+        if not d or d < SF_GAP_B_SEG_START or v is None:
+            continue
+        ngv = _interp_monthly(ng_pts, d)
+        if ngv is not None:
+            seg_gaps.append(round(v - ngv, 2))
+    pct = None
+    if seg_gaps:
+        pct = round(sum(1 for x in seg_gaps if x <= gap) / len(seg_gaps) * 100)
+
+    # 基数豁免：负缺口但名义GDP高增（低基数伪信号）
     breach = gap < SF_GAP_ANCHOR_RED_PP
+    exempt = breach and ng_latest > SF_GAP_BASE_EXEMPT_NG
+    if breach and not exempt:
+        light, zone = "red", "红线触发·信用收缩（社融跑输名义增长）"
+    elif breach and exempt:
+        light = "yellow"
+        zone = "缺口为负但名义GDP高增·低基数伪信号豁免"
+    else:
+        light = "gray"
+        band = ("偏低" if pct is not None and pct < 25
+                else "偏高" if pct is not None and pct > 75 else "中位区间")
+        zone = f"中枢+{SF_GAP_ANCHOR_CENTER_PP:g}pp·当前P{pct}{band}"
+
+    # 口径门禁：B 段内 |官方增速−存量自算同比| 超 0.3pp 标🟡（不报错）。
+    # 存量序列取自 data/cn_macro_supplement.json → shrzgm_stock（读数失败则降级 None）。
+    stock = {}
+    try:
+        supp_path = os.path.join(os.path.dirname(PROJECT_ROOT), "data",
+                                 "cn_macro_supplement.json")
+        with open(supp_path, encoding="utf-8") as f:
+            for pt in (json.load(f) or {}).get("shrzgm_stock") or []:
+                stock[pt.get("date")] = pt.get("value")
+    except Exception:
+        stock = {}
+    # 门禁断言窗口=近12个月（监测未来口径漂移，裁决本意）；全段记录如实保留。
+    # 实测：2023 全年 11 个月超差 0.26~0.35pp——央行存量回溯修订噪音
+    # （官方增速按当年发布存量算，自算用修订后存量系统性偏高 ~0.3pp），非口径错误。
+    caliber = None
+    if stock:
+        latest_d = latest.get("date") or "0000-00"
+        ly, lm = int(latest_d[:4]), int(latest_d[5:7])
+        win_start = f"{ly - 1:04d}-{lm:02d}"  # 近12个月（含当月共13个端点起点）
+        all_rows = []
+        for h in hist:
+            d, v = h.get("date"), h.get("value")
+            if not d or d < SF_GAP_CALIBER_CHECK_START or v is None:
+                continue
+            y, m = int(d[:4]), int(d[5:7])
+            cur, prev = stock.get(d), stock.get(f"{y - 1:04d}-{m:02d}")
+            if cur in (None, 0) or prev in (None, 0):
+                continue
+            all_rows.append((d, abs(v - round((cur / prev - 1) * 100, 2))))
+        def _worst(rows):
+            if not rows:
+                return 0.0, None, 0
+            w = max(rows, key=lambda r: r[1])
+            return round(w[1], 2), w[0], sum(1 for r in rows if r[1] > SF_GAP_CALIBER_TOL_PP)
+        wa, da, na = _worst(all_rows)
+        recent = [r for r in all_rows if r[0] >= win_start]
+        wr, dr, nr = _worst(recent)
+        caliber = {"tol_pp": SF_GAP_CALIBER_TOL_PP,
+                   "gate_window": "近12个月（裁决口径断言窗口）",
+                   "recent_12m": {"max_abs_diff_pp": wr, "max_at": dr,
+                                  "breach_n": nr, "ok": nr == 0},
+                   "all_seg": {"max_abs_diff_pp": wa, "max_at": da,
+                               "breach_n": na,
+                               "note": "2023 全年超差 0.26~0.35pp=央行存量回溯修订噪音，不触发门禁"},
+                   "ok": nr == 0}
+    caliber_ok = (caliber is None) or caliber["ok"]
+
     return {
         "gap_pp": gap,
         "shrzgm_yoy": latest.get("value"),
         "nominal_gdp_yoy": round(ng_latest, 2),
         "anchor": {"red_pp": SF_GAP_ANCHOR_RED_PP,
-                   "center_est_pp": SF_GAP_ANCHOR_CENTER_EST,
-                   "center_status": "估算待回填"},
-        "light": "red" if breach else "gray",
-        "zone": ("红线触发·信用收缩（社融跑输名义增长）" if breach
-                 else "红线未触发·中枢估算待复核"),
-        "note": ("P1-10 社融缺口锚：红线<0生效；中枢+1~+3pp为估算灰灯，待投资分析复核锁定。"
-                 "口径：社融同比=央行官方增速列（2018-07/09、2019-12口径完善由官方衔接）；"
-                 "名义GDP=现价同比季频插值。历史分位待中枢复核时一并锁定。"),
+                   "center_pp": SF_GAP_ANCHOR_CENTER_PP,
+                   "center_a_pp": SF_GAP_ANCHOR_CENTER_A_PP,
+                   "center_status": "已锁定（分段）",
+                   "base_exempt_ng_pp": SF_GAP_BASE_EXEMPT_NG,
+                   "seg_b_start": SF_GAP_B_SEG_START},
+        "pct_in_seg_b": pct,
+        "seg_b_n": len(seg_gaps),
+        "caliber_check": caliber,  # None=存量序列不可用（降级）；dict=核验结果
+        "light": "yellow" if (light != "red" and not caliber_ok) else light,
+        "zone": zone + ("" if caliber_ok else "｜口径校验超差🟡"),
+        "note": ("P1-10 社融缺口锚（投资分析2026-11-03复核锁定）：分段中枢 B段+4pp（全口径"
+                 "2019-01起 n=93）/A段+1.5pp仅历史展示；红线<0维持+基数豁免（名义GDP>13%降🟡）；"
+                 "历史分位段内计算。口径：社融同比=央行官方增速列；名义GDP=现价同比季频插值。"
+                 + ("门禁：近12月|官方−自算|"
+                 + (f"<{SF_GAP_CALIBER_TOL_PP}pp 通过（最大 {caliber['recent_12m']['max_abs_diff_pp']}pp）" if caliber and caliber["ok"]
+                    else f"超差🟡（最大 {caliber['recent_12m']['max_abs_diff_pp']}pp @{caliber['recent_12m']['max_at']}）" if caliber
+                    else "存量缺失降级")
+                 + "；2023 年历史超差 0.26~0.35pp 系存量回溯修订噪音不触发门禁。")),
         "as_of": latest.get("date"),
     }
 

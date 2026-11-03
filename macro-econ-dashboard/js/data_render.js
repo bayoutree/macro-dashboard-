@@ -384,19 +384,22 @@ function parseAssetRanking(s, country) {
 
 // P1-10（2026-11-03）：M1 双护栏锚定块 + 口径节点永久标注（裁决方案③）
 function renderSfGapAnchor(shrzgm) {
-  // P1-10b：社融缺口锚（红线<0生效，中枢估算灰灯待复核）
+  // P1-10b：社融缺口锚（投资分析2026-11-03复核锁定：分段中枢+基数豁免+段内分位）
   const ga = shrzgm && shrzgm.gap_anchor;
   if (!ga) return '';
   const lightMap = { red: '#ef4444', yellow: '#f59e0b', green: '#10b981', gray: '#6b7280' };
   const color = lightMap[ga.light] || '#6b7280';
   const fmtPp = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2) + 'pp';
+  const a = ga.anchor || {};
+  const caliberWarn = ga.caliber_check && !ga.caliber_check.ok
+    ? '｜<span style="color:#f59e0b">口径校验超差🟡</span>' : '';
   return `
-    <div class="mt-1 mb-2 px-2 py-1.5 rounded text-xs" style="background:rgba(107,114,128,0.08);border-left:3px solid ${color}">
+    <div class="mt-1 mb-2 px-2 py-1.5 rounded text-xs" style="background:rgba(107,114,128,0.08);border-left:3px solid ${color}" title="${ga.note || ''}">
       <div class="flex items-center justify-between">
         <span class="text-gray-300">社融缺口锚：社融 ${fmtPp(ga.shrzgm_yoy)}% − 名义GDP ${fmtPp(ga.nominal_gdp_yoy)}% = <b style="color:${color}">${fmtPp(ga.gap_pp)}</b></span>
         <span style="color:${color}">● ${ga.zone}</span>
       </div>
-      <div class="text-gray-500 mt-0.5">红线 ${fmtPp(ga.anchor.red_pp)}（生效）｜中枢 ${ga.anchor.center_est_pp}pp（${ga.anchor.center_status}）</div>
+      <div class="text-gray-500 mt-0.5">红线 ${fmtPp(a.red_pp)}（生效·基数豁免>+${a.base_exempt_ng_pp}pp）｜中枢 +${a.center_pp}pp（${a.center_status}·B段n=${ga.seg_b_n}）｜A段 +${a.center_a_pp}pp（历史展示）${caliberWarn}</div>
     </div>`;
 }
 
@@ -926,18 +929,20 @@ function renderConclusion(countryData) {
 // 利差原仅渲染在中国 Tab 底部「中美联动」区，展示位过深。本模块将其提升到
 // 主屏（<main> 顶部、所有 Tab 常驻），并新增「汇率约束下的降息空间」提示模块。
 // 数据：cross.cn_us_10y_spread（中债10Y−美债10Y，bps）+ cross.usdcny，均现成。
-// 提示模块阈值档位 v0.1 —— 文案已送投资分析复核（页面如实标注「评审中」）。
+// 提示模块阈值档位 v0.2（2026-11-03 投资分析复核通过）：①🔴档「降息空间显著受限」→
+// 「总量宽松的节奏与幅度受约束」（2025 仍在降息，约束节奏非封死空间）；②≥0 档名
+// 「正常区间」→「利差为正」（v=+10 称充裕偏强）。阈值维持绝对值驱动+分位副行佐证。
 
 function _spreadAlertLevel(v) {
   if (v === null || v === undefined || isNaN(v)) return null;
   if (v <= -300) return { tag: '深度倒挂', icon: '🔴', color: '#ef4444',
-    text: '跨境资本流出压力大，人民币承压；若国内降息快于美联储，倒挂加深将放大贬值压力。央行总量型宽松（降息）空间显著受限，政策或更倚重结构性工具与财政发力。' };
+    text: '跨境资本流出压力大，人民币承压；若国内降息快于美联储，倒挂加深将放大贬值压力。央行总量宽松的节奏与幅度受约束，政策或更倚重结构性工具与财政发力。' };
   if (v <= -100) return { tag: '显著倒挂', icon: '🟡', color: '#f59e0b',
     text: '倒挂显著，人民币贬值压力存在，国内降息节奏受外部约束，宽松窗口需等待美联储路径进一步确认。' };
   if (v < 0) return { tag: '轻度倒挂', icon: '🟡', color: '#eab308',
     text: '轻度倒挂，汇率约束初步显现但压力可控，国内货币政策空间仍存，需持续跟踪利差走向。' };
-  return { tag: '正常区间', icon: '🟢', color: '#10b981',
-    text: '中美利差为正，汇率约束缓和，国内货币政策自主空间充裕。' };
+  return { tag: '利差为正', icon: '🟢', color: '#10b981',
+    text: '中美利差为正，汇率约束缓和，国内货币政策自主空间较大。' };
 }
 
 function renderSpreadMainscreen(cross) {
@@ -986,7 +991,7 @@ function renderSpreadMainscreen(cross) {
           <span class="text-xs font-semibold" style="color:${lvl.color}">汇率约束下的降息空间 · ${lvl.tag}</span>
         </div>
         <p class="text-[11px] text-gray-400 leading-relaxed">${lvl.text}</p>
-        <p class="text-[9px] text-gray-600 mt-1 leading-relaxed">${[pctText, fxText].filter(Boolean).join(' · ')}${pctText || fxText ? '。' : ''}框架性提示，非政策预测；阈值档位 v0.1（评审中）。<a href="#cross-section" class="underline hover:text-gray-400">详见底部中美联动 ↓</a></p>
+        <p class="text-[9px] text-gray-600 mt-1 leading-relaxed">${[pctText, fxText].filter(Boolean).join(' · ')}${pctText || fxText ? '。' : ''}框架性提示，非政策预测；阈值档位 v0.2（投资分析复核通过）。<a href="#cross-section" class="underline hover:text-gray-400">详见底部中美联动 ↓</a></p>
       </div>
     </div>
   </div>`;
