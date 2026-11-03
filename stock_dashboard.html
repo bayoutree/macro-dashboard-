@@ -3571,7 +3571,13 @@ function applyTimingDataToMockData() {
       const _asOfDate = new Date(_asOf + 'T00:00:00');
       const _now = new Date();
       const _tradingDaysSince = Math.round((_now - _asOfDate) / 86400000 * 5/7);
-      if (_tradingDaysSince > 3) {
+      // [P1-7 降级出口 2026-11-03 投分裁决] QVIX 单一外部源连续性：
+      // 停更>5 个交易日→灰灯「停更待复核」，不输出信号分档（2026-09 曾停更15天）
+      if (_tradingDaysSince > 5) {
+        M[2].signal = 'gray';
+        M[2].signalText = 'QVIX停更' + _tradingDaysSince + '交易日·待复核';
+        M[2].description += '<span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">⏸ QVIX 单一外部源停更超 5 个交易日，恐贪指针灰灯（P1-7 门禁6 新鲜度条款）。</span>';
+      } else if (_tradingDaysSince > 3) {
         M[2].signalText = fgp.zone_confirmed + ' ⚠数据滞后' + _tradingDaysSince + '天';
       }
     }
