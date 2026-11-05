@@ -41605,13 +41605,14 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 70.24,
-          "score": 70.24,
+          "value": 67.86,
+          "score": 67.86,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
           "source": "data/feargreed_pointer.json#score",
-          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。"
+          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。",
+          "ssot_source": "data/feargreed_pointer.json#score"
         },
         "turnover_rate": {
           "name": "全A换手率",
