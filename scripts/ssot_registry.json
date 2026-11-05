@@ -170,7 +170,11 @@
         }
       ],
       "caliber": "QVIX 单因子反百分位（score=100−252日分位，P1-7 终态 2026-11-03）；collect_qvix 日频更新主源，update_data 引用写入 timing_scores；登记目的：消除跨 workflow 日更顺序导致的同源不同步（P0验收打回① 2026-11-04）",
-      "note": "P0-2 单一真值源登记：commit 前 ssot_check --fix 原子回写+阻断校验，流水线顺序无关化"
+      "note": "P0-2 单一真值源登记：commit 前 ssot_check --fix 原子回写+阻断校验，流水线顺序无关化",
+      "tolerance": {
+        "absolute": 0,
+        "relative": 0
+      }
     }
   ],
   "unit_rules": [

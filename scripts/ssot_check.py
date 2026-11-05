@@ -103,6 +103,12 @@ def check(root, registry, verbose=True):
     log("=" * 72)
 
     for ind in registry.get("indicators", []):
+        # 条目级容差覆盖全局：分数/代码类同值传递指标应严格一致（absolute=0），
+        # 测量类指标沿用全局容差。[P0验收打回① 2026-11-04：67.86 vs 68.25 在全局
+        # 1% 容差内漏检，恐贪分数必须严格等值]
+        ind_tol = ind.get("tolerance", {})
+        ind_abs_tol = float(ind_tol.get("absolute", abs_tol))
+        ind_rel_tol = float(ind_tol.get("relative", rel_tol))
         m = ind["master"]
         m_doc = load_json(os.path.join(root, m["file"]))
         _, _, m_node = resolve(m_doc, m["path"])
@@ -125,7 +131,7 @@ def check(root, registry, verbose=True):
                 log(f"      ✗ 下游缺失 {sec['file']}#{sec['path']}")
                 continue
             diff = abs(m_val - s_val)
-            allowed = max(abs_tol, rel_tol * max(abs(m_val), abs(s_val)))
+            allowed = max(ind_abs_tol, ind_rel_tol * max(abs(m_val), abs(s_val)))
             if diff > allowed:
                 violations.append(
                     f"[冲突] {ind['id']} ({ind['name']}): 主源 {m_val} vs "

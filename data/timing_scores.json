@@ -41605,8 +41605,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 67.86,
-          "score": 67.86,
+          "value": 68.25,
+          "score": 68.25,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
