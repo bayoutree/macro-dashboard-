@@ -908,7 +908,7 @@ function renderConclusion(countryData) {
         <div class="text-[10px] text-gray-600 mt-2 leading-relaxed">
           📌 每个资产显示：<span style="color:#6b7280">周期▲/▼</span> = 经济周期定位的基准方向；
           <span style="color:#6b7280">估值↑便宜/↓偏贵</span> = 当前分位数修正；
-          <span style="color:#6b7280">趋势</span> = MA200偏离 · 距52周高点回撤 · 3个月动量（P1-8 2026-11-02，数据源 asset_prices 日频；美债为收益率口径，收益率↑=债价↓；A股/中债/中房暂无日频价格序列显示「—」）；
+          <span style="color:#6b7280">趋势</span> = MA200偏离 · 距52周高点回撤 · 3个月动量（P1-8 2026-11-02，数据源：资产价格日频序列；美债为收益率口径，收益率↑=债价↓；A股/中债/中房暂无日频价格序列显示「—」）；
           综合信号灯 = 基准 + 估值。灰色=非本国视角资产（供参考）。
         </div>
       </div>
