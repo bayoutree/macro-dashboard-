@@ -1,6 +1,6 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-06 00:42:33",
+  "generated_at": "2026-11-06 15:52:18",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {

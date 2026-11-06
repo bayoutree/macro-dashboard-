@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-06T08:42:57+08:00",
+    "update_time": "2026-11-06T23:52:38+08:00",
     "data_freshness_score": 8,
     "assessment_date": "2026-09-01",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": true,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-06T00:42:57+08:00"
+    "v4_built_at": "2026-11-06T15:52:38+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -14807,7 +14807,7 @@
             "name": "失业率",
             "source": "BLS/FRED",
             "unit": "%",
-            "current": 4.2,
+            "current": 4.1,
             "last_updated": "2026-11-06",
             "history": [
               {
@@ -15525,6 +15525,10 @@
               {
                 "date": "2026-09-01",
                 "value": 4.2
+              },
+              {
+                "date": "2026-10-01",
+                "value": 4.1
               }
             ],
             "frequency": "monthly",
