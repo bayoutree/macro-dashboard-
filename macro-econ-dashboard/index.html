@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a2332">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="宏观指标">
+  <link rel="manifest" href="manifest.webmanifest?v=3a62c43a">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png?v=24fb1e45">
   <title>宏观经济看板 | Macro Economy Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
@@ -99,5 +106,6 @@
   <script src="js/data_render.js?v=27e09858"></script>
   <script src="js/app.js?v=3844ee76"></script>
   <script src="../js/conflict_flags.js?v=98e4d38d"></script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("../sw.js").catch(()=>{}));}</script>
 </body>
 </html>

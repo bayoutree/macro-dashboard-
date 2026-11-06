@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a2332">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="A股看板">
+<link rel="manifest" href="manifest_stock.webmanifest?v=b13e77e7">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=24fb1e45">
 <title>A股周期定位看板 V4.1</title>
 <style>
 :root {
@@ -4388,5 +4395,6 @@ function renderSparkline_inline(container, data) {
 document.addEventListener('DOMContentLoaded', init);
 </script>
   <script src="js/conflict_flags.js?v=98e4d38d"></script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script>
 </body>
 </html>

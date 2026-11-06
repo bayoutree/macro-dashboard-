@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a2332">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="宏观看板">
+  <link rel="manifest" href="manifest.webmanifest?v=c3dc086f">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=24fb1e45">
   <title>宏观经济指标看板 | Macro Dashboard V2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
@@ -85,7 +92,7 @@
 
     <!-- Macro Tab (New 5-layer CN+US Dashboard) -->
     <div id="tab-macro" class="tab-content active">
-      <iframe id="macro-iframe" src="macro-econ-dashboard/index.html?v=7297c153" style="width:100%;height:calc(100vh - 140px);border:none;border-radius:8px;" title="中美宏观五层看板"></iframe>
+      <iframe id="macro-iframe" src="macro-econ-dashboard/index.html?v=aaad1a5e" style="width:100%;height:calc(100vh - 140px);border:none;border-radius:8px;" title="中美宏观五层看板"></iframe>
     </div>
 
     <!-- Cycle Tab -->
@@ -94,7 +101,7 @@
     </div>
 
     <!-- Stock Tab -->
-    <div id="tab-stock" class="tab-content hidden"><iframe id="stock-iframe" src="stock_dashboard.html?v=f593e066" data-src="stock_dashboard.html?v=f593e066" style="width:100%;min-height:calc(100vh - 160px);border:none;border-radius:8px;" title="股票看板"></iframe></div>
+    <div id="tab-stock" class="tab-content hidden"><iframe id="stock-iframe" src="stock_dashboard.html?v=45d7897f" data-src="stock_dashboard.html?v=45d7897f" style="width:100%;min-height:calc(100vh - 160px);border:none;border-radius:8px;" title="股票看板"></iframe></div>
 
   </main>
 
@@ -153,5 +160,6 @@
   })();
   </script>
 
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script>
 </body>
 </html>
