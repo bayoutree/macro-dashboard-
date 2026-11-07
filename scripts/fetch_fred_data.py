@@ -21,7 +21,8 @@ OUTPUT_FILE = DATA_DIR / 'cycle_position_v3.json'
 # FRED系列代码映射
 FRED_SERIES = {
     'dfii10': 'DFII10',           # 5Y-5Y远期实际利率
-    'termprem10': 'ACMTP10',      # ACM期限溢价（V22-5：TERMPREM10 在FRED无此序列→拉取静默失败，改纽储ACM官方代码）
+    'termprem10': 'ACMTP10',
+        'ig_oas': 'BAMLC0A0CM',       # [V22-3] ICE BofA美国IG公司债OAS(%)——credit_spread_ig真源，替09-02写死旧值      # ACM期限溢价（V22-5：TERMPREM10 在FRED无此序列→拉取静默失败，改纽储ACM官方代码）
     't30yiem': 'T30YIEM',          # 30Y盈亏平衡通胀
     'bamlh0a0hym2': 'BAMLH0A0HYM2', # 高收益债利差
     't10y2y': 'T10Y2Y',            # 10Y-2Y利差
