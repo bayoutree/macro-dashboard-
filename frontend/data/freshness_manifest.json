@@ -103,7 +103,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "资金面：股基/灵基仓位daily(4/7)、融资余额monthly、新基金/产业资本/财政月频；northbound已deprecated；margin_buying_ratio(capital_flow)无history跳过",
+      "note": "资金面：股基/灵基仓位daily(4/7)、融资余额monthly、新基金/产业资本/财政月频；margin_buying_ratio(capital_flow)无history跳过",
       "fresh_max_trading_days": 2,
       "watch_max_trading_days": 5,
       "expected_publish_day": 15,
@@ -672,18 +672,6 @@
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
-    },
-    {
-      "id": "northbound",
-      "file": "data/timing_scores.json",
-      "date_path": "dimensions.capital_flow.indicators.northbound.value",
-      "freq": "daily",
-      "calendar": "CN",
-      "lag_days": 1,
-      "critical": false,
-      "severity_on_gap": "warn",
-      "status": "deprecated",
-      "note": "北向资金：官方2025-09起停止披露实时数据；deprecated不评估，前端置角标"
     }
   ]
 }

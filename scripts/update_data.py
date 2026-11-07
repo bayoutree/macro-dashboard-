@@ -1212,7 +1212,7 @@ def compute_global_dominance(us_macro_data, cn_macro_data=None, fx_rates=None, c
 
     三阈值（满足 ≥2 → veto=True）：
       a. 加息斜率：fed_funds 近3月变化×4 年化 > 300bp；或 QT：fed_balance 近3月降幅 > 0.5%
-      b. 汇率阀门：USDCNY 年贬 > 4.5% 且（外储3月连降 或 CNH-CNY价差超阈）——北向代理已废弃（无数据源）
+      b. 汇率阀门：USDCNY 年贬 > 4.5% 且（外储3月连降 或 CNH-CNY价差超阈）——原外资流代理已废弃（无数据源）
       c. 信用形态：M2 同比近2月上行 且 M2-社融存量同比裂口 > 2pp（宽货币紧信用空转）
     豁免：R7 has_catalyst=true → 保留 A 段左侧布局（其余加仓仍冻结），注记可观测。
     数据缺失腿按"未知"处理（不计满足），b 腿三元态照常输出供前端展示。
@@ -1381,7 +1381,7 @@ def compute_global_dominance(us_macro_data, cn_macro_data=None, fx_rates=None, c
                 "cnh_cny_spread_latest_bp": spread_latest_bp, "cnh_cny_spread_triggered": spread_triggered,
                 "cnh_cny_params": {"streak_bp": F3_CNH_CNY_STREAK_BP, "streak_days": F3_CNH_CNY_STREAK_DAYS, "single_bp": F3_CNH_CNY_SINGLE_BP},
                 "cnh_cny_detail": spread_detail,
-                "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；北向代理已废弃（无数据源）",
+                "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）",
             },
             "c_credit_form": {
                 "met": bool(c_met), "m2_yoy_2m_up": m2_up, "m2_sf_gap_pp": gap_pp,
@@ -2504,7 +2504,6 @@ class TimingScoreEngine:
           - 灵基仓位: 权重20%
           - 新发基金热度: 权重20%
           - 产业资本增减持: 权重15%
-          - 北向资金: 已停更(权重0%)
           - 两融/流通市值: 参考(权重0%)
           - 财政支出: 参考(权重0%)
         """
@@ -2568,11 +2567,8 @@ class TimingScoreEngine:
             "top_signal": "仓位极高"
         }
 
-        # --- 北向资金趋势 ---
-        north_score, north_val = self._calc_northbound()
-        # [P1-10④ 2026-10-18 投资分析裁决] 北向删卡（披露制度消灭免费高频源），
+        # [P1-10④ 2026-10-18 投资分析裁决] 外资流删卡（披露制度消灭免费高频源），
         # 卡位腾给两融余额变化（沪市融资余额，杠杆资金情绪，免费日频衔接①修复）；
-        # 原 northbound sub_weight=0 → 本指标同 0（换子指标不动权重，不进 composite）
         mb_balance, mb_w_chg, mb_asof, mb_hist = self._calc_margin_balance()
         if mb_balance is None:
             # [2026-10-24 删史防线] stock_margin_sse 源断（CI 限流 JSONDecodeError）时整体继承上期，
@@ -2591,7 +2587,7 @@ class TimingScoreEngine:
                 indicators["margin_balance"] = {
                     "name": "两融余额（沪市）", "value": "数据待更新", "week_change": None,
                     "score": 50, "sub_weight": 0,
-                    "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+                    "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
                     "as_of": None, "freq": "日频", "history": []
                 }
         else:
@@ -2601,7 +2597,7 @@ class TimingScoreEngine:
                 "week_change": f"{mb_w_chg:+.0f}亿" if mb_w_chg is not None else None,
                 "score": 50,
                 "sub_weight": 0,
-                "note": "【P1-10④】北向卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+                "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
                 "as_of": mb_asof,
                 "freq": "日频",
                 "history": mb_hist or []
@@ -2690,7 +2686,7 @@ class TimingScoreEngine:
                 return ind.get("score", 50), None
 
     def _calc_margin_balance(self):
-        """[P1-10④] 沪市融资余额+周变化（北向卡位替代指标，参考权重0）"""
+        """[P1-10④] 沪市融资余额+周变化（外资流卡位替代指标，参考权重0）"""
         try:
             ak = self.init_akshare()
             end = datetime.now().strftime("%Y%m%d")
@@ -2714,52 +2710,6 @@ class TimingScoreEngine:
             logger.warning(f"      两融余额计算失败: {e}")
             return None, None, None, None
 
-    def _calc_northbound(self):
-        """北向资金趋势"""
-        try:
-            ak = self.init_akshare()
-            # 使用 stock_hsgt_hist_em 获取北向资金历史数据
-            hgt_df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="沪股通")
-            sgt_df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="深股通")
-
-            # 合并沪股通+深股通
-            combined = pd.Series(dtype=float)
-            for df in [hgt_df, sgt_df]:
-                if df is not None and not df.empty and '当日成交净买额' in df.columns:
-                    dates = pd.to_datetime(df['日期'])
-                    net_buy = pd.to_numeric(df['当日成交净买额'], errors='coerce')
-                    series = pd.Series(net_buy.values, index=dates.values).dropna()
-                    # 单位: 万元 → 亿元
-                    series = series / 10000
-                    combined = combined.add(series, fill_value=0)
-
-            if not combined.empty and len(combined) >= 3:
-                recent_5d = combined.tail(5).sum()
-                recent_3d = combined.tail(3).sum()
-
-                if recent_5d > 100:
-                    score = 30
-                    val = "连续净流入"
-                elif recent_5d > 0:
-                    score = 42
-                    val = "小幅净流入"
-                elif recent_5d > -100:
-                    score = 55
-                    val = "震荡"
-                else:
-                    score = 70
-                    val = "持续净流出"
-
-                logger.info(f"      北向5日净流入: {recent_5d:.0f}亿 → {val}")
-                return score, val
-        except Exception as e:
-            logger.warning(f"      北向资金异常: {e}")
-
-        prev = load_json("timing_scores.json")
-        return (prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {})
-                .get("northbound", {}).get("score", 50),
-                prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {})
-                .get("northbound", {}).get("value", "震荡"))
 
     def _calc_new_fund(self):
         """新发基金热度"""
@@ -4160,28 +4110,6 @@ class TimingRightEngine:
         except Exception as e:
             return False, f"数据获取异常: {e}"
 
-    def _sig_northbound_inflow(self):
-        """北向配置型资金持续净流入：连续2周净流入>100亿"""
-        try:
-            ak = self.init_akshare()
-            # P2-2 修复(2026-10-10): akshare 无 stock_hsgt_north_net_flow_in_em；
-            # 改用 stock_hsgt_hist_em(symbol="北向资金")，并显式识别 2024-08 起停更。
-            df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="北向资金")
-            if df is not None and not df.empty:
-                col = '当日成交净买额' if '当日成交净买额' in df.columns else ('当日净流入' if '当日净流入' in df.columns else None)
-                if col and '日期' in df.columns:
-                    d = df[['日期', col]].dropna()
-                    if d.empty:
-                        return False, "北向资金已停更（2024-08 起无净买额数据）"
-                    d = d.copy()
-                    d['date'] = pd.to_datetime(d['日期'])
-                    weekly_flow = d.set_index('date')[col].resample('W').sum()
-                    if len(weekly_flow) >= 2:
-                        last2 = weekly_flow.tail(2)
-                        triggered = bool((last2 > 100).all())
-                        val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
-                        return triggered, val
-            return False, "数据待获取"
         except Exception as e:
             return False, f"数据获取异常: {e}"
 
@@ -4351,30 +4279,6 @@ class TimingRightEngine:
             return sig.get("triggered", False), sig.get("current_value", "数据待获取")
         return False, "数据待获取"
 
-    def _sig_northbound_outflow(self):
-        """北向配置型资金持续净流出：连续2周净流出>100亿"""
-        try:
-            ak = self.init_akshare()
-            # P2-2 修复(2026-10-10): 同 _sig_northbound_inflow，改用 stock_hsgt_hist_em。
-            df = safe_ak_call(ak.stock_hsgt_hist_em, symbol="北向资金")
-            if df is not None and not df.empty:
-                col = '当日成交净买额' if '当日成交净买额' in df.columns else ('当日净流入' if '当日净流入' in df.columns else None)
-                if col and '日期' in df.columns:
-                    d = df[['日期', col]].dropna()
-                    if d.empty:
-                        return False, "北向资金已停更（2024-08 起无净买额数据）"
-                    d = d.copy()
-                    d['date'] = pd.to_datetime(d['日期'])
-                    weekly_flow = d.set_index('date')[col].resample('W').sum()
-                    if len(weekly_flow) >= 2:
-                        last2 = weekly_flow.tail(2)
-                        triggered = bool((last2 < -100).all())
-                        val = f"近2周净流入: {last2.iloc[0]:.0f}亿, {last2.iloc[1]:.0f}亿"
-                        return triggered, val
-            return False, "数据待获取"
-        except Exception as e:
-            return False, f"数据获取异常: {e}"
-
     def _sig_volume_price_divergence(self):
         """量价背离（顶部）：指数创新高但成交额未同步放大"""
         df = self._get_index_daily()
@@ -4529,10 +4433,6 @@ class TimingRightEngine:
         logger.info(f"    产业资本转增持: {t} ({v})")
         early_bull.append(self._make_signal("产业资本转增持", t, 7, v, "交易所公告汇总"))
 
-        t, v = self._sig_northbound_inflow()
-        logger.info(f"    北向配置型资金持续净流入: {t} ({v})")
-        early_bull.append(self._make_signal("北向配置型资金持续净流入", t, 10, v, "沪深港通数据"))
-
         t, v = self._sig_volume_price_coord()
         logger.info(f"    量价配合: {t} ({v})")
         early_bull.append(self._make_signal("量价配合", t, 5, v, "交易所行情"))
@@ -4584,10 +4484,6 @@ class TimingRightEngine:
         t, v = self._sig_industry_capital_sell()
         logger.info(f"    产业资本减持放大: {t} ({v})")
         early_bear.append(self._make_signal("产业资本减持放大", t, 7, v, "交易所公告汇总"))
-
-        t, v = self._sig_northbound_outflow()
-        logger.info(f"    北向配置型资金持续净流出: {t} ({v})")
-        early_bear.append(self._make_signal("北向配置型资金持续净流出", t, 10, v, "沪深港通数据"))
 
         t, v = self._sig_volume_price_divergence()
         logger.info(f"    量价背离: {t} ({v})")

@@ -261,8 +261,6 @@ def generate_allocation(layers):
     # 基于估值信号
     impact = l1.get("assets_impact", {})
 
-    # 铜: 结构性紧缺 + 新能源需求
-    overweight.append("铜")
     # A股: 低估值
     if "A股" in l3.get("conclusion", "").lower() or "低估" in l3.get("conclusion", ""):
         overweight.append("A股")

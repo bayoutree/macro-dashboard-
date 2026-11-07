@@ -884,7 +884,7 @@ body::before {
           <div class="sparkline-tooltip" id="ust10y-tooltip"></div>
         </div>
         <div class="sparkline-dates" id="ust10y-dates"></div>
-        <div class="ind-description">美债10Y是全球资产贴现率锚，上行期压制高估值板块，并通过北向资金传导至A股。</div>
+        <div class="ind-description">美债10Y是全球资产贴现率锚，上行期压制高估值板块，并通过外资流动传导至A股。</div>
         <div class="update-time">更新: 2026-10-08 (日频)</div>
       </div>
       <!-- 中美10Y利差 -->
@@ -918,7 +918,7 @@ body::before {
           <div class="sparkline-tooltip" id="usdcny-tooltip"></div>
         </div>
         <div class="sparkline-dates" id="usdcny-dates"></div>
-        <div class="ind-description">人民币汇率是资金面与风险偏好的综合阀门。贬值压力常伴随北向流出，压制外资重仓板块。<br><span style="color:var(--yellow);">⚠️ 注意：箭头方向与数值相反——贬值=风险升高</span><br><span style="color:var(--text-muted);font-size:10px;">(待接入FRED DEXCHUS)</span></div>
+        <div class="ind-description">人民币汇率是资金面与风险偏好的综合阀门。贬值压力常伴随外资流出，压制外资重仓板块。<br><span style="color:var(--yellow);">⚠️ 注意：箭头方向与数值相反——贬值=风险升高</span><br><span style="color:var(--text-muted);font-size:10px;">(待接入FRED DEXCHUS)</span></div>
         <div class="update-time">更新: 2026-10-02 (日频)</div>
       </div>
     </div>
@@ -1304,7 +1304,6 @@ const StageEngine = {
       if (name.includes('60日线')) return '跌破60日线';
       if (name.includes('成交')) return name.includes('放量') ? '成交放量' : '成交萎缩';
       if (name.includes('产业资本')) return name.includes('增持') ? '产业资本增持' : '产业资本减持';
-      if (name.includes('北向')) return name.includes('流入') ? '北向净流入' : '北向净流出';
       if (name.includes('宽度')) return name.includes('修复') ? '市场宽度修复' : '宽度恶化';
       if (name.includes('两融')) return name.includes('回升') ? '两融回升' : '两融回落';
       if (name.includes('量价')) return name.includes('配合') ? '量价配合' : '量价背离';
@@ -1760,18 +1759,6 @@ const mockData = {
       history: [-2.4,-2.0,-0.6,-0.6,-1.0,-1.9,-0.9,-1.0,-0.9,-1.5,0.0,-0.2,0.6,-1.0,-0.6,6.9,3.5,4.7,5.1,4.2,6.6,5.4,5.9,7.5,5.6,6.1,6.5,5.9,7.5,7.9,7.9,8.5,8.9,8.3,9.1,11.5,11.2,14.1,14.1,16.1,18.2,16.2,19.1,20.2,23.1,22.7,22.7,16.8,15.8,12.7,10.9,7.5,5.1,1.5,0.6,-3.2,-5.5,-6.9,-5.9,-3.8,-4.6,-2.0,-0.9,-0.2,0.5,2.3,4.2,4.4,6.5,6.8,6.7,3.7,1.9,-1.0,-2.5,-2.7,-4.8,-6.1,-8.5,-9.8,-10,-10,-10,-6.5,-6.1,-2.1,-1.3,1.6,3.8,8.0,9.8,12.1,14.7,16.1,18.5,18.9,18.2,18.7,19.6,19.4,19.8,19.9,20.5,20.8,22.2,21.7,21.9,22.0,21.6,24.2,23.7,24.2,23.3,25,22.6,21.2,17.5,15.0,12.1,10.1,7.7,6.2,3.7,0.1,0.3,-3.5,-2.4,-2.5,-2.6,-3.7,-4.7,-5.7,-6.6,-5.1,-6.4,-7.0,-7.6,-7.6,-6.3,-6.4,-6.0,-5.5,-5.6,-5.4,-4.4,-4.9,-2.9,-2.3,-3.4,-4.0,-1.9,-1.8,-1.7,-2.6,-2.8,0.4,-0.9,-0.1,-0.3,0.3,-0.9,-0.0,-0.6,-0.2,0.3,-0.4,0.8,0.8,0.6,1.6,1.8,1.3,3.8,2.9,3.4,2.4,3.5,3.6,2.4,3.5],
       updateTime: '2026-08 (月频)'
     },
-    <!-- 北向资金卡：2024-08起停更，已折叠到参考区 -->
-    // [MOVED] 北向资金累计净流入 → 已移至 referenceIndicators[4]
-    // 保留原始数据定义供未来恢复（原始history数据过长，已删除）
-    {
-      name: '北向资金累计净流入', dim: '参考', dimClass: 'dim-tag-ref', value: '已折叠', signal: 'gray', signalText: '已折叠',
-      freq: '周频',
-      description: '',
-      dates: [],
-      history: [],
-      updateTime: '2024-08-20',
-      _folded: true
-    },
     // 7. ETF份额变化
     {
       name: 'ETF份额变化', dim: '资金流', dimClass: 'dim-tag-capital-flow', value: '13400亿份', signal: 'green', signalText: '持续增长',
@@ -1853,7 +1840,7 @@ const mockData = {
       history: [-18.0,-6.0,1.0,-86.0,-48.0,-62.0,-63.0,-94.0,-82.0,-96.0,-0.0,-49.0,-55.0,-64.0,-1.0,-6.0,12.0,-4.0,-20.0,-22.0,-19.0,-8.0,22.0,-6.0,17.0,31.0,4.0,43.0,32.0,35.0,28.0,36.0,13.0,12.0,36.0,50.0,19.0,35.0,14.0,-0.0,19.0,27.0,-1.0,1.0,3.0,20.0,-20.0,24.0,25.0,24.0,6.0,28.0,-6.0,3.0,43.0,-9.0,9.0,11.0,43.0,20],
       updateTime: '2026-09 (月频)'
     },
-    // 6. 两融余额（沪市）— [P1-10④ 2026-10-18 投资分析裁决] 北向删卡（2024-08起披露制度消灭免费高频源），
+    // 6. 两融余额（沪市）— [P1-10④ 2026-10-18 投资分析裁决] 外资流删卡（2024-08起披露制度消灭免费高频源），
     //    卡位腾给两融余额变化：沪市融资余额，杠杆资金情绪，免费日频，衔接①两融修复
     {
       name: '两融余额（沪市）',
@@ -2993,7 +2980,7 @@ function renderMainIndicators() {
   let html = '';
   
   mockData.mainIndicators.forEach((ind, idx) => {
-    if (ind._folded) return; // 北向资金卡已折叠到参考区，不在主区渲染
+    if (ind._folded) return; // 已折叠卡不在主区渲染
     const slopeHtml = ind.slope ? `<span class="trend-slope ${ind.slope}">${ind.slope === 'accel' ? '↑加速' : ind.slope === 'decel' ? '↓减速' : '→走平'}</span>` : '';
     const descHtml = ind.description ? `<div class="ind-description">${ind.description}</div>` : '';
     // A2: date labels
@@ -3622,17 +3609,6 @@ function applyTimingDataToMockData() {
     M[4].signalText = _scoreText(f3.score, '收益');
     M[4].description = '【P1-10② 2026-10-18裁决】中证偏股型基金指数930950（csindex官方周频）3年滚动年化(756交易日)，反映公募赚钱效应。替代885001万得偏股混（付费源不可得，重叠段差0.40pp）；score阈值映射：<-10%→90/[0,10%)→50/≥30%→10';
   } else _setPending(M[4]);
-  // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，指标已下线
-  // [5] 北向资金 — 2024-08 起交易所停止披露实时数据，已折叠至参考区
-  // M[5] 保留占位但不渲染DOM（_folded:true）
-  M[5].value = '已折叠';
-  M[5].signal = 'gray';
-  M[5].signalText = '已折叠';
-  M[5].description = '';
-  M[5].dates = [];
-  M[5].history = [];
-  M[5].updateTime = '2024-08-20';
-  M[5]._folded = true;
   // [6] 产业资本净减持率 — 工单6c: 股东增减持净减持额/流通市值，2018起全历史百分位
   //     数据源: 东方财富RPTA_WEB_GDSCTJ日度汇总(公告日口径) + AKShare流通市值
   //     评分: 全历史百分位分档 + 护栏(≥0.15%→90/≥0.10%→75/≥0.05%→60)
@@ -3640,24 +3616,24 @@ function applyTimingDataToMockData() {
   //     注意：未含回购，净减持额偏高~20-25%，当前值为上限估计
   const ic6 = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
   if (ic6 && Array.isArray(ic6.history) && ic6.history.length >= 2) {
-    M[6].name = '产业资本净减持率';
-    M[6].freq = '月频';
-    M[6].value = (+ic6.value).toFixed(3) + '%';
+    M[5].name = '产业资本净减持率';
+    M[5].freq = '月频';
+    M[5].value = (+ic6.value).toFixed(3) + '%';
     const _ic6TierSig = {'extreme_greed':'red','greed':'red','watch':'yellow','neutral':'yellow','cool':'green','cold':'green'};
-    M[6].signal = _ic6TierSig[ic6.tier] || _scoreSignal(ic6.score);
+    M[5].signal = _ic6TierSig[ic6.tier] || _scoreSignal(ic6.score);
     const _ic6TierText = {'extreme_greed':'过热','greed':'偏热','watch':'关注','neutral':'中性','cool':'偏冷','cold':'冰点'};
-    M[6].signalText = _ic6TierText[ic6.tier] || _scoreText(ic6.score, '减持');
-    M[6].slope = null;
-    M[6].dates = ic6.history.map(p => p.date);
-    M[6].history = ic6.history.map(p => +p.value);
-    M[6].history2 = undefined;
+    M[5].signalText = _ic6TierText[ic6.tier] || _scoreText(ic6.score, '减持');
+    M[5].slope = null;
+    M[5].dates = ic6.history.map(p => p.date);
+    M[5].history = ic6.history.map(p => +p.value);
+    M[5].history2 = undefined;
     const _ic6PctTxt = (ic6.pctile_all !== undefined) ? (+ic6.pctile_all).toFixed(0) + '%分位' : '';
-    M[6].description = '<span class="desc-range">2018起 ' + _ic6PctTxt + '</span>'
+    M[5].description = '<span class="desc-range">2018起 ' + _ic6PctTxt + '</span>'
       + ' 产业资本净减持额/流通市值。低减持率=产业资本不卖(底部区域)，高减持率=大举卖出(风险信号)。'
       + '回购计入增持端后数据将下修，当前值为上限估计。'
       + (ic6.note ? '<details style="margin-top:3px;"><summary style="cursor:pointer;color:var(--text-muted);font-size:10px;">数据说明与局限</summary><div style="font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.5;">' + String(ic6.note).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></details>' : '');
-    M[6].updateTime = ((M[6].dates.length > 0) ? M[6].dates[M[6].dates.length - 1] : (ic6.update_date || ic6._updateDate || '')) + ' (' + (M[6].freq || '月频') + ')';
-  } else _setPending(M[6], '产业资本净减持率数据待获取');
+    M[5].updateTime = ((M[5].dates.length > 0) ? M[5].dates[M[5].dates.length - 1] : (ic6.update_date || ic6._updateDate || '')) + ' (' + (M[5].freq || '月频') + ')';
+  } else _setPending(M[5], '产业资本净减持率数据待获取');
 
   // ============ 参考指标 5 项 ============
   const R = mockData.referenceIndicators;
@@ -3699,7 +3675,7 @@ function applyTimingDataToMockData() {
     else if (_feScore <= 80) R[2].signal = 'yellow';
     else R[2].signal = 'red';
   } else _setPending(R[2], '财政支出增速数据待获取');
-  // [3] 产业资本净减持率 — 工单6c真数据已接入M[6]主指标，参考区同步更新
+  // [3] 产业资本净减持率 — 工单6c真数据已接入M[5]主指标，参考区同步更新
   const ic = _tag(_tsInd(ts, 'capital_flow', 'industrial_capital'));
   if (ic && Array.isArray(ic.history) && ic.history.length >= 2) {
     _setSnapshot(R[3], ic, (+ic.value).toFixed(3) + '%', '月频');
@@ -3709,7 +3685,7 @@ function applyTimingDataToMockData() {
     R[3].dates = ic.history.map(p => p.date);
     R[3].history = ic.history.map(p => +p.value);
   } else _setPending(R[3], '产业资本数据待获取');
-  // [4] 两融余额（沪市）— [P1-10④] 北向卡位替代，timing_scores.json capital_flow.margin_balance
+  // [4] 两融余额（沪市）— [P1-10④] 外资流卡位替代，timing_scores.json capital_flow.margin_balance
   const _mb = _tag(_tsInd(ts, 'capital_flow', 'margin_balance'));
   if (_mb && Array.isArray(_mb.history) && _mb.history.length >= 2) {
     _setSnapshot(R[4], _mb, _mb.value, '日频');
