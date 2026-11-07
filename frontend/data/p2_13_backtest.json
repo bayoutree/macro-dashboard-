@@ -1,0 +1,214 @@
+{
+ "generated": "2026-11-03 21:09:12 CST",
+ "spec": "P2-13 信号有效性回溯方法学规格 v1（2026-11-01）",
+ "signal": "composite 逐月可用指标集权重归一化；expanding 分位(min24m)防后视；月频慢变量 lag1",
+ "target": "沪深300价格指数（全收益免费源不可得，全表统一价格指数口径，股息差年均约2pp）",
+ "alignment": "信号月末 as_of → 次月首个交易日起 3M(63td)/6M(126td) 累计",
+ "sample": {
+  "main_window": "2010-01→2026-03",
+  "n_6m": 195,
+  "n_3m": 198,
+  "note": "expanding 预热 24 月，有效窗随指标覆盖实际"
+ },
+ "bands_3m": [
+  {
+   "band": "0-20",
+   "n": 52,
+   "mean": 3.11,
+   "median": -1.29,
+   "win_rate": 48.1,
+   "std": 13.83,
+   "note": ""
+  },
+  {
+   "band": "20-40",
+   "n": 76,
+   "mean": 2.36,
+   "median": 1.67,
+   "win_rate": 59.2,
+   "std": 10.94,
+   "note": ""
+  },
+  {
+   "band": "40-60",
+   "n": 51,
+   "mean": -1.86,
+   "median": -1.09,
+   "win_rate": 41.2,
+   "std": 10.93,
+   "note": ""
+  },
+  {
+   "band": "60-80~80-100",
+   "n": 19,
+   "mean": -0.15,
+   "median": -1.02,
+   "win_rate": 42.1,
+   "std": 8.29,
+   "note": "n<30 合并相邻档：60-80+80-100"
+  }
+ ],
+ "bands_6m": [
+  {
+   "band": "0-20",
+   "n": 52,
+   "mean": 8.78,
+   "median": 2.22,
+   "win_rate": 51.9,
+   "std": 26.23,
+   "note": ""
+  },
+  {
+   "band": "20-40",
+   "n": 76,
+   "mean": 1.13,
+   "median": 1.93,
+   "win_rate": 53.9,
+   "std": 11.71,
+   "note": ""
+  },
+  {
+   "band": "40-60",
+   "n": 49,
+   "mean": 0.39,
+   "median": 0.16,
+   "win_rate": 51.0,
+   "std": 14.34,
+   "note": ""
+  },
+  {
+   "band": "60-80~80-100",
+   "n": 18,
+   "mean": -0.29,
+   "median": -2.43,
+   "win_rate": 44.4,
+   "std": 8.64,
+   "note": "n<30 合并相邻档：60-80+80-100"
+  }
+ ],
+ "endpoint_3m": null,
+ "endpoint_6m": null,
+ "monotonicity_3m": {
+  "rho": -0.8,
+  "p": 0.2
+ },
+ "monotonicity_6m": {
+  "rho": -1.0,
+  "p": 0.0
+ },
+ "ic": {
+  "rank_ic_6m": -0.105,
+  "icir": -0.9,
+  "n": 195
+ },
+ "stability": {
+  "ic_2010_2017": -0.21329733895549552,
+  "n1": 96,
+  "ic_2018_now": -0.03991774637511015,
+  "n2": 99
+ },
+ "oos": {
+  "ic_2023": 0.12703072034083218,
+  "n": 39,
+  "ic_pre": -0.18957990554879733,
+  "degradation_pct": 167.0
+ },
+ "spot_check_12": [
+  {
+   "month": "2010-01",
+   "composite": 56.9,
+   "n_indicators": 1,
+   "fwd6m": -10.15,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2011-06",
+   "composite": 16.0,
+   "n_indicators": 1,
+   "fwd6m": -25.36,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2012-12",
+   "composite": 6.0,
+   "n_indicators": 2,
+   "fwd6m": -11.06,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2014-05",
+   "composite": 2.4,
+   "n_indicators": 2,
+   "fwd6m": 44.39,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2015-11",
+   "composite": 26.5,
+   "n_indicators": 2,
+   "fwd6m": -11.5,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2017-05",
+   "composite": 27.8,
+   "n_indicators": 3,
+   "fwd6m": 14.31,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2018-10",
+   "composite": 9.8,
+   "n_indicators": 5,
+   "fwd6m": 15.48,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2020-04",
+   "composite": 50.4,
+   "n_indicators": 5,
+   "fwd6m": 25.85,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2021-10",
+   "composite": 49.3,
+   "n_indicators": 5,
+   "fwd6m": -18.69,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2023-03",
+   "composite": 35.8,
+   "n_indicators": 7,
+   "fwd6m": -9.49,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2024-09",
+   "composite": 48.4,
+   "n_indicators": 8,
+   "fwd6m": -11.68,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  },
+  {
+   "month": "2026-03",
+   "composite": 63.8,
+   "n_indicators": 15,
+   "fwd6m": -4.61,
+   "lag_note": "月频慢变量已 lag1；分位类用当时分位"
+  }
+ ],
+ "multitest": "档×窗×持有期组合：5档×(主窗+分半×2+样本外)×(3M/6M)=40 组，全报",
+ "verdict": {
+  "pass": false,
+  "fails": [
+   "6M 档 60-80~80-100 n=18<30",
+   "6M 端点差/NW t 未过: None",
+   "单调性未过: rho=(-1.0, 0.0)",
+   "IC/ICIR 未过: IC=-0.105, ICIR=-0.9",
+   "样本外退化 167.0% 或方向翻转"
+  ]
+ },
+ "data_hash": "3f636da"
+}

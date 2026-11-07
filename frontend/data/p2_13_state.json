@@ -1,0 +1,14 @@
+{
+ "status": "有效性未验证",
+ "light": "gray",
+ "last_run": "2026-11-03 21:09:12 CST",
+ "fails": [
+  "6M 档 60-80~80-100 n=18<30",
+  "6M 端点差/NW t 未过: None",
+  "单调性未过: rho=(-1.0, 0.0)",
+  "IC/ICIR 未过: IC=-0.105, ICIR=-0.9",
+  "样本外退化 167.0% 或方向翻转"
+ ],
+ "revalidate_due": "规则或口径变更后 30 天内重跑",
+ "detail": "data/p2_13_backtest.json"
+}
