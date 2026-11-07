@@ -107,6 +107,13 @@ body::before {
 }
 .staleness-banner.block { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.5); color: var(--red); }
 .staleness-banner.warn { background: rgba(255,215,110,0.12); border: 1px solid rgba(255,215,110,0.4); color: var(--yellow); }
+/* [M4 2026-11-07] 指标卡「这是什么」展开说明 */
+.ind-info-btn { cursor: pointer; font-size: 11px; color: var(--text-muted); margin-left: 4px; user-select: none; }
+.ind-info-btn:hover { color: var(--text-secondary); }
+.ind-detail { display: none; margin-top: 6px; padding: 8px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; font-size: 11px; line-height: 1.7; color: var(--text-secondary); }
+.ind-detail.open { display: block; }
+.ind-detail .d-row { margin: 2px 0; }
+.ind-detail .d-label { color: var(--text-muted); display: inline-block; min-width: 56px; }
 
 /* ===== RANGE INFO BAR (A3 fix) ===== */
 .range-info-bar {
@@ -2985,6 +2992,48 @@ function _fgZoneSignal(zone) {
   return ({'极度恐惧':'green','恐惧':'green2','中性':'neutral','贪婪':'yellow','极度贪婪':'red'})[zone] || 'gray';
 }
 
+// [M4 2026-11-07] 指标卡「这是什么」四要素：定义/来源/频率/当前含义
+// 当前含义按 score 区间+逆向标记生成白话；来源取 freq 与 history 点数
+// [M4] 主区/确认卡「这是什么」定义表（卡名→一句话说人话定义）；优先于动态数值行展示
+const _M4_CARD_DEFS = {
+  '机构仓位(公募/灵活)': '公募基金当前持有股票的比例。仓位高=机构子弹少，仓位低=还有加仓空间。',
+  '杠杆资金(余额/占比)': '借钱炒股的资金规模与活跃度。余额上行=资金进场；占比急升=情绪过热，常见于行情后段。',
+  '融资买入占比': '融资买入额占市场成交额比重。杠杆资金进攻性直接度量，急升=情绪过热，常见于行情后段。',
+  '恐贪指针': '0-100的市场情绪温度计（QVIX波动率驱动）。>75贪婪(谨慎)，<25恐惧(逆向机会)。',
+  '新发基金份额': '每月新成立基金的发行规模。爆款频出=场外资金跑步进场(顶部特征)，发行冰点=底部特征。',
+  '新发主动偏股基金': '每月新发主动偏股基金规模。爆款频出=场外资金跑步进场(顶部特征)，发行冰点=底部特征。',
+  '偏股基金3年年化': '偏股基金指数近3年年化收益。负数=买基金三年不赚钱(底部特征)，过高=赚钱效应过热。',
+  'ETF份额变化': 'ETF总份额增减。越跌越买=聪明钱逆势布局，份额持续流出=资金离场。',
+  '产业资本净减持率': '上市公司股东/高管的增减持。最了解公司的钱：净增持=底部信号，减持放大=顶部信号。',
+  '均线排列(月线)': '指数与月均线的位置关系。站稳年线上方=长期趋势转多，跌破反抽失败=转空确认。',
+  'MACD(月线)': '月线级动量指标。金叉=长期动能转强，死叉=转弱；月频信号慢但胜率高。',
+  '成交量': '成交活跃度。量价齐升=健康上涨，缩量上涨=动力存疑，放量滞涨=分歧加大。',
+};
+function _m4Meaning(ind) {
+  // 由信号灯推导白话含义（signal 已在各填充处按阈值算好，单一真值）
+  const g = ind.signal;
+  const t = ind.signalText || '';
+  if (g === 'red' || g === 'bearish') return `当前${t ? '「' + t + '」' : ''}处于偏高/偏热区，信号谨慎，注意拥挤风险。`;
+  if (g === 'green' || g === 'bullish' || g === 'green2') return `当前${t ? '「' + t + '」' : ''}处于偏低/有空间一侧，对布局相对友好。`;
+  if (g === 'gray') return '数据待获取或信号未触发，暂不作方向参考。';
+  return `当前${t ? '「' + t + '」' : ''}处于中性区间，方向信号不强。`;
+}
+function _m4Toggle(btn) {
+  const d = btn.parentElement.parentElement.querySelector('.ind-detail');
+  if (d) { d.classList.toggle('open'); btn.textContent = d.classList.contains('open') ? '▾ 收起' : 'ⓘ 这是什么'; }
+}
+function _m4DetailHtml(ind, withDesc) {
+  const desc = ind.description || '';
+  if (!desc && !ind.freq) return '';
+  const n = (ind.history && ind.history.length) || 0;
+  const src = (ind.freq || '') + (n ? ' · ' + n + '个数据点' : '');
+  return `<div class="ind-detail">
+    ${desc ? `<div class="d-row"><span class="d-label">是什么</span>${desc}</div>` : ''}
+    ${src ? `<div class="d-row"><span class="d-label">来源/频率</span>${src}</div>` : ''}
+    <div class="d-row"><span class="d-label">当前含义</span>${_m4Meaning(ind) || '读数解读随阶段切换，结合信号色看。'}</div>
+  </div>`;
+}
+
 function renderMainIndicators() {
   const container = document.getElementById('main-indicators');
   let html = '';
@@ -2992,7 +3041,9 @@ function renderMainIndicators() {
   mockData.mainIndicators.forEach((ind, idx) => {
     if (ind._folded) return; // 已折叠卡不在主区渲染
     const slopeHtml = ind.slope ? `<span class="trend-slope ${ind.slope}">${ind.slope === 'accel' ? '↑加速' : ind.slope === 'decel' ? '↓减速' : '→走平'}</span>` : '';
-    const descHtml = ind.description ? `<div class="ind-description">${ind.description}</div>` : '';
+    const _def = _M4_CARD_DEFS[ind.name] || '';
+    const _descShow = _def || ind.description || '';
+    const descHtml = (_descShow || ind.freq) ? `<div class="ind-description" style="cursor:pointer;" onclick="_m4Toggle(this)"><span class="ind-info-btn">ⓘ 这是什么</span>${_descShow ? ' ' + _descShow : ''}</div>${_m4DetailHtml({...ind, description: _descShow})}` : '';
     // A2: date labels
     const startD = ind.dates ? fmtDateLabel(ind.dates[0]) : '';
     const endD = ind.dates ? fmtDateLabel(ind.dates[ind.dates.length-1]) : '';
@@ -3033,7 +3084,9 @@ function renderConfirmSignals() {
   let html = '';
   
   mockData.confirmSignals.forEach((cf, idx) => {
-    const descHtml = cf.description ? `<div class="ind-description">${cf.description}</div>` : '';
+    const _defC = _M4_CARD_DEFS[cf.name] || '';
+    const _descC = _defC || cf.description || '';
+    const descHtml = (_descC || cf.freq) ? `<div class="ind-description" style="cursor:pointer;" onclick="_m4Toggle(this)"><span class="ind-info-btn">ⓘ 这是什么</span>${_descC ? ' ' + _descC : ''}</div>${_m4DetailHtml({...cf, description: _descC})}` : '';
     const updateCls = getUpdateStatus(cf.updateTime);
     const startD = cf.dates ? fmtDateLabel(cf.dates[0]) : '';
     const endD = cf.dates ? fmtDateLabel(cf.dates[cf.dates.length-1]) : '';
