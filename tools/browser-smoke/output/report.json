@@ -42,7 +42,7 @@
         "canvas": 2,
         "svg": 66,
         "graphics": 68,
-        "textLen": 14599
+        "textLen": 14621
       }
     },
     {
@@ -65,7 +65,7 @@
         [
           "图形元素(canvas+svg)>=5",
           true,
-          "graphics=30(canvas=0,svg=30)"
+          "graphics=34(canvas=0,svg=34)"
         ],
         [
           "可见文本含'新鲜度'",
@@ -84,9 +84,9 @@
       "stats": {
         "divs": 18,
         "canvas": 0,
-        "svg": 30,
-        "graphics": 30,
-        "textLen": 5556
+        "svg": 34,
+        "graphics": 34,
+        "textLen": 6400
       }
     },
     {
@@ -104,12 +104,12 @@
         [
           "图形容器>=20",
           true,
-          "chart_divs=46"
+          "chart_divs=49"
         ],
         [
           "图形元素(canvas+svg)>=10",
           true,
-          "graphics=58(canvas=57,svg=1)"
+          "graphics=63(canvas=62,svg=1)"
         ],
         [
           "Console真实错误==0",
@@ -121,11 +121,11 @@
       "raw_identifier_tokens": [],
       "title": "宏观经济看板 | Macro Economy Dashboard",
       "stats": {
-        "divs": 46,
-        "canvas": 57,
+        "divs": 49,
+        "canvas": 62,
         "svg": 1,
-        "graphics": 58,
-        "textLen": 3023
+        "graphics": 63,
+        "textLen": 4345
       }
     }
   ],
