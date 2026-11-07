@@ -100,6 +100,13 @@ body::before {
 .data-status.stale .dot { background: var(--yellow); }
 .data-status.expired .dot { background: var(--red); }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+/* [V22-2 2026-11-07] 断更头部横幅：block级红条 / warn级黄条 */
+.staleness-banner {
+  margin-bottom: 12px; padding: 10px 16px; border-radius: 12px;
+  font-size: 13px; font-weight: 600; text-align: left; line-height: 1.6;
+}
+.staleness-banner.block { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.5); color: var(--red); }
+.staleness-banner.warn { background: rgba(255,215,110,0.12); border: 1px solid rgba(255,215,110,0.4); color: var(--yellow); }
 
 /* ===== RANGE INFO BAR (A3 fix) ===== */
 .range-info-bar {
@@ -597,10 +604,13 @@ body::before {
       <div class="subtitle">V4.1 · 4段等宽 · 月线级择时</div>
     </div>
     <div class="header-right">
-      <span class="data-status fresh"><span class="dot"></span>数据正常</span>
+      <span class="data-status fresh" id="data-status-lamp"><span class="dot"></span>数据正常</span>
       <span class="update-badge" id="header-update-time">更新: --</span>
     </div>
   </header>
+
+  <!-- [V22-2 2026-11-07] 断更头部横幅：核心数据源超期时红/黄条逐项列出（断更5天无人发现的修复闸） -->
+  <div id="staleness-banner" class="staleness-banner" style="display:none;"></div>
 
   <!-- A3: Range info bar -->
   <div class="range-info-bar" id="range-info-bar"></div>
@@ -4125,9 +4135,76 @@ function safeRender(name, fn) {
   try { fn(); } catch (err) { console.warn('[render] ' + name + ' failed:', err); }
 }
 
+// ============================================================
+// [V22-2 2026-11-07] 断更头部横幅+动态状态灯
+// 背景：2026-11-03~07 update-data连挂4天、决策数据断更5天无人发现——
+// 头部状态灯原写死"数据正常"。此闸逐项检查核心源新鲜度，超期即红/黄条列出。
+// ============================================================
+async function checkDataStaleness() {
+  const tdays = (dateStr) => {  // 近似交易日差（跳过周末）
+    if (!dateStr) return 999;
+    const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00');
+    if (isNaN(d)) return 999;
+    const today = new Date();
+    let n = 0;
+    for (let t = new Date(d); t.setDate(t.getDate() + 1), t < today;) {  // 从数据日次日起计
+      const w = t.getDay();
+      if (w !== 0 && w !== 6) n++;
+    }
+    return n;
+  };
+  const stale = [];
+  // 1. 决策引擎 timing_scores（日更核心，>2交易日=断更）
+  const tsDate = StageEngine._timingData && StageEngine._timingData.update_date;
+  const tsLag = tdays(tsDate);
+  if (tsLag > 2) stale.push({ name: '决策引擎', date: tsDate || '无日期', lag: tsLag, level: 'block' });
+  // 2. 决策态日志 timing_history 尾点
+  const hist = StageEngine._timingHistory;
+  const hDate = (hist && hist.length) ? hist[hist.length - 1].date : null;
+  const hLag = tdays(hDate);
+  if (hLag > 2) stale.push({ name: '决策态日志', date: hDate || '无数据', lag: hLag, level: 'block' });
+  // 3. 恐贪指针（QVIX上游发布滞后数日，宽限5交易日）
+  const fgDate = StageEngine._fearGreedPointer && StageEngine._fearGreedPointer.as_of;
+  const fgLag = tdays(fgDate);
+  if (fgLag > 5) stale.push({ name: '恐贪指针(QVIX)', date: fgDate || '无日期', lag: fgLag, level: 'warn' });
+  // 4. 资产价格日频序列（尾点>3交易日列入，防节假日误报）
+  try {
+    const r = await fetch('data/asset_prices.json?v=' + Date.now());
+    if (r.ok) {
+      const ap = await r.json();
+      const names = { sp500: '标普500', nasdaq: '纳指', gold: '黄金', copper: '铜', crude_oil: '原油',
+                      usd_index: '美元指数', us_10y_bond: '美债10Y', btc: 'BTC', hs300: '沪深300', cn_10y_yield: '中债10Y' };
+      const badAssets = [];
+      Object.keys(ap.prices || {}).forEach(k => {
+        const d = ap.prices[k] && ap.prices[k].daily;
+        const tail = (d && d.length) ? d[d.length - 1].date : null;
+        const lag = tdays(tail);
+        if (lag > 3) badAssets.push((names[k] || k) + '停' + (tail || '?'));
+      });
+      if (badAssets.length) stale.push({ name: '资产价格', date: badAssets.slice(0, 4).join('、'), lag: 0, level: 'block' });
+    }
+  } catch(e) { console.warn('[V22-2] asset_prices 检查失败:', e); }
+  // 渲染横幅+状态灯
+  const banner = document.getElementById('staleness-banner');
+  const lamp = document.getElementById('data-status-lamp');
+  if (stale.length) {
+    const worst = stale.some(x => x.level === 'block') ? 'block' : 'warn';
+    banner.style.display = 'block';
+    banner.className = 'staleness-banner ' + worst;
+    banner.innerHTML = '⚠️ 数据断更告警：' + stale.map(x =>
+      x.lag > 0 ? `${x.name} 停在 ${x.date}（${x.lag}个交易日未更新）` : `${x.name}：${x.date}`
+    ).join('；') + '。请以各卡片日期角标为准，修复进行中。';
+    if (lamp) { lamp.className = 'data-status ' + (worst === 'block' ? 'expired' : 'stale'); lamp.innerHTML = '<span class="dot"></span>数据断更'; }
+  } else {
+    banner.style.display = 'none';
+    if (lamp) { lamp.className = 'data-status fresh'; lamp.innerHTML = '<span class="dot"></span>数据正常'; }
+  }
+}
+
 async function init() {
   // Load timing_scores.json for real engine data
   try { await StageEngine.load(); } catch(e) { console.warn("[init] StageEngine.load failed:", e); }
+  safeRender('checkDataStaleness', checkDataStaleness); // [V22-2] 断更横幅
   // v3.3.1: 首期迁移归零——脚本同步阶段的 runEngine() 使用内嵌fallback数据，
   // 其结果不得作为真实数据期的迁移基准；置空 prev 后重算，迁移箭头首期全0
   StageEngine._prevProbabilities = null;
