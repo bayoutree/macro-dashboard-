@@ -71,7 +71,14 @@ jobs:
             echo "📋 数据无变更，跳过提交"
           else
             git commit -m "📊 Daily data update $(date +%Y-%m-%d)"
-            git push
+            # [V22 2026-11-07] 并发加固：两条数据链路同仓写 data/，push 被拒时 rebase 重试；
+            # rebase 冲突不硬解（数据口径可能互相覆盖），abort 后人工介入
+            for i in 1 2 3; do
+              if git push; then break; fi
+              echo "⚠️ push 被拒（并发写入），pull --rebase 重试 $i/3"
+              git pull --rebase || { git rebase --abort; echo "::error::rebase 冲突，需人工合并"; exit 1; }
+              sleep 5
+            done
             echo "committed=true" >> "$GITHUB_OUTPUT"
             echo "✅ 数据已推送入库"
           fi
