@@ -25,9 +25,7 @@
     }
   },
   "allocation": {
-    "overweight": [
-      "铜"
-    ],
+    "overweight": [],
     "market_weight": [
       "黄金",
       "中国国债",
