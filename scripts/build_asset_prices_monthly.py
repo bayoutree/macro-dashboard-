@@ -47,6 +47,11 @@ KEY_MAP = {
     "crude_oil": ("wti_oil", "value"),
     "usd_index": ("usd_index", "value"),
     "us_10y_bond": ("us_10y_yield", "value"),
+    # [V22-5 2026-11-07] 中国源序列接入日频聚合——P0-2 遗留"停更待修"的
+    # hs300/cn_10y_yield（A股/中债月频估值，资产映射层用，CIO实测断26+交易日）；
+    # 日频 asset_prices.json 同源覆盖（08月起），口径闸门校验重叠月偏差≤10%
+    "hs300": ("hs300", "close"),
+    "cn_10y_yield": ("cn_10y_yield", "yield"),
 }
 
 SEAM_TOLERANCE_PCT = 10.0   # 全部重叠月偏差 ≤10% 视为同尺度可合并

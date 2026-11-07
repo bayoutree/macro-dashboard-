@@ -49,13 +49,14 @@ def update_v3_json(fred_raw):
     
     # 映射FRED数据到JSON字段
     mappings = {
-        # (json_path_keys, fred_series_key, indicator_key)
-        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'breakeven_5y5y'), 'dfii10'),
-        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'acm_term_premium'), 'termprem10'),
-        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'breakeven_30y'), 't30yiem'),
-        (('cycle_layers', 'layer_3_rate_regime', 'market_based', 'hy_spread'), 'bamlh0a0hym2'),
-        (('cycle_layers', 'layer_3_rate_regime', 'market_based', 'yield_spread_10y_2y'), 't10y2y'),
-        (('cycle_layers', 'layer_3_rate_regime', 'market_based', 'core_pce'), 'cpilfesl'),
+        # [V22-5 2026-11-07] 对齐 v3 实际结构：forward_looking/market_based 均带
+        # indicators 层，旧键名（breakeven_5y5y/breakeven_30y/acm_term_premium/
+        # hy_spread/core_pce）在 v3 不存在→静默落空，breakeven_inflation 停更
+        # 2026-09-02 两月余（CIO 11-07 实测配套发现）。删除无目标键映射。
+        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'indicators', 'breakeven_inflation'), 't30yiem'),
+        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'indicators', 'real_rate_forward'), 'dfii10'),
+        (('cycle_layers', 'layer_3_rate_regime', 'forward_looking', 'indicators', 'term_premium'), 'termprem10'),
+        (('cycle_layers', 'layer_3_rate_regime', 'market_based', 'indicators', 'yield_curve_2s10s'), 't10y2y'),
         (('cycle_layers', 'layer_6_merrill', 'us', 'indicators', 'unemployment_rate'), 'unrate'),
     }
     
