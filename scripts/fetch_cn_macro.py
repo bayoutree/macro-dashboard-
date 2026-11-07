@@ -261,19 +261,58 @@ def main():
         except Exception as e:
             logger.warning(f"  解析沪深300失败: {e}")
 
-    # --- 中国10Y国债收益率 (bond_gb_zh_sina: date/open/high/low/close/volume) ---
+    # --- 中国10Y国债收益率 ---
+    # [V22 2026-11-07] 主源改 bond_china_yield（中债登，CI 海外可通，与 asset_prices 同源；
+    # 大窗口上游返回空→月批，模式同 fetch_asset_data）；新浪 bond_gb_zh_sina 海外超时降级备用；
+    # 双源皆空→保留旧 history/快照，严禁空数组覆盖缩史（11-07 history_guard 实测拦截一次）
     cn10y_val, cn10y_date = None, None
     cn10y_history = []
-    if not cn_bond.empty and 'close' in cn_bond.columns:
-        try:
+    bond_series = None
+    try:
+        _frames = []
+        for _i in range(18):  # 18 个月 ≥ 250 交易日+冗余
+            _end = datetime.now() - timedelta(days=30 * _i)
+            _start = _end - timedelta(days=35)
+            _sub = safe_call(ak.bond_china_yield, start_date=_start.strftime("%Y%m%d"), end_date=_end.strftime("%Y%m%d"))
+            if _sub is not None and not _sub.empty and "曲线名称" in _sub.columns:
+                _gov = _sub[_sub["曲线名称"] == "中债国债收益率曲线"]
+                if not _gov.empty:
+                    _frames.append(_gov[["日期", "10年"]])
+            time.sleep(0.5)
+        if _frames:
+            _all = pd.concat(_frames).drop_duplicates(subset=["日期"]).sort_values("日期")
+            bond_series = pd.Series(_all["10年"].values, index=pd.to_datetime(_all["日期"])).dropna().sort_index()
+            bond_series = bond_series[~bond_series.index.duplicated(keep='last')]
+    except Exception as e:
+        logger.warning(f"  中债登月批拉取失败: {e}")
+    if (bond_series is None or bond_series.empty) and not cn_bond.empty and 'close' in cn_bond.columns:
+        try:  # 备用：新浪（原主源）
             cn_bond['date'] = pd.to_datetime(cn_bond['date'])
             bond_series = cn_bond.set_index('date')['close'].dropna()
+            logger.info("  中国10Y国债: 中债登空，回退新浪源")
+        except Exception as e:
+            logger.warning(f"  新浪备用源解析失败: {e}")
+    if bond_series is not None and not bond_series.empty:
+        try:
             cn10y_val = safe_float(bond_series.iloc[-1])
             cn10y_date = str(bond_series.index[-1])[:10]
             cn10y_history = series_to_history(bond_series, freq="daily", max_points=250)
-            logger.info(f"  中国10Y国债: {cn10y_val}%, 日期: {cn10y_date}")
+            logger.info(f"  中国10Y国债: {cn10y_val}%, 日期: {cn10y_date}, 历史 {len(cn10y_history)} 点")
         except Exception as e:
             logger.warning(f"  解析国债收益率失败: {e}")
+    if not cn10y_history:
+        # 双源皆空：保留旧值（防 250点→空数组 缩史）
+        try:
+            import json as _json
+            with open("data/cn_macro.json", encoding="utf-8") as _f:
+                _prev = _json.load(_f)
+            cn10y_history = (_prev.get("history") or {}).get("cn_10y_bond") or []
+            _pb = (_prev.get("bond") or {}).get("cn_10y_yield") or {}
+            cn10y_val, cn10y_date = _pb.get("value"), _pb.get("date")
+            if cn10y_history:
+                logger.warning(f"  中国10Y国债双源皆空，保留旧值 {len(cn10y_history)} 点 (尾 {cn10y_date})")
+        except Exception as e:
+            logger.warning(f"  旧值兜底失败: {e}")
 
     # --- 沪深300 PE/PB (stock_index_pe_lg) ---
     hs300_pe_val = None
