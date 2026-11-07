@@ -510,7 +510,8 @@ def get_china_groups():
             cs = str(c).lower()
             if "日期" in cs or "date" in cs:
                 date_col = c
-            if "中国国债收益率10年" in cs or ("中国" in cs and "10" in cs):
+            # [P1-11 验收打回修复 2026-11-07] 精确匹配，严禁子串命中「中国国债收益率10年-2年」覆盖错列
+            if cs == "中国国债收益率10年":
                 val_col = c
         if date_col and val_col:
             cn10 = []

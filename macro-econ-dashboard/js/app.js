@@ -66,6 +66,22 @@ async function loadData() {
     }
     statusEl.innerHTML = '<span class="text-green-400">✓ 数据已加载</span>';
 
+    // [V22-2 2026-11-07] 断更判定：update_time 超 2 个交易日未刷新 → 红条+状态灯转黄（CIO P1验收横切H1）
+    try {
+      const _ut = macroData.update_time;
+      const _banner = document.getElementById('staleness-banner');
+      if (_ut && _banner) {
+        const _lag = Math.max(0, Math.round((Date.now() - new Date(_ut + 'T16:00:00+08:00').getTime()) / 86400000 * 5 / 7));
+        if (_lag > 2) {
+          _banner.textContent = `⚠️ 数据断更：indicators.json 停在 ${_ut}（约 ${_lag} 个交易日未更新），页面读数非最新，链路修复中。`;
+          _banner.classList.remove('hidden');
+          statusEl.innerHTML = `<span class="text-yellow-400">⚠ 数据滞后 ${_lag} 个交易日</span>`;
+        } else {
+          _banner.classList.add('hidden');
+        }
+      }
+    } catch (e) { console.warn('V22-2 断更检查失败(不阻断):', e); }
+
     // P0-2（2026-11-01 CIO）：资产价格序列超 10 个交易日未更新 → 信号灯强制置灰。
     // 读取仓库根 data/asset_prices_monthly.json 的 series_meta（由
     // scripts/build_asset_prices_monthly.py 日频聚合生成），交易日按 自然日×5/7

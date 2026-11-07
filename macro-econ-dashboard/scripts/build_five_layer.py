@@ -1455,6 +1455,10 @@ SOURCE_REGISTRY = {
     ("china", "ppi"): ("NBS 工业生产者出厂价格指数（akshare macro_china_ppi_yearly）", "当月同比 %"),
     ("china", "unemployment"): ("NBS 城镇调查失业率（akshare macro_china_urban_unemployment）", "%、月末"),
     ("china", "csi300_pe"): ("乐咕乐股 沪深300 市盈率（akshare stock_index_pe_lg）", "滚动市盈率 x"),
+    # [P1验收打回复工 2026-11-07] 补登记：P1-10 落码遗漏致 _annotate_sources 抛 KeyError，macro-econ 链路 11-03 起全断
+    ("china", "nominal_gdp_yoy"): ("NBS 国内生产总值现价累计（akshare macro_china_gdp）", "现价累计同比 %、名义口径（P1-10 双护栏分母，季频内插月频）"),
+    ("china", "shrzgm"): ("人民银行 社会融资规模存量同比（akshare macro_china_shrzgm，断更回退央行官方采集 pbc.gov.cn）", "存量同比 %、月末"),
+    ("china", "caixin_pmi"): ("财新/Markit 制造业 PMI（akshare macro_china_caijin_pmi）", "扩散指数、50 为荣枯线"),
     # ---------------- 美国 ----------------
     ("us", "gdp"): ("FRED GDP", "实际 GDP 同比 %、4 季滚动（消除季调噪声）"),
     ("us", "cpi"): ("FRED CPIAUCSL", "同比 %、季调"),

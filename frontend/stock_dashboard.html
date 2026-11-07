@@ -646,6 +646,8 @@ body::before {
     <div id="bucket-dist"></div>
     <!-- [R7 2026-10-23] 冲突状态卡：位置分位区×趋势×熊形态→信号优先级；冲突A/B自动点亮；催化剂耦合仅极端区 -->
     <div id="r7-conflict"></div>
+    <!-- [P2-13 2026-11-07] 信号有效性灰灯卡：CIO验收打回项，数据源 data/p2_13_state.json -->
+    <div id="p213-state"></div>
   </section>
 
   <!-- ===== 2. MACRO LIQUIDITY ===== -->
@@ -4186,6 +4188,31 @@ function renderCycleFreshness() {
 // v3.4.2修复: 渲染链防御包裹——任一渲染步骤报错只记录警告并继续，
 // 不再单点熔断整条 init() 链（renderActionBar 的 ReferenceError 曾导致
 // sparkline、主模型/确认/参考三个指标区全部不渲染）
+// [P2-13 2026-11-07 验收打回修复] 信号有效性灰灯卡
+// 数据源：data/p2_13_state.json（独立 fetch，五重替代检验产物）；方法学§四要求页面如实呈现
+// 灰=未验证；与 timing_scores.p2_13_state（20261018 裁决Q8 样本外信号统计，另一schema）不同源，
+// 合并归属待 P1-9 归属表裁决，本卡只消费独立 state 文件。
+async function renderP213State() {
+  const el = document.getElementById('p213-state');
+  if (!el) return;
+  let st = null;
+  try {
+    const r = await fetch('data/p2_13_state.json?v=' + Date.now());
+    if (r.ok) st = await r.json();
+  } catch (e) { st = null; }
+  if (!st || !st.status) { el.innerHTML = ''; return; }
+  const LIGHT = { gray: ['\u26aa', 'var(--text-muted)'], green: ['\ud83d\udfe2', 'var(--green)'], yellow: ['\ud83d\udfe1', 'var(--yellow)'], red: ['\ud83d\udd34', 'var(--red)'] };
+  const lm = LIGHT[st.light] || LIGHT.gray;
+  const dt = (st.last_run || '').slice(0, 10);
+  const fails = st.fails || [];
+  const failHtml = fails.length
+    ? `<div class="r7-note">未过门槛 ${fails.length} 项：${fails.join('；')}</div>` : '';
+  el.innerHTML = `<div class="r7-card" style="border-left:3px solid ${lm[1]};">` +
+    `<div class="r7-title" style="color:${lm[1]};">${lm[0]} P2-13 信号有效性：${st.status}${dt ? ' ｜ 最近验证 ' + dt : ''}</div>` +
+    failHtml +
+    `<div class="r7-note">口径：五重替代检验（IC/ICIR、单调性、端点差NW-t、分档样本量n≥30、样本外稳定），全过方转「已验证」；${st.revalidate_due || ''}。本灯仅呈现验证状态，不构成买卖依据。数据源 p2_13_state.json；与 timing_scores.p2_13_state（Q8样本外统计）不同源，合并归属待裁决。</div></div>`;
+}
+
 function safeRender(name, fn) {
   try { fn(); } catch (err) { console.warn('[render] ' + name + ' failed:', err); }
 }
@@ -4275,6 +4302,7 @@ async function init() {
   safeRender('renderSlopeForecast', renderSlopeForecast); // [R4 2026-10-23]
   safeRender('renderBucketDist', renderBucketDist); // [R5 2026-10-23]
   safeRender('renderR7Conflict', renderR7Conflict); // [R7 2026-10-23]
+  safeRender('renderP213State', renderP213State); // [P2-13 2026-11-07]
   safeRender('renderFxValve', renderFxValve); // [F3④ 2026-10-23]
   safeRender('renderActionBar', renderActionBar);
   safeRender('renderCycleFreshness', renderCycleFreshness);
