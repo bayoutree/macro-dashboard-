@@ -672,6 +672,20 @@
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
+    },
+    {
+      "id": "all_a_gxl_spread",
+      "name": "全A股息率-10Y利差",
+      "status": "orphaned",
+      "severity_on_gap": "none",
+      "note": "legulegu源停2026-09-11；全仓py/js/html零引用=孤儿文件，保留存档不评估（V22-3审计登记）"
+    },
+    {
+      "id": "break_net_asset_rate",
+      "name": "全A破净率",
+      "status": "orphaned",
+      "severity_on_gap": "none",
+      "note": "legulegu源停2026-09-11；全仓零引用=孤儿文件（update_data.py破净率为akshare自算链不用本文件），保留存档不评估（V22-3审计登记）"
     }
   ]
 }
