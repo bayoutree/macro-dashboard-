@@ -96,6 +96,10 @@ def main():
     logger.info("\n[4/4] 利率与市场...")
     dgs10 = fetch_series(fred, "DGS10", "2019-01-01")
     dgs2 = fetch_series(fred, "DGS2", "2019-01-01")
+    # [V22-3 2026-11-07] 3月国债+零售销售接入——freshness_gate裁决清单条目，
+    # 原manifest自认"无此序列按GAP处理"致每日BLOCK误报（50个open issue无人看的根源之一）
+    dgs3m = fetch_series(fred, "DGS3MO", "2019-01-01")
+    rsafs = fetch_series(fred, "RSAFS", "2019-01-01")
     tips = fetch_series(fred, "DFII10", "2019-01-01")
     breakeven = fetch_series(fred, "T10YIE", "2019-01-01")
     term_prem = fetch_series(fred, "THREEFYTP10", "2019-01-01")
@@ -248,6 +252,12 @@ def main():
     # 2Y 国债收益率历史
     history["yield_2y"] = series_to_history(dgs2, freq="daily", max_points=250)
 
+    # [V22-3] 3M 国债收益率历史（日频）
+    history["yield_3m"] = series_to_history(dgs3m, freq="daily", max_points=250)
+
+    # [V22-3] 零售销售历史（月频，level 十亿美元）
+    history["retail_sales"] = series_to_history(rsafs, freq="monthly", max_points=36)
+
     # 期限溢价历史
     history["term_premium"] = series_to_history(term_prem, freq="daily", max_points=250)
 
@@ -294,6 +304,12 @@ def main():
             "industrial_production": {"value": indpro_val, "date": indpro_date},
             "nonfarm_payrolls_yoy": {"value": payems_val, "date": payems_date}
         },
+        "cyclical": {
+            # [V22-3 2026-11-07] 零售销售接入（RSAFS月频level）——freshness_gate裁决清单条目
+            "retail_sales": {"value": safe_float(rsafs.iloc[-1]) if not rsafs.empty else None,
+                             "date": rsafs.index[-1].strftime('%Y-%m') if not rsafs.empty else None,
+                             "unit": "十亿美元", "freq": "monthly"}
+        },
         "lagging": {
             "cpi_yoy": {"value": cpi_yoy_val, "date": cpi_yoy_date},
             "ppi_yoy": {"value": ppi_yoy_val, "date": ppi_yoy_date},
@@ -302,6 +318,8 @@ def main():
         "rates": {
             "yield_10y": {"value": safe_float(d10_val), "date": ts_to_date_str(dgs10.index[-1]) if not dgs10.empty else None},
             "yield_2y": {"value": safe_float(d2_val), "date": ts_to_date_str(dgs2.index[-1]) if not dgs2.empty else None},
+            "yield_3m": {"value": safe_float(dgs3m.iloc[-1]) if not dgs3m.empty else None,
+                         "date": ts_to_date_str(dgs3m.index[-1]) if not dgs3m.empty else None},
             "real_rate_10y": {"value": safe_float(tips.iloc[-1]) if not tips.empty else None,
                               "date": ts_to_date_str(tips.index[-1]) if not tips.empty else None},
             "inflation_expectation": {"value": safe_float(breakeven.iloc[-1]) if not breakeven.empty else None,

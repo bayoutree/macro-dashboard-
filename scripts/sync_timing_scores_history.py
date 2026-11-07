@@ -377,6 +377,54 @@ def fix_dividend_spread(timing: dict, cn_macro: dict):
 
 
 # ================================================================
+# [V22-3 2026-11-07] 8. 沪深300 PE 分位 (hs300_pe_percentile)
+# 断更根因：P1-10(10-18)回填后无每日续点机制定格10-16；同期乐咕
+# stock_index_pe_lg 接口月频化(260点/间隔28-36天实测)——分位窗口由
+# 2500日点坍缩为全量月点。此处月频全量重算续上，口径=expanding分位
+# (与 _history_meta 声明一致)；frequency 显形 monthly。
+# ================================================================
+def fix_hs300_pe_percentile(timing: dict):
+    try:
+        import akshare as ak
+        import pandas as pd
+    except ImportError:
+        logger.warning("  akshare/pandas 不可用，跳过 PE 分位")
+        return False
+    key_path = ("dimensions", "valuation", "indicators", "hs300_pe_percentile")
+    indicator = timing
+    for k in key_path:
+        indicator = indicator.get(k, {})
+    if not isinstance(indicator, dict):
+        return False
+    try:
+        df = ak.stock_index_pe_lg(symbol="沪深300")
+    except Exception as e:
+        logger.warning(f"  stock_index_pe_lg 拉取失败: {e}")
+        return False
+    if df is None or df.empty or '滚动市盈率' not in df.columns:
+        logger.warning("  PE 数据为空或缺列")
+        return False
+    ser = df.set_index('日期')['滚动市盈率'].dropna()
+    ser.index = pd.to_datetime(ser.index)
+    ser = ser.sort_index()
+    values = ser.tolist()
+    pcts = rolling_percentile_series(values, window=len(values))  # expanding 全窗口
+    history = [{"date": str(ser.index[i].date()), "value": round(p, 1)}
+               for i, p in enumerate(pcts) if p is not None]
+    if len(history) < 2:
+        return False
+    old_len = len(indicator.get("history") or [])
+    indicator["history"] = history
+    indicator["frequency"] = "monthly"
+    indicator["_history_meta"] = {
+        "source": "ak.stock_index_pe_lg 月频全量 expanding 分位（接口月频化后 V22-3 续点）",
+        "synced_at": datetime.now().strftime("%Y-%m-%d"),
+    }
+    logger.info(f"  ✅ hs300_pe_percentile: {old_len}→{len(history)} 点，尾 {history[-1]['date']}={history[-1]['value']} (月频)")
+    return True
+
+
+# ================================================================
 # 7. 沪深300 ERP (hs300_erp)
 # ================================================================
 def fix_erp(timing: dict, cn_macro: dict):
@@ -507,6 +555,10 @@ def main():
     # 7. 沪深300 ERP
     logger.info("\n[7/7] 沪深300 ERP (hs300_erp)")
     results["hs300_erp"] = fix_erp(timing, cn_macro)
+
+    # 8. [V22-3] 沪深300 PE 分位（月频续点）
+    logger.info("\n[8/8] 沪深300 PE分位 (hs300_pe_percentile)")
+    results["hs300_pe_percentile"] = fix_hs300_pe_percentile(timing)
 
     # 统一给回填的真 history 打来源标记（供 update_data.py 白名单继承识别，
     # 防止每日重建 timing_scores.json 时被清空；同时隔离 _legacy_FAKE 假序列）

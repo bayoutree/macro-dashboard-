@@ -272,7 +272,7 @@ def _period_index(key: tuple) -> int:
 # key=分组id，value={子序列key: freq}；未列出的子序列再走间隔推断）。
 SUBSEQ_FREQ = {
     "timing_valuation": {
-        "hs300_pe_percentile": "daily",
+        "hs300_pe_percentile": "monthly",  # [V22-3 2026-11-07] 乐咕stock_index_pe_lg已改版月频(260点/间隔28-36天实测)，daily阈值系错配
         "hs300_pb_percentile": "daily",
         "buffett_ratio": "daily",
         "break_net_rate": "daily",

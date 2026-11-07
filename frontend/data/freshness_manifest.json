@@ -10,15 +10,15 @@
       "freq": "daily",
       "calendar": "CN",
       "lag_days": 1,
-      "fresh_max_trading_days": 2,
-      "watch_max_trading_days": 5,
+      "fresh_max_trading_days": 3,
+      "watch_max_trading_days": 7,
       "history_path": "history",
       "value_path": "score",
       "history_count_tolerance": 0.05,
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "恐贪指数；QVIX 为中证500ETF波动率指数，akshare 日频"
+      "note": "恐贪指数；QVIX=中证500ETF波动率指数，akshare日频。[V22-1 2026-11-07实测] 上游发布滞后无SLA：11-06的QVIX数据11-07才出现在源（CI 11-06 23:52拉到尾11-02=2842行，本地11-07拉到尾11-06=2844行）——断更8天系上游发布节奏非链路断，阈值放宽至fresh3/watch7交易日；CIO验收标准1对该端点按watch线评估"
     },
     {
       "id": "timing_composite",
@@ -213,7 +213,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "美债3个月：仓库现有 us_macro.json 无此序列（裁决清单列名），落地待补采集；当前按GAP处理"
+      "note": "美债3个月：DGS3MO日频已接入fetch_us_macro（V22-3 2026-11-07），待CI首拉后GAP消除"
     },
     {
       "id": "sp500",
@@ -270,18 +270,16 @@
       "id": "fed_funds",
       "file": "data/us_macro.json",
       "date_path": "lagging.fed_funds_rate.date",
-      "freq": "daily",
+      "freq": "monthly",
       "calendar": "US",
       "lag_days": 1,
-      "fresh_max_trading_days": 2,
-      "watch_max_trading_days": 5,
       "history_path": "history.fed_funds",
       "value_path": "lagging.fed_funds_rate.value",
       "history_count_tolerance": 0.05,
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "联邦基金利率；us_macro现存月频快照(月末值)，判定按daily阈值"
+      "note": "联邦基金利率：FRED FEDFUNDS为官方月频序列（原daily阈值错配致每日STALE误报）；月频阈值40/55自然日"
     },
     {
       "id": "gold",
@@ -410,7 +408,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "零售销售：仓库us_macro.json现有结构无此序列，落地待补；当前GAP"
+      "note": "零售销售：RSAFS月频已接入fetch_us_macro cyclical.retail_sales（V22-3 2026-11-07），待CI首拉后GAP消除"
     },
     {
       "id": "industrial_production",
