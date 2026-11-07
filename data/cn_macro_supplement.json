@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-02",
+  "as_of": "2026-11-07",
   "source": "akshare (macro_china_fx_gold + macro_china_money_supply)",
   "fx_reserves": [
     {
@@ -2707,7 +2707,6 @@
       "value_pct": -4.0
     }
   ],
-  "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差",
   "shrzgm_stock": [
     {
       "date": "2016-01",
@@ -3226,6 +3225,7 @@
       "value": 468.17
     }
   ],
+  "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差；P1-10b：社融存量存档（央行官方，自算同比见 fetch_china 回退路径）",
   "shrzgm_yoy_official": [
     {
       "date": "2016-01",
