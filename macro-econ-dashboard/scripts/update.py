@@ -108,6 +108,12 @@ def _restore_lost_series(new, old, path, restored):
         return
     for key, old_val in old.items():
         if key in new:
+            # [V22 2026-11-07] 派生层空壳回填：build 重组时源缺失会产出 "shrzgm": None
+            # （键存在→旧"整键消失"判定漏过→history_guard 判 REMOVED）。None 且旧含序列→回填。
+            if new[key] is None and _contains_series(old_val):
+                new[key] = old_val
+                restored.append("/".join(path + [str(key)]))
+                continue
             _restore_lost_series(new[key], old_val, path + [str(key)], restored)
     missing = [k for k in old if k not in new and _contains_series(old[k])]
     if not missing:

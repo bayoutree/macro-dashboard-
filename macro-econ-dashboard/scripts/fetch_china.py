@@ -419,9 +419,15 @@ def get_china_groups():
     if "shrzgm" not in groups.get("leading", {}):
         try:
             import os as _os, sys as _sys
-            _rs = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "scripts")
-            if _rs not in _sys.path:
-                _sys.path.insert(0, _rs)
+            # [V22 2026-11-07] 路径修正：fetch_pbc_social_financing.py 在仓库根 scripts/，
+            # 原 _rs 指向 macro-econ-dashboard/scripts/（无此文件→回退静默失效）
+            _here = _os.path.dirname(_os.path.abspath(__file__))
+            _cands = [_os.path.join(_os.path.dirname(_os.path.dirname(_here)), "scripts"), _here]
+            for _rs in _cands:
+                if _os.path.exists(_os.path.join(_rs, "fetch_pbc_social_financing.py")):
+                    if _rs not in _sys.path:
+                        _sys.path.insert(0, _rs)
+                    break
             from fetch_pbc_social_financing import fetch_social_financing
             _sf = fetch_social_financing() or {}
             _stock = _sf.get("stock") or []
