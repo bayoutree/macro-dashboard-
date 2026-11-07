@@ -50,7 +50,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "估值维度：pe/pb 分位、巴菲特指标、破净率，均日频",
+      "note": "估值维度：pe分位月频(乐咕接口月频化,V22-3已续点)/pb分位daily/巴菲特daily/破净率daily",
       "fresh_max_trading_days": 2,
       "watch_max_trading_days": 5
     },
@@ -103,7 +103,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "资金面：股基/灵基仓位daily(4/7)、融资余额monthly、新基金/产业资本/财政月频；margin_buying_ratio(capital_flow)无history跳过",
+      "note": "资金面：股基/灵基仓位daily(4/7)、融资余额monthly、新基金/产业资本/财政月频；margin系源=上交所stock_margin_sse，[V22-3 2026-11-07实测]CI海外runner被限流(JSONDecodeError)本地正常——10-16起STALE系限流非源断，备用源工单跟进",
       "fresh_max_trading_days": 2,
       "watch_max_trading_days": 5,
       "expected_publish_day": 15,
@@ -124,7 +124,7 @@
       "critical": true,
       "severity_on_gap": "block",
       "status": "active",
-      "note": "情绪维度：3年年化weekly、新开户monthly；fear_greed_index/turnover_rate/capital_flow margin_buying_ratio 无history跳过",
+      "note": "情绪维度：3年年化weekly、新开户monthly；turnover_rate源=东财海外runner限流簇(10-13起)；fear_greed_index/margin_buying_ratio无history跳过",
       "fresh_max_trading_days": 2,
       "watch_max_trading_days": 5
     },
