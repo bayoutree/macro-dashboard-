@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-07T12:10:55",
+  "update_time": "2026-11-07T15:28:54",
   "generated_by": "scripts/build_asset_prices_monthly.py (P0-2: 日频聚合+口径闸门)",
   "prices": {
     "sp500": [
@@ -1053,7 +1053,7 @@
       },
       {
         "date": "2026-11",
-        "close": 7419.3799
+        "close": 7376.8599
       }
     ],
     "wti_oil": [
@@ -2107,7 +2107,7 @@
       },
       {
         "date": "2026-11",
-        "value": 90.18
+        "value": 90.83
       }
     ],
     "copper": [
@@ -3161,7 +3161,7 @@
       },
       {
         "date": "2026-11",
-        "value": 13792.1028
+        "value": 13708.327
       }
     ],
     "usd_index": [
@@ -4503,7 +4503,7 @@
       },
       {
         "date": "2026-11",
-        "value": 102.167
+        "value": 102.3
       }
     ],
     "us_10y_yield": [
@@ -5557,7 +5557,7 @@
       },
       {
         "date": "2026-11",
-        "value": 4.862
+        "value": 4.859
       }
     ],
     "us_10y_price": [
@@ -6611,7 +6611,7 @@
       },
       {
         "date": "2026-11",
-        "value": 62.2
+        "value": 62.22
       }
     ],
     "hs300": [
@@ -9069,7 +9069,7 @@
       },
       {
         "date": "2026-11",
-        "close": 4055.5
+        "close": 4074.8999
       }
     ],
     "series_meta": {
@@ -9077,8 +9077,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.57%）",
+        "seam_deviation_pct": 0.57,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
@@ -9087,8 +9087,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤5%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤5%)，max_dev=0.61%）",
+        "seam_deviation_pct": 0.61,
         "caliber": "月频准绳=FRED PCOPPUSDM(IMF/LME, 美元/吨) | 日频延伸=COMEX 主力连续(yfinance HG=F)×2204.62(写库时换算美元/吨) | 同月基差超±5%亮灰灯注记、不静默对齐",
         "basis_dev_pct": 1.43,
         "basis_month": "2026-08",
@@ -9100,8 +9100,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.72%）",
+        "seam_deviation_pct": 0.72,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
@@ -9110,8 +9110,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.13%）",
+        "seam_deviation_pct": 0.13,
         "caliber": "主屏=DXY(ICE: EUR57.6/JPY13.6/GBP11.9/CAD9.1/SEK4.2/CHF3.6, 不含CNY/MXN, 1973起, 日频 yfinance DX-Y.NYB) | 月末最后交易日值",
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
@@ -9121,8 +9121,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.06%）",
+        "seam_deviation_pct": 0.06,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
@@ -9131,8 +9131,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=2.73%）",
-        "seam_deviation_pct": 2.73,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
+        "seam_deviation_pct": 0.0,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
@@ -9141,8 +9141,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.23%）",
-        "seam_deviation_pct": 0.23,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
+        "seam_deviation_pct": 0.0,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
@@ -9151,8 +9151,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤10%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤10%)，max_dev=0.48%）",
+        "seam_deviation_pct": 0.48,
         "effective_last_date": "2026-11-06",
         "trading_days_stale": 1,
         "stale_10td": false
