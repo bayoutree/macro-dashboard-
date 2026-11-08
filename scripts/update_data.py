@@ -179,25 +179,6 @@ def merge_history_description(new_data: dict) -> dict:
         return new_data
     if not old or "dimensions" not in old:
         return new_data
-    # [M4 2026-11-07] 指标「这是什么」说人话兜底表：定义+解读一句话，
-    # 优先于旧版继承写入（旧版 desc 若有且不空则保留，缺 desc 的 11 项由本表补齐）
-    _M4_DESCRIPTIONS = {
-        ("valuation", "median_pe_all_a"): "全A股中位数市盈率。比指数PE更能反映多数股票贵贱；当前值越高说明市场整体越贵。",
-        ("equity_bond", "wanda_erp"): "中证800股权风险溢价(主指标)=1/PE−10Y国债收益率，衡量股票相对债券的便宜程度。越高股票越便宜。",
-        ("capital_flow", "margin_ratio"): "沪市融资余额在近250个交易日中的分位。越高说明杠杆越热(逆向:越热score越低)，>80%警惕拥挤。",
-        ("capital_flow", "equity_fund_position"): "普通股票型基金仓位(周频估算)。仓位高=机构已满仓,后续买盘乏力；仓位低=还有加仓空间。",
-        ("capital_flow", "margin_buying_ratio"): "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。",
-        ("capital_flow", "flexible_fund_position"): "灵活配置型基金仓位(周频估算)。比股基仓位弹性大，反映机构边际加减仓方向。",
-        ("capital_flow", "margin_balance"): "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。",
-        ("capital_flow", "new_fund"): "新发基金规模(月频)。爆款基金频出=场外资金跑步进场， historically常见于阶段顶部区域。",
-        ("capital_flow", "industrial_capital"): "产业资本增减持(月频)。产业资本是最了解公司的钱：净增持=底部信号，净减持放大=顶部信号。",
-        ("sentiment", "margin_buying_ratio"): "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。",
-        ("sentiment", "new_account_opening"): "新增股票账户数(月频)。开户潮=散户跑步进场的经典顶部信号，开户冰点=底部特征。",
-    }
-    for (dim_key, ind_key), desc in _M4_DESCRIPTIONS.items():
-        ind = new_data.get("dimensions", {}).get(dim_key, {}).get("indicators", {}).get(ind_key)
-        if ind is not None and not ind.get("description"):
-            ind["description"] = desc
     for dim_key, dim in new_data.get("dimensions", {}).items():
         old_dim = old.get("dimensions", {}).get(dim_key, {})
         for ind_key, ind in dim.get("indicators", {}).items():
@@ -248,6 +229,33 @@ def merge_history_description(new_data: dict) -> dict:
         if _tl_key not in new_data and _tl_key in old:
             new_data[_tl_key] = old[_tl_key]
             logger.info(f"    🔒 保留顶层节(新数据未生成): {_tl_key}")
+
+    # [M4 2026-11-07] 指标「这是什么」说人话兜底表：定义+解读一句话，
+    # 优先于旧版继承写入（旧版 desc 若有且不空则保留，缺 desc 的 11 项由本表补齐）
+    _M4_DESCRIPTIONS = {
+        ("valuation", "median_pe_all_a"): "全A股中位数市盈率。比指数PE更能反映多数股票贵贱；当前值越高说明市场整体越贵。",
+        ("equity_bond", "wanda_erp"): "中证800股权风险溢价(主指标)=1/PE−10Y国债收益率，衡量股票相对债券的便宜程度。越高股票越便宜。",
+        ("capital_flow", "margin_ratio"): "沪市融资余额在近250个交易日中的分位。越高说明杠杆越热(逆向:越热score越低)，>80%警惕拥挤。",
+        ("capital_flow", "equity_fund_position"): "普通股票型基金仓位(周频估算)。仓位高=机构已满仓,后续买盘乏力；仓位低=还有加仓空间。",
+        ("capital_flow", "margin_buying_ratio"): "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。",
+        ("capital_flow", "flexible_fund_position"): "灵活配置型基金仓位(周频估算)。比股基仓位弹性大，反映机构边际加减仓方向。",
+        ("capital_flow", "margin_balance"): "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。",
+        ("capital_flow", "new_fund"): "新发基金规模(月频)。爆款基金频出=场外资金跑步进场， historically常见于阶段顶部区域。",
+        ("capital_flow", "industrial_capital"): "产业资本增减持(月频)。产业资本是最了解公司的钱：净增持=底部信号，净减持放大=顶部信号。",
+        ("sentiment", "margin_buying_ratio"): "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。",
+        ("sentiment", "new_account_opening"): "新增股票账户数(月频)。开户潮=散户跑步进场的经典顶部信号，开户冰点=底部特征。",
+    }
+    for (dim_key, ind_key), desc in _M4_DESCRIPTIONS.items():
+        ind = new_data.get("dimensions", {}).get(dim_key, {}).get("indicators", {}).get(ind_key)
+        if ind is not None and not ind.get("description"):
+            ind["description"] = desc
+
+    # [M4 修复 2026-11-08] 兜底表应用挪到「保留旧指标」之后：限流簇指标由旧文件整体复制，
+    # 不经过上方新生成路径，原位置的兜底写不到它们（margin_ratio 等 desc 实测仍为空）
+    for (dim_key, ind_key), desc in _M4_DESCRIPTIONS.items():
+        ind = new_data.get("dimensions", {}).get(dim_key, {}).get("indicators", {}).get(ind_key)
+        if ind is not None and not ind.get("description"):
+            ind["description"] = desc
 
     return new_data
 

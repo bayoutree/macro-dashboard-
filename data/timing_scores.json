@@ -3073,7 +3073,8 @@
             "restored_from": "mockData迁移+legulegu最新值",
             "restored_at": "2026-10-14",
             "original_count": 12
-          }
+          },
+          "description": "全A股中位数市盈率。比指数PE更能反映多数股票贵贱；当前值越高说明市场整体越贵。"
         }
       }
     },
@@ -4902,7 +4903,8 @@
           "sub_weight": 40,
           "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
           "bottom_threshold": ">4%",
-          "top_threshold": "<1.5%"
+          "top_threshold": "<1.5%",
+          "description": "中证800股权风险溢价(主指标)=1/PE−10Y国债收益率，衡量股票相对债券的便宜程度。越高股票越便宜。"
         },
         "dividend_bond_spread_red": {
           "name": "红利指数股债利差",
@@ -21731,7 +21733,8 @@
             "source": "SSE margin balance 250d rolling percentile (ak.stock_margin_sse)",
             "backfilled_at": "2026-10-18",
             "replaces": "两融/流通市值 ratio 口径（分母无长历史源，P1-10① 裁决换 250 日分位）"
-          }
+          },
+          "description": "沪市融资余额在近250个交易日中的分位。越高说明杠杆越热(逆向:越热score越低)，>80%警惕拥挤。"
         },
         "equity_fund_position": {
           "name": "股基仓位",
@@ -23581,7 +23584,8 @@
           "_history_meta": {
             "source": "akshare fund_stock_position_lg (legulegu stock fund weekly position)",
             "synced_at": "2026-09-27"
-          }
+          },
+          "description": "普通股票型基金仓位(周频估算)。仓位高=机构已满仓,后续买盘乏力；仓位低=还有加仓空间。"
         },
         "margin_buying_ratio": {
           "name": "融资买入占比",
@@ -37545,7 +37549,8 @@
           "_history_meta": {
             "source": "backfill_margin_buying_ratio (沪市stock_margin_sse 2010起 / 全A成交额腾讯sh000985, 分子仅沪市口径)",
             "backfilled_at": "2026-10-18"
-          }
+          },
+          "description": "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。"
         },
         "flexible_fund_position": {
           "name": "灵基仓位",
@@ -39395,7 +39400,8 @@
           "_history_meta": {
             "source": "akshare fund_linghuo_position_lg (legulegu flexible allocation fund weekly position)",
             "synced_at": "2026-09-27"
-          }
+          },
+          "description": "灵活配置型基金仓位(周频估算)。比股基仓位弹性大，反映机构边际加减仓方向。"
         },
         "margin_balance": {
           "name": "两融余额（沪市）",
@@ -40407,7 +40413,8 @@
               "date": "2026-10-30",
               "value": 11989.0
             }
-          ]
+          ],
+          "description": "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。"
         },
         "new_fund": {
           "name": "新发基金热度",
@@ -40570,7 +40577,8 @@
             "source": "baseline history: new fund issuance 3m rolling sum (eastmoney L2 + sina caliber)",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "description": "新发基金规模(月频)。爆款基金频出=场外资金跑步进场， historically常见于阶段顶部区域。"
         },
         "industrial_capital": {
           "name": "产业资本增减持",
@@ -40733,7 +40741,8 @@
             "source": "baseline history: insider net reduction / float mkt cap (float=total*0.88)",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "description": "产业资本增减持(月频)。产业资本是最了解公司的钱：净增持=底部信号，净减持放大=顶部信号。"
         },
         "fiscal_expenditure": {
           "name": "财政支出",
@@ -56033,7 +56042,8 @@
           "_history_meta": {
             "source": "backfill_margin_buying_ratio (沪市stock_margin_sse 2010起 / 全A成交额腾讯sh000985, 分子仅沪市口径)",
             "backfilled_at": "2026-10-18"
-          }
+          },
+          "description": "融资买入额占成交额比重。杠杆资金进攻性的直接度量，急升常见于行情后段。"
         },
         "new_account_opening": {
           "name": "新增开户数",
@@ -56612,7 +56622,8 @@
             "source": "new investor accounts monthly (10k households)",
             "restored_from": "18b49566b5",
             "restored_at": "2026-09-26"
-          }
+          },
+          "description": "新增股票账户数(月频)。开户潮=散户跑步进场的经典顶部信号，开户冰点=底部特征。"
         }
       }
     },
