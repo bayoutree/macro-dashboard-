@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T23:28:54+08:00",
+  "generated_at": "2026-11-08T18:54:35+08:00",
   "boards": [
     {
       "board": "macro_cross",
@@ -21,7 +21,7 @@
       "board": "a_timing",
       "direction": 0,
       "raw_value": "48.8/orange",
-      "as_of": "2026-11-06",
+      "as_of": "2026-11-07",
       "effective": true,
       "status": "normal"
     }

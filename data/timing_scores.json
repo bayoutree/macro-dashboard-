@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-11-07",
+  "update_date": "2026-11-08",
   "version": "v4.1",
   "composite_score": 48.8,
   "stage": "B",
@@ -1030,7 +1030,7 @@
           ],
           "_history_meta": {
             "source": "ak.stock_index_pe_lg 月频全量 expanding 分位（接口月频化后 V22-3 续点）",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           },
           "frequency": "monthly"
         },
@@ -2012,7 +2012,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "buffett_ratio": {
@@ -2508,12 +2508,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.1,
+          "value": 9.0,
           "unit": "%",
           "score": 35,
           "sub_weight": 25,
@@ -3004,10 +3004,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-07T15:30:55"
+          "collect_time": "2026-11-08T10:56:31"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -3230,7 +3230,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "interest_rate": {
@@ -3706,7 +3706,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "fed_policy": {
@@ -4892,7 +4892,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "wanda_erp": {
@@ -5918,7 +5918,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -6413,7 +6413,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-07"
+            "synced_at": "2026-11-08"
           }
         },
         "cn_us_spread": {
@@ -21738,7 +21738,7 @@
         },
         "equity_fund_position": {
           "name": "股基仓位",
-          "value": 97.29,
+          "value": 97.19,
           "score": 85,
           "sub_weight": 25,
           "bottom_signal": "仓位极低(恐慌)",
@@ -23579,6 +23579,10 @@
             {
               "date": "2026-10-30",
               "value": 97.29
+            },
+            {
+              "date": "2026-11-06",
+              "value": 97.19
             }
           ],
           "_history_meta": {
@@ -37554,7 +37558,7 @@
         },
         "flexible_fund_position": {
           "name": "灵基仓位",
-          "value": 87.79,
+          "value": 88.05,
           "score": 75,
           "sub_weight": 20,
           "bottom_signal": "仓位极低",
@@ -39395,6 +39399,10 @@
             {
               "date": "2026-10-30",
               "value": 87.79
+            },
+            {
+              "date": "2026-11-06",
+              "value": 88.05
             }
           ],
           "_history_meta": {
@@ -56636,7 +56644,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "42.47%",
+          "value": "44.39%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -56657,8 +56665,8 @@
               "value": 41.24
             },
             {
-              "date": "2026-11-07",
-              "value": 42.47
+              "date": "2026-11-08",
+              "value": 44.39
             }
           ],
           "_history_meta": {
@@ -56666,7 +56674,7 @@
             "inherited_at": "2026-10-17"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-07T15:30:55"
+          "collect_time": "2026-11-08T10:56:31"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -58600,7 +58608,7 @@
             "original_count": 228
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-07T15:30:55"
+          "collect_time": "2026-11-08T10:56:31"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
