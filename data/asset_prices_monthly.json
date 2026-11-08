@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-08T10:54:34",
+  "update_time": "2026-11-08T14:48:45",
   "generated_by": "scripts/build_asset_prices_monthly.py (P0-2: 日频聚合+口径闸门)",
   "prices": {
     "sp500": [
@@ -3161,7 +3161,7 @@
       },
       {
         "date": "2026-11",
-        "value": 13708.327
+        "value": 13751.3177
       }
     ],
     "usd_index": [
@@ -9087,8 +9087,8 @@
         "last_month": "2026-11",
         "last_src_date": "2026-11-06",
         "source": "daily_aggregate(asset_prices.json)",
-        "seam": "合并成功（同尺度(重叠月偏差≤5%)）",
-        "seam_deviation_pct": 0.0,
+        "seam": "合并成功（同尺度(重叠月偏差≤5%)，max_dev=0.31%）",
+        "seam_deviation_pct": 0.31,
         "caliber": "月频准绳=FRED PCOPPUSDM(IMF/LME, 美元/吨) | 日频延伸=COMEX 主力连续(yfinance HG=F)×2204.62(写库时换算美元/吨) | 同月基差超±5%亮灰灯注记、不静默对齐",
         "basis_dev_pct": 1.43,
         "basis_month": "2026-08",

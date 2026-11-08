@@ -3007,7 +3007,7 @@
             "synced_at": "2026-11-08"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-08T10:56:31"
+          "collect_time": "2026-11-08T14:50:40"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -56674,7 +56674,7 @@
             "inherited_at": "2026-10-17"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-08T10:56:31"
+          "collect_time": "2026-11-08T14:50:40"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -58608,7 +58608,7 @@
             "original_count": 228
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-08T10:56:31"
+          "collect_time": "2026-11-08T14:50:40"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

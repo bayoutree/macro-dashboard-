@@ -6684,7 +6684,7 @@
   },
   "commodity": {
     "copper": {
-      "price": 13708.327,
+      "price": 13751.3177,
       "inventory": null,
       "history": [
         {
@@ -6925,7 +6925,7 @@
         },
         {
           "date": "2026-11-06",
-          "value": 13708.327
+          "value": 13751.3177
         }
       ]
     },
