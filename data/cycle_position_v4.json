@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-08T22:48:59+08:00",
-    "data_freshness_score": 6,
+    "update_time": "2026-11-09T20:16:41+08:00",
+    "data_freshness_score": 5,
     "assessment_date": "2026-09-01",
     "version": "3.0",
     "next_assessment_date": "2026-10-01",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-08-06",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-08",
+      "as_of": "2026-11-09",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-08-15",
-          "score": 15
+          "score": 14
         },
         "narrative_kondratieff": {
           "last_updated": "2026-08-06",
-          "score": 6
+          "score": 5
         },
         "narrative_perez": {
           "last_updated": "2026-08-06",
-          "score": 6
+          "score": 5
         },
         "constraint_rate_regime": {
           "last_updated": "2026-08-06",
-          "score": 6
+          "score": 5
         }
       },
       "excluded_no_date": [
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": true,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-08T14:48:59+08:00"
+    "v4_built_at": "2026-11-09T12:16:41+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -437,7 +437,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "history": [
               {
                 "date": "1947Q1",
@@ -3166,7 +3166,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-08"
+              "last_updated": "2026-11-09"
             },
             "cn": {
               "current": 0.36,
@@ -3266,7 +3266,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-08"
+              "last_updated": "2026-11-09"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -4172,7 +4172,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -6290,7 +6290,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -18968,7 +18968,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -31724,7 +31724,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -44430,7 +44430,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -49447,7 +49447,7 @@
               "frequency": "monthly"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
-            "last_updated": "2026-11-07",
+            "last_updated": "2026-11-09",
             "frequency": "monthly",
             "history": [
               {
@@ -49665,9 +49665,13 @@
               {
                 "date": "2026-09",
                 "value": 0.78
+              },
+              {
+                "date": "2026-10",
+                "value": 0.95
               }
             ],
-            "current": 0.78
+            "current": 0.95
           }
         }
       },
@@ -50119,7 +50123,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
@@ -51245,7 +51249,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-08",
+            "last_updated": "2026-11-09",
             "history": [
               {
                 "date": "2015-01-01",
@@ -88755,7 +88759,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-08",
+    "last_updated": "2026-11-09",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=2 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:多周期共振上行(P1=2,P2=2); CN:扩张早期+被动补库(P1=2,P2=1)",
