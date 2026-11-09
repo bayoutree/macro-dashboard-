@@ -64,7 +64,7 @@ jobs:
             for i in 1 2 3; do
               if git push; then break; fi
               echo "⚠️ push 被拒（并发写入），pull --rebase 重试 $i/3"
-              git pull --rebase || { git rebase --abort; echo "::error::rebase 冲突，需人工合并"; exit 1; }
+              git pull --rebase --autostash || { git rebase --abort 2>/dev/null; echo "::error::rebase 冲突，需人工合并"; exit 1; }
               sleep 5
             done
             echo "committed=true" >> "$GITHUB_OUTPUT"
