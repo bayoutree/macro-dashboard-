@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-09T20:16:41+08:00",
+    "update_time": "2026-11-10T02:39:06+08:00",
     "data_freshness_score": 5,
     "assessment_date": "2026-09-01",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": true,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-09T12:16:41+08:00"
+    "v4_built_at": "2026-11-09T18:39:06+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -437,7 +437,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "history": [
               {
                 "date": "1947Q1",
@@ -3166,7 +3166,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-09"
+              "last_updated": "2026-11-10"
             },
             "cn": {
               "current": 0.36,
@@ -3266,7 +3266,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-09"
+              "last_updated": "2026-11-10"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -47592,6 +47592,10 @@
               {
                 "date": "2026-11-05",
                 "value": 0.93
+              },
+              {
+                "date": "2026-11-06",
+                "value": 0.93
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
@@ -48417,7 +48421,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-07",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -49383,10 +49387,14 @@
               {
                 "date": "2026-11-06",
                 "value": 20.22
+              },
+              {
+                "date": "2026-11-09",
+                "value": 20.08
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 20.22
+            "current": 20.08
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -50123,7 +50131,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
@@ -83216,6 +83224,10 @@
             },
             {
               "date": "2026-11-05",
+              "value": 0.93
+            },
+            {
+              "date": "2026-11-06",
               "value": 0.93
             }
           ]
