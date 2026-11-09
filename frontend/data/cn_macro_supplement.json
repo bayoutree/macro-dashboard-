@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-09",
   "source": "akshare (macro_china_fx_gold + macro_china_money_supply)",
   "fx_reserves": [
     {
@@ -901,6 +901,10 @@
     {
       "date": "2026-09",
       "value_billion_usd": 34002.51
+    },
+    {
+      "date": "2026-10",
+      "value_billion_usd": 34051.78
     }
   ],
   "m1_yoy": [
