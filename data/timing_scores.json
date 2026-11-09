@@ -2513,9 +2513,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.0,
+          "value": 9.8,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3005,9 +3005,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-09"
-          },
-          "data_source": "akshare",
-          "collect_time": "2026-11-09T18:41:46"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -56675,13 +56673,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "akshare",
-          "collect_time": "2026-11-09T18:41:46"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58609,9 +58605,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-09T18:41:46"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -61781,7 +61775,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": -2.7,
+    "weekly_change": -1.2,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -61831,14 +61825,14 @@
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -2.2,
+        "cnh_cny_spread_latest_bp": -4.2,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -2bp（阈值：单日>70bp 或 连续5日>40bp）；序列 9 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 -4bp（阈值：单日>70bp 或 连续5日>40bp）；序列 10 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {
@@ -61886,7 +61880,7 @@
   },
   "r7_state": {
     "as_of": "2026-11-09",
-    "position_pct": 47.2,
+    "position_pct": 41.7,
     "position_zone": "normal",
     "window_n": 36,
     "ref_anchor": "rolling_36m_completed",

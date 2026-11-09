@@ -1,6 +1,6 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-09 12:16:20",
+  "generated_at": "2026-11-09 18:38:49",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {
@@ -34,16 +34,16 @@
     "a_share_timing": {
       "board": "A股择时",
       "file": "data/timing_scores.json + data/timing_right_scores.json",
-      "as_of": "2026-11-02",
-      "age_days": 7,
+      "as_of": "2026-11-09",
+      "age_days": 0,
       "raw": {
-        "composite_score": 48.8,
+        "composite_score": 46.8,
         "stage": "B",
         "position_range": "32%",
         "market_status": "中性偏恐惧，正常配置",
         "signal_light": "orange",
         "signal_direction": "bear",
-        "bull_score": 0,
+        "bull_score": 8,
         "bear_score": 27,
         "trend_bias": "neutral"
       },
