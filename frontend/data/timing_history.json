@@ -9084,14 +9084,14 @@
   },
   {
     "date": "2026-11-10",
-    "composite_score": 46.2,
+    "composite_score": 47.5,
     "stage": "B",
     "dimensions": {
       "valuation": 50.0,
       "liquidity": 42.2,
       "equity_bond": 29.0,
       "capital_flow": 55.2,
-      "sentiment": 51.6,
+      "sentiment": 59.5,
       "micro_structure": 53.4
     },
     "triggers": {
@@ -9147,7 +9147,7 @@
       "current": "normal",
       "since": null,
       "target_equity": null,
-      "weekly_change": -1.8,
+      "weekly_change": -1.3,
       "trigger_reason": ""
     },
     "trend_state": {
@@ -9164,7 +9164,7 @@
       "layer": "event_soft",
       "cap": 32,
       "cumulative_hike_prob": 0.9803,
-      "yield_10y": 4.84,
+      "yield_10y": 4.86,
       "triggers": [
         "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
         "累计加息概率98%>85%（概率单路·A1）"

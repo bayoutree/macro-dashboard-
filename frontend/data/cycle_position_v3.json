@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-10T02:39:06+08:00",
-    "data_freshness_score": 5,
+    "update_time": "2026-11-11T00:22:19+08:00",
+    "data_freshness_score": 4,
     "assessment_date": "2026-09-01",
     "version": "3.0",
     "next_assessment_date": "2026-10-01",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-08-06",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-09",
+      "as_of": "2026-11-10",
       "layers": {
         "layer_0_debt_cycle": {
           "last_updated": "2026-08-15",
-          "score": 14
+          "score": 13
         },
         "layer_1_kondratieff": {
           "last_updated": "2026-08-06",
-          "score": 5
+          "score": 4
         },
         "layer_2_perez": {
           "last_updated": "2026-08-06",
-          "score": 5
+          "score": 4
         },
         "layer_3_rate_regime": {
           "last_updated": "2026-08-06",
-          "score": 5
+          "score": 4
         }
       },
       "excluded_no_date": [
@@ -435,7 +435,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "history": [
               {
                 "date": "1947Q1",
@@ -3152,7 +3152,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-10"
+              "last_updated": "2026-11-11"
             },
             "cn": {
               "current": 0.36,
@@ -3252,7 +3252,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-10"
+              "last_updated": "2026-11-11"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -4157,7 +4157,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -6275,7 +6275,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -18149,10 +18149,14 @@
               {
                 "date": "2026-11-05",
                 "value": 2.6
+              },
+              {
+                "date": "2026-11-06",
+                "value": 2.63
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 2.6
+            "current": 2.63
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
@@ -18953,7 +18957,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -31708,7 +31712,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -43586,10 +43590,14 @@
               {
                 "date": "2026-11-06",
                 "value": 0.35
+              },
+              {
+                "date": "2026-11-09",
+                "value": 0.32
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.35
+            "current": 0.32
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -44414,7 +44422,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -47580,11 +47588,15 @@
               {
                 "date": "2026-11-06",
                 "value": 0.93
+              },
+              {
+                "date": "2026-11-09",
+                "value": 0.91
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.93
+            "current": 0.91
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48405,7 +48417,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -49375,10 +49387,14 @@
               {
                 "date": "2026-11-09",
                 "value": 20.08
+              },
+              {
+                "date": "2026-11-10",
+                "value": 22.11
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 20.08
+            "current": 22.11
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -50107,7 +50123,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
@@ -51276,7 +51292,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-10",
             "history": [
               {
                 "date": "2015-01-01",

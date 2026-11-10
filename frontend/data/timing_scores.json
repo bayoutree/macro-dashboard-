@@ -1,7 +1,7 @@
 {
   "update_date": "2026-11-10",
   "version": "v4.1",
-  "composite_score": 46.2,
+  "composite_score": 47.5,
   "stage": "B",
   "position_range": "32%",
   "market_status": "中性偏恐惧，正常配置",
@@ -2513,7 +2513,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.8,
+          "value": 9.7,
           "unit": "%",
           "score": 40,
           "sub_weight": 25,
@@ -41151,9 +41151,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 51.6,
+      "score": 59.5,
       "weight": 16,
-      "weighted_score": 8.26,
+      "weighted_score": 9.52,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
@@ -41821,8 +41821,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 66.67,
-          "score": 66.67,
+          "value": 89.29,
+          "score": 89.29,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
@@ -56641,7 +56641,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "43.17%",
+          "value": "42.66%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -56666,8 +56666,8 @@
               "value": 44.39
             },
             {
-              "date": "2026-11-09",
-              "value": 43.17
+              "date": "2026-11-10",
+              "value": 42.66
             }
           ],
           "_history_meta": {
@@ -61775,7 +61775,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": -1.8,
+    "weekly_change": -1.3,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -61792,7 +61792,7 @@
     "layer": "event_soft",
     "cap": 32,
     "cumulative_hike_prob": 0.9803,
-    "yield_10y": 4.84,
+    "yield_10y": 4.86,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
       "累计加息概率98%>85%（概率单路·A1）"
@@ -61821,18 +61821,18 @@
         "met": false,
         "data_status": "ok",
         "valve_open": false,
-        "usdcny_annual_deprec_pct": -6.507,
+        "usdcny_annual_deprec_pct": -6.261,
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -1.2,
+        "cnh_cny_spread_latest_bp": -2.1,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -1bp（阈值：单日>70bp 或 连续5日>40bp）；序列 10 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 -2bp（阈值：单日>70bp 或 连续5日>40bp）；序列 11 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {

@@ -1,7 +1,7 @@
 {
   "update_date": "2026-11-10",
   "version": "v4.1",
-  "composite_score": 46.2,
+  "composite_score": 47.5,
   "stage": "B",
   "position_range": "32%",
   "market_status": "中性偏恐惧，正常配置",
@@ -2513,9 +2513,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 8.9,
+          "value": 9.7,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3005,9 +3005,7 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-10"
-          },
-          "data_source": "akshare",
-          "collect_time": "2026-11-10T16:25:13"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -41153,9 +41151,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 51.6,
+      "score": 59.5,
       "weight": 16,
-      "weighted_score": 8.26,
+      "weighted_score": 9.52,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
@@ -41829,8 +41827,7 @@
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
           "source": "data/feargreed_pointer.json#score",
-          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。",
-          "ssot_source": "data/feargreed_pointer.json#score"
+          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。"
         },
         "turnover_rate": {
           "name": "全A换手率",
@@ -56676,13 +56673,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "akshare",
-          "collect_time": "2026-11-10T16:25:13"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58610,9 +58605,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-10T16:25:13"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -61782,7 +61775,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": -1.8,
+    "weekly_change": -1.3,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -61799,7 +61792,7 @@
     "layer": "event_soft",
     "cap": 32,
     "cumulative_hike_prob": 0.9803,
-    "yield_10y": 4.84,
+    "yield_10y": 4.86,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
       "累计加息概率98%>85%（概率单路·A1）"
@@ -61828,18 +61821,18 @@
         "met": false,
         "data_status": "ok",
         "valve_open": false,
-        "usdcny_annual_deprec_pct": -6.507,
+        "usdcny_annual_deprec_pct": -6.261,
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -1.2,
+        "cnh_cny_spread_latest_bp": -2.1,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -1bp（阈值：单日>70bp 或 连续5日>40bp）；序列 10 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 -2bp（阈值：单日>70bp 或 连续5日>40bp）；序列 11 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {
