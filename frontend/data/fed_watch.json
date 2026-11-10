@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-10",
   "source": "cme-fedwatch 0.2.1 (CME 30D Fed Funds futures settlements + FRED)",
   "target_range": [
     3.75,
@@ -12,13 +12,13 @@
   "meetings": [
     {
       "date": "2026-12-09",
-      "hike_prob": 0.763
+      "hike_prob": 0.84
     },
     {
       "date": "2027-01-27",
-      "hike_prob": 0.812
+      "hike_prob": 0.877
     }
   ],
-  "cumulative_hike_prob": 0.9554,
+  "cumulative_hike_prob": 0.9803,
   "note": "累计口径=1-(1-p1)(1-p2)（独立性假设偏保守，投资分析2026-10-18裁决）"
 }
