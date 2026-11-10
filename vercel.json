@@ -1,14 +1,5 @@
 {
-  "functions": {
-    "api/fetch_data.py": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
-  "crons": [
-    {
-      "path": "/api/fetch_data",
-      "schedule": "0 8 * * *"
-    }
+  "redirects": [
+    { "source": "/index_v2.html", "destination": "/", "permanent": true }
   ]
 }
