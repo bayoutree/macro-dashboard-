@@ -2513,9 +2513,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.8,
+          "value": 8.9,
           "unit": "%",
-          "score": 40,
+          "score": 35,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3005,7 +3005,9 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-10"
-          }
+          },
+          "data_source": "akshare",
+          "collect_time": "2026-11-10T16:25:13"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -41821,13 +41823,14 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 66.67,
-          "score": 66.67,
+          "value": 89.29,
+          "score": 89.29,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
           "source": "data/feargreed_pointer.json#score",
-          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。"
+          "description": "恐贪综合指数（由换手率、融资等多因子合成）。极端恐惧=底部信号，极端贪婪=顶部信号。",
+          "ssot_source": "data/feargreed_pointer.json#score"
         },
         "turnover_rate": {
           "name": "全A换手率",
@@ -56641,7 +56644,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "43.17%",
+          "value": "42.66%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -56666,18 +56669,20 @@
               "value": 44.39
             },
             {
-              "date": "2026-11-09",
-              "value": 43.17
+              "date": "2026-11-10",
+              "value": 42.66
             }
           ],
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "akshare",
+          "collect_time": "2026-11-10T16:25:13"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -58605,7 +58610,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-11-10T16:25:13"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
