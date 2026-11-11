@@ -43,6 +43,7 @@ INDICATORS_PATH = os.path.join(PROJECT_ROOT, "data", "indicators.json")
 # ============================================================================
 NAME_MAP = {
     "dr007": "DR007",
+    "nominal_gdp_yoy": "名义GDP同比",
     "m2": "M2同比",
     "m1": "M1同比",
     "shrzgm": "社融存量同比",
@@ -468,7 +469,10 @@ def _build_evolution_paths(tmpl, ctx, from_phase=None):
             "fail": p.get("fail"),
             "confidence": p.get("confidence"),
             "data_gaps": p.get("data_gaps") or [],
-            "caliber_notes": p.get("caliber_notes") or [],
+            # [B2 修复 2026-11-11] U2 背离注记由 build_us 每次跑批重新生成，
+            # 继承时须过滤自动生成的旧注记，否则每次跑批累积一条（曾堆积 8 条）。
+            "caliber_notes": [n for n in (p.get("caliber_notes") or [])
+                              if "政策事实层已降息 vs 市场定价层" not in n],
             # 同时暴露为场景字段，供前端 conclusion.scenarios 渲染
             "name": f"{from_label}→{p.get('to')}",
             "probability": p.get("prob"),

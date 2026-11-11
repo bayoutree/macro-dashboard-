@@ -1068,6 +1068,7 @@ function renderCrossSection(crossData) {
 
 // [第4阶段 T-3] 指标 key -> 中文标签兜底：当数据缺 name 字段时不再直接透出 snake_case 标识符
 const METRIC_ZH = {
+  nominal_gdp_yoy: '名义GDP同比',
   fiscal_revenue_growth: '财政收入增速',
   fiscal_balance: '财政收支差额',
   special_bond: '专项债发行进度',

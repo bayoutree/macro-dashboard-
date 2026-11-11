@@ -360,7 +360,9 @@ def _house_price_series(df):
     if val_col is None or date_col is None:
         return None
     g = df.groupby(date_col)[val_col].mean()
-    return [(cn_date(d), float(v)) for d, v in g.items() if v == v]
+    # [B5 修复 2026-11-11] 上游「新建商品住宅价格指数-同比」是上年=100的指数口径
+    # （97.3=同比跌2.7%），原代码直接当百分比显示 → 100.0% 错值。统一转换为涨跌幅。
+    return [(cn_date(d), round(float(v) - 100, 2)) for d, v in g.items() if v == v]
 
 
 # ----------------------------------------------------------------------------

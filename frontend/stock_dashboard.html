@@ -906,7 +906,7 @@ body::before {
         </div>
         <div class="sparkline-dates" id="ust10y-dates"></div>
         <div class="ind-description">美债10Y是全球资产贴现率锚，上行期压制高估值板块，并通过外资流动传导至A股。</div>
-        <div class="update-time">更新: 2026-10-08 (日频)</div>
+        <div class="update-time" id="ust10y-updatetime">更新: -- (日频)</div>
       </div>
       <!-- 中美10Y利差 -->
       <div class="anchor-card" id="spread-card">
@@ -923,7 +923,7 @@ body::before {
         </div>
         <div class="sparkline-dates" id="spread-dates"></div>
         <div class="ind-description">中美利差反映资金跨境流动方向。<br><span style="color:var(--yellow);font-size:11px;">⚠️ 符号约定：走势线=美债10Y−中债10Y，正值=美债利率更高（中美倒挂程度）；当前倒挂收窄=外资流出压力减轻。</span></div>
-        <div class="update-time">更新: 2026-10-08 (日频)</div>
+        <div class="update-time" id="spread-updatetime">更新: -- (日频)</div>
       </div>
       <!-- USDCNY -->
       <div class="anchor-card" id="usdcny-card" style="position:relative;">
@@ -3787,7 +3787,9 @@ function applyTimingDataToMockData() {
       const et = document.getElementById('erp-title');
       if (et) et.innerHTML = '万得全A ERP <span style="font-size:10px;color:var(--text-muted);">(股权风险溢价·000985口径·主指标为中证800)</span>';
       const eu = document.getElementById('erp-updatetime');
-      if (eu) eu.textContent = '更新: ' + _ud + ' | 本卡=中证全指000985 PE(TTM)−10Y,月频 | composite主指标=中证800 ERP（全A代理,乐咕月频2007起） | 分位: ' + (erp.percentile || '2020年以来');
+      // [B4 修复 2026-11-11] 标签首段从文件更新日改为序列尾日期，与折线末端对齐
+      const _erpTail = erpSeries.dates.length ? erpSeries.dates[erpSeries.dates.length - 1] : _ud;
+      if (eu) eu.textContent = '更新: ' + _erpTail + ' | 本卡=中证全指000985 PE(TTM)−10Y,月频 | composite主指标=中证800 ERP（全A代理,乐咕月频2007起） | 分位: ' + (erp.percentile || '2020年以来');
     } else {
       mockData.erp.dates = []; mockData.erp.history = [];
       _setAnchorPending('erp-card');
@@ -3933,6 +3935,9 @@ async function loadExternalLiqData() {
         ust10yChgEl.textContent = (dc !== null ? dcStr + ' (日)' : '--') + ' | ' + (wc !== null ? wcStr + ' (周)' : '--');
         ust10yChgEl.className = 'indicator-change ' + (dc > 0 ? 'up' : dc < 0 ? 'down' : 'flat');
       }
+      // [B4 修复 2026-11-11] update-time 与序列尾对齐（原硬编码 2026-10-08 常旧）
+      const ust10yUpdEl = document.getElementById('ust10y-updatetime');
+      if (ust10yUpdEl) ust10yUpdEl.textContent = '更新: ' + latest.date + ' (日频·FRED DGS10)';
     }
 
     // --- 10Y国债锚点卡: cn_macro history.cn_10y_bond (日频真值) ---
@@ -4007,6 +4012,9 @@ async function loadExternalLiqData() {
             spreadChgEl.textContent = (dc !== null ? dcStr + ' (日)' : '--') + ' | ' + (wc !== null ? wcStr + ' (周)' : '--');
             spreadChgEl.className = 'indicator-change ' + (dc > 0 ? 'up' : dc < 0 ? 'down' : 'flat');
           }
+          // [B4 修复 2026-11-11] update-time 与序列尾对齐（中美共同日期末点）
+          const spreadUpdEl = document.getElementById('spread-updatetime');
+          if (spreadUpdEl) spreadUpdEl.textContent = '更新: ' + spreadDates[spreadDates.length - 1] + ' (日频)';
         }
       }
       // ERP card liquidity overlay：中/美/利差统一取"共同日期对齐"末点（与三联卡同口径）
