@@ -1834,6 +1834,41 @@ class TimingScoreEngine:
             "top_threshold": "<3%"
         }
 
+        # --- 中位数PE(全A) (参考指标, 不计分) ---
+        # [P0-2 修复 2026-11-11] 原无日更函数，2026-10-14 外部一次性写入后停更。
+        # 真源: 乐咕 stock_a_ttm_lyr() middlePETTM 列（周频，2005 起）。
+        try:
+            _ak = self.init_akshare()
+            _pe_df = safe_ak_call(ak.stock_a_ttm_lyr)
+            if _pe_df is not None and not _pe_df.empty and 'middlePETTM' in _pe_df.columns:
+                _ser = _pe_df['middlePETTM'].dropna()
+                _cur_pe = safe_float(_ser.iloc[-1])
+                import math as _m2
+                if _cur_pe is None or _m2.isnan(_cur_pe) or _cur_pe <= 0:
+                    raise ValueError(f"中位数PE异常值 cur={_cur_pe}")
+                _dcol = 'date' if 'date' in _pe_df.columns else _pe_df.columns[0]
+                _tail_dt = pd.to_datetime(_pe_df[_dcol]).dropna().iloc[-1]
+                _stale = (datetime.now() - _tail_dt).days
+                if _stale > 14:
+                    raise ValueError(f"中位数PE上游陈旧（尾={_tail_dt.date()}，{_stale}天前）")
+                indicators["median_pe_all_a"] = {
+                    "name": "中位数PE(全A)",
+                    "value": _cur_pe,
+                    "unit": "倍",
+                    "score": None,
+                    "sub_weight": 0,
+                    "note": "【参考】中位数PE仅作辅助参考，不计分"
+                }
+                logger.info(f"      中位数PE(全A): {_cur_pe} (乐咕, 尾={_tail_dt.date()})")
+            else:
+                raise ValueError("stock_a_ttm_lyr 返回空或缺 middlePETTM 列")
+        except Exception as e:
+            logger.warning(f"      中位数PE采集失败: {e} → 沿用上期")
+            _prev = load_json("timing_scores.json")
+            _pind = _prev.get("dimensions", {}).get("valuation", {}).get("indicators", {}).get("median_pe_all_a", {})
+            if _pind:
+                indicators["median_pe_all_a"] = {k: v for k, v in _pind.items() if k != 'history'}
+
         # 维度总分 = 加权子指标得分
         dim_score = self._weighted_score(indicators)
         signal = self._valuation_signal(dim_score, hs300_pe_pct)
@@ -2772,12 +2807,60 @@ class TimingScoreEngine:
         return prev_score, prev_val
 
     def _calc_fiscal_expenditure(self):
-        """财政支出 (v4.1新增, 参考指标)"""
+        """财政支出 (v4.1新增, 参考指标)
+        [P0-2 修复 2026-11-11] 原实现为纯空壳（只 return 上期值，从未采集），
+        是「静默失败无告警」的典型：上游无数据时照样返回 prev，日志无任何异常。
+        真源：财政部官网「全国财政收支情况」月度发布（次月中下旬发布上月累计值）。
+        """
         prev = load_json("timing_scores.json")
-        prev_val = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("fiscal_expenditure", {}).get("value", "数据待更新")
-        prev_score = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("fiscal_expenditure", {}).get("score", 50)
-        logger.info(f"      财政支出: {prev_val} (使用上期值)")
-        return prev_score, prev_val
+        prev_ind = prev.get("dimensions", {}).get("capital_flow", {}).get("indicators", {}).get("fiscal_expenditure", {})
+        prev_val = prev_ind.get("value", "数据待更新")
+        prev_score = prev_ind.get("score", 50)
+        try:
+            import re as _re, requests as _req
+            _idx = _req.get("http://www.mof.gov.cn/zhengwuxinxi/redianzhuanti/quanguocaizhengshouzhiqingkuang/", timeout=30)
+            _idx.encoding = _idx.apparent_encoding
+            _links = _re.findall(r'href="(http://gks\.mof\.gov\.cn/tongjishuju/[^"]+\.htm)"[^>]*>\s*([^<]*财政收支情况)', _idx.text)
+            if not _links:
+                raise ValueError("MoF 列表页未找到财政收支情况链接")
+            _url, _title = _links[0]
+            _art = _req.get(_url, timeout=30)
+            _art.encoding = _art.apparent_encoding
+            _m = _re.search(r'全国一般公共预算支出[^。]{0,40}?同比增长([\d.]+)%', _art.text)
+            if not _m:
+                _m = _re.search(r'全国一般公共预算支出[^。]{0,40}?下降([\d.]+)%', _art.text)
+                if _m:
+                    cur = -float(_m.group(1))
+                else:
+                    raise ValueError(f"MoF 文章未解析到支出同比: {_title}")
+            else:
+                cur = float(_m.group(1))
+            # 期别 → 月份（累计值口径）
+            _ym = _re.search(r'(\d{4})年', _title)
+            _year = int(_ym.group(1)) if _ym else None
+            if '前三季度' in _title: _month = 9
+            elif '上半年' in _title: _month = 6
+            elif '一季度' in _title: _month = 3
+            else:
+                _mm = _re.search(r'1-(\d{1,2})月', _title)
+                _month = int(_mm.group(1)) if _mm else 12
+            from datetime import date as _date
+            _asof = _date(_year, _month, 28)
+            _stale = (_date.today() - _asof).days
+            logger.info(f"      财政支出: {cur}% (MoF { _title }，期别 {_year}-{_month:02d})")
+            # 月频指标陈旧容忍 60 天（次月中下旬发布上月值）
+            if _stale > 60:
+                raise ValueError(f"MoF 数据陈旧（期别 {_year}-{_month:02d}，{_stale} 天前），拒绝落库")
+            # score：增速越高越扩张。映射: >5%→15, 3~5→25, 1~3→35, 0~1→45, <0→60
+            if cur > 5: sc = 15
+            elif cur > 3: sc = 25
+            elif cur > 1: sc = 35
+            elif cur >= 0: sc = 45
+            else: sc = 60
+            return sc, cur
+        except Exception as e:
+            logger.warning(f"      财政支出 MoF 采集失败: {e} → 沿用上期 {prev_val}")
+            return prev_score, prev_val
 
     def _calc_new_account_opening(self):
         """新增开户数 (v4.1从资金面移入情绪)"""
@@ -2972,13 +3055,22 @@ class TimingScoreEngine:
         return score, round(score, 2)
 
     def _calc_turnover(self):
-        """全A换手率 - 基于SSE成交量估算"""
+        """全A换手率 - 基于SSE成交量估算
+        [P0-2 修复 2026-11-11] 主源新浪 stock_zh_index_daily 在 CI 海外被限流
+        （10-13 起静默失败走降级抄上期），加东财 stock_zh_index_daily_em 备用源。
+        """
         try:
             ak = self.init_akshare()
+            _em_scale = 1.0  # 新浪源 volume 单位=股；东财源单位=手(×100=股)
             sse_df = safe_ak_call(ak.stock_zh_index_daily, symbol="sh000001")
+            if sse_df is None or sse_df.empty or 'volume' not in sse_df.columns:
+                # 东财备用源（海外可达性好于新浪）
+                logger.warning("      换手率: 新浪源失效，尝试东财备用源")
+                sse_df = safe_ak_call(ak.stock_zh_index_daily_em, symbol="sh000001")
+                _em_scale = 100.0
             if sse_df is not None and not sse_df.empty:
                 if 'volume' in sse_df.columns:
-                    vol = pd.to_numeric(sse_df['volume'], errors='coerce').dropna()
+                    vol = pd.to_numeric(sse_df['volume'], errors='coerce').dropna() * _em_scale
                     if len(vol) >= 5:
                         # vol 单位: 股 (SSE全市场成交量)
                         # 估算全A成交量: SSE约占60%
