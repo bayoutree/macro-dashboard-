@@ -3051,6 +3051,16 @@ class TimingScoreEngine:
             ma20 = float(ratio.rolling(20).mean().iloc[-1]) if len(ratio) >= 20 else None
             as_of = str(ratio.index[-1].date())
 
+            # [P0-1 修复 2026-11-11] 空值/零值/陈旧三重拦截：
+            # 上游失效会返回0值行（11-09 曾落库 0.0 并自我固化），
+            # 或返回陈旧数据（stock_margin_sse 区间查询曾截断至 10-12）——均视为失效抄上期
+            import math as _math
+            if _math.isnan(cur) or cur <= 0:
+                raise ValueError(f"融资买入占比异常值 cur={cur}（上游失效），拒绝落库")
+            _stale_days = (datetime.now().date() - ratio.index[-1].date()).days
+            if _stale_days > 7:
+                raise ValueError(f"融资买入占比上游数据陈旧（尾={as_of}，{_stale_days}天前），拒绝落库")
+
             # 2016后分位：基于落盘 history（回填3486条）+ 当日值
             hist = prev_ind.get("history", [])
             hist_vals = [h["value"] for h in hist
