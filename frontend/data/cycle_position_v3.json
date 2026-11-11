@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-11T22:12:04+08:00",
+    "update_time": "2026-11-12T00:03:10+08:00",
     "data_freshness_score": 100,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -439,7 +439,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "history": [
               {
                 "date": "1947Q1",
@@ -3156,7 +3156,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-11"
+              "last_updated": "2026-11-12"
             },
             "cn": {
               "current": 0.36,
@@ -3256,7 +3256,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-11"
+              "last_updated": "2026-11-12"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -48449,7 +48449,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -49423,10 +49423,14 @@
               {
                 "date": "2026-11-10",
                 "value": 22.11
+              },
+              {
+                "date": "2026-11-11",
+                "value": 22.12
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.11
+            "current": 22.12
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -50157,7 +50161,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,

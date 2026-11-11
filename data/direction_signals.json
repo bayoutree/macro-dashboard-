@@ -1,6 +1,6 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-11 22:10:59",
+  "generated_at": "2026-11-11 16:02:54",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {
@@ -12,8 +12,8 @@
         "cn_phase": "复苏酝酿",
         "cn_monetary": "宽货币",
         "cn_credit": "中性信用",
-        "us_phase": "复苏",
-        "us_liquidity": "中性流动性"
+        "us_phase": "滞胀加剧",
+        "us_liquidity": "紧流动性"
       },
       "direction_provisional": "bull"
     },
@@ -37,10 +37,10 @@
       "as_of": "2026-11-11",
       "age_days": 0,
       "raw": {
-        "composite_score": 46.9,
-        "stage": "B",
+        "composite_score": 50.4,
+        "stage": "C",
         "position_range": "32%",
-        "market_status": "中性偏恐惧，正常配置",
+        "market_status": "中性偏贪婪，逐步兑现",
         "signal_light": "orange",
         "signal_direction": "bear",
         "bull_score": 8,
