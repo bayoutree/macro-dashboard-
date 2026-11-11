@@ -2513,9 +2513,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 10.1,
+          "value": 9.7,
           "unit": "%",
-          "score": 25,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3005,13 +3005,11 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-11"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-11T16:04:36"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
-          "value": 34.66,
+          "value": 34.97,
           "unit": "倍",
           "score": null,
           "sub_weight": 0,
@@ -3076,7 +3074,7 @@
             },
             {
               "date": "2026-11-11",
-              "value": 34.66
+              "value": 34.97
             }
           ],
           "_history_meta": {
@@ -67316,13 +67314,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-11T16:04:36"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -69250,9 +69246,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-11T16:04:36"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -72472,14 +72466,14 @@
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -2.5,
+        "cnh_cny_spread_latest_bp": -0.6,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -2bp（阈值：单日>70bp 或 连续5日>40bp）；序列 11 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 -1bp（阈值：单日>70bp 或 连续5日>40bp）；序列 12 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {
@@ -72527,8 +72521,8 @@
   },
   "r7_state": {
     "as_of": "2026-11-11",
-    "position_pct": 41.7,
-    "position_zone": "normal",
+    "position_pct": 50.0,
+    "position_zone": "high",
     "window_n": 36,
     "ref_anchor": "rolling_36m_completed",
     "ref_span": "2023-10→2026-09",
@@ -72539,9 +72533,9 @@
       "decline_3m_pct": -11.7,
       "monthly_neg_streak": 0
     },
-    "conflict": "A",
-    "verdict": "趋势优先（价值陷阱）",
-    "verdict_ref": "2021-22 趋势空仓避过 -41%",
+    "conflict": null,
+    "verdict": "按既有框架（P1-7/P1-9 信号）",
+    "verdict_ref": "非冲突分档区",
     "catalyst_coupling": {
       "zone_active": false,
       "has_catalyst": false,
