@@ -1,7 +1,7 @@
 {
   "_meta": {
     "update_time": "2026-11-11T00:22:19+08:00",
-    "data_freshness_score": 3,
+    "data_freshness_score": 100,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -32,26 +32,26 @@
         "status": "ok"
       }
     ],
-    "data_cutoff_date": "2026-08-06",
+    "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
       "as_of": "2026-11-11",
       "layers": {
         "constraint_debt_cycle": {
-          "last_updated": "2026-08-15",
-          "score": 12
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "narrative_kondratieff": {
-          "last_updated": "2026-08-06",
-          "score": 3
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "narrative_perez": {
-          "last_updated": "2026-08-06",
-          "score": 3
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "constraint_rate_regime": {
-          "last_updated": "2026-08-06",
-          "score": 3
+          "last_updated": "2026-11-11",
+          "score": 100
         }
       },
       "excluded_no_date": [
@@ -62,18 +62,18 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-11T14:31:00+08:00"
+    "v4_built_at": "2026-11-11T15:01:01+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
       "name": "达里奥·大债务周期",
       "description": "约束其他所有周期判断的'第0层'，决定利率敏感资产的有效性边界",
-      "last_updated": "2026-08-15",
+      "last_updated": "2026-11-11",
       "us": {
         "phase": "晚期去杠杆→和谐化过渡",
         "phase_code": "late_deleveraging_to_smooth",
         "signal_weight": -2,
-        "debt_to_gdp": 132,
+        "debt_to_gdp": 121.19,
         "interest_to_revenue": 33.55,
         "fiscal_deficit_gdp": 6.5,
         "description": "债务/GDP超130%，利息支出占财政收入>20%",
@@ -82,7 +82,7 @@
           "debt_to_gdp": {
             "name": "联邦债务/GDP",
             "source": "FRED (GFDEGDQ188S)",
-            "current": 132,
+            "current": 121.19,
             "unit": "%",
             "threshold": {
               "warning": 100,
@@ -417,6 +417,10 @@
               {
                 "date": "2026Q1",
                 "value": 122.59387
+              },
+              {
+                "date": "2026Q2",
+                "value": 121.19
               }
             ],
             "frequency": "quarterly",
@@ -2194,7 +2198,7 @@
       "phase_code": "trough_to_recovery",
       "signal_weight": 2,
       "confidence": "medium",
-      "last_updated": "2026-08-06",
+      "last_updated": "2026-11-11",
       "investment_usage": "康波决定大类资产的长期战略方向。回升初期利好新科技和新基建。",
       "investment_advice": [
         "战略性增配AI/新能源相关资产",
@@ -2685,11 +2689,11 @@
     },
     "narrative_perez": {
       "name": "佩雷斯（技术革命周期）",
-      "current_phase": "Frenzy中后期 → Turning Point前兆",
+      "current_phase": "Frenzy末期→Turning Point前兆增强",
       "phase_code": "frenzy_late",
-      "signal_weight": -1,
+      "signal_weight": 0,
       "confidence": "medium",
-      "last_updated": "2026-08-06",
+      "last_updated": "2026-11-11",
       "investment_usage": "Frenzy后期投机泡沫风险上升，Turning Point标志向Deployment过渡。",
       "investment_advice": [
         "警惕估值过高的AI概念股",
@@ -2812,7 +2816,7 @@
     "constraint_rate_regime": {
       "name": "利率范式（高利率时代跟踪）",
       "description": "判断全球是否进入结构性高利率时代",
-      "last_updated": "2026-08-06",
+      "last_updated": "2026-11-11",
       "structural": {
         "name": "结构性因素",
         "indicators": {
@@ -49699,25 +49703,18 @@
           }
         }
       },
-      "regime_state": {
-        "current_regime": "high_rate",
-        "structural_breached": true,
-        "forward_breached": false,
-        "market_breached": true,
-        "constraint_active": true,
-        "description": "实际利率>2%持续超过6个月，期限溢价偏高。high_rate regime下债券配置自动降一档。"
-      }
+      "regime_state": "重启加息：12月概率84%/累计98%（CME 11-10），FFR 3.75-4.00%、10Y 4.86%、实际利率2.63%、期限溢价0.91上行"
     },
     "cycle_juglar": {
       "us": {
         "current_phase": "上升段（AI Capex驱动）",
         "phase_code": "expansion",
-        "signal_weight": 2,
+        "signal_weight": 1,
         "confidence": "high",
         "start": 2020,
         "expected_end": "2027-2029",
         "phase_position": 0.6,
-        "last_updated": "2026-08-06",
+        "last_updated": "2026-11-11",
         "investment_usage": "朱格拉周期指导制造业/设备/工业材料的布局时机。",
         "investment_advice": [
           "超配半导体设备和AI基础设施",
@@ -49919,7 +49916,8 @@
                 "value": 75.9621
               }
             ],
-            "frequency": "monthly"
+            "frequency": "monthly",
+            "data_gap_note": "current 79.5 与 history 尾值 75.96@2026-07 不一致，上游停更，待补采核实（数据工单另行立项）"
           },
           "equipment_investment": {
             "name": "设备投资增速",
@@ -50041,12 +50039,12 @@
       "cn": {
         "current_phase": "上升初期（新周期启动）",
         "phase_code": "early_expansion",
-        "signal_weight": 2,
+        "signal_weight": 1,
         "confidence": "medium",
         "start": 2025,
         "expected_end": "2032-2033",
         "phase_position": 0.15,
-        "last_updated": "2026-08-06",
+        "last_updated": "2026-11-11",
         "investment_usage": "中国朱格拉新周期由高技术制造业+AI+新能源驱动。",
         "investment_advice": [
           "关注高技术制造业（半导体、AI服务器、新能源车）",
@@ -50328,9 +50326,9 @@
       "us": {
         "current_phase": "主动补库中期",
         "phase_code": "active_restocking",
-        "signal_weight": 2,
+        "signal_weight": 1,
         "confidence": "medium",
-        "last_updated": "2026-08-06",
+        "last_updated": "2026-11-11",
         "description": "美国处于基钦补库周期中期，PMI>50持续扩张。",
         "indicators": {
           "inventory_sales_ratio": {
@@ -51134,11 +51132,11 @@
     },
     "cycle_merrill_3d": {
       "us": {
-        "current_phase": "复苏→过热",
-        "phase_code": "recovery_to_overheat",
-        "signal_weight": 1,
+        "current_phase": "过热后期→滞胀风险抬头",
+        "phase_code": "overheat",
+        "signal_weight": 0,
         "confidence": "medium",
-        "last_updated": "2026-08-06",
+        "last_updated": "2026-11-11",
         "indicators": {
           "core_cpi": {
             "name": "核心CPI同比",
@@ -52689,11 +52687,11 @@
         ]
       },
       "cn": {
-        "current_phase": "复苏中期",
-        "phase_code": "recovery",
-        "signal_weight": 2,
+        "current_phase": "复苏酝酿→确认窗口",
+        "phase_code": "mild_recovery",
+        "signal_weight": 1,
         "confidence": "medium",
-        "last_updated": "2026-08-06",
+        "last_updated": "2026-11-11",
         "indicators": {
           "cn_cpi": {
             "name": "CPI同比",
@@ -87704,26 +87702,27 @@
       "description": "康波回升初期+佩雷斯Frenzy末期+朱格拉扩张中期+基钦补库中后期的错位组合",
       "interpretation": "长周期向上、短周期见顶风险上升，共振较9月评估减弱；配置从总量超配转向结构与防御平衡"
     },
+    "note": "分国分为 P1 朱格拉/P2 基钦/P3 美林三周期动量分（公式固定，不入大债务/利率约束层）；overall_score 为七维综合评估。两口径分歧本身反映动量与约束的对冲",
     "united_states": {
+      "p1_score": 2,
+      "p2_score": 1,
+      "p3_score": 0,
+      "p1_label": "朱格拉设备周期-扩张早期",
+      "p2_label": "基钦库存周期-被动补库",
+      "p3_label": "美林时钟-过热后期→滞胀风险抬头",
+      "raw_score": 1.0,
+      "consensus_score": 75.0,
+      "signal": "看多"
+    },
+    "china": {
       "p1_score": 2,
       "p2_score": 1,
       "p3_score": 1,
       "p1_label": "朱格拉设备周期-扩张早期",
       "p2_label": "基钦库存周期-被动补库",
-      "p3_label": "美林时钟-复苏→过热",
+      "p3_label": "美林时钟-复苏酝酿→确认窗口",
       "raw_score": 1.3,
       "consensus_score": 82.5,
-      "signal": "强烈看多"
-    },
-    "china": {
-      "p1_score": 2,
-      "p2_score": 1,
-      "p3_score": 2,
-      "p1_label": "朱格拉设备周期-扩张早期",
-      "p2_label": "基钦库存周期-被动补库",
-      "p3_label": "美林时钟-复苏中期",
-      "raw_score": 1.6,
-      "consensus_score": 90.0,
       "signal": "强烈看多"
     },
     "formula": "raw_score = P1×0.3 + P2×0.4 + P3×0.3, consensus_score = (raw_score + 2) / 4 × 100"
@@ -88602,7 +88601,7 @@
       "trigger_condition": "联邦债务/GDP>130% 且 利息/财政收入>20%",
       "currently_triggered": true,
       "current_values": {
-        "debt_to_gdp": 132,
+        "debt_to_gdp": 121.19,
         "interest_to_revenue": 33.55
       },
       "degradation_rules": {
@@ -88646,8 +88645,8 @@
       "trigger_condition": "高利率Regime持续（联邦基金利率>3%且实际利率>1%）",
       "currently_triggered": true,
       "current_values": {
-        "fed_funds_rate": 4.5,
-        "real_rate": 1.8
+        "fed_funds_rate": 3.88,
+        "real_rate": 2.63
       },
       "degradation_rules": {
         "us_equity_valuation_sensitive": {
