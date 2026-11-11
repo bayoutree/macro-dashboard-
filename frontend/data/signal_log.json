@@ -1,5 +1,17 @@
 {
-  "signals": [],
+  "signals": [
+    {
+      "type": "stage",
+      "from": "B",
+      "to": "C",
+      "direction": "reduce",
+      "date": "2026-11-11",
+      "composite": 50.4,
+      "price": 5207.16,
+      "settled20": null,
+      "settled60": null
+    }
+  ],
   "ic_points": [
     {
       "date": "2026-10-26",
@@ -66,14 +78,31 @@
     }
   ],
   "stats": {
-    "by_type": {},
+    "by_type": {
+      "stage": {
+        "w20": {
+          "n": 0,
+          "win": 0,
+          "draw": 0,
+          "win_rate": null,
+          "avg_ret": null
+        },
+        "w60": {
+          "n": 0,
+          "win": 0,
+          "draw": 0,
+          "win_rate": null,
+          "avg_ret": null
+        }
+      }
+    },
     "ic": {
       "ic20": null,
       "ic20_n": 0,
       "ic60": null,
       "ic60_n": 0
     },
-    "total_signals": 0,
+    "total_signals": 1,
     "disclose_min_n": 20,
     "cite_min_n": 50
   },

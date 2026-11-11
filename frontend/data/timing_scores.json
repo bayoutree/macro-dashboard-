@@ -1,10 +1,10 @@
 {
   "update_date": "2026-11-11",
   "version": "v4.1",
-  "composite_score": 46.9,
-  "stage": "B",
+  "composite_score": 50.4,
+  "stage": "C",
   "position_range": "32%",
-  "market_status": "中性偏恐惧，正常配置",
+  "market_status": "中性偏贪婪，逐步兑现",
   "dimensions": {
     "valuation": {
       "name": "估值",
@@ -1031,8 +1031,7 @@
           "_history_meta": {
             "source": "ak.stock_index_pe_lg 月频全量 expanding 分位（接口月频化后 V22-3 续点）",
             "synced_at": "2026-11-11"
-          },
-          "frequency": "monthly"
+          }
         },
         "hs300_pb_percentile": {
           "name": "沪深300 PB分位",
@@ -3096,7 +3095,7 @@
         "social_financing_trend": {
           "name": "社融增速趋势",
           "value": 7.11,
-          "value_label": "宽松见顶",
+          "value_label": "紧缩(Δ-12288.0)",
           "score": 25,
           "sub_weight": 40,
           "bottom_signal": "触底回升",
@@ -3456,7 +3455,7 @@
             },
             {
               "date": "2026-11-11",
-              "value": 1.6
+              "value": 1.59
             }
           ],
           "_history_meta": {
@@ -3896,8 +3895,8 @@
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
-          "value": "6.31%",
-          "percentile": "66.3%",
+          "value": "6.33%",
+          "percentile": "47.3%",
           "score": 20,
           "sub_weight": 0,
           "note": "【参考】沪深300口径仅作参考，主指标为中证800 ERP（全A代理）",
@@ -6660,10 +6659,10 @@
     },
     "capital_flow": {
       "name": "资金面",
-      "score": 55.2,
+      "score": 72.5,
       "weight": 17,
-      "weighted_score": 9.38,
-      "signal": "正常",
+      "weighted_score": 12.32,
+      "signal": "正常偏低",
       "indicators": {
         "margin_ratio": {
           "name": "融资余额250日分位（沪市）",
@@ -23613,14 +23612,14 @@
         },
         "margin_buying_ratio": {
           "name": "融资买入占比",
-          "value": 0.0,
-          "score": 0.0,
+          "value": 7.54,
+          "score": 86.3,
           "sub_weight": 20,
           "bottom_threshold": "<7%",
           "top_threshold": ">11%",
-          "tier": "extreme_fear",
-          "ma20": 0.0,
-          "pctile_2016": 0.0,
+          "tier": "greed",
+          "ma20": 7.08,
+          "pctile_2016": 86.3,
           "as_of": "2026-11-10",
           "freq": "日频",
           "source": "沪市stock_margin_sse/全A成交额(腾讯sh000985)",
@@ -41250,9 +41249,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 55.8,
+      "score": 59.2,
       "weight": 16,
-      "weighted_score": 8.93,
+      "weighted_score": 9.47,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
@@ -41912,7 +41911,7 @@
             },
             {
               "date": "2026-11-11",
-              "value": 4.3
+              "value": 4.79
             }
           ],
           "_history_meta": {
@@ -41924,8 +41923,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 89.29,
-          "score": 89.29,
+          "value": 99.21,
+          "score": 99.21,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
@@ -52307,6 +52306,10 @@
             {
               "date": "2026-11-10",
               "value": 89.29
+            },
+            {
+              "date": "2026-11-11",
+              "value": 99.21
             }
           ]
         },
@@ -52641,7 +52644,7 @@
             },
             {
               "date": "2026-11-11",
-              "value": 1.5
+              "value": 1.4
             }
           ],
           "_history_meta": {
@@ -52651,15 +52654,15 @@
         },
         "margin_buying_ratio": {
           "name": "融资买入占比",
-          "value": 0.0,
-          "score": 0.0,
+          "value": 7.54,
+          "score": 86.3,
           "sub_weight": 0,
           "note": "【已移至资金面】",
           "bottom_threshold": "<7%",
           "top_threshold": ">11%",
-          "tier": "extreme_fear",
-          "ma20": 0.0,
-          "pctile_2016": 0.0,
+          "tier": "greed",
+          "ma20": 7.08,
+          "pctile_2016": 86.3,
           "as_of": "2026-11-10",
           "freq": "日频",
           "source": "沪市stock_margin_sse/全A成交额(腾讯sh000985)",
@@ -67278,7 +67281,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "42.66%",
+          "value": "44.69%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -67303,8 +67306,8 @@
               "value": 44.39
             },
             {
-              "date": "2026-11-10",
-              "value": 42.66
+              "date": "2026-11-11",
+              "value": 44.69
             }
           ],
           "_history_meta": {
@@ -72264,7 +72267,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数>85且QVIX<14(极度贪婪)",
         "stars": 4,
-        "active": false
+        "active": true
       },
       {
         "dimension": "市场情绪",
@@ -72324,7 +72327,7 @@
       },
       {
         "condition": "恐贪指数>85且QVIX<14(极度贪婪双确认)",
-        "met": false
+        "met": true
       },
       {
         "condition": "社融增速进一步下行",
@@ -72360,7 +72363,7 @@
         "note": "大小盘均衡，中性配置"
       },
       "现金_债券": {
-        "range": "48%-63%",
+        "range": "63%-78%",
         "note": "防御配置"
       }
     },
@@ -72412,7 +72415,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": -1.9,
+    "weekly_change": 1.1,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -72429,7 +72432,7 @@
     "layer": "event_soft",
     "cap": 32,
     "cumulative_hike_prob": 1.0,
-    "yield_10y": 4.86,
+    "yield_10y": 4.88,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
       "累计加息概率100%>85%（概率单路·A1）"
@@ -72517,7 +72520,7 @@
   },
   "r7_state": {
     "as_of": "2026-11-11",
-    "position_pct": 47.2,
+    "position_pct": 41.7,
     "position_zone": "normal",
     "window_n": 36,
     "ref_anchor": "rolling_36m_completed",
@@ -74484,8 +74487,25 @@
     }
   },
   "p2_13_oos_stats": {
-    "total_signals": 0,
-    "by_type": {},
+    "total_signals": 1,
+    "by_type": {
+      "stage": {
+        "w20": {
+          "n": 0,
+          "win": 0,
+          "draw": 0,
+          "win_rate": null,
+          "avg_ret": null
+        },
+        "w60": {
+          "n": 0,
+          "win": 0,
+          "draw": 0,
+          "win_rate": null,
+          "avg_ret": null
+        }
+      }
+    },
     "ic": {
       "ic20": null,
       "ic20_n": 0,

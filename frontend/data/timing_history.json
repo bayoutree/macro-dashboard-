@@ -9183,14 +9183,14 @@
   },
   {
     "date": "2026-11-11",
-    "composite_score": 46.9,
-    "stage": "B",
+    "composite_score": 50.4,
+    "stage": "C",
     "dimensions": {
       "valuation": 50.0,
       "liquidity": 42.2,
       "equity_bond": 29.0,
-      "capital_flow": 55.2,
-      "sentiment": 55.8,
+      "capital_flow": 72.5,
+      "sentiment": 59.2,
       "micro_structure": 53.4
     },
     "triggers": {
@@ -9202,7 +9202,7 @@
       },
       "reduce_position": {
         "两融占比突破3.5%": false,
-        "恐贪指数>85且QVIX<14(极度贪婪双确认)": false,
+        "恐贪指数>85且QVIX<14(极度贪婪双确认)": true,
         "社融增速进一步下行": false,
         "美联储重启加息": true,
         "股息率-国债利差(沪深300)降至0.3%以下": false
@@ -9246,7 +9246,7 @@
       "current": "normal",
       "since": null,
       "target_equity": null,
-      "weekly_change": -1.9,
+      "weekly_change": 1.1,
       "trigger_reason": ""
     },
     "trend_state": {
@@ -9263,7 +9263,7 @@
       "layer": "event_soft",
       "cap": 32,
       "cumulative_hike_prob": 1.0,
-      "yield_10y": 4.86,
+      "yield_10y": 4.88,
       "triggers": [
         "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
         "累计加息概率100%>85%（概率单路·A1）"

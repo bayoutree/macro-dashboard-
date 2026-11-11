@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-11T00:22:19+08:00",
-    "data_freshness_score": 4,
+    "update_time": "2026-11-11T22:12:04+08:00",
+    "data_freshness_score": 100,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -32,26 +32,26 @@
         "status": "ok"
       }
     ],
-    "data_cutoff_date": "2026-11-10",
+    "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-10",
+      "as_of": "2026-11-11",
       "layers": {
         "layer_0_debt_cycle": {
-          "last_updated": "2026-08-15",
-          "score": 13
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "layer_1_kondratieff": {
-          "last_updated": "2026-08-06",
-          "score": 4
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "layer_2_perez": {
-          "last_updated": "2026-08-06",
-          "score": 4
+          "last_updated": "2026-11-11",
+          "score": 100
         },
         "layer_3_rate_regime": {
-          "last_updated": "2026-08-06",
-          "score": 4
+          "last_updated": "2026-11-11",
+          "score": 100
         }
       },
       "excluded_no_date": [
@@ -60,7 +60,7 @@
         "layer_6_merrill"
       ]
     },
-    "assessment_overdue": true
+    "assessment_overdue": false
   },
   "cycle_layers": {
     "layer_0_debt_cycle": {
@@ -426,7 +426,7 @@
             "percentile": {
               "p25": 91.61,
               "p50": 102.35,
-              "p75": 117.44,
+              "p75": 118.14,
               "current_rank": "p50"
             }
           },
@@ -4161,7 +4161,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -6279,7 +6279,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -18157,10 +18157,14 @@
               {
                 "date": "2026-11-06",
                 "value": 2.63
+              },
+              {
+                "date": "2026-11-09",
+                "value": 2.66
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 2.63
+            "current": 2.66
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
@@ -18961,7 +18965,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -30819,10 +30823,30 @@
               {
                 "date": "2026-10-30",
                 "value": 0.9089
+              },
+              {
+                "date": "2026-11-02",
+                "value": 0.9088
+              },
+              {
+                "date": "2026-11-03",
+                "value": 0.9084
+              },
+              {
+                "date": "2026-11-04",
+                "value": 0.8988
+              },
+              {
+                "date": "2026-11-05",
+                "value": 0.8693
+              },
+              {
+                "date": "2026-11-06",
+                "value": 0.8738
               }
             ],
             "source_url": "https://fred.stlouisfed.org/series/TSYOREA01",
-            "current": 0.9089
+            "current": 0.8738
           },
           "cn_tfp_trend": {
             "name": "TFP增速",
@@ -31716,7 +31740,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -43598,10 +43622,14 @@
               {
                 "date": "2026-11-09",
                 "value": 0.32
+              },
+              {
+                "date": "2026-11-10",
+                "value": 0.25
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.32
+            "current": 0.25
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -44426,7 +44454,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -51299,7 +51327,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-11",
             "history": [
               {
                 "date": "2015-01-01",

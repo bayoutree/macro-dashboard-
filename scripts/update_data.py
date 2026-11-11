@@ -264,6 +264,15 @@ def merge_history_description(new_data: dict) -> dict:
 
     for dim_key, dim in new_data.get("dimensions", {}).items():
         for ind_key, ind in dim.get("indicators", {}).items():
+            # [P1 修复 2026-11-11] value 为 None 而 history 有真值时，用 history 尾点回填。
+            # 背景：social_financing_trend 的 value 设计上「由 sync_timing_scores_history
+            # 从真源 history 末点写入」，但 update-data 链路只跑 update_data 不跑 sync，
+            # 单独跑时无人回填 → null 入库（freshness_gate 判 value went null BLOCK）。
+            if ind.get("value") is None:
+                _vh = ind.get("history") or []
+                if _vh and isinstance(_vh[-1], dict) and isinstance(_vh[-1].get("value"), (int, float)):
+                    ind["value"] = _vh[-1]["value"]
+                    logger.info(f"    🔧 {dim_key}.{ind_key} value=null，用 history 尾点回填 {_vh[-1]['value']}（{_vh[-1].get('date')}）")
             # ③ fear_greed_index 从 feargreed_pointer.json 全量同步（即使 history 缺失/为空）
             if (dim_key, ind_key) == ("sentiment", "fear_greed_index"):
                 try:

@@ -1,43 +1,43 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-10 16:22:03",
+  "generated_at": "2026-11-11 22:10:59",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {
       "board": "宏观截面",
       "file": "macro-econ-dashboard/data/indicators.json",
-      "as_of": "2026-11-10",
+      "as_of": "2026-11-11",
       "age_days": 0,
       "raw": {
         "cn_phase": "复苏酝酿",
         "cn_monetary": "宽货币",
         "cn_credit": "中性信用",
-        "us_phase": "滞胀加剧",
-        "us_liquidity": "紧流动性"
+        "us_phase": "复苏",
+        "us_liquidity": "中性流动性"
       },
       "direction_provisional": "bull"
     },
     "cycle_v4": {
       "board": "全球周期v4",
       "file": "data/cycle_position_v4.json",
-      "as_of": "2026-09-01",
-      "age_days": 70,
+      "as_of": "2026-11-11",
+      "age_days": 0,
       "raw": {
-        "overall_signal": "bullish",
-        "overall_score": 68,
-        "overall_assessment": "复苏早期，多周期共振向上",
-        "assessment_date": "2026-09-01",
-        "data_cutoff_date": "2026-08-06"
+        "overall_signal": "neutral",
+        "overall_score": 55,
+        "overall_assessment": "复苏中后期：长周期（康波回升+朱格拉AI资本开支）向上与短周期（美林过热后期+货币重启收紧+信用利差走阔）转弱形成对冲，多周期共振减弱，结构性机会取代总量超配",
+        "assessment_date": "2026-11-11",
+        "data_cutoff_date": "2026-11-11"
       },
-      "direction_provisional": "bull"
+      "direction_provisional": "neutral"
     },
     "a_share_timing": {
       "board": "A股择时",
       "file": "data/timing_scores.json + data/timing_right_scores.json",
-      "as_of": "2026-11-10",
+      "as_of": "2026-11-11",
       "age_days": 0,
       "raw": {
-        "composite_score": 46.2,
+        "composite_score": 46.9,
         "stage": "B",
         "position_range": "32%",
         "market_status": "中性偏恐惧，正常配置",
