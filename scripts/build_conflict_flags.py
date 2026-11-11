@@ -88,7 +88,12 @@ def norm_cycle_v4(v4):
     overdue = bool(meta.get("assessment_overdue"))  # P0-① 单源
     # 触发器快照（规则§三.2：利率范式/大债务约束层 breached 计数）
     hrt = ((v4.get("cross_analysis") or {}).get("high_rate_tracker")) or {}
-    crr = ((v4.get("cycle_layers") or {}).get("constraint_rate_regime") or {}).get("regime_state") or {}
+    # [修复 2026-11-11] regime_state 自 f729b40 起是文本描述（如「重启加息：12月概率84%…」），
+    # 原代码按 dict 调 .get 抛 AttributeError，致本脚本自 14:52 起每次跑批静默失败
+    # （run_all 单脚本失败不阻塞，产物 conflict_flags 断更）。
+    _crr_node = (v4.get("cycle_layers") or {}).get("constraint_rate_regime") or {}
+    _crr_rs = _crr_node.get("regime_state")
+    crr = _crr_rs if isinstance(_crr_rs, dict) else {}
     snapshot = {
         "high_rate_tracker": {k: hrt.get(k) for k in
                               ("structural_breached", "forward_looking_breached", "market_based_breached")},

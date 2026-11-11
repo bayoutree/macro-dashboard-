@@ -1,37 +1,37 @@
 {
-  "generated_at": "2026-11-11T00:22:03+08:00",
+  "generated_at": "2026-11-11T22:39:41+08:00",
   "boards": [
     {
       "board": "macro_cross",
       "direction": -1,
       "raw_value": "滞胀加剧/现金>黄金>商品>债券>股票",
-      "as_of": "2026-11-10",
+      "as_of": "2026-11-11",
       "effective": true,
       "status": "normal"
     },
     {
       "board": "cycle_v4",
-      "direction": 1,
-      "raw_value": "共识度68",
-      "as_of": "2026-09-01",
-      "effective": false,
-      "status": "pending_review"
+      "direction": 0,
+      "raw_value": "共识度55",
+      "as_of": "2026-11-11",
+      "effective": true,
+      "status": "normal"
     },
     {
       "board": "a_timing",
       "direction": 0,
-      "raw_value": "46.2/orange",
-      "as_of": "2026-11-10",
+      "raw_value": "50.4/orange",
+      "as_of": "2026-11-11",
       "effective": true,
       "status": "normal"
     }
   ],
   "v4_clock": {
-    "assessment_date": "2026-09-01",
-    "next_assessment_date": "2026-10-01",
-    "overdue": true,
+    "assessment_date": "2026-11-11",
+    "next_assessment_date": "2026-12-11",
+    "overdue": false,
     "trigger_hit": false,
-    "state": "pending_review",
+    "state": "normal",
     "breached_snapshot": {
       "high_rate_tracker": {
         "structural_breached": 3,
@@ -39,9 +39,9 @@
         "market_based_breached": 0
       },
       "constraint_rate_regime": {
-        "structural_breached": true,
-        "forward_breached": false,
-        "market_breached": true
+        "structural_breached": null,
+        "forward_breached": null,
+        "market_breached": null
       }
     }
   },
@@ -51,9 +51,9 @@
       {
         "a": "macro_cross",
         "b": "cycle_v4",
-        "type": "hard",
-        "both_effective": false,
-        "note": "宏观截面 -1 vs 全球周期v4 +1（全球周期v4(pending_review)，按规则降级展示）"
+        "type": "divergence",
+        "both_effective": true,
+        "note": "宏观截面 -1 vs 全球周期v4 +0"
       },
       {
         "a": "macro_cross",
@@ -61,13 +61,6 @@
         "type": "divergence",
         "both_effective": true,
         "note": "宏观截面 -1 vs A股择时 +0"
-      },
-      {
-        "a": "cycle_v4",
-        "b": "a_timing",
-        "type": "divergence",
-        "both_effective": false,
-        "note": "全球周期v4 +1 vs A股择时 +0（全球周期v4(pending_review)，按规则降级展示）"
       }
     ]
   },
