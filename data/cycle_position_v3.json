@@ -52975,7 +52975,7 @@
   },
   "cross_analysis": {
     "consensus": {
-      "score": 68,
+      "score": 55,
       "scenario": "C",
       "scenario_description": "长波脆弱 + 短周期上行：上行空间受限",
       "last_updated": "2026-09-01",
