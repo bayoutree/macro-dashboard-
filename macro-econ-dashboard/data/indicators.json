@@ -90,34 +90,55 @@
       "pct_10y": 98,
       "note": "近5年分位97%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 6.898,
-        "dd_52w_pct": -8.0979,
-        "mom_3m_pct": 3.3898,
-        "date": "2026-11-09",
+        "ma200_dev_pct": 9.2674,
+        "dd_52w_pct": -5.8934,
+        "mom_3m_pct": 7.6923,
+        "date": "2026-11-11",
         "caliber": "yield",
         "approx": false
       }
     },
     "usd": {
       "name": "美元指数DXY",
-      "pct_5y": 49,
-      "pct_10y": 74,
-      "note": "近5年分位49%，中性区间",
-      "trend": null
+      "pct_5y": 54,
+      "pct_10y": 77,
+      "note": "近5年分位54%，中性区间",
+      "trend": {
+        "ma200_dev_pct": 2.9117,
+        "dd_52w_pct": -0.0,
+        "mom_3m_pct": 2.7291,
+        "date": "2026-11-11",
+        "caliber": "price",
+        "approx": false
+      }
     },
     "gold": {
       "name": "黄金",
       "pct_5y": 80,
-      "pct_10y": 89,
+      "pct_10y": 90,
       "note": "近5年分位80%，处相对高位",
-      "trend": null
+      "trend": {
+        "ma200_dev_pct": -9.9094,
+        "dd_52w_pct": -23.9978,
+        "mom_3m_pct": -8.558,
+        "date": "2026-11-11",
+        "caliber": "price",
+        "approx": false
+      }
     },
     "commodity": {
       "name": "大宗商品(CRB)",
       "pct_5y": 100,
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
-      "trend": null
+      "trend": {
+        "ma200_dev_pct": 0.9296,
+        "dd_52w_pct": -7.6358,
+        "mom_3m_pct": -4.6796,
+        "date": "2026-11-11",
+        "caliber": "price",
+        "approx": false
+      }
     }
   },
   "china": {
@@ -24821,17 +24842,13 @@
           "caliber": "2Y 美债收益率 %"
         },
         "dxy": {
-          "value": 102.195,
+          "value": 102.882,
           "unit": "",
-          "change": 0.545,
-          "pct_5y": 49,
-          "pct_10y": 74,
-          "date": "2026-11-10",
+          "change": 0.652,
+          "pct_5y": 54,
+          "pct_10y": 77,
+          "date": "2026-11-11",
           "history": [
-            {
-              "date": "2021-11-05",
-              "value": 94.32
-            },
             {
               "date": "2021-11-08",
               "value": 94.05
@@ -29866,7 +29883,11 @@
             },
             {
               "date": "2026-11-10",
-              "value": 102.195
+              "value": 102.23
+            },
+            {
+              "date": "2026-11-11",
+              "value": 102.882
             }
           ],
           "name": "美元指数DXY",
@@ -34923,9 +34944,7 @@
             }
           ],
           "name": "广义美元指数(叙事参考)",
-          "delta_vs_dxy_pp": 19,
-          "delta_note_level": "watch",
-          "delta_note": "广义美元相对 G10 偏强（分位差 19pp>P75），新兴市场货币承压",
+          "delta_vs_dxy_pp": 14,
           "source": "FRED DTWEXBGS",
           "caliber": "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）"
         }
