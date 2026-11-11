@@ -164,8 +164,10 @@ const CycleV3Module = (() => {
   };
 
   function getFreshness(lastUpdated, frequency, assessmentDate) {
-    // Use _assessmentDate (set during render) or explicit param, fallback to Date.now()
-    const refDate = (assessmentDate || _assessmentDate) ? new Date(assessmentDate || _assessmentDate) : new Date();
+    // [P0-3 修复 2026-11-11] 徽标失真根因：旧逻辑以数据文件 _meta.assessment_date
+    // （=数据生成日 2026-09-01）为基准算天数，导致老数据 days≈0 永远显示「✅最新」。
+    // 新鲜度必须按「数据 last_updated 距真实今天」实时判定，assessment_date 仅作展示用途。
+    const refDate = new Date();
     const thresh = FREQ_THRESHOLDS[frequency] || FREQ_THRESHOLDS.monthly;
     const freqLabel = thresh.label;
     // If no last_updated but we have a current value, data is available
