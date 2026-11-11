@@ -496,10 +496,11 @@
       "fresh_max_trading_days": 2,
       "watch_max_trading_days": 5,
       "value_path": "bear_score",
-      "note": "右侧择时；无history，仅快照/日期检查",
-      "critical": false,
-      "severity_on_gap": "warn",
-      "status": "active"
+      "note": "右侧择时；无history，仅快照/日期检查；[P1 补强 2026-11-11] 升 critical：update_date 回退=数据版本被旧版覆盖（11-11 强推事故实证），必须阻断",
+      "critical": true,
+      "severity_on_gap": "block",
+      "status": "active",
+      "snapshot": true
     },
     {
       "id": "social_financing",

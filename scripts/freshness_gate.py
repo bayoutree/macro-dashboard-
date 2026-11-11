@@ -249,7 +249,10 @@ def validate_manifest(manifest: Any) -> None:
                         errors.append(f"items[{i}]({iid}) 兜底模式缺少整数 {key}")
 
         if item.get("critical"):
-            for key in ("history_path", "value_path"):
+            # [P1 补强 2026-11-11] 快照型条目（无 history，仅 value+date 单点）允许
+            # 显式声明 snapshot=true 后免 history_path；value_path 仍必需。
+            keys = ("value_path",) if item.get("snapshot") else ("history_path", "value_path")
+            for key in keys:
                 if key not in item:
                     errors.append(f"items[{i}]({iid}) critical 条目必须带 {key}")
 
@@ -634,6 +637,62 @@ def check_structure(item: dict, cur_doc: Any, base_doc: Any | None) -> list[str]
         if bv is not None and cv is None:
             blocks.append(
                 f"BLOCK {iid}: value went null (was {bv}) ({cp})")
+
+    # 4) [P1 补强 2026-11-11] 值退化为占位符
+    # 事故背景：11-11 强推后 asset_valuation 部分项退化为「数据缺失，估值待更新」，
+    # 原检查只认 null，字符串占位符全部漏检。占位符=实质数据丢失，必须阻断。
+    _PLACEHOLDERS = ("数据缺失", "数据待更新", "数据待获取", "待更新", "待获取",
+                     "暂无数据", "数据获取失败", "N/A")
+
+    def _is_placeholder(x) -> bool:
+        return isinstance(x, str) and any(_ph in x for _ph in _PLACEHOLDERS)
+
+    for cp, bp in val_pairs:
+        bv = deep_get(base_doc, bp, default=None)
+        cv = deep_get(cur_doc, cp, default=None)
+        if bv is None or cv is None:
+            continue
+        if _is_placeholder(cv) and not _is_placeholder(bv):
+            blocks.append(
+                f"BLOCK {iid}: value degraded to placeholder '{cv}' (was '{bv}') ({cp})")
+
+    # 5) [P1 补强 2026-11-11] 同日 value 与 history 尾点数值不一致
+    # 事故背景：同日二次跑批时新值只写 indicator.value 不回写 history 尾点
+    # （turnover 1.4 vs 尾 1.5、fund_3y 4.79 vs 4.3），前端曲线与卡片打架。
+    # 仅当尾点日期==今日才判定（历史遗留缺口不追溯）。
+    import re as _re2
+
+    def _num_of(x):
+        if isinstance(x, bool):
+            return None
+        if isinstance(x, (int, float)):
+            return float(x)
+        if isinstance(x, str):
+            m = _re2.search(r'-?\d+\.?\d*', x.replace(',', ''))
+            return float(m.group(0)) if m else None
+        return None
+
+    _today_iso = _today_str()
+    for p in cur_hist_paths:
+        h = cur_hists.get(p) or []
+        if not h or not isinstance(h[-1], dict):
+            continue
+        if str(h[-1].get("date", "")) != _today_iso:
+            continue
+        vpp = p.replace(".history", ".value")
+        vv = deep_get(cur_doc, vpp, default=None)
+        vn, hn = _num_of(vv), _num_of(h[-1].get("value"))
+        if vn is not None and hn is not None and abs(vn - hn) > 1e-6:
+            # 仅对设计上「日更 history」的指标阻断（其余指标 history 非日频，
+            # 尾点日期=今日但值属上次采集是既有状态，只记录不阻断）
+            _daily_hist = {"turnover_rate", "margin_buying_ratio", "fund_3y_annual",
+                           "fear_greed_index", "interest_rate", "median_pe_all_a"}
+            _seg_id = iid.split(".")[-1]
+            _msg = f"同日值不一致 value={vn} vs history尾={hn} ({vpp})"
+            if _seg_id in _daily_hist or any(k in vpp for k in _daily_hist):
+                blocks.append(f"BLOCK {iid}: {_msg}")
+            else:
+                blocks.append(f"WARN {iid}: {_msg}（非日更指标，不阻断）")
     return blocks
 
 
@@ -773,6 +832,13 @@ def evaluate(args: argparse.Namespace) -> int:
         else:
             item_blocks = []
 
+        # check_structure 以 "WARN " 前缀标记不阻断项（如非日更指标的同日值差异）
+        _warn_msgs = [b[5:] for b in item_blocks if b.startswith("WARN ")]
+        _block_msgs = [b for b in item_blocks if not b.startswith("WARN ")]
+        if _warn_msgs:
+            warnings.extend(_warn_msgs)
+        item_blocks = _block_msgs
+
         if item["critical"]:
             n_crit += 1
             if item_blocks:
@@ -786,6 +852,22 @@ def evaluate(args: argparse.Namespace) -> int:
                 warnings.extend(item_blocks)
             if status in ("GAP", "STALE", "WATCH"):
                 warnings.append(f"{iid}: {status}（{rel_file}，不阻断）")
+
+    # [P1 补强 2026-11-11] 前后端双副本一致性：前端读 frontend/data/ 副本，
+    # 两副本由不同链路各自写入，曾出现强推后单侧丢失（恐贪 11-11 点）。
+    _data_dir = current_root / "data"
+    _fe_dir = current_root / "frontend" / "data"
+    if _data_dir.is_dir() and _fe_dir.is_dir():
+        for _f in sorted(_data_dir.glob("*.json")):
+            _g = _fe_dir / _f.name
+            if _g.exists():
+                try:
+                    # JSON 语义比较（而非字节）：两侧 indent/键序可能不同，内容一致即可
+                    if load_json(_f) != load_json(_g):
+                        blocks.append(
+                            f"BLOCK frontend-drift: data/{_f.name} 与 frontend/data/{_f.name} 内容不一致")
+                except Exception as _exc:
+                    warnings.append(f"frontend-drift 检查异常 {_f.name}: {_exc}")
 
     print("[freshness-gate] 新鲜度状态（评估日 %s，基线 %s）："
           % (eval_date, args.baseline_ref))

@@ -322,6 +322,19 @@ def merge_history_description(new_data: dict) -> dict:
                 if not hist or hist[-1].get("date") < _today:
                     hist.append({"date": _today, "value": num})
                     logger.info(f"    📈 {dim_key}.{ind_key} 追加 {_today}={num}")
+                elif hist[-1].get("date") == _today:
+                    # [P1 修复 2026-11-11] 同日重跑值变更回写尾点。
+                    # 事故：11-11 turnover 指标 value=1.4 而 history 尾仍 1.5、fund_3y 4.79 vs 4.3，
+                    # 前端曲线与卡片数值打架。同日多次跑（daily_update + update-data 两链路）
+                    # 以最后一次观测为准，覆盖当日点而非跳过。
+                    _tail_v = hist[-1].get("value")
+                    try:
+                        _tail_f = float(_tail_v)
+                    except (TypeError, ValueError):
+                        _tail_f = None
+                    if _tail_f is not None and abs(_tail_f - num) > 1e-9:
+                        hist[-1]["value"] = num
+                        logger.info(f"    ♻️ {dim_key}.{ind_key} 同日值回写 {_tail_f}→{num} ({_today})")
                 continue
             # ② 月频指标：value 数值可解析且尾期 < 当月才追加当月点
             #    （月频指标 value 陈旧时不追加——尾期即真实业务期，gate 会判 STALE 告警）
@@ -332,6 +345,15 @@ def merge_history_description(new_data: dict) -> dict:
                     if abs(num - float(hist[-1].get("value", 0))) > 1e-9:
                         hist.append({"date": _this_month, "value": num})
                         logger.info(f"    📈 {dim_key}.{ind_key} 追加 {_this_month}={num}")
+                elif num is not None and hist[-1]["date"] == _this_month:
+                    # [P1 修复 2026-11-11] 同月值修订回写（上游修订/口径更正场景）
+                    try:
+                        _m_f = float(hist[-1].get("value"))
+                    except (TypeError, ValueError):
+                        _m_f = None
+                    if _m_f is not None and abs(_m_f - num) > 1e-9:
+                        hist[-1]["value"] = num
+                        logger.info(f"    ♻️ {dim_key}.{ind_key} 同月值回写 {_m_f}→{num} ({_this_month})")
 
     # [CI修复 2026-10-17] 顶层节继承：confirm_signals 等顶层数据由外部采集器
     # (collect_confirm_signals.py) 写入，compute_all 不生成这些节。
@@ -2938,15 +2960,18 @@ class TimingScoreEngine:
             _url, _title = _links[0]
             _art = _req.get(_url, timeout=30)
             _art.encoding = _art.apparent_encoding
-            _m = _re.search(r'全国一般公共预算支出[^。]{0,40}?同比增长([\d.]+)%', _art.text)
+            # [P1 修复 2026-11-11] MoF 正文每段文字都被 <span> 逐片包裹（如
+            # 「全国一般公共预算支出</span><span>210199</span><span>亿元，</span>…<span>同比增长</span><span>1</span><span>%」），
+            # 直接对 HTML 匹配会因标签长度超窗口而失败。必须先剥离标签与实体再解析。
+            import html as _html
+            _clean = _html.unescape(_re.sub(r'<[^>]+>', '', _art.text))
+            _clean = _re.sub(r'\s+', ' ', _clean)
+            _m = re.search(r'一般公共预算支出[^。]{0,60}?(同比)?(增长|下降)([\d.]+)%', _clean)
             if not _m:
-                _m = _re.search(r'全国一般公共预算支出[^。]{0,40}?下降([\d.]+)%', _art.text)
-                if _m:
-                    cur = -float(_m.group(1))
-                else:
-                    raise ValueError(f"MoF 文章未解析到支出同比: {_title}")
-            else:
-                cur = float(_m.group(1))
+                raise ValueError(f"MoF 文章未解析到支出同比: {_title}")
+            cur = float(_m.group(3))
+            if _m.group(2) == '下降':
+                cur = -cur
             # 期别 → 月份（累计值口径）
             _ym = _re.search(r'(\d{4})年', _title)
             _year = int(_ym.group(1)) if _ym else None
@@ -3261,6 +3286,15 @@ class TimingScoreEngine:
             import math as _math
             if _math.isnan(cur) or cur <= 0:
                 raise ValueError(f"融资买入占比异常值 cur={cur}（上游失效），拒绝落库")
+            # [P1 修复 2026-11-11] 极小非零值护栏：11-11 跑批 cur≈0.00x 通过 cur<=0 拦截，
+            # 落库 score/ma20/pctile_2016 全 0（tier=extreme_fear），再被「抄上期」固化为 0.0。
+            # 历史极值 min=1.1%（2012），沪市口径常态 6-12%，<1.0 必为分母单位错或分子缺失。
+            if cur < 1.0:
+                raise ValueError(f"融资买入占比异常低值 cur={cur:.4f}%（<1.0 历史极值，疑似分母单位错），拒绝落库")
+            # 口径 sanity：区间中位数应落在 2-20%，否则判定单位/口径错（如 amount 未换算）
+            _med = float(ratio.median())
+            if not (2.0 <= _med <= 20.0):
+                raise ValueError(f"融资买入占比区间中位数异常 med={_med:.4f}%（口径/单位可疑），拒绝落库")
             _stale_days = (datetime.now().date() - ratio.index[-1].date()).days
             if _stale_days > 7:
                 raise ValueError(f"融资买入占比上游数据陈旧（尾={as_of}，{_stale_days}天前），拒绝落库")
@@ -3288,6 +3322,14 @@ class TimingScoreEngine:
             logger.warning(f"      融资买入占比计算失败: {e}，抄上期")
             prev_val = prev_ind.get("value", "8-10%")
             prev_score = prev_ind.get("score", 48)
+            # [P1 修复 2026-11-11] 降级不继承坏值：上期 score<=0 或 ma20/pctile 为 0 说明已固化过异常，
+            # 继续抄会把 0.0 永久传染（复发性根因）。此时改用中性 50 并把异常标记出来。
+            _bad_prev = (isinstance(prev_score, (int, float)) and prev_score <= 0) or \
+                        (prev_ind.get("ma20") == 0) or (prev_ind.get("pctile_2016") == 0)
+            if _bad_prev:
+                logger.warning("      上期 margin_buying_ratio 已含异常零值（score/ma20/pctile=0），不继承，降级中性 50")
+                return 50, prev_val, {"tier": "neutral", "freq": "日频",
+                                      "source": "降级中性（上期零值异常，待上游恢复）"}
             return prev_score, prev_val, dict(prev_ind) if isinstance(prev_ind, dict) else {}
 
     # ----------------------------------------------------------

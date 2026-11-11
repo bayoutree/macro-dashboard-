@@ -213,7 +213,18 @@ jobs:
             git commit -m "📊 自动数据更新 ${DATE} ${TIME} CST" \
                         -m "更新文件: $(git diff --cached --name-only | tr '\n' ', ')" \
                         -m "运行环境: GitHub Actions"
-            git pull --rebase origin main --no-edit || { git rebase --abort 2>/dev/null; git push --force-with-lease; }
+            # [P0-b 修复 2026-11-11] 冲突即中止，严禁 force push。
+            # 事故：11-11 update-data #86 rebase 冲突后走 force-with-lease，强推 4b1f4d3
+            # 覆盖 daily_update #126 的 cbb3c63（已非 main 祖先），造成 8 个日期字段回退、
+            # 流动性/资产描述翻转、asset_valuation 退化"数据缺失"、恐贪 11-11 点丢失。
+            # 违反 V22「冲突不强推」。冲突意味着两条链路同时改了同一数据文件，必须人工裁决。
+            if ! git pull --rebase origin main --no-edit; then
+              git rebase --abort 2>/dev/null || true
+              echo "::error::rebase 冲突，禁止强推。本次数据未入库，请人工检查与另一链路的并发写入。"
+              echo "committed=false" >> "$GITHUB_OUTPUT"
+              echo "conflict=true" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
             git push || { echo "重试push..." && git pull --rebase origin main --no-edit && git push; }
             echo "committed=true" >> "$GITHUB_OUTPUT"
             echo "✅ 数据已推送入库"
