@@ -221,6 +221,118 @@ def merge_history_description(new_data: dict) -> dict:
                     dim.setdefault("indicators", {})[old_ind_key] = old_ind
                     logger.info(f"    🔒 保留旧指标(新数据未生成): {dim_key}.{old_ind_key} ({len(old_hist)}点)")
 
+    # ============================================================
+    # [P1-2 2026-11-11] 指标级 history 日追加机制
+    # 背景：merge 层此前只继承旧 history、从不追加新点，导致全站指标
+    # history 停在上次一次性回填日（value 天天新、history 不动），
+    # freshness_gate 大面积 STALE——这是「断更无告警」的结构性根因。
+    # 规则：
+    #  ① 白名单内日更链指标：从 value 解析数值，追加 {当日日期, 数值}
+    #     （_calc 失败抄上期时会追加同值点=真实记录停滞，不构成伪造；
+    #      P0 系拦截指标异常时 raise，根本不走到这）；
+    #  ② 月频指标：仅当 value 对应期 > history 尾期才追加（同月不重复）；
+    #  ③ fear_greed_index 从 feargreed_pointer.json 全量同步；
+    #  ④ cn_us_spread 数值=US10Y-CN10Y（value 是标签无法解析，特判）。
+    # ============================================================
+    import re as _re
+    _today = today_str()
+    _this_month = _today[:7]
+
+    def _extract_num(v):
+        """从 value 提取数值：支持 float/int、'4.30%'、'极低/偏热(1.60%)'、'-4.0%(2026-09)'"""
+        if isinstance(v, (int, float)):
+            return float(v)
+        if not isinstance(v, str):
+            return None
+        m = _re.search(r'\((-?\d+\.?\d*)%?\)', v)  # 括号内数值优先
+        if m:
+            return float(m.group(1))
+        m = _re.match(r'^\s*(-?\d+\.?\d*)\s*%?$', v)  # 纯数字/百分数
+        if m:
+            return float(m.group(1))
+        return None
+
+    _APPEND_DAILY = {
+        ("sentiment", "turnover_rate"),
+        ("sentiment", "margin_buying_ratio"),
+        ("capital_flow", "margin_buying_ratio"),  # 双副本同步追加
+        ("sentiment", "fund_3y_annual"),
+        ("sentiment", "fear_greed_index"),
+        ("liquidity", "interest_rate"),
+        ("valuation", "median_pe_all_a"),
+    }
+
+    for dim_key, dim in new_data.get("dimensions", {}).items():
+        for ind_key, ind in dim.get("indicators", {}).items():
+            # ③ fear_greed_index 从 feargreed_pointer.json 全量同步（即使 history 缺失/为空）
+            if (dim_key, ind_key) == ("sentiment", "fear_greed_index"):
+                try:
+                    _fg = load_json("feargreed_pointer.json")
+                    _fg_hist = _fg.get("history") or []
+                    _cur_hist = ind.get("history") or []
+                    if len(_fg_hist) > len(_cur_hist):
+                        ind["history"] = [{"date": p["date"], "value": p["value"]}
+                                          for p in _fg_hist if p.get("date") and p.get("value") is not None]
+                        logger.info(f"    📈 fear_greed_index history 从 feargreed_pointer 同步: {len(ind['history'])}点")
+                except Exception as _e:
+                    logger.warning(f"    fear_greed_index 同步异常: {_e}")
+                continue
+            # ⑤ fed_policy 特判：value 是文字标签，history 存 FFR 数值（月频）
+            if (dim_key, ind_key) == ("liquidity", "fed_policy"):
+                try:
+                    _us = load_json("us_macro.json")
+                    _ff = _us.get("lagging", {}).get("fed_funds_rate", {}) or {}
+                    _ff_val = _ff.get("value")
+                    _ff_date = _ff.get("date")  # 'YYYY-MM'
+                    _ff_num = float(str(_ff_val).replace('%', '')) if _ff_val is not None else None
+                    hist = ind.get("history")
+                    if _ff_num is not None and _ff_date and isinstance(hist, list):
+                        if not hist or hist[-1].get("date") < _ff_date:
+                            hist.append({"date": _ff_date, "value": _ff_num})
+                            logger.info(f"    📈 fed_policy 追加 {_ff_date}={_ff_num}")
+                except Exception as _e:
+                    logger.warning(f"    fed_policy 追加异常: {_e}")
+                continue
+            hist = ind.get("history")
+            if not isinstance(hist, list):
+                continue
+            # ④ cn_us_spread 特判：数值=US10Y-CN10Y
+            if (dim_key, ind_key) == ("equity_bond", "cn_us_spread"):
+                try:
+                    _us = load_json("us_macro.json")
+                    _us10y = safe_float((_us.get("rates", {}).get("yield_10y", {}) or {}).get("value"))
+                    _cn10y = None
+                    _cn = load_json("cn_macro.json")
+                    _cb = (_cn.get("history", {}) or {}).get("cn_10y_bond") or []
+                    if _cb:
+                        _cn10y = safe_float(_cb[-1].get("value"))
+                    if _us10y and _cn10y:
+                        _spread = round(_us10y - _cn10y, 2)
+                        if not hist or hist[-1].get("date") < _today:
+                            hist.append({"date": _today, "value": _spread})
+                            logger.info(f"    📈 cn_us_spread 追加 {_today}={_spread}")
+                except Exception as _e:
+                    logger.warning(f"    cn_us_spread 追加异常: {_e}")
+                continue
+            # ① 日更链白名单
+            if (dim_key, ind_key) in _APPEND_DAILY:
+                num = _extract_num(ind.get("value"))
+                if num is None:
+                    continue
+                if not hist or hist[-1].get("date") < _today:
+                    hist.append({"date": _today, "value": num})
+                    logger.info(f"    📈 {dim_key}.{ind_key} 追加 {_today}={num}")
+                continue
+            # ② 月频指标：value 数值可解析且尾期 < 当月才追加当月点
+            #    （月频指标 value 陈旧时不追加——尾期即真实业务期，gate 会判 STALE 告警）
+            if hist and len(str(hist[-1].get("date", ""))) == 7:
+                num = _extract_num(ind.get("value"))
+                if num is not None and hist[-1]["date"] < _this_month:
+                    # 仅当 value 与尾值不同（说明上游真出了新月数据）才追加
+                    if abs(num - float(hist[-1].get("value", 0))) > 1e-9:
+                        hist.append({"date": _this_month, "value": num})
+                        logger.info(f"    📈 {dim_key}.{ind_key} 追加 {_this_month}={num}")
+
     # [CI修复 2026-10-17] 顶层节继承：confirm_signals 等顶层数据由外部采集器
     # (collect_confirm_signals.py) 写入，compute_all 不生成这些节。
     # 当 runner 上采集失败时，旧节必须保留，否则每日 CI 都会丢。
