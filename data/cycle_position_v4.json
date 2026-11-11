@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-11T15:09:20+08:00"
+    "v4_built_at": "2026-11-11T16:00:42+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -49726,8 +49726,8 @@
             "name": "制造业产能利用率",
             "source": "美联储",
             "unit": "%",
-            "current": 79.5,
-            "last_updated": "2026-08-06",
+            "current": 75.9245,
+            "last_updated": "2026-09-01",
             "percentile": {
               "p25": 75.39,
               "p50": 75.8,
@@ -49914,10 +49914,17 @@
               {
                 "date": "2026-07",
                 "value": 75.9621
+              },
+              {
+                "date": "2026-08-01",
+                "value": 75.793
+              },
+              {
+                "date": "2026-09-01",
+                "value": 75.9245
               }
             ],
-            "frequency": "monthly",
-            "data_gap_note": "current 79.5 与 history 尾值 75.96@2026-07 不一致，上游停更，待补采核实（数据工单另行立项）"
+            "frequency": "monthly"
           },
           "equipment_investment": {
             "name": "设备投资增速",
@@ -50100,10 +50107,10 @@
           "fixed_asset_investment": {
             "name": "固定资产投资增速",
             "source": "国家统计局",
-            "current": 3.6,
+            "current": -10.07,
             "unit": "%",
             "description": "中国固定资产投资累计同比，反映企业扩产意愿",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026-09",
             "frequency": "monthly",
             "history": [
               {
@@ -50129,6 +50136,38 @@
               {
                 "date": "2026-01",
                 "value": 3.6
+              },
+              {
+                "date": "2026-02",
+                "value": 0.19
+              },
+              {
+                "date": "2026-03",
+                "value": -0.45
+              },
+              {
+                "date": "2026-04",
+                "value": -3.9
+              },
+              {
+                "date": "2026-05",
+                "value": -7.0
+              },
+              {
+                "date": "2026-06",
+                "value": -8.96
+              },
+              {
+                "date": "2026-07",
+                "value": -9.68
+              },
+              {
+                "date": "2026-08",
+                "value": -10.13
+              },
+              {
+                "date": "2026-09",
+                "value": -10.07
               }
             ],
             "source_url": "https://data.stats.gov.cn/",
@@ -50335,8 +50374,8 @@
             "name": "库存/销售比",
             "source": "美国人口普查局",
             "unit": "倍",
-            "current": 1.32,
-            "last_updated": "2026-08-06",
+            "current": 1.33,
+            "last_updated": "2026-08-01",
             "history": [
               {
                 "date": "2022-01",
@@ -50493,6 +50532,14 @@
               {
                 "date": "2026-06",
                 "value": 1.3
+              },
+              {
+                "date": "2026-07-01",
+                "value": 1.34
+              },
+              {
+                "date": "2026-08-01",
+                "value": 1.33
               }
             ],
             "frequency": "monthly",
@@ -50558,10 +50605,10 @@
           "new_orders": {
             "name": "耐用品新订单",
             "source": "Census Bureau",
-            "current": 285,
+            "current": 345.672,
             "unit": "十亿美元",
             "description": "领先于生产的先行指标，订单回升→补库存启动",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026-09-01",
             "frequency": "monthly",
             "history": [
               {
@@ -50723,6 +50770,14 @@
               {
                 "date": "2026-07",
                 "value": 339.4
+              },
+              {
+                "date": "2026-08-01",
+                "value": 339.185
+              },
+              {
+                "date": "2026-09-01",
+                "value": 345.672
               }
             ],
             "source_url": "https://www.census.gov/economic-indicators/",
@@ -50734,12 +50789,12 @@
             }
           },
           "manufacturing_inventories": {
-            "name": "制造业库存总量",
+            "name": "商业总库存",
             "source": "FRED (BUSINV)",
-            "current": 2740.2,
+            "current": 2818.757,
             "unit": "billion USD",
             "threshold": null,
-            "last_updated": "2026-09-01",
+            "last_updated": "2026-08-01",
             "history": [
               {
                 "date": "2023-07",
@@ -50884,6 +50939,14 @@
               {
                 "date": "2026-06",
                 "value": 2740.2
+              },
+              {
+                "date": "2026-07-01",
+                "value": 2807.083
+              },
+              {
+                "date": "2026-08-01",
+                "value": 2818.757
               }
             ],
             "frequency": "monthly",
@@ -50893,7 +50956,8 @@
               "p50": 2649.5,
               "p75": 2676.6,
               "current_rank": "p50"
-            }
+            },
+            "caliber_note": "序列为 FRED BUSINV 商业总库存（2026-11-11 补采工单核正名实：原指标名\"制造业库存总量\"与序列口径不符，序列本身延续未混填）"
           }
         }
       },

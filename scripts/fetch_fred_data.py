@@ -31,6 +31,11 @@ FRED_SERIES = {
     'gfdegdq188s': 'GFDEGDQ188S',  # 联邦债务/GDP
     'walcl': 'WALCL',              # 美联储总资产
     'unrate': 'UNRATE',            # 失业率
+    # ---- 补采工单（CIO 2026-11-11 立项，截止 11-14）：v4 层内停更指标真源 ----
+    'mcumfn': 'MCUMFN',            # 制造业产能利用率(%)——juglar.us.capacity_utilization 真源
+    'isratio': 'ISRATIO',          # 商业库存销售比(倍)——kitchin.us.inventory_sales_ratio 真源
+    'dgorder': 'DGORDER',          # 耐用品新订单(百万美元)——kitchin.us.new_orders 真源（/1000=十亿）
+    'businv': 'BUSINV',            # 商业总库存(百万美元)——kitchin.us.manufacturing_inventories 实际口径（/1000=十亿）
 }
 
 def fetch_fred_series(series_id, observation_start='2015-01-01', observation_end=None):

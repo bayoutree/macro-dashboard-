@@ -686,12 +686,20 @@ def _fix_credit_spread_units(layers):
 INDICATORS_JSON = DATA_DIR.parent / "macro-econ-dashboard" / "data" / "indicators.json"
 FRED_RAW_JSON = DATA_DIR / "fred_raw.json"
 
+# 元组: (层, side, 指标键, 源类型, 源路径, 除数换算 or None)
 UPSTREAM_REFRESH = [
-    ("cycle_merrill_3d", "us", "core_cpi", "ind", ["us", "validation", "lagging", "core_cpi"]),
-    ("cycle_merrill_3d", "cn", "cn_cpi", "ind", ["china", "validation", "lagging", "cpi"]),
-    ("cycle_merrill_3d", "cn", "cn_ppi", "ind", ["china", "validation", "lagging", "ppi"]),
-    ("cycle_merrill_3d", "cn", "cn_industrial_va", "ind", ["china", "validation", "coincident", "industrial_prod"]),
-    ("cycle_kitchin", "cn", "cn_pmi_manufacturing", "ind", ["china", "sectors", "corporate", "pmi"]),
+    ("cycle_merrill_3d", "us", "core_cpi", "ind", ["us", "validation", "lagging", "core_cpi"], None),
+    ("cycle_merrill_3d", "cn", "cn_cpi", "ind", ["china", "validation", "lagging", "cpi"], None),
+    ("cycle_merrill_3d", "cn", "cn_ppi", "ind", ["china", "validation", "lagging", "ppi"], None),
+    ("cycle_merrill_3d", "cn", "cn_industrial_va", "ind", ["china", "validation", "coincident", "industrial_prod"], None),
+    ("cycle_kitchin", "cn", "cn_pmi_manufacturing", "ind", ["china", "sectors", "corporate", "pmi"], None),
+    # ---- 补采工单（CIO 2026-11-11 立项）：fred_raw 四系列 ----
+    ("cycle_juglar", "us", "capacity_utilization", "fred", ["mcumfn"], None),
+    ("cycle_kitchin", "us", "inventory_sales_ratio", "fred", ["isratio"], None),
+    ("cycle_kitchin", "us", "new_orders", "fred", ["dgorder"], 1000.0),   # 百万美元→十亿
+    ("cycle_kitchin", "us", "manufacturing_inventories", "fred", ["businv"], 1000.0),  # 百万→十亿；实为商业总库存口径
+    # FAI 累计同比（fetch_china gdzctz 自年初累计自算）
+    ("cycle_juglar", "cn", "fixed_asset_investment", "ind", ["china", "sectors", "corporate", "fai_yoy_cum"], None),
 ]
 
 
@@ -724,15 +732,19 @@ def refresh_indicators_from_upstream(layers):
     ind = load_json(INDICATORS_JSON)
     fred = load_json(FRED_RAW_JSON) if FRED_RAW_JSON.exists() else {}
     changes = []
-    for layer_key, side, ind_key, src_kind, path in UPSTREAM_REFRESH:
+    for layer_key, side, ind_key, src_kind, path, div in UPSTREAM_REFRESH:
         node = _dig(layers, [layer_key, side, "indicators", ind_key])
         if not isinstance(node, dict):
             continue
-        src = _dig(ind, path) if src_kind == "ind" else None
-        if not isinstance(src, dict):
-            continue
-        src_hist = [h for h in (src.get("history") or [])
-                    if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        if src_kind == "ind":
+            src = _dig(ind, path)
+            src_hist = [h for h in ((src or {}).get("history") or [])
+                        if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        else:  # fred_raw
+            src_hist = [h for h in ((fred.get("series") or {}).get(path[0]) or [])
+                        if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        if div:
+            src_hist = [{"date": h["date"], "value": round(h["value"] / div, 4)} for h in src_hist]
         if not src_hist:
             continue
         src_tail = src_hist[-1]
@@ -741,8 +753,12 @@ def refresh_indicators_from_upstream(layers):
             continue
         hist = node.setdefault("history", [])
         cur_tail_key = _date_key(hist[-1].get("date")) if hist else None
-        if cur_tail_key is not None and cur_tail_key >= src_tail_key:
-            continue  # 层内不旧于上游，不回灌
+        # 值口径修正场景：上游尾期==层内尾期但值不同（如 capacity_utilization 错值 79.5）
+        same_date_diff_val = (
+            cur_tail_key is not None and cur_tail_key == src_tail_key
+            and hist and abs((hist[-1].get("value") or 0) - src_tail["value"]) > 1e-9)
+        if cur_tail_key is not None and cur_tail_key > src_tail_key:
+            continue  # 层内新于上游，不回灌
         appended = 0
         for h in src_hist:
             hk = _date_key(h.get("date"))
@@ -750,10 +766,14 @@ def refresh_indicators_from_upstream(layers):
                 continue
             hist.append({"date": h["date"], "value": h["value"]})
             appended += 1
+        if same_date_diff_val:
+            hist[-1]["value"] = src_tail["value"]
         node["current"] = src_tail["value"]
         node["last_updated"] = src_tail["date"]
-        changes.append(
-            f"{layer_key}.{side}.{ind_key}: -> {src_tail['value']}@{src_tail['date']} (+{appended} points)")
+        node.pop("data_gap_note", None)  # 真值回灌后缺口闭合
+        if appended or same_date_diff_val:
+            changes.append(
+                f"{layer_key}.{side}.{ind_key}: -> {src_tail['value']}@{src_tail['date']} (+{appended} points)")
     # Perez 高收益债利差（turning_point_signals 为列表结构，特判）
     perez = layers.get("narrative_perez") or {}
     hy = (fred.get("series") or {}).get("bamlh0a0hym2") or []

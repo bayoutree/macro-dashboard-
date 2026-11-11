@@ -187,6 +187,30 @@ NBS_EXT_ROWS = {
 }
 NBS_EXT_UNITS = {"export": "%", "import": "%", "trade_balance": "亿美元"}
 
+
+def _fai_cum_yoy_series(df):
+    """gdzctz「自年初累计」(亿元) → FAI 累计同比 %。数据反序(head=最新)。"""
+    import re as _re
+    pts = []
+    for _, row in df.iterrows():
+        m = _re.match(r"(\d{4})年(\d{2})月份", str(row.get("月份", "")))
+        cum = row.get("自年初累计")
+        if not m or cum is None or cum != cum:
+            continue
+        try:
+            pts.append((f"{m.group(1)}-{m.group(2)}", float(cum)))
+        except (TypeError, ValueError):
+            continue
+    by = dict(pts)
+    out = []
+    for ym, cum in pts:
+        y, mm = ym.split("-")
+        prev = by.get(f"{int(y) - 1}-{mm}")
+        if prev:
+            out.append((ym, round((cum / prev - 1) * 100, 2)))
+    out.sort(key=lambda x: x[0])
+    return out
+
 def cn_month_date(s):
     """月度标签 → 自然月 'YYYY-MM'（与其它中国指标一致）。
     支持 '2026年8月' / '2026年08月份' / '2026-08' / '2026-08-01'。
@@ -588,6 +612,10 @@ def get_china_groups():
     df = grab(ak.macro_china_gdzctz)
     add("sectors", "mfg_investment",
         extract_series(df, ["月份"], ["同比增长", "制造业", "自年初累计同比增长"]), unit="%")
+    # FAI 累计同比（补采工单 2026-11-11，CIO 立项）：gdzctz 无累计同比列，
+    # 用「自年初累计」绝对额按年月对齐自算：(cum[y,m]/cum[y-1,m]-1)*100。
+    # 供 v4 周期看板 juglar.cn.fixed_asset_investment 回灌（层内同口径累计同比）。
+    add("sectors", "fai_yoy_cum", _fai_cum_yoy_series(df), unit="%", hist_limit=300)
 
     # ---- 对外（external）----
     # #12 换源（CIO 终裁 2026-10-11）：旧 jin10 系 date=发布日且止于 2025-07（滞后约1年）；

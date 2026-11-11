@@ -50718,7 +50718,7 @@
             }
           },
           "manufacturing_inventories": {
-            "name": "制造业库存总量",
+            "name": "商业总库存",
             "source": "FRED (BUSINV)",
             "current": 2740.2,
             "unit": "billion USD",
@@ -50877,7 +50877,8 @@
               "p50": 2649.5,
               "p75": 2676.6,
               "current_rank": "p50"
-            }
+            },
+            "caliber_note": "序列为 FRED BUSINV 商业总库存（2026-11-11 补采工单核正名实：原指标名\"制造业库存总量\"与序列口径不符，序列本身延续未混填）"
           }
         }
       },

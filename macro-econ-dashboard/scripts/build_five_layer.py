@@ -605,6 +605,9 @@ def _build_cn_sectors(g):
     mi = g.get("sectors", {}).get("mfg_investment")
     if mi:
         corporate["mfg_investment"] = _named(mi, "mfg_investment")
+    fai = g.get("sectors", {}).get("fai_yoy_cum")
+    if fai:
+        corporate["fai_yoy_cum"] = _named(fai, "fai_yoy_cum")
     pmi = g.get("leading", {}).get("pmi")
     if pmi:
         corporate["pmi"] = _named(pmi, "pmi")
@@ -1448,6 +1451,7 @@ SOURCE_REGISTRY = {
     ("china", "house_price"): ("NBS 70 城新建商品住宅价格指数（akshare macro_china_new_house_price）", "同比 %、70 城均值"),
     ("china", "industrial_profit"): ("NBS 工业企业利润总额累计同比（akshare macro_china_nbs_nation 工业>工业企业主要经济指标）", "累计同比 %（非当月）"),
     ("china", "mfg_investment"): ("NBS 固定资产投资·制造业（akshare macro_china_gdzctz）", "自年初累计同比 %"),
+    ("china", "fai_yoy_cum"): ("NBS 固定资产投资(不含农户)（akshare macro_china_gdzctz 自年初累计额自算同比）", "累计同比 %"),
     ("china", "pmi"): ("NBS 制造业 PMI（akshare macro_china_pmi）", "扩散指数、50 为荣枯线"),
     ("china", "fiscal_revenue_growth"): ("财政部 公共财政收入（akshare macro_china_czsr）", "当月同比 %"),
     ("china", "export"): ("海关总署·NBS 对外经济>货物进出口总额（东财 RPT_ECONOMY_CUSTOMS 降级）", "当月同比 %、自然月"),
