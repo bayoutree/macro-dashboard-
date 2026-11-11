@@ -88810,7 +88810,7 @@
     "description": "约束层触发时的资产方向降级规则（v3.0第4.4节）",
     "C1_debt_cycle": {
       "name": "大债务周期约束",
-      "trigger_condition": "联邦债务/GDP>130% 且 利息/财政收入>20%",
+      "trigger_condition": "联邦债务/GDP>120% 或 利息/财政收入>20%",
       "currently_triggered": true,
       "current_values": {
         "debt_to_gdp": 121.19,
@@ -88850,7 +88850,8 @@
           "description": "不变"
         }
       },
-      "current_values_source": "cycle_position_v3.json#cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue（FRED A091RC1Q027SBEA/W006RC1Q027SBEA）"
+      "current_values_source": "cycle_position_v3.json#cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue（FRED A091RC1Q027SBEA/W006RC1Q027SBEA）",
+      "trigger_condition_revision": "2026-11-11 主人裁决修订：原「债务/GDP>130%」因口径更正（FRED 2026Q2 实测 121.19，2020Q3以来从未>123，132 系错误值）永久失效，改为双条件取「或」。修订后 121.19>120 与 33.55%>20% 双满足，currently_triggered 维持 true，降级规则与现网已生效状态一致，无信号跳变。"
     },
     "C2_rate_regime": {
       "name": "高利率Regime约束",
