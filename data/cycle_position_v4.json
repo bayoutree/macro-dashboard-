@@ -1,10 +1,10 @@
 {
   "_meta": {
     "update_time": "2026-11-11T00:22:19+08:00",
-    "data_freshness_score": 4,
-    "assessment_date": "2026-09-01",
+    "data_freshness_score": 3,
+    "assessment_date": "2026-11-11",
     "version": "3.0",
-    "next_assessment_date": "2026-10-01",
+    "next_assessment_date": "2026-12-11",
     "data_sources": [
       {
         "name": "FRED",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-08-06",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-10",
+      "as_of": "2026-11-11",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-08-15",
-          "score": 13
+          "score": 12
         },
         "narrative_kondratieff": {
           "last_updated": "2026-08-06",
-          "score": 4
+          "score": 3
         },
         "narrative_perez": {
           "last_updated": "2026-08-06",
-          "score": 4
+          "score": 3
         },
         "constraint_rate_regime": {
           "last_updated": "2026-08-06",
-          "score": 4
+          "score": 3
         }
       },
       "excluded_no_date": [
@@ -60,9 +60,9 @@
         "cycle_merrill_3d"
       ]
     },
-    "assessment_overdue": true,
+    "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-10T16:22:19+08:00"
+    "v4_built_at": "2026-11-11T14:31:00+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -52951,7 +52951,7 @@
   },
   "cross_analysis": {
     "consensus": {
-      "score": 68,
+      "score": 55,
       "scenario": "C",
       "scenario_description": "长波脆弱 + 短周期上行：上行空间受限",
       "last_updated": "2026-09-01",
@@ -86994,7 +86994,7 @@
   },
   "synthesis": {
     "title": "周期轮动综合研判",
-    "overall_assessment": "2026年9月，全球处于第六轮康波回升初期+佩雷斯Frenzy中后期+朱格拉上升段+基钦补库中期+信贷脉冲温和回升的叠加格局。共识度评分68/100，匹配情景C（长波脆弱+短周期上行）。多周期共振指向'温和复苏+结构分化'，但上层约束限制上行空间。",
+    "overall_assessment": "2026年9月，全球处于第六轮康波回升初期+佩雷斯Frenzy中后期+朱格拉上升段+基钦补库中期+信贷脉冲温和回升的叠加格局。共识度评分55/100，匹配情景C（长波脆弱+短周期上行）。多周期共振指向'温和复苏+结构分化'，但上层约束限制上行空间。",
     "last_updated": "2026-09-01",
     "cycle_positions_summary": [
       {
@@ -87621,96 +87621,98 @@
     "merrill": "cycle_layers.layer_6_merrill"
   },
   "cycle_consensus": {
-    "last_updated": "2026-09-01",
-    "overall_score": 68,
-    "overall_assessment": "复苏早期，多周期共振向上",
-    "overall_signal": "bullish",
+    "last_updated": "2026-11-11",
+    "overall_score": 55,
+    "overall_assessment": "复苏中后期：长周期（康波回升+朱格拉AI资本开支）向上与短周期（美林过热后期+货币重启收紧+信用利差走阔）转弱形成对冲，多周期共振减弱，结构性机会取代总量超配",
+    "overall_signal": "neutral",
     "dimension_scores": [
       {
         "dimension": "大债务周期",
         "us_score": -2,
         "cn_score": 0,
-        "assessment": "美国晚期去杠杆约束利率敏感资产，中国结构性去杠杆中后期空间较充裕",
+        "assessment": "美国利息/财政收入33.55%（2026Q2）处历史最高区，期限溢价年内0.50→0.91快速上行，债务货币化压力加大（FRED债务/GDP 2026Q2为121.2%）；中国结构性去杠杆中后期空间较充裕",
         "signal": "constraint"
       },
       {
         "dimension": "康波长波",
         "score": 2,
-        "assessment": "第五轮萧条尾声→第六轮回升初期，AI技术突破标志新周期起点",
+        "assessment": "第五轮萧条尾声→第六轮回升初期，AI技术突破与资本开支周期延续（年度频率判断维持）",
         "signal": "bullish"
       },
       {
         "dimension": "佩雷斯技术周期",
-        "score": 1,
-        "assessment": "新技术部署期，TFP开始回升，但旧动能仍在出清",
-        "signal": "cautious_bullish"
+        "score": 0,
+        "assessment": "Frenzy末期→Turning Point前兆增强：HY利差自年内低点2.6走阔至3.34（11-09）、VC/PE 720高位、加息重启压制估值，泡沫-转折风险上升",
+        "signal": "neutral"
       },
       {
         "dimension": "利率体制",
-        "assessment": "高利率时代延续但见顶概率上升",
-        "signal": "neutral"
+        "assessment": "高利率时代延续且货币政策重启收紧：12月加息概率84%、累计98%（CME 11-10），FFR 3.75-4.00%、10Y 4.86%、实际利率2.63%；9月『见顶概率上升』判断证伪，利率约束从高位钝化转为主动收紧",
+        "signal": "constraint"
       },
       {
         "dimension": "朱格拉设备周期",
         "us_score": 1,
         "cn_score": 1,
-        "assessment": "中美均处于扩张早期，产能利用率回升",
+        "assessment": "美国AI Capex驱动扩张中期，产能利用率高位，但资本成本上升构成边际逆风；中国高技术制造投资领跑、产能利用率73.0%（2026Q2）",
         "signal": "bullish"
       },
       {
         "dimension": "基钦库存周期",
-        "us_score": 2,
+        "us_score": 1,
         "cn_score": 1,
-        "assessment": "美国主动补库存，中国被动去库存→主动补库存过渡",
-        "signal": "bullish"
+        "assessment": "美国主动补库中后期（库存销售比1.32），非农YoY仅0.56%显示需求动能减速；中国PPI +5.7%（10月）上游再通胀、PMI 49.3仍收缩，K型补库延续",
+        "signal": "cautious_bullish"
       },
       {
         "dimension": "美林时钟",
-        "us_assessment": "复苏期→过热前期",
-        "cn_assessment": "复苏早期",
-        "signal": "bullish"
+        "us_assessment": "过热后期→滞胀风险抬头：CPI 3.72（P61）/PPI 6.35（P75）高企+增长动能减速+央行收紧",
+        "cn_assessment": "复苏酝酿→确认窗口：宽货币（DR007 1.36% P4）+PPI再通胀，信用脉冲待起（社融缺口锚B段P15偏低）",
+        "signal": "neutral"
       }
     ],
     "asset_allocation_summary": {
       "equity": {
-        "recommendation": "超配",
-        "weight": "60-70%",
-        "rationale": "多周期共振向上，股票风险收益比最优"
+        "recommendation": "标配",
+        "weight": "50-60%",
+        "rationale": "AI资本开支周期支撑美股盈利但估值高位+加息重启压制；A股HS300 PE 12.65（P52）不贵但趋势strong_bear、择时仓位上限32%——权益由共振超配降为标配，结构重于总量"
       },
       "bonds": {
         "recommendation": "低配",
         "weight": "15-20%",
-        "rationale": "利率见顶但仍在高位，长久期债券承压"
+        "rationale": "加息重启+期限溢价快速上行，长久期承压加剧；短久期票息（FFR 3.88%）有相对价值，中国10Y 1.60%防御属性"
       },
       "commodities": {
-        "recommendation": "超配",
-        "weight": "15-20%",
-        "rationale": "康波回升初期+库存周期补库，商品迎来战略配置窗口"
+        "recommendation": "标配",
+        "weight": "10-15%",
+        "rationale": "美林过热后期+PPI高企仍有支撑，但CRB月线-5.3%回落、境内板块分化（能化强/黑色弱）、加息压制金融属性——由战略超配降为标配（与12月期月报商品章一致）"
       },
       "cash": {
         "recommendation": "标配",
         "weight": "5-10%",
-        "rationale": "保留流动性应对潜在波动"
+        "rationale": "加息周期现金类收益有支撑，保留流动性应对转折期波动"
       }
     },
     "key_risks": [
-      "美国债务上限博弈可能引发短期流动性冲击",
-      "中国地产风险尚未完全出清",
+      "美联储加息重启落地：12月会议加息概率84%、累计98%（CME 11-10），全球利率敏感资产重定价、美元走强",
+      "美国过热滑向滞胀：PPI 6.35%高企+非农YoY 0.56%动能减速，盈利与估值双杀风险",
+      "长端期限溢价年内0.50→0.91快速上行+利息/财政收入33.55%历史高位，美债供给冲击风险",
+      "中国信用脉冲疲弱：社融缺口锚B段P15偏低、PMI 49.3再收缩，复苏酝酿期拉长",
       "地缘政治不确定性"
     ],
     "cycle_nesting": {
-      "description": "当前处于康波回升初期+佩雷斯部署期+朱格拉扩张早期+基钦补库阶段的四重共振",
-      "interpretation": "大周期向好，中小周期同步向上，是较为难得的多周期共振配置窗口"
+      "description": "康波回升初期+佩雷斯Frenzy末期+朱格拉扩张中期+基钦补库中后期的错位组合",
+      "interpretation": "长周期向上、短周期见顶风险上升，共振较9月评估减弱；配置从总量超配转向结构与防御平衡"
     },
     "united_states": {
       "p1_score": 2,
-      "p2_score": 2,
+      "p2_score": 1,
       "p3_score": 1,
       "p1_label": "朱格拉设备周期-扩张早期",
-      "p2_label": "基钦库存周期-主动补库",
+      "p2_label": "基钦库存周期-被动补库",
       "p3_label": "美林时钟-复苏→过热",
-      "raw_score": 1.7,
-      "consensus_score": 92.5,
+      "raw_score": 1.3,
+      "consensus_score": 82.5,
       "signal": "强烈看多"
     },
     "china": {
@@ -88795,10 +88797,10 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-10",
+    "last_updated": "2026-11-11",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
-    "calculation_method": "transmission_table(US P1=2,P2=2 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
-    "base_scenario": "US:多周期共振上行(P1=2,P2=2); CN:扩张早期+被动补库(P1=2,P2=1)",
+    "calculation_method": "transmission_table(US P1=2,P2=1 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
+    "base_scenario": "US:扩张早期+被动补库（当前美国）(P1=2,P2=1); CN:扩张早期+被动补库(P1=2,P2=1)",
     "constraint_active": true,
     "ranking": [
       {
@@ -88812,9 +88814,9 @@
       {
         "rank": 2,
         "asset": "usd",
-        "signal": "超配",
-        "adjusted_direction": "up",
-        "base_direction": "up",
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
         "adjustment": 0
       },
       {
@@ -88843,7 +88845,7 @@
       },
       {
         "rank": 6,
-        "asset": "china_bond",
+        "asset": "us_bond",
         "signal": "标配",
         "adjusted_direction": "neutral",
         "base_direction": "neutral",
@@ -88851,7 +88853,7 @@
       },
       {
         "rank": 7,
-        "asset": "china_realestate",
+        "asset": "china_bond",
         "signal": "标配",
         "adjusted_direction": "neutral",
         "base_direction": "neutral",
@@ -88859,10 +88861,10 @@
       },
       {
         "rank": 8,
-        "asset": "us_bond",
-        "signal": "低配",
-        "adjusted_direction": "down",
-        "base_direction": "down",
+        "asset": "china_realestate",
+        "signal": "标配",
+        "adjusted_direction": "neutral",
+        "base_direction": "neutral",
         "adjustment": 0
       }
     ],
