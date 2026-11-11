@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-11T15:01:01+08:00"
+    "v4_built_at": "2026-11-11T15:09:20+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2704,11 +2704,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 2.6,
+          "current_value": 3.34,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-08-06"
+          "last_updated": "2026-11-09"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -50910,8 +50910,8 @@
             "name": "中国制造业PMI",
             "source": "国家统计局",
             "unit": "",
-            "current": 50.4,
-            "last_updated": "2026-08-15",
+            "current": 49.3,
+            "last_updated": "2026-10",
             "percentile": {
               "p25": 49.4,
               "p50": 50.1,
@@ -50954,6 +50954,42 @@
               {
                 "date": "2026-01",
                 "value": 50.4
+              },
+              {
+                "date": "2026-02",
+                "value": 49.0
+              },
+              {
+                "date": "2026-03",
+                "value": 50.4
+              },
+              {
+                "date": "2026-04",
+                "value": 50.3
+              },
+              {
+                "date": "2026-05",
+                "value": 50.0
+              },
+              {
+                "date": "2026-06",
+                "value": 50.3
+              },
+              {
+                "date": "2026-07",
+                "value": 49.2
+              },
+              {
+                "date": "2026-08",
+                "value": 49.8
+              },
+              {
+                "date": "2026-09",
+                "value": 50.1
+              },
+              {
+                "date": "2026-10",
+                "value": 49.3
               }
             ],
             "frequency": "monthly",
@@ -51142,8 +51178,8 @@
             "name": "核心CPI同比",
             "source": "BLS/FRED",
             "unit": "%",
-            "current": 2.9,
-            "last_updated": "2026-08-06",
+            "current": 2.5658,
+            "last_updated": "2026-09-01",
             "history": [
               {
                 "date": "2022-01",
@@ -51256,6 +51292,18 @@
               {
                 "date": "2026-06",
                 "value": 2.57
+              },
+              {
+                "date": "2026-07-01",
+                "value": 2.4665
+              },
+              {
+                "date": "2026-08-01",
+                "value": 2.4462
+              },
+              {
+                "date": "2026-09-01",
+                "value": 2.5658
               }
             ],
             "frequency": "monthly",
@@ -52697,8 +52745,8 @@
             "name": "CPI同比",
             "source": "国家统计局/AKShare",
             "unit": "%",
-            "current": 0.6,
-            "last_updated": "2026-08-15",
+            "current": 0.7,
+            "last_updated": "2026-10",
             "history": [
               {
                 "date": "2022-01",
@@ -52735,6 +52783,42 @@
               {
                 "date": "2026-01",
                 "value": 0.6
+              },
+              {
+                "date": "2026-02",
+                "value": 1.3
+              },
+              {
+                "date": "2026-03",
+                "value": 1.0
+              },
+              {
+                "date": "2026-04",
+                "value": 1.2
+              },
+              {
+                "date": "2026-05",
+                "value": 1.2
+              },
+              {
+                "date": "2026-06",
+                "value": 1.0
+              },
+              {
+                "date": "2026-07",
+                "value": 0.5
+              },
+              {
+                "date": "2026-08",
+                "value": 0.8
+              },
+              {
+                "date": "2026-09",
+                "value": 0.9
+              },
+              {
+                "date": "2026-10",
+                "value": 0.7
               }
             ],
             "frequency": "monthly",
@@ -52749,8 +52833,8 @@
             "name": "PPI同比",
             "source": "国家统计局/AKShare",
             "unit": "%",
-            "current": -0.8,
-            "last_updated": "2026-08-15",
+            "current": 5.7,
+            "last_updated": "2026-10",
             "history": [
               {
                 "date": "2022-01",
@@ -52787,6 +52871,42 @@
               {
                 "date": "2026-01",
                 "value": -0.8
+              },
+              {
+                "date": "2026-02",
+                "value": -0.9
+              },
+              {
+                "date": "2026-03",
+                "value": 0.5
+              },
+              {
+                "date": "2026-04",
+                "value": 2.8
+              },
+              {
+                "date": "2026-05",
+                "value": 3.9
+              },
+              {
+                "date": "2026-06",
+                "value": 4.1
+              },
+              {
+                "date": "2026-07",
+                "value": 3.5
+              },
+              {
+                "date": "2026-08",
+                "value": 3.8
+              },
+              {
+                "date": "2026-09",
+                "value": 5.0
+              },
+              {
+                "date": "2026-10",
+                "value": 5.7
               }
             ],
             "frequency": "monthly",
@@ -52859,7 +52979,7 @@
               ]
             },
             "description": "规模以上工业增加值同比增速",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026-09",
             "frequency": "monthly",
             "history": [
               {
@@ -52913,6 +53033,34 @@
               {
                 "date": "2026-01",
                 "value": 5.6
+              },
+              {
+                "date": "2026-03",
+                "value": 5.7
+              },
+              {
+                "date": "2026-04",
+                "value": 4.1
+              },
+              {
+                "date": "2026-05",
+                "value": 4.5
+              },
+              {
+                "date": "2026-06",
+                "value": 5.3
+              },
+              {
+                "date": "2026-07",
+                "value": 4.5
+              },
+              {
+                "date": "2026-08",
+                "value": 5.2
+              },
+              {
+                "date": "2026-09",
+                "value": 5.5
               }
             ],
             "percentile": {
@@ -52921,7 +53069,7 @@
               "p75": 6.4,
               "current_rank": "p50"
             },
-            "current": 5.6
+            "current": 5.5
           }
         },
         "quadrant_trajectory": [

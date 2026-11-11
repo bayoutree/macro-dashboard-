@@ -675,6 +675,105 @@ def _fix_credit_spread_units(layers):
     return layers, fixed
 
 
+
+# ------------------------------------------------------------------
+# 【指标回灌】CIO P1-1 复验打回（2026-11-11）：层内 indicators 是静态快照，
+# 上游（indicators.json/fred_raw）已到 9-10 月发布期而层内仍停 8 月。
+# 每次构建从上游现值回灌：上游 history 尾业务期 > 层内尾业务期时，
+# 追加缺失业务期点 + current/last_updated=上游尾业务期（不虚标为今天）。
+# 上游缺失/停更的指标（ISM/产能利用率/库存销售比等）不伪造，由数据补采工单处理。
+# ------------------------------------------------------------------
+INDICATORS_JSON = DATA_DIR.parent / "macro-econ-dashboard" / "data" / "indicators.json"
+FRED_RAW_JSON = DATA_DIR / "fred_raw.json"
+
+UPSTREAM_REFRESH = [
+    ("cycle_merrill_3d", "us", "core_cpi", "ind", ["us", "validation", "lagging", "core_cpi"]),
+    ("cycle_merrill_3d", "cn", "cn_cpi", "ind", ["china", "validation", "lagging", "cpi"]),
+    ("cycle_merrill_3d", "cn", "cn_ppi", "ind", ["china", "validation", "lagging", "ppi"]),
+    ("cycle_merrill_3d", "cn", "cn_industrial_va", "ind", ["china", "validation", "coincident", "industrial_prod"]),
+    ("cycle_kitchin", "cn", "cn_pmi_manufacturing", "ind", ["china", "sectors", "corporate", "pmi"]),
+]
+
+
+def _date_key(s):
+    """'2026-10'/'2026-10-01' -> (2026,10,1) 可比较元组；失败 None。"""
+    if not isinstance(s, str):
+        return None
+    parts = s.strip()[:10].split("-")
+    try:
+        y = int(parts[0])
+        m = int(parts[1]) if len(parts) > 1 else 1
+        d = int(parts[2]) if len(parts) > 2 else 1
+        return (y, m, d)
+    except (ValueError, IndexError):
+        return None
+
+
+def _dig(obj, path):
+    for k in path:
+        if not isinstance(obj, dict):
+            return None
+        obj = obj.get(k)
+    return obj
+
+
+def refresh_indicators_from_upstream(layers):
+    """从上游现值回灌层内月频指标；返回改动描述列表（供日志）。"""
+    if not INDICATORS_JSON.exists():
+        return []
+    ind = load_json(INDICATORS_JSON)
+    fred = load_json(FRED_RAW_JSON) if FRED_RAW_JSON.exists() else {}
+    changes = []
+    for layer_key, side, ind_key, src_kind, path in UPSTREAM_REFRESH:
+        node = _dig(layers, [layer_key, side, "indicators", ind_key])
+        if not isinstance(node, dict):
+            continue
+        src = _dig(ind, path) if src_kind == "ind" else None
+        if not isinstance(src, dict):
+            continue
+        src_hist = [h for h in (src.get("history") or [])
+                    if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        if not src_hist:
+            continue
+        src_tail = src_hist[-1]
+        src_tail_key = _date_key(src_tail["date"])
+        if src_tail_key is None:
+            continue
+        hist = node.setdefault("history", [])
+        cur_tail_key = _date_key(hist[-1].get("date")) if hist else None
+        if cur_tail_key is not None and cur_tail_key >= src_tail_key:
+            continue  # 层内不旧于上游，不回灌
+        appended = 0
+        for h in src_hist:
+            hk = _date_key(h.get("date"))
+            if hk is None or (cur_tail_key is not None and hk <= cur_tail_key):
+                continue
+            hist.append({"date": h["date"], "value": h["value"]})
+            appended += 1
+        node["current"] = src_tail["value"]
+        node["last_updated"] = src_tail["date"]
+        changes.append(
+            f"{layer_key}.{side}.{ind_key}: -> {src_tail['value']}@{src_tail['date']} (+{appended} points)")
+    # Perez 高收益债利差（turning_point_signals 为列表结构，特判）
+    perez = layers.get("narrative_perez") or {}
+    hy = (fred.get("series") or {}).get("bamlh0a0hym2") or []
+    if hy:
+        tail = hy[-1]
+        tk = _date_key(tail.get("date"))
+        for sig in perez.get("turning_point_signals") or []:
+            if sig.get("metric") != "HY spread":
+                continue
+            sk = _date_key(sig.get("last_updated", ""))
+            if tk and (sk is None or sk < tk):
+                old = sig.get("current_value")
+                v = tail["value"]
+                sig["current_value"] = v
+                sig["last_updated"] = tail["date"]
+                sig["status"] = "red" if v >= 6 else ("yellow" if v >= 4 else "green")
+                changes.append(f"narrative_perez.HY spread: {old} -> {v}@{tail['date']}")
+    return changes
+
+
 def _fix_core_cpi_index(layers):
     """修复 Merrill us.core_cpi 混入 CPI 指数。
     
@@ -847,6 +946,10 @@ def build():
     out["cycle_layers"], cpi_fixed = _fix_core_cpi_index(out["cycle_layers"])
     if cpi_fixed:
         print("⚠ core_cpi 修复: CPI指数→YoY增速")
+
+    # ---- 2e. 层内月频指标从上游现值回灌（CIO P1-1 复验打回，2026-11-11） ----
+    for _c in refresh_indicators_from_upstream(out["cycle_layers"]):
+        print(f"  [回灌] {_c}")
 
     # ---- 2d. C1 债务约束 current_values 以 v3 L0 主源刷新（#14 CIO 裁决） ----
     # 旧行为：constraint_degradation 由 V4_PRESERVE_KEYS 从上一版 v4 原样继承，
