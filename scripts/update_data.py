@@ -626,7 +626,7 @@ def p213_compute_stats(log):
 
 def p213_update(history, fetch_index_fn=None, log_name="signal_log.json"):
     """[P2-13] 主入口：diff 最新两条决策态生成信号 + 结算 + IC 日点 + 统计。
-    返回 stats（供 timing_scores.p2_13_state 下发）；任何子步骤失败仅告警不阻断主流程。
+    返回 stats（供 timing_scores.p2_13_oos_stats 下发）；任何子步骤失败仅告警不阻断主流程。
     fetch_index_fn 默认 None → 惰性解析 fetch_trend_index_daily（定义在后文 P1-6 区块）。
     """
     if fetch_index_fn is None:
@@ -4871,11 +4871,11 @@ def append_timing_history(timing_data, right_data, history_path="data/timing_his
             "cite_min_n": P213_MIN_CITE_N,
             "note": "P2-13 样本外信号统计（2026-10-18起累积；n<10只显示累积中，n≥20显示百分比，n≥50方可研报引用）",
         }
-        timing_data["p2_13_state"] = p213_state
+        timing_data["p2_13_oos_stats"] = p213_state
         # 主流程 save_json 在 append 之前 → 直接注入已落盘的 timing_scores.json
         ts_on_disk = load_json("timing_scores.json")
         if isinstance(ts_on_disk, dict):
-            ts_on_disk["p2_13_state"] = p213_state
+            ts_on_disk["p2_13_oos_stats"] = p213_state
             save_json(ts_on_disk, "timing_scores.json")
         logger.info(f"    📊 P2-13 信号统计: 累计信号 {stats.get('total_signals', 0)} 条")
     except Exception as e:

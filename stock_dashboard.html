@@ -1458,7 +1458,7 @@ const StageEngine = {
       p1_6_state: this._timingData?.p1_6_state || { trend: 'unknown' },
       // [P1-8 2026-10-18] 美联储双层
       p1_8_state: this._timingData?.p1_8_state || { layer: 'none' },
-      p2_13_state: this._timingData?.p2_13_state || {}
+      p2_13_state: this._timingData?.p2_13_oos_stats || {}
     };
   }
 };
@@ -2429,7 +2429,7 @@ function renderStageCards() {
     // [P2-13 2026-10-18裁决Q8] 样本外信号统计小字（n<10只显示累积中，n≥20显示百分比）
     let _p213Badge = '';
     if (isActive) {
-      const _p213 = engineOutput.p2_13_state || {};
+      const _p213 = engineOutput.p2_13_oos_stats || {};
       const _tot = _p213.total_signals || 0;
       if (_tot > 0) {
         let _bestN = 0, _bestTxt = '';
@@ -4190,7 +4190,7 @@ function renderCycleFreshness() {
 // sparkline、主模型/确认/参考三个指标区全部不渲染）
 // [P2-13 2026-11-07 验收打回修复] 信号有效性灰灯卡
 // 数据源：data/p2_13_state.json（独立 fetch，五重替代检验产物）；方法学§四要求页面如实呈现
-// 灰=未验证；与 timing_scores.p2_13_state（20261018 裁决Q8 样本外信号统计，另一schema）不同源，
+// 灰=未验证；与 timing_scores.p2_13_oos_stats（Q8 样本外信号统计）双源正交、归属已定（P1-9 2026-11-11），
 // 合并归属待 P1-9 归属表裁决，本卡只消费独立 state 文件。
 async function renderP213State() {
   const el = document.getElementById('p213-state');
@@ -4210,7 +4210,7 @@ async function renderP213State() {
   el.innerHTML = `<div class="r7-card" style="border-left:3px solid ${lm[1]};">` +
     `<div class="r7-title" style="color:${lm[1]};">${lm[0]} P2-13 信号有效性：${st.status}${dt ? ' ｜ 最近验证 ' + dt : ''}</div>` +
     failHtml +
-    `<div class="r7-note">口径：五重替代检验（IC/ICIR、单调性、端点差NW-t、分档样本量n≥30、样本外稳定），全过方转「已验证」；${st.revalidate_due || ''}。本灯仅呈现验证状态，不构成买卖依据。数据源 p2_13_state.json；与 timing_scores.p2_13_state（Q8样本外统计）不同源，合并归属待裁决。</div></div>`;
+    `<div class="r7-note">口径：五重替代检验（IC/ICIR、单调性、端点差NW-t、分档样本量n≥30、样本外稳定），全过方转「已验证」；${st.revalidate_due || ''}。本灯仅呈现验证状态，不构成买卖依据。数据源 p2_13_state.json；与 timing_scores.p2_13_oos_stats（Q8样本外统计）双源正交：本卡=有效性门禁（backtest写），徽标=样本外表现（update_data写），归属已定（P1-9，2026-11-11）。</div></div>`;
 }
 
 function safeRender(name, fn) {
