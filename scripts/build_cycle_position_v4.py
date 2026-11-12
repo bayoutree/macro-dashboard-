@@ -716,10 +716,13 @@ MONTHLY_META = {
     },
     "cn_inventory_cycle": {
         "source": ("国家统计局《全国规模以上工业企业利润》月度新闻稿"
-                   "（www.stats.gov.cn/sj/zxfb/，规模以上工业企业产成品存货）"),
+                   "（www.stats.gov.cn/sj/zxfb/，正文「产成品存货 X 万亿元，增长 Y%」）"),
         "caliber": ("规模以上工业企业产成品存货同比增速（%），名义值、未剔除价格因素。"
-                    "与 PMI 产成品库存扩散指数不同口径。"),
-        "gap_note": None,
+                    "与 PMI 产成品库存扩散指数不同口径：前者是存量同比，后者是环比扩散指数。"),
+        "gap_note": ("每年 1 月单月产成品存货数据官方不单独发布——1—2 月合并为一篇稿，"
+                     "只给 2 月末值，故序列缺 2025-01 / 2026-01 两个点。属国家统计局"
+                     "发布口径，非采集缺失，不做插值。"),
+        "gap_reason": "每年 1 月官方不单独发布，跨该月算斜率会把缺失当跳变",
     },
 }
 
@@ -752,6 +755,7 @@ UPSTREAM_REFRESH = [
     # 层内原为 3 个年度桩点（11.8/12.0/12.5，与官方年度值 22.2/9.9/7.0 无法调和），故整体替换。
     ("cycle_juglar", "cn", "high_tech_manufacturing_investment", "nbs", ["high_tech_mfg"], None, "replace_monthly"),
     ("cycle_kitchin", "cn", "cn_pmi_finished_goods", "nbs_inv", ["pmi_finished_goods"], None, "replace_monthly"),
+    ("cycle_kitchin", "cn", "cn_inventory_cycle", "nbs_inv", ["inventory_yoy"], None, "replace_monthly"),
 ]
 
 
@@ -1124,8 +1128,6 @@ def _fix_high_rate_tracker_history(v4_data):
 _STUB_TOL = {"daily": 0.5, "weekly": 1.0, "monthly": 2.2, "quarterly": 5.5, "annual": 20.0}
 
 STUB_REGISTRY = {
-    "cycle_kitchin/cn/indicators/cn_inventory_cycle": ("stub",
-        "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"),
     "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp": ("stub",
         "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"),
     "constraint_debt_cycle/us/indicators/interest_to_revenue": ("meta_error",
