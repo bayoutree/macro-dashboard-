@@ -1,0 +1,1078 @@
+{
+  "meta": {
+    "generated_at": "2026-11-12 09:05:16",
+    "eval_date": "2026-11-12",
+    "repo": "/home/runner/work/macro-dashboard-/macro-dashboard-",
+    "git_sha": "8043d57",
+    "live_base": "https://bayoutree.github.io/macro-dashboard-/"
+  },
+  "coverage": {
+    "l1_active_items": 51,
+    "l1_manifest_items": 53,
+    "l1_data_files": 39,
+    "l1_registered_files": 39,
+    "l1_orphan_files": 0,
+    "l2_files": 12,
+    "l2_files_reachable": 12,
+    "l3_value_assertions": 5,
+    "l3_badges": 28
+  },
+  "summary": {
+    "total": 89,
+    "PASS": 65,
+    "WARN": 19,
+    "FAIL": 3,
+    "SKIP": 2,
+    "verdict": "FAIL"
+  },
+  "results": [
+    {
+      "code": "HC-D-001",
+      "layer": "L1",
+      "target": "feargreed_qvix",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/feargreed_pointer.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-002",
+      "layer": "L1",
+      "target": "timing_composite",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-12 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-12",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-003",
+      "layer": "L1",
+      "target": "timing_valuation",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-004",
+      "layer": "L1",
+      "target": "timing_liquidity",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-11，应已发布最新期 2026-11 | 自然日口径=FRESH · monthly · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "monthly",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-005",
+      "layer": "L1",
+      "target": "timing_equity_bond",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-006",
+      "layer": "L1",
+      "target": "timing_capital_flow",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-007",
+      "layer": "L1",
+      "target": "timing_sentiment",
+      "status": "WARN",
+      "detail": "WATCH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-008",
+      "layer": "L1",
+      "target": "timing_micro_structure",
+      "status": "WARN",
+      "detail": "WATCH | weekly · 末点 2026-11-12 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-12",
+        "freq": "weekly",
+        "file": "data/timing_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-009",
+      "layer": "L1",
+      "target": "cycle_position_v4",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-11，应已发布最新期 2026-11 | 自然日口径=FRESH · monthly · 末点 2026-11-11 · lag=30d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "monthly",
+        "file": "data/cycle_position_v4.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-010",
+      "layer": "L1",
+      "target": "treasury_10y",
+      "status": "WARN",
+      "detail": "WATCH | daily · 末点 2026-11-09 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-09",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-011",
+      "layer": "L1",
+      "target": "treasury_2y",
+      "status": "WARN",
+      "detail": "WATCH | daily · 末点 2026-11-09 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-09",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-012",
+      "layer": "L1",
+      "target": "treasury_3m",
+      "status": "WARN",
+      "detail": "WATCH | daily · 末点 2026-11-09 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-09",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-013",
+      "layer": "L1",
+      "target": "sp500",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-10 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-10",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-014",
+      "layer": "L1",
+      "target": "vix",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-10 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-10",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-015",
+      "layer": "L1",
+      "target": "usdcny_market",
+      "status": "WARN",
+      "detail": "WATCH | daily · 末点 2026-11-06 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-11-06",
+        "freq": "daily",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-016",
+      "layer": "L1",
+      "target": "fed_funds",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-017",
+      "layer": "L1",
+      "target": "gold",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-12 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-12",
+        "freq": "daily",
+        "file": "data/asset_prices.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-018",
+      "layer": "L1",
+      "target": "oil",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-12 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-12",
+        "freq": "daily",
+        "file": "data/asset_prices.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-019",
+      "layer": "L1",
+      "target": "cpi",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09-01 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09-01",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-020",
+      "layer": "L1",
+      "target": "ppi",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-021",
+      "layer": "L1",
+      "target": "payrolls_nonfarm",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-022",
+      "layer": "L1",
+      "target": "unemployment",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-023",
+      "layer": "L1",
+      "target": "retail_sales",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-024",
+      "layer": "L1",
+      "target": "industrial_production",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=5d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-025",
+      "layer": "L1",
+      "target": "dgorder_yoy",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=FRESH · monthly · 末点 2026-09-01 · lag=25d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09-01",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-026",
+      "layer": "L1",
+      "target": "gdp",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-07 | 自然日口径=FRESH · quarterly · 末点 2026-09 · lag=28d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "quarterly",
+        "file": "data/us_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-027",
+      "layer": "L1",
+      "target": "oecd_cli",
+      "status": "FAIL",
+      "detail": "STALE | 期次落后 33 期：数据期 2023-11，应已发布至 2026-08（真实断更） | 自然日口径=STALE · monthly · 末点 2023-11-01 · lag=60d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2023-11-01",
+        "freq": "monthly",
+        "file": "data/us_macro.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-028",
+      "layer": "L1",
+      "target": "timing_right",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_right_scores.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-029",
+      "layer": "L1",
+      "target": "social_financing",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=11d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "data/cn_macro.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-030",
+      "layer": "L1",
+      "target": "cn_m2",
+      "status": "WARN",
+      "detail": "FRESH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=12d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "data/cn_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-031",
+      "layer": "L1",
+      "target": "cn_gdp",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-07 | 自然日口径=FRESH · quarterly · 末点 2026-09 · lag=17d · critical=True · sev=block",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "quarterly",
+        "file": "data/cn_macro.json",
+        "critical": true
+      }
+    },
+    {
+      "code": "HC-D-032",
+      "layer": "L1",
+      "target": "legulegu_gxl_spread",
+      "status": "FAIL",
+      "detail": "STALE | weekly · 末点 2026-09-11 · lag=14d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2026-09-11",
+        "freq": "weekly",
+        "file": "data/all_a_gxl_spread.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-033",
+      "layer": "L1",
+      "target": "legulegu_break_net",
+      "status": "FAIL",
+      "detail": "STALE | weekly · 末点 2026-09-11 · lag=14d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2026-09-11",
+        "freq": "weekly",
+        "file": "data/break_net_asset_rate.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-034",
+      "layer": "L1",
+      "target": "pe_percentile",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "data/timing_scores.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-035",
+      "layer": "L1",
+      "target": "fund_3y_annual",
+      "status": "PASS",
+      "detail": "FRESH | weekly · 末点 2026-11-11 · lag=7d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "weekly",
+        "file": "data/timing_scores.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-036",
+      "layer": "L1",
+      "target": "cn_trade_balance",
+      "status": "WARN",
+      "detail": "WATCH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=WATCH · monthly · 末点 2026-09 · lag=8d · critical=False · sev=warn",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-037",
+      "layer": "L1",
+      "target": "cn_exports_imports",
+      "status": "WARN",
+      "detail": "WATCH | 期次落后 1 期：数据期 2026-09，应已发布至 2026-10（发布窗口内） | 自然日口径=WATCH · monthly · 末点 2026-09 · lag=8d · critical=False · sev=warn",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-038",
+      "layer": "L1",
+      "target": "us_federal_debt",
+      "status": "WARN",
+      "detail": "STALE | 期次落后 1 期：数据期 2026-04，应已发布至 2026-07（发布窗口内） | 自然日口径=STALE · quarterly · 末点 2026-04-01 · lag=90d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2026-04-01",
+        "freq": "quarterly",
+        "file": "data/fred_raw.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-039",
+      "layer": "L1",
+      "target": "all_a_gxl_spread",
+      "status": "SKIP",
+      "detail": "deprecated，不评估"
+    },
+    {
+      "code": "HC-D-040",
+      "layer": "L1",
+      "target": "break_net_asset_rate",
+      "status": "SKIP",
+      "detail": "deprecated，不评估"
+    },
+    {
+      "code": "HC-D-041",
+      "layer": "L1",
+      "target": "cn_pmi",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=15d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-042",
+      "layer": "L1",
+      "target": "cn_cpi",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=10d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-043",
+      "layer": "L1",
+      "target": "cn_ppi",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=FRESH · monthly · 末点 2026-10 · lag=10d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-10",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-044",
+      "layer": "L1",
+      "target": "cn_house_price",
+      "status": "PASS",
+      "detail": "STALE | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=STALE · monthly · 末点 2026-09-01 · lag=16d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2026-09-01",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-045",
+      "layer": "L1",
+      "target": "cn_retail",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=16d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-046",
+      "layer": "L1",
+      "target": "cn_fiscal_revenue",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=20d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-047",
+      "layer": "L1",
+      "target": "cn_m1",
+      "status": "PASS",
+      "detail": "FRESH | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=FRESH · monthly · 末点 2026-09 · lag=13d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-09",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-048",
+      "layer": "L1",
+      "target": "us_hy_spread",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-09 · lag=1d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-09",
+        "freq": "daily",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-049",
+      "layer": "L1",
+      "target": "us_nonfarm",
+      "status": "PASS",
+      "detail": "WATCH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=WATCH · monthly · 末点 2026-10-01 · lag=8d · critical=False · sev=warn",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-10-01",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-050",
+      "layer": "L1",
+      "target": "us_unemployment",
+      "status": "PASS",
+      "detail": "WATCH | 期次对齐：数据期 2026-10，应已发布最新期 2026-10 | 自然日口径=WATCH · monthly · 末点 2026-10-01 · lag=8d · critical=False · sev=warn",
+      "extra": {
+        "status": "WATCH",
+        "last": "2026-10-01",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-051",
+      "layer": "L1",
+      "target": "us_cpi",
+      "status": "PASS",
+      "detail": "STALE | 期次对齐：数据期 2026-09，应已发布最新期 2026-09 | 自然日口径=STALE · monthly · 末点 2026-09-01 · lag=13d · critical=False · sev=warn",
+      "extra": {
+        "status": "STALE",
+        "last": "2026-09-01",
+        "freq": "monthly",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-052",
+      "layer": "L1",
+      "target": "us_dxy",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-11 · lag=1d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-11",
+        "freq": "daily",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-053",
+      "layer": "L1",
+      "target": "cross_cn_us_10y_spread",
+      "status": "PASS",
+      "detail": "FRESH | daily · 末点 2026-11-09 · lag=1d · critical=False · sev=warn",
+      "extra": {
+        "status": "FRESH",
+        "last": "2026-11-09",
+        "freq": "daily",
+        "file": "macro-econ-dashboard/data/indicators.json",
+        "critical": false
+      }
+    },
+    {
+      "code": "HC-D-REG",
+      "layer": "L1",
+      "target": "data_file_registry",
+      "status": "PASS",
+      "detail": "数据文件 39 个，已登记 39 个",
+      "extra": {
+        "orphans": [],
+        "tier_b_bad": []
+      }
+    },
+    {
+      "code": "HC-P-001",
+      "layer": "L2",
+      "target": "data/timing_scores.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-12"
+    },
+    {
+      "code": "HC-P-002",
+      "layer": "L2",
+      "target": "data/timing_right_scores.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-11"
+    },
+    {
+      "code": "HC-P-003",
+      "layer": "L2",
+      "target": "data/feargreed_pointer.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-11"
+    },
+    {
+      "code": "HC-P-004",
+      "layer": "L2",
+      "target": "data/dashboard_summary.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-12"
+    },
+    {
+      "code": "HC-P-005",
+      "layer": "L2",
+      "target": "data/cycle_position_v4.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-11"
+    },
+    {
+      "code": "HC-P-006",
+      "layer": "L2",
+      "target": "data/us_macro.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-09"
+    },
+    {
+      "code": "HC-P-007",
+      "layer": "L2",
+      "target": "data/cn_macro.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-09"
+    },
+    {
+      "code": "HC-P-008",
+      "layer": "L2",
+      "target": "data/asset_prices.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-11-12"
+    },
+    {
+      "code": "HC-P-009",
+      "layer": "L2",
+      "target": "macro-econ-dashboard/data/indicators.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-09-01"
+    },
+    {
+      "code": "HC-P-010",
+      "layer": "L2",
+      "target": "data/all_a_gxl_spread.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-09-11"
+    },
+    {
+      "code": "HC-P-011",
+      "layer": "L2",
+      "target": "data/break_net_asset_rate.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-09-11"
+    },
+    {
+      "code": "HC-P-012",
+      "layer": "L2",
+      "target": "data/fred_raw.json",
+      "status": "PASS",
+      "detail": "线上与仓库语义一致 as_of=2026-04-01"
+    },
+    {
+      "code": "HC-P-P01",
+      "layer": "L2",
+      "target": "index.html",
+      "status": "PASS",
+      "detail": "HTTP 200 · 7413B"
+    },
+    {
+      "code": "HC-P-P02",
+      "layer": "L2",
+      "target": "stock_dashboard.html",
+      "status": "PASS",
+      "detail": "HTTP 200 · 323128B"
+    },
+    {
+      "code": "HC-P-P03",
+      "layer": "L2",
+      "target": "macro-econ-dashboard/index.html",
+      "status": "PASS",
+      "detail": "HTTP 200 · 5448B"
+    },
+    {
+      "code": "HC-R-stock-err",
+      "layer": "L3",
+      "target": "stock",
+      "status": "PASS",
+      "detail": "Console 真实错误 0 个"
+    },
+    {
+      "code": "HC-R-stock-usdcny-value",
+      "layer": "L3",
+      "target": "USDCNY",
+      "status": "PASS",
+      "detail": "页面 6.676 ≈ 源 6.676",
+      "extra": {
+        "shown": 6.676,
+        "source": 6.676
+      }
+    },
+    {
+      "code": "HC-R-stock-ust10y-value",
+      "layer": "L3",
+      "target": "美债10Y",
+      "status": "PASS",
+      "detail": "页面 4.88 ≈ 源 4.88",
+      "extra": {
+        "shown": 4.88,
+        "source": 4.88
+      }
+    },
+    {
+      "code": "HC-R-stock-fed-rate-value",
+      "layer": "L3",
+      "target": "联邦基金利率",
+      "status": "PASS",
+      "detail": "页面 3.88 ≈ 源 3.88",
+      "extra": {
+        "shown": 3.88,
+        "source": 3.88
+      }
+    },
+    {
+      "code": "HC-R-stock-break-net-rate-value",
+      "layer": "L3",
+      "target": "破净率",
+      "status": "PASS",
+      "detail": "页面 9.2 ≈ 源 9.2",
+      "extra": {
+        "shown": 9.2,
+        "source": 9.2
+      }
+    },
+    {
+      "code": "HC-R-stock-dividend-spread-value",
+      "layer": "L3",
+      "target": "股息率利差",
+      "status": "PASS",
+      "detail": "页面 3.01 ≈ 源 3.01",
+      "extra": {
+        "shown": 3.01,
+        "source": 3.01
+      }
+    },
+    {
+      "code": "HC-R-stock-badge",
+      "layer": "L3",
+      "target": "stock",
+      "status": "PASS",
+      "detail": "检查 0 个徽标",
+      "extra": {
+        "badges": 0,
+        "stale": [],
+        "lag1": []
+      }
+    },
+    {
+      "code": "HC-R-stock-mock",
+      "layer": "L3",
+      "target": "stock",
+      "status": "PASS",
+      "detail": "无 mock 残留"
+    },
+    {
+      "code": "HC-R-stock-ph",
+      "layer": "L3",
+      "target": "stock",
+      "status": "PASS",
+      "detail": "占位符 1 处"
+    },
+    {
+      "code": "HC-R-stock-raw",
+      "layer": "L3",
+      "target": "stock",
+      "status": "WARN",
+      "detail": "裸露英文标识符 1 个：['timing_scores']",
+      "extra": {
+        "tokens": [
+          "timing_scores"
+        ]
+      }
+    },
+    {
+      "code": "HC-R-cycle_global-err",
+      "layer": "L3",
+      "target": "cycle_global",
+      "status": "PASS",
+      "detail": "Console 真实错误 0 个"
+    },
+    {
+      "code": "HC-R-cycle_global-badge",
+      "layer": "L3",
+      "target": "cycle_global",
+      "status": "WARN",
+      "detail": "检查 28 个徽标；落后 1 个周期 3 处（待复核是否应更新）：[('2026-06-30 | 季频 | ✅最新', 135, 120), ('2026-06-30 | 季频 | ✅最新', 135, 120), ('2026-06-30 | 季频 | ✅最新', 135, 120)]",
+      "extra": {
+        "badges": 28,
+        "stale": [],
+        "lag1": [
+          [
+            "2026-06-30 | 季频 | ✅最新",
+            135,
+            120
+          ],
+          [
+            "2026-06-30 | 季频 | ✅最新",
+            135,
+            120
+          ],
+          [
+            "2026-06-30 | 季频 | ✅最新",
+            135,
+            120
+          ]
+        ]
+      }
+    },
+    {
+      "code": "HC-R-cycle_global-mock",
+      "layer": "L3",
+      "target": "cycle_global",
+      "status": "PASS",
+      "detail": "无 mock 残留"
+    },
+    {
+      "code": "HC-R-cycle_global-ph",
+      "layer": "L3",
+      "target": "cycle_global",
+      "status": "WARN",
+      "detail": "占位符 5 处"
+    },
+    {
+      "code": "HC-R-cycle_global-raw",
+      "layer": "L3",
+      "target": "cycle_global",
+      "status": "PASS",
+      "detail": "裸露英文标识符 0 个",
+      "extra": {
+        "tokens": []
+      }
+    },
+    {
+      "code": "HC-R-macro_econ-err",
+      "layer": "L3",
+      "target": "macro_econ",
+      "status": "PASS",
+      "detail": "Console 真实错误 0 个"
+    },
+    {
+      "code": "HC-R-macro_econ-badge",
+      "layer": "L3",
+      "target": "macro_econ",
+      "status": "PASS",
+      "detail": "检查 28 个徽标",
+      "extra": {
+        "badges": 28,
+        "stale": [],
+        "lag1": []
+      }
+    },
+    {
+      "code": "HC-R-macro_econ-mock",
+      "layer": "L3",
+      "target": "macro_econ",
+      "status": "PASS",
+      "detail": "无 mock 残留"
+    },
+    {
+      "code": "HC-R-macro_econ-ph",
+      "layer": "L3",
+      "target": "macro_econ",
+      "status": "PASS",
+      "detail": "占位符 0 处"
+    },
+    {
+      "code": "HC-R-macro_econ-raw",
+      "layer": "L3",
+      "target": "macro_econ",
+      "status": "WARN",
+      "detail": "裸露英文标识符 1 个：['fai_yoy_cum']",
+      "extra": {
+        "tokens": [
+          "fai_yoy_cum"
+        ]
+      }
+    }
+  ]
+}
