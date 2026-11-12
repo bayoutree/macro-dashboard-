@@ -15,9 +15,9 @@ on:
         required: false
         default: ""
       serve_local:
-        description: "呈现层打本地静态服务（true=避开线上发布延迟）"
+        description: "呈现层打本地静态服务（默认 false=巡检线上真实页面；true 仅用于发布前预检）"
         required: false
-        default: "true"
+        default: "false"
       strict:
         description: "严格模式：任何 STALE/GAP 均判 FAIL"
         required: false

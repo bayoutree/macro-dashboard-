@@ -628,6 +628,7 @@ def layer_render(root: Path, base: str, registry: dict, results: list, coverage:
             except Exception:
                 badge_texts = []
             stale_fresh = []
+            lag_fresh = []
             for t in badge_texts:
                 if "最新" not in t:
                     continue
@@ -646,12 +647,18 @@ def layer_render(root: Path, base: str, registry: dict, results: list, coverage:
                         limit = lim
                         break
                 if days > limit:
-                    stale_fresh.append((t.strip()[:40], days, limit))
-            results.append(Result(f"HC-R-{name}-badge", "L3", name,
-                                  R["PASS"] if not stale_fresh else R["FAIL"],
-                                  f"检查 {badges_checked} 个徽标" if not stale_fresh else
-                                  f"「✅最新」失真 {len(stale_fresh)} 处（日期超周期）：{stale_fresh[:3]}",
-                                  {"badges": badges_checked, "stale": stale_fresh[:10]}))
+                    # 落后 1 个周期内 = WARN（发布窗口/口径边界）；超 2 个周期 = 真失真 FAIL
+                    (stale_fresh if days > 2 * limit else lag_fresh).append(
+                        (t.strip()[:40], days, limit))
+            st = R["PASS"] if not stale_fresh and not lag_fresh else (R["FAIL"] if stale_fresh else R["WARN"])
+            det = f"检查 {badges_checked} 个徽标"
+            if stale_fresh:
+                det += f"；「✅最新」真失真 {len(stale_fresh)} 处（超 2 个周期）：{stale_fresh[:3]}"
+            if lag_fresh:
+                det += f"；落后 1 个周期 {len(lag_fresh)} 处（待复核是否应更新）：{lag_fresh[:3]}"
+            results.append(Result(f"HC-R-{name}-badge", "L3", name, st, det,
+                                  {"badges": badges_checked,
+                                   "stale": stale_fresh[:10], "lag1": lag_fresh[:10]}))
 
             # 3d mock 兜底静默生效
             markers = [t for t in registry["mock_markers"]["tokens"] if t in body_text]
