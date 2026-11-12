@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-11-11",
+  "update_date": "2026-11-12",
   "version": "v4.1",
   "composite_score": 50.4,
   "stage": "C",
@@ -1030,7 +1030,7 @@
           ],
           "_history_meta": {
             "source": "ak.stock_index_pe_lg 月频全量 expanding 分位（接口月频化后 V22-3 续点）",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           },
           "frequency": "monthly"
         },
@@ -2012,7 +2012,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "buffett_ratio": {
@@ -2508,14 +2508,14 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.7,
+          "value": 9.2,
           "unit": "%",
-          "score": 40,
+          "score": 35,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3004,8 +3004,10 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
-          }
+            "synced_at": "2026-11-12"
+          },
+          "data_source": "sina",
+          "collect_time": "2026-11-12T08:13:50"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -3238,7 +3240,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "interest_rate": {
@@ -3718,7 +3720,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "fed_policy": {
@@ -4908,7 +4910,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "wanda_erp": {
@@ -5934,7 +5936,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "dividend_bond_spread_hs300": {
@@ -6429,7 +6431,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-11"
+            "synced_at": "2026-11-12"
           }
         },
         "cn_us_spread": {
@@ -67283,7 +67285,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "44.69%",
+          "value": "47.27%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -67308,18 +67310,20 @@
               "value": 44.39
             },
             {
-              "date": "2026-11-11",
-              "value": 44.69
+              "date": "2026-11-12",
+              "value": 47.27
             }
           ],
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "sina",
+          "collect_time": "2026-11-12T08:13:50"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -69247,7 +69251,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-11-12T08:13:50"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

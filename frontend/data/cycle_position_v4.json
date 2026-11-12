@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T00:03:10+08:00",
+    "update_time": "2026-11-12T16:12:23+08:00",
     "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T15:58:26+08:00"
+    "v4_built_at": "2026-11-12T08:12:23+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -4226,7 +4226,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "monthly",
             "history": [
               {
@@ -6344,7 +6344,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -19030,7 +19030,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -31806,7 +31806,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -44520,7 +44520,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -52215,7 +52215,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "history": [
               {
                 "date": "2015-01-01",
