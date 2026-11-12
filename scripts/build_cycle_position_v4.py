@@ -727,6 +727,63 @@ MONTHLY_META = {
 }
 
 # 元组: (层, side, 指标键, 源类型, 源路径, 除数换算 or None)
+# [2026-11-12] 全站 source 扫描补遗：25 个指标节点缺 source。
+# 只补叶子指标，容器节点（层/side/indicators 中间层）不写 source。
+_SOURCE_BACKFILL = {
+    "tfp_growth": ("全要素生产率增速（%），手工汇编：美国=Conference Board TFP 年度增速，"
+                   "中国=统计局/学界 TFP 测算。年频，来源分散需人工核对，非自动采集。"),
+    "productivity_growth": ("劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。"),
+    "income_inequality": ("基尼系数（0-1），手工汇编：美国= Census/World Bank，中国= 统计局。"
+                          "发布不规律（中国 2 年一更、美国 1 年一更），故 last_updated 常显著早于构建日。"),
+    "cn_savings_rate": ("国民储蓄率（%），统计局资金流量表（年频，滞后约 18 个月）。"),
+    "breakeven_inflation": "FRED T30YIEM / T10YIE（通胀预期，日频）",
+    "real_rate_forward": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
+    "term_premium": "FRED ACMTP10（ACM 10 年期期限溢价，日频）",
+    "cn_tfp_trend": ("中国 TFP 趋势项，手工汇编：由统计局年度资本/劳动/产出数据测算。"),
+    "yield_curve_2s10s": "FRED T10Y2Y（10Y-2Y 利差，日频）",
+    "credit_spread_ig": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
+    "realized_volatility": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
+    "cn_real_rate": "中国实际利率，统计局 CPI + 政策利率手工计算（月频）",
+    "key_ratio": ("佩雷斯技术周期关键比率（手工汇编年频，滚动更新；"
+                  "年内未结束，故 last_updated 保留年份语义而非 12-31）"),
+    "high_rate_tracker": ("高利率跟踪派生序列：由 constraint_rate_regime 的 "
+                          "real_rate_forward / term_premium / breakeven_inflation 映射生成，"
+                          "非独立采集源。"),
+    "narrative_kondratieff": ("康德拉季耶夫长波层：综合评分序列，由层内 tfp_growth / "
+                              "技术扩散等分项加权派生，非独立采集源。"),
+}
+
+
+def _backfill_sources(layers):
+    """给缺 source 的叶子指标补来源说明，容器节点跳过。"""
+    filled = []
+
+    def _scan(node, path):
+        if isinstance(node, dict):
+            h = node.get("history")
+            # 叶子指标的键名：多数挂在 <name>/us 或 <name>/cn 下，
+            # 故 side 段要跳过，取真正的指标名段。
+            _segs = [x for x in path.split("/") if x and x not in
+                     ("cycle_layers", "indicators", "us", "cn", "eu")]
+            nm = _segs[-1] if _segs else path.split("/")[-1]
+            if isinstance(h, list) and h and isinstance(h[-1], dict) \
+               and node.get("frequency") and not node.get("source"):
+                txt = _SOURCE_BACKFILL.get(nm)
+                if txt:
+                    node["source"] = txt
+                    node["source_backfilled"] = "2026-11-12 全站 source 扫描"
+                    filled.append(nm)
+            for k, v in node.items():
+                if isinstance(v, (dict, list)):
+                    _scan(v, path + "/" + k)
+        elif isinstance(node, list):
+            for v in node:
+                _scan(v, path)
+
+    _scan(layers, "")
+    return filled
+
+
 UPSTREAM_REFRESH = [
     ("cycle_merrill_3d", "us", "core_cpi", "ind", ["us", "validation", "lagging", "core_cpi"], None),
     ("cycle_merrill_3d", "cn", "cn_cpi", "ind", ["china", "validation", "lagging", "cpi"], None),
@@ -1545,6 +1602,9 @@ def build():
         for _x in _lu_fixed[:12]:
             print("    " + _x)
 
+    _src_filled = _backfill_sources(out)
+    if _src_filled:
+        print(f"⚠ source 补遗：{len(_src_filled)} 个叶子指标补上来源说明")
     _slope_bad = _assert_no_slope_across_gap(out["cycle_layers"])
     if _slope_bad:
         print("❌ 断档指标出现斜率字段（CIO 2026-11-12 裁决禁止）：" + ", ".join(_slope_bad))

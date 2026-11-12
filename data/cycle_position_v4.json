@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T17:48:22+08:00"
+    "v4_built_at": "2026-11-12T21:29:51+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2404,7 +2404,9 @@
                 "value": 0.8
               }
             ],
-            "frequency": "annual"
+            "frequency": "annual",
+            "source": "全要素生产率增速（%），手工汇编：美国=Conference Board TFP 年度增速，中国=统计局/学界 TFP 测算。年频，来源分散需人工核对，非自动采集。",
+            "source_backfilled": "2026-11-12 全站 source 扫描"
           },
           "cn": {
             "current": 1.2,
@@ -2474,7 +2476,9 @@
                 "value": 1.2
               }
             ],
-            "frequency": "annual"
+            "frequency": "annual",
+            "source": "全要素生产率增速（%），手工汇编：美国=Conference Board TFP 年度增速，中国=统计局/学界 TFP 测算。年频，来源分散需人工核对，非自动采集。",
+            "source_backfilled": "2026-11-12 全站 source 扫描"
           },
           "frequency": "annual",
           "source_url": "https://www.rug.nl/ggdc/productivity/pwt/",
@@ -2733,7 +2737,9 @@
         "cross_validation": "与P2基钦被动去库阶段交叉验证：库存下降+需求上升，支持商品温和上涨。但ISM价格指数71.1偏高，短期存在回调风险。",
         "historical_reference": "周金涛2007年预判：康波回升期大宗商品先于经济触底，第三轮康波(1990s)和中国工业化推动的大宗商品超级周期(2000s)"
       },
-      "current": null
+      "current": null,
+      "source": "康德拉季耶夫长波层：综合评分序列，由层内 tfp_growth / 技术扩散等分项加权派生，非独立采集源。",
+      "source_backfilled": "2026-11-12 全站 source 扫描"
     },
     "narrative_perez": {
       "name": "佩雷斯（技术革命周期）",
@@ -2834,7 +2840,9 @@
         "frequency": "annual",
         "current": 2.8,
         "last_updated": "2026",
-        "caliber": "人工汇编·年频（全球 VC/PE 年度融资额 ÷ 全球制造业/基建年度资本形成额）；非自动采集，更新随年报发布"
+        "caliber": "人工汇编·年频（全球 VC/PE 年度融资额 ÷ 全球制造业/基建年度资本形成额）；非自动采集，更新随年报发布",
+        "source": "佩雷斯技术周期关键比率（手工汇编年频，滚动更新；年内未结束，故 last_updated 保留年份语义而非 12-31）",
+        "source_backfilled": "2026-11-12 全站 source 扫描"
       },
       "indicators": {
         "vc_pe_funding": {
@@ -2931,7 +2939,9 @@
                 }
               ],
               "frequency": "quarterly",
-              "description": "US nonfarm business sector labor productivity growth (BLS)"
+              "description": "US nonfarm business sector labor productivity growth (BLS)",
+              "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "cn": {
               "current": 5.5,
@@ -3220,7 +3230,9 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2024-12-31"
+              "last_updated": "2024-12-31",
+              "source": "基尼系数（0-1），手工汇编：美国= Census/World Bank，中国= 统计局。发布不规律（中国 2 年一更、美国 1 年一更），故 last_updated 常显著早于构建日。",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "cn": {
               "current": 0.36,
@@ -3320,7 +3332,9 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2022-12-31"
+              "last_updated": "2022-12-31",
+              "source": "基尼系数（0-1），手工汇编：美国= Census/World Bank，中国= 统计局。发布不规律（中国 2 年一更、美国 1 年一更），故 last_updated 常显著早于构建日。",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -3372,7 +3386,9 @@
                   "value": -3.2
                 }
               ],
-              "frequency": "annual"
+              "frequency": "annual",
+              "source": "国民储蓄率（%），统计局资金流量表（年频，滞后约 18 个月）。",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "储蓄-投资差额占GDP比重，反映国内资金供需缺口",
             "last_updated": "2026",
@@ -4218,7 +4234,9 @@
                   "value": 2.34
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED T30YIEM / T10YIE（通胀预期，日频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "cn": {
               "current": 2.1,
@@ -6341,7 +6359,9 @@
                   "value": 2.44
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
             "last_updated": "2026-11-09",
@@ -19027,7 +19047,9 @@
                   "value": 0.8751
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED ACMTP10（ACM 10 年期期限溢价，日频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
             "last_updated": "2026-11-06",
@@ -30957,7 +30979,9 @@
                   "value": 3.8
                 }
               ],
-              "frequency": "annual"
+              "frequency": "annual",
+              "source": "中国 TFP 趋势项，手工汇编：由统计局年度资本/劳动/产出数据测算。",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "全要素生产率增速，反映长期增长潜力",
             "last_updated": "2026",
@@ -31803,7 +31827,9 @@
                   "value": 0.4
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED T10Y2Y（10Y-2Y 利差，日频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
             "last_updated": "2026-11-10",
@@ -44517,7 +44543,9 @@
                   "value": 3.5722
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
             "last_updated": "2026-11-09",
@@ -48512,7 +48540,9 @@
                   "value": 15.2
                 }
               ],
-              "frequency": "daily"
+              "frequency": "daily",
+              "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
             "last_updated": "2026-11-11",
@@ -49554,7 +49584,9 @@
                   "value": 0.5
                 }
               ],
-              "frequency": "monthly"
+              "frequency": "monthly",
+              "source": "中国实际利率，统计局 CPI + 政策利率手工计算（月频）",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
             "last_updated": "2026-10-31",
@@ -54668,7 +54700,9 @@
               "date": "2024",
               "value": 0.43
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "美国利息/财政收入",
@@ -55955,7 +55989,9 @@
               "date": "2026Q2",
               "value": 33.55
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "TFP 5年均值",
@@ -56214,7 +56250,9 @@
               "date": "2019",
               "value": 0.66
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "ECI 5年均值",
@@ -56329,7 +56367,9 @@
               "date": "2024",
               "value": -2.71
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "5Y-5Y远期实际利率",
@@ -68224,7 +68264,9 @@
               "date": "2026-11-09",
               "value": 2.66
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "ACM期限溢价",
@@ -80115,7 +80157,9 @@
               "date": "2026-11-06",
               "value": 0.8738
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "30Y盈亏平衡通胀",
@@ -81442,7 +81486,9 @@
               "date": "2026-10-01",
               "value": 2.27
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "高收益债利差",
@@ -84625,7 +84671,9 @@
               "date": "2026-11-09",
               "value": 0.91
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         },
         {
           "name": "核心PCE",
@@ -87844,7 +87892,9 @@
               "date": "2026-09",
               "value": 3.12
             }
-          ]
+          ],
+          "source": "高利率跟踪派生序列：由 constraint_rate_regime 的 real_rate_forward / term_premium / breakeven_inflation 映射生成，非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
         }
       ],
       "structural_breached": 3,
