@@ -1,7 +1,7 @@
 {
   "update_date": "2026-11-12",
   "version": "v4.1",
-  "composite_score": 50.7,
+  "composite_score": 50.5,
   "stage": "C",
   "position_range": "32%",
   "market_status": "中性偏贪婪，逐步兑现",
@@ -2515,7 +2515,7 @@
           "name": "破净率",
           "value": 9.2,
           "unit": "%",
-          "score": 35,
+          "score": 40,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -3005,13 +3005,11 @@
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-12"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-12T16:50:49"
+          }
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
-          "value": 34.97,
+          "value": 34.34,
           "unit": "倍",
           "score": null,
           "sub_weight": 0,
@@ -3080,7 +3078,7 @@
             },
             {
               "date": "2026-11-12",
-              "value": 34.97
+              "value": 34.34
             }
           ],
           "_history_meta": {
@@ -4923,7 +4921,7 @@
         },
         "wanda_erp": {
           "name": "中证800 ERP ★主指标（全A代理）",
-          "value": "5.66%",
+          "value": "5.68%",
           "percentile": "46.9%",
           "score": 20,
           "sub_weight": 40,
@@ -6444,7 +6442,7 @@
         },
         "cn_us_spread": {
           "name": "中美双视角利差",
-          "value": "分歧",
+          "value": "A股更便宜",
           "score": 35,
           "sub_weight": 20,
           "bottom_signal": "内外资均认为便宜",
@@ -39527,7 +39525,7 @@
           "week_change": "-9亿",
           "score": 50,
           "sub_weight": 0,
-          "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
+          "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向｜源暂断·继承上期",
           "as_of": "2026-11-11",
           "freq": "日频",
           "history": [
@@ -40532,7 +40530,8 @@
               "value": 11767.0
             }
           ],
-          "description": "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。"
+          "description": "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。",
+          "stale_inherited": true
         },
         "new_fund": {
           "name": "新发基金热度",
@@ -41268,9 +41267,9 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 59.2,
+      "score": 57.6,
       "weight": 16,
-      "weighted_score": 9.47,
+      "weighted_score": 9.22,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
@@ -52333,6 +52332,10 @@
             {
               "date": "2026-11-11",
               "value": 99.21
+            },
+            {
+              "date": "2026-11-12",
+              "value": 94.44
             }
           ],
           "ssot_source": "data/feargreed_pointer.json#score"
@@ -67345,13 +67348,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-12T16:50:49"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -69279,9 +69280,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-12T16:50:49"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -72303,7 +72302,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数>85且QVIX<14(极度贪婪)",
         "stars": 4,
-        "active": true
+        "active": false
       },
       {
         "dimension": "市场情绪",
@@ -72363,7 +72362,7 @@
       },
       {
         "condition": "恐贪指数>85且QVIX<14(极度贪婪双确认)",
-        "met": true
+        "met": false
       },
       {
         "condition": "社融增速进一步下行",
@@ -72451,7 +72450,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": 1.4,
+    "weekly_change": 3.7,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -72501,14 +72500,14 @@
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": 0.8,
+        "cnh_cny_spread_latest_bp": 3.5,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 +1bp（阈值：单日>70bp 或 连续5日>40bp）；序列 12 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 +4bp（阈值：单日>70bp 或 连续5日>40bp）；序列 13 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {

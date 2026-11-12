@@ -9282,14 +9282,14 @@
   },
   {
     "date": "2026-11-12",
-    "composite_score": 50.7,
+    "composite_score": 50.5,
     "stage": "C",
     "dimensions": {
       "valuation": 49.6,
       "liquidity": 42.2,
       "equity_bond": 31.0,
       "capital_flow": 72.5,
-      "sentiment": 59.2,
+      "sentiment": 57.6,
       "micro_structure": 53.4
     },
     "triggers": {
@@ -9301,7 +9301,7 @@
       },
       "reduce_position": {
         "两融占比突破3.5%": false,
-        "恐贪指数>85且QVIX<14(极度贪婪双确认)": true,
+        "恐贪指数>85且QVIX<14(极度贪婪双确认)": false,
         "社融增速进一步下行": false,
         "美联储重启加息": true,
         "股息率-国债利差(沪深300)降至0.3%以下": false
@@ -9345,7 +9345,7 @@
       "current": "normal",
       "since": null,
       "target_equity": null,
-      "weekly_change": 1.4,
+      "weekly_change": 3.7,
       "trigger_reason": ""
     },
     "trend_state": {
