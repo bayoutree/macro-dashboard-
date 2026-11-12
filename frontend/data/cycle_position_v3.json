@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T16:12:23+08:00",
+    "update_time": "2026-11-12T16:24:51+08:00",
     "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -50158,16 +50158,16 @@
           "industrial_capacity_utilization": {
             "name": "工业产能利用率",
             "source": "国家统计局季度规模以上工业产能利用率新闻稿（逐点人工核验）",
-            "current": 73.0,
+            "current": 73.1,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-06-30",
+            "last_updated": "2026-09-30",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
               "critical": 78
             },
-            "source_url": "https://www.stats.gov.cn/sj/zxfb/202607/t20260715_1964130.html",
+            "source_url": "https://www.stats.gov.cn/sj/zxfb/202610/t20261019_1965611.html",
             "history": [
               {
                 "date": "2017Q1",
@@ -50320,11 +50320,15 @@
               {
                 "date": "2026Q2",
                 "value": 73.0
+              },
+              {
+                "date": "2026Q3",
+                "value": 73.1
               }
             ],
             "percentile": {
-              "p25": 74.6,
-              "p50": 75.9,
+              "p25": 74.5,
+              "p50": 75.8,
               "p75": 76.8,
               "current_rank": "<=p25"
             }

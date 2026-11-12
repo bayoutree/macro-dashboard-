@@ -690,6 +690,38 @@ def _fix_credit_spread_units(layers):
 INDICATORS_JSON = DATA_DIR.parent / "macro-econ-dashboard" / "data" / "indicators.json"
 FRED_RAW_JSON = DATA_DIR / "fred_raw.json"
 NBS_RAW_JSON = DATA_DIR / "nbs_high_tech_raw.json"
+NBS_INV_JSON = DATA_DIR / "nbs_inventory_raw.json"
+
+# [CIO 2026-11-12] replace_monthly 的逐指标文案表：key 为 ind_key。
+# 有 gap_note 的指标自动写 data_gap_note + score_policy（断档禁斜率）。
+MONTHLY_META = {
+    "high_tech_manufacturing_investment": {
+        "source": ("国家统计局 固定资产投资统计司 投资数据解读稿"
+                   "（www.stats.gov.cn/sj/sjjd/，月度/季度累计同比）"),
+        "caliber": ("1—N 月累计同比（%），全国固定资产投资（不含农户）口径下的"
+                    "高技术制造业投资。注意：与「高技术产业投资」不同口径"
+                    "（后者 = 高技术制造业 + 高技术服务业），2026 年 1—9 月两者差 0.9pp。"),
+        "gap_note": ("2024-12 ~ 2026-01 共 14 个月官方未发布该口径总量增速（仅发布高技术服务业"
+                     "投资与分行业分项），属国家统计局发布口径变更，非采集缺失；2026-02 起恢复。"
+                     "断档期不做插值。"),
+        "gap_reason": "2024-12~2026-01 官方停发，跨该区间算斜率会把断档当跳变",
+    },
+    "cn_pmi_finished_goods": {
+        "source": ("国家统计局 服务业调查中心、中国物流与采购联合会"
+                   "《中国采购经理指数运行情况》（www.stats.gov.cn/sj/zxfb/，月度）"),
+        "caliber": ("制造业 PMI 分类指数之一「产成品库存」，扩散指数（经季节调整），50 为荣枯线；"
+                    ">50 表示产成品库存环比增加的企业占比更高。注意：这是环比扩散指数，"
+                    "不是同比增速，与「工业企业产成品存货同比」不同口径。"),
+        "gap_note": None,
+    },
+    "cn_inventory_cycle": {
+        "source": ("国家统计局《全国规模以上工业企业利润》月度新闻稿"
+                   "（www.stats.gov.cn/sj/zxfb/，规模以上工业企业产成品存货）"),
+        "caliber": ("规模以上工业企业产成品存货同比增速（%），名义值、未剔除价格因素。"
+                    "与 PMI 产成品库存扩散指数不同口径。"),
+        "gap_note": None,
+    },
+}
 
 # 元组: (层, side, 指标键, 源类型, 源路径, 除数换算 or None)
 UPSTREAM_REFRESH = [
@@ -719,6 +751,7 @@ UPSTREAM_REFRESH = [
     # ---- [CIO 2026-11-12 ⑤ 方案 A] 高技术制造业投资：NBS 解读稿解析的月度累计同比整段重建 ----
     # 层内原为 3 个年度桩点（11.8/12.0/12.5，与官方年度值 22.2/9.9/7.0 无法调和），故整体替换。
     ("cycle_juglar", "cn", "high_tech_manufacturing_investment", "nbs", ["high_tech_mfg"], None, "replace_monthly"),
+    ("cycle_kitchin", "cn", "cn_pmi_finished_goods", "nbs_inv", ["pmi_finished_goods"], None, "replace_monthly"),
 ]
 
 
@@ -797,9 +830,11 @@ def refresh_indicators_from_upstream(layers):
             _node = _dig(_doc, path[1:]) if len(path) > 1 else _doc
             src_hist = [h for h in (_node or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
-        elif src_kind == "nbs":
-            # [CIO 2026-11-12 ⑤] data/nbs_high_tech_raw.json 由 fetch_nbs_high_tech.py 生成
-            _nd = load_json(NBS_RAW_JSON) if NBS_RAW_JSON.exists() else {}
+        elif src_kind in ("nbs", "nbs_inv"):
+            # [CIO 2026-11-12 ⑤] nbs: data/nbs_high_tech_raw.json（fetch_nbs_high_tech.py）
+            # [CIO 2026-11-12 ①] nbs_inv: data/nbs_inventory_raw.json（fetch_nbs_inventory.py）
+            _np = NBS_RAW_JSON if src_kind == "nbs" else NBS_INV_JSON
+            _nd = load_json(_np) if _np.exists() else {}
             src_hist = [h for h in ((_nd.get("series") or {}).get(path[0]) or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
         else:  # fred_raw
@@ -841,23 +876,24 @@ def refresh_indicators_from_upstream(layers):
                 node["last_updated"] = _month_end(_t["date"])
                 node["frequency"] = "monthly"
                 node["unit"] = "%"
-                node["source"] = ("国家统计局 固定资产投资统计司 投资数据解读稿"
-                                  "（www.stats.gov.cn/sj/sjjd/，月度/季度累计同比）")
-                node["caliber"] = ("1—N 月累计同比（%），全国固定资产投资（不含农户）口径下的"
-                                   "高技术制造业投资。注意：与「高技术产业投资」不同口径"
-                                   "（后者 = 高技术制造业 + 高技术服务业），2026 年 1—9 月两者差 0.9pp。")
-                node["data_gap_note"] = (
-                    "2024-12 ~ 2026-01 共 14 个月官方未发布该口径总量增速（仅发布高技术服务业"
-                    "投资与分行业分项），属国家统计局发布口径变更，非采集缺失；2026-02 起恢复。"
-                    "断档期不做插值。")
-                # [CIO 2026-11-12 口径裁决] 断档期禁做趋势外推：
-                # 层内打分只允许用 percentile（值分布，与时间连续性无关），
-                # 禁止跨断档区间计算斜率/动量/环比，否则会把 14 个月空洞当成真实跳变。
-                node["score_policy"] = {
-                    "mode": "percentile_only",
-                    "slope_across_gap": "forbidden",
-                    "reason": "2024-12~2026-01 官方停发，跨该区间算斜率会把断档当跳变",
-                }
+                _meta = MONTHLY_META.get(ind_key) or {}
+                if _meta.get("source"):
+                    node["source"] = _meta["source"]
+                if _meta.get("caliber"):
+                    node["caliber"] = _meta["caliber"]
+                if _meta.get("gap_note"):
+                    node["data_gap_note"] = _meta["gap_note"]
+                    # [CIO 2026-11-12 口径裁决] 断档期禁做趋势外推：
+                    # 层内打分只允许用 percentile（值分布，与时间连续性无关），
+                    # 禁止跨断档区间计算斜率/动量/环比，否则会把空洞当成真实跳变。
+                    node["score_policy"] = {
+                        "mode": "percentile_only",
+                        "slope_across_gap": "forbidden",
+                        "reason": _meta.get("gap_reason") or "官方停发，跨该区间算斜率会把断档当跳变",
+                    }
+                else:
+                    node.pop("data_gap_note", None)
+                    node.pop("score_policy", None)
                 node["current_nulled"] = None
                 _pb = percentile_bands(node["history"])
                 if _pb:
@@ -1088,8 +1124,6 @@ def _fix_high_rate_tracker_history(v4_data):
 _STUB_TOL = {"daily": 0.5, "weekly": 1.0, "monthly": 2.2, "quarterly": 5.5, "annual": 20.0}
 
 STUB_REGISTRY = {
-    "cycle_kitchin/cn/indicators/cn_pmi_finished_goods": ("stub",
-        "静态桩值：history 尾点 2026-01=46.8，current 却标 2026-08-31；从未灌过 2026 年数据，非「停在 8 月」而是从未更新。NBS 分项无源，CIO 已批 A 路补采（P1，截止 11-15）。"),
     "cycle_kitchin/cn/indicators/cn_inventory_cycle": ("stub",
         "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"),
     "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp": ("stub",

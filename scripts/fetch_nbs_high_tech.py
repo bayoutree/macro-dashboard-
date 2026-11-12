@@ -37,7 +37,7 @@ DATA_DIR = ROOT / "data"
 OUT = DATA_DIR / "nbs_high_tech_raw.json"
 BASE = "https://www.stats.gov.cn/sj/sjjd/"
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-MAX_PAGES = 80
+MAX_PAGES = 70
 
 PAT_MFG_YOY = re.compile(r"高技术制造业投资[^。；]{0,30}?同比(增长|下降|回落|减少)\s*([\d.]+)%")
 PAT_MFG_ANN = re.compile(r"高技术制造业投资[^。；]{0,20}?比上年(增长|下降)\s*([\d.]+)%")
@@ -53,7 +53,7 @@ _UA_STR = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
            "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
 
 
-def _get(url, tries=4):
+def _get(url, tries=2):
     """抓取页面。
 
     NBS 有 WAF：无 cookie 的裸请求会被下发「Please enable JavaScript」挑战页
@@ -168,9 +168,14 @@ def crawl_index():
                 continue
             seen.add(k)
             rows.append({"u": k, "ym": m.group(2), "d": m.group(3), "t": m.group(4).strip()})
-        if len(rows) == n0 and p > 5:
-            break
-        time.sleep(0.35)
+        # 连续 2 页无新增即停（WAF 抖动时不要跑满重试，否则 CI 20 分钟预算被吃光）
+        if len(rows) == n0:
+            _empty += 1
+            if _empty >= 2:
+                break
+        else:
+            _empty = 0
+        time.sleep(0.3)
     return rows
 
 

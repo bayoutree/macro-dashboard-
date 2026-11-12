@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T16:12:23+08:00",
+    "update_time": "2026-11-12T16:24:51+08:00",
     "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T08:12:23+08:00"
+    "v4_built_at": "2026-11-12T16:24:56+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -50469,16 +50469,16 @@
           "industrial_capacity_utilization": {
             "name": "工业产能利用率",
             "source": "国家统计局季度规模以上工业产能利用率新闻稿（逐点人工核验）",
-            "current": 73.0,
+            "current": 73.1,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-06-30",
+            "last_updated": "2026-09-30",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,
               "critical": 78
             },
-            "source_url": "https://www.stats.gov.cn/sj/zxfb/202607/t20260715_1964130.html",
+            "source_url": "https://www.stats.gov.cn/sj/zxfb/202610/t20261019_1965611.html",
             "history": [
               {
                 "date": "2017Q1",
@@ -50631,11 +50631,15 @@
               {
                 "date": "2026Q2",
                 "value": 73.0
+              },
+              {
+                "date": "2026Q3",
+                "value": 73.1
               }
             ],
             "percentile": {
-              "p25": 74.6,
-              "p50": 75.9,
+              "p25": 74.5,
+              "p50": 75.8,
               "p75": 76.8,
               "current_rank": "<=p25"
             }
@@ -51924,7 +51928,7 @@
           },
           "cn_pmi_finished_goods": {
             "name": "PMI产成品库存",
-            "source": "NBS",
+            "source": "国家统计局 服务业调查中心、中国物流与采购联合会《中国采购经理指数运行情况》（www.stats.gov.cn/sj/zxfb/，月度）",
             "cn": {
               "current": 46.8,
               "unit": "",
@@ -51984,9 +51988,214 @@
               ]
             },
             "description": "PMI产成品库存分项，<50=库存收缩",
-            "last_updated": "2026-08-31",
+            "last_updated": "2026-10-31",
             "frequency": "monthly",
             "history": [
+              {
+                "date": "2022-10",
+                "value": 48.0
+              },
+              {
+                "date": "2022-11",
+                "value": 48.1
+              },
+              {
+                "date": "2022-12",
+                "value": 46.6
+              },
+              {
+                "date": "2023-01",
+                "value": 47.2
+              },
+              {
+                "date": "2023-02",
+                "value": 50.6
+              },
+              {
+                "date": "2023-03",
+                "value": 49.5
+              },
+              {
+                "date": "2023-04",
+                "value": 49.4
+              },
+              {
+                "date": "2023-05",
+                "value": 48.9
+              },
+              {
+                "date": "2023-06",
+                "value": 46.1
+              },
+              {
+                "date": "2023-07",
+                "value": 46.3
+              },
+              {
+                "date": "2023-08",
+                "value": 47.2
+              },
+              {
+                "date": "2023-09",
+                "value": 46.7
+              },
+              {
+                "date": "2023-10",
+                "value": 48.5
+              },
+              {
+                "date": "2023-11",
+                "value": 48.2
+              },
+              {
+                "date": "2023-12",
+                "value": 47.8
+              },
+              {
+                "date": "2024-01",
+                "value": 49.4
+              },
+              {
+                "date": "2024-02",
+                "value": 47.9
+              },
+              {
+                "date": "2024-03",
+                "value": 48.9
+              },
+              {
+                "date": "2024-04",
+                "value": 47.3
+              },
+              {
+                "date": "2024-05",
+                "value": 46.5
+              },
+              {
+                "date": "2024-06",
+                "value": 48.3
+              },
+              {
+                "date": "2024-07",
+                "value": 47.8
+              },
+              {
+                "date": "2024-08",
+                "value": 48.5
+              },
+              {
+                "date": "2024-09",
+                "value": 48.4
+              },
+              {
+                "date": "2024-10",
+                "value": 46.9
+              },
+              {
+                "date": "2024-11",
+                "value": 47.4
+              },
+              {
+                "date": "2024-12",
+                "value": 47.9
+              },
+              {
+                "date": "2025-01",
+                "value": 46.5
+              },
+              {
+                "date": "2025-02",
+                "value": 48.3
+              },
+              {
+                "date": "2025-03",
+                "value": 48.0
+              },
+              {
+                "date": "2025-04",
+                "value": 47.3
+              },
+              {
+                "date": "2025-05",
+                "value": 46.5
+              },
+              {
+                "date": "2025-06",
+                "value": 48.1
+              },
+              {
+                "date": "2025-07",
+                "value": 47.4
+              },
+              {
+                "date": "2025-08",
+                "value": 46.8
+              },
+              {
+                "date": "2025-09",
+                "value": 48.2
+              },
+              {
+                "date": "2025-10",
+                "value": 48.1
+              },
+              {
+                "date": "2025-11",
+                "value": 47.3
+              },
+              {
+                "date": "2025-12",
+                "value": 48.2
+              },
+              {
+                "date": "2026-01",
+                "value": 48.6
+              },
+              {
+                "date": "2026-02",
+                "value": 45.8
+              },
+              {
+                "date": "2026-03",
+                "value": 46.7
+              },
+              {
+                "date": "2026-04",
+                "value": 47.5
+              },
+              {
+                "date": "2026-05",
+                "value": 49.3
+              },
+              {
+                "date": "2026-06",
+                "value": 47.7
+              },
+              {
+                "date": "2026-07",
+                "value": 48.6
+              },
+              {
+                "date": "2026-08",
+                "value": 48.4
+              },
+              {
+                "date": "2026-09",
+                "value": 47.6
+              },
+              {
+                "date": "2026-10",
+                "value": 47.5
+              }
+            ],
+            "percentile": {
+              "p25": 47.2,
+              "p50": 47.9,
+              "p75": 48.4,
+              "current_rank": "p25-p50"
+            },
+            "current": 47.5,
+            "history_legacy_stub": [
               {
                 "date": "2020-01",
                 "value": 46.2
@@ -52040,24 +52249,9 @@
                 "value": 46.8
               }
             ],
-            "percentile": {
-              "p25": 46.0,
-              "p50": 46.8,
-              "p75": 47.8,
-              "current_rank": "p50"
-            },
-            "current": 46.8,
-            "data_quality": {
-              "status": "stub",
-              "kind": "date_mismatch",
-              "tail_date": "2026-01",
-              "tail_value": 46.8,
-              "current": 46.8,
-              "last_updated": "2026-08-31",
-              "gap_months": 8.0,
-              "timestamp_faked": false,
-              "note": "静态桩值：history 尾点 2026-01=46.8，current 却标 2026-08-31；从未灌过 2026 年数据，非「停在 8 月」而是从未更新。NBS 分项无源，CIO 已批 A 路补采（P1，截止 11-15）。"
-            }
+            "unit": "%",
+            "caliber": "制造业 PMI 分类指数之一「产成品库存」，扩散指数（经季节调整），50 为荣枯线；>50 表示产成品库存环比增加的企业占比更高。注意：这是环比扩散指数，不是同比增速，与「工业企业产成品存货同比」不同口径。",
+            "current_nulled": null
           }
         }
       }
