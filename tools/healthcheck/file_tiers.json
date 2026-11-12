@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "updated": "2026-11-12",
+  "note": "数据文件分级登记。Tier A = 呈现指标，必须在 data/freshness_manifest.json 登记并受门禁；Tier B = 中间产物/派生（有下游消费者，可无 as_of，只查文件存在与可解析）；Tier C = 回测/日志/历史归档（不巡检）。未登记文件由 monthly_audit 报 UNREGISTERED（strict 下 FAIL）。",
+  "tier_b": [
+    "data/asset_prices_monthly.json",
+    "data/asset_prices_monthly_gold.json",
+    "data/asset_valuation.json",
+    "data/cn_macro_supplement.json",
+    "data/cn_macro_v2.json",
+    "data/commodity_index_monthly.json",
+    "data/cycle_position.json",
+    "data/dashboard_summary.json",
+    "data/direction_signals.json",
+    "data/fed_watch.json",
+    "data/fomc_calendar.json",
+    "data/fx_rates_em.json",
+    "data/fx_rates_sina.json",
+    "data/ism_pmi.json",
+    "data/margin_sentiment.json",
+    "data/nbs_high_tech_raw.json",
+    "data/nbs_inventory_raw.json",
+    "data/timing_history.json",
+    "data/conflict_flags.json"
+  ],
+  "tier_c": [
+    "data/composite_backtest.json",
+    "data/composite_reference_dist.json",
+    "data/cycle_position_v3.json",
+    "data/guard_margin_buying_ratio_daily_2010_2026.json",
+    "data/p2_13_backtest.json",
+    "data/p2_13_state.json",
+    "data/signal_log.json",
+    "data/v4_stub_flags.json"
+  ],
+  "ignore": [
+    "data/freshness_manifest.json"
+  ]
+}

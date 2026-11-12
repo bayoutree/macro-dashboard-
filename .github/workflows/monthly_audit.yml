@@ -1,0 +1,78 @@
+name: Monthly Data Health Audit
+
+# 看板月度数据健康巡检（制度 v1 执行体）
+# 触发：
+#   1) 每月 1 日 10:00 CST（UTC 02:00）自动跑，产出当月基线报告
+#   2) 手动 workflow_dispatch，可指定评估日与"打本地静态服务"（避开 Pages 发布延迟）
+# 产物：tools/healthcheck/output/*.json|md + screenshots/*.png，保留 90 天
+# 语义：任一门禁 FAIL → 作业红，即为"阻断"，需在 24h 内出结论
+
+on:
+  workflow_dispatch:
+    inputs:
+      eval_date:
+        description: "评估日 YYYY-MM-DD（默认今天）"
+        required: false
+        default: ""
+      serve_local:
+        description: "呈现层打本地静态服务（true=避开线上发布延迟）"
+        required: false
+        default: "true"
+      strict:
+        description: "严格模式：任何 STALE/GAP 均判 FAIL"
+        required: false
+        default: "true"
+  schedule:
+    - cron: "0 2 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install playwright
+        run: |
+          python -m pip install --quiet --upgrade pip
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run monthly audit
+        id: audit
+        continue-on-error: true
+        env:
+          EVAL_DATE: ${{ github.event.inputs.eval_date }}
+          SERVE_LOCAL: ${{ github.event.inputs.serve_local }}
+          STRICT: ${{ github.event.inputs.strict }}
+        run: |
+          ARGS=""
+          if [ -n "$EVAL_DATE" ]; then ARGS="$ARGS --eval-date $EVAL_DATE"; fi
+          if [ "$SERVE_LOCAL" != "false" ]; then ARGS="$ARGS --serve-local"; fi
+          if [ "$STRICT" != "false" ]; then ARGS="$ARGS --strict"; fi
+          echo "ARGS=$ARGS"
+          python tools/healthcheck/monthly_audit.py $ARGS | tee audit_console.log
+          echo "exit=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monthly-audit-${{ github.run_number }}
+          path: |
+            tools/healthcheck/output/
+            audit_console.log
+          retention-days: 90
+
+      - name: Gate
+        if: steps.audit.outputs.exit != '0'
+        run: |
+          echo "::error::月度巡检存在 FAIL 项（见 artifact 报告），按制度须 24h 内出结论"
+          exit 1

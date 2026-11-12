@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "updated": "2026-11-12",
+  "note": "呈现层断言登记表：页面实际显示值 ←→ 数据源值。新增卡片必须在此登记，未登记卡片不计入覆盖率，制度要求覆盖率≥已上线数值卡 60%。tolerance 为绝对容差（渲染四舍五入后允许的误差）。",
+  "pages": [
+    {
+      "name": "stock",
+      "url": "/stock_dashboard.html",
+      "title_sub": "A股",
+      "wait_ms": 6000,
+      "values": [
+        {
+          "id": "usdcny-value",
+          "label": "USDCNY",
+          "file": "data/us_macro.json",
+          "path": "history.usdcny[-1].value",
+          "tolerance": 0.0002,
+          "decimals": 4
+        },
+        {
+          "id": "ust10y-value",
+          "label": "美债10Y",
+          "file": "data/us_macro.json",
+          "path": "history.yield_10y[-1].value",
+          "tolerance": 0.011,
+          "decimals": 2,
+          "suffix": "%"
+        },
+        {
+          "id": "fed-rate-value",
+          "label": "联邦基金利率",
+          "file": "data/us_macro.json",
+          "path": "lagging.fed_funds_rate.value",
+          "tolerance": 0.011,
+          "decimals": 2,
+          "suffix": "%"
+        },
+        {
+          "id": "break-net-rate-value",
+          "label": "破净率",
+          "file": "data/timing_scores.json",
+          "path": "dimensions.valuation.indicators.break_net_rate.value",
+          "tolerance": 0.011,
+          "decimals": 2,
+          "suffix": "%"
+        },
+        {
+          "id": "dividend-spread-value",
+          "label": "股息率利差",
+          "file": "data/timing_scores.json",
+          "path": "dimensions.equity_bond.indicators.dividend_bond_spread_red.value",
+          "tolerance": 0.02,
+          "decimals": 2,
+          "suffix": "%"
+        }
+      ]
+    },
+    {
+      "name": "cycle_global",
+      "url": "/index.html",
+      "title_sub": "宏观",
+      "click": "button[data-tab=cycle]",
+      "wait_ms": 6000,
+      "values": []
+    },
+    {
+      "name": "macro_econ",
+      "url": "/macro-econ-dashboard/index.html",
+      "title_sub": "宏观",
+      "wait_ms": 6000,
+      "values": []
+    }
+  ],
+  "badge_rules": {
+    "note": "徽标失真门禁：带「✅最新」的徽标，其日期必须落在该频率的正常发布周期内，否则 FAIL。",
+    "cycle_days": {"日频": 7, "周频": 21, "月频": 60, "季频": 120, "日": 7, "周": 21, "月": 60, "季": 120}
+  },
+  "mock_markers": {
+    "note": "页面硬编码 mock 兜底快照的 updateTime 字样；出现在可见文本即说明真实数据未覆盖成功（静默降级）。",
+    "tokens": ["2026-08 (周频)", "2026Q3 (季频)", "2026-08 (月频)"]
+  }
+}
