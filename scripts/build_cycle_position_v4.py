@@ -706,6 +706,9 @@ UPSTREAM_REFRESH = [
     # BEA 实际值季度序列 → 同比% 后灌入（mode="yoy_q"，日期统一为 'YYYYQn'）
     ("cycle_juglar", "us", "equipment_investment", "fred", ["equip_inv"], None, "yoy_q"),
     ("cycle_juglar", "us", "capex_growth", "fred", ["nonres_inv"], None, "yoy_q"),
+    # ---- [CIO 2026-11-12 ISM 方案落地] 美国制造业 PMI 真序列 ----
+    # 层内原为 9 个半年采样桩点（2026-01=52.3 系编造，真值 52.6），故用 mode="replace" 整体重建。
+    ("cycle_kitchin", "us", "ism_manufacturing", "file", ["ism_pmi.json", "history"], None, "replace"),
 ]
 
 
@@ -752,6 +755,13 @@ def refresh_indicators_from_upstream(layers):
             src = _dig(ind, path)
             src_hist = [h for h in ((src or {}).get("history") or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        elif src_kind == "file":
+            # [CIO 2026-11-12] data/ 下独立采集文件的 history 数组
+            _f = DATA_DIR / path[0]
+            _doc = load_json(_f) if _f.exists() else {}
+            _node = _dig(_doc, path[1:]) if len(path) > 1 else _doc
+            src_hist = [h for h in (_node or [])
+                        if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
         else:  # fred_raw
             src_hist = [h for h in ((fred.get("series") or {}).get(path[0]) or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
@@ -776,6 +786,25 @@ def refresh_indicators_from_upstream(layers):
             src_hist = _yoy
         if not src_hist:
             continue
+        if mode == "replace":
+            _keep = [h for h in src_hist if (_date_key(h["date"]) or (0,)) >= (2016, 1, 1)]
+            if len(_keep) >= 24:
+                _old = node.get("history") or []
+                node["history_legacy_stub"] = _old
+                node["history"] = [{"date": h["date"], "value": h["value"]} for h in _keep]
+                _t = node["history"][-1]
+                node["current"] = _t["value"]
+                node["last_updated"] = _t["date"]
+                node["source"] = "ISM® Manufacturing PMI®（PR Newswire 分发官方稿）"
+                node["frequency"] = "monthly"
+                node.pop("data_gap_note", None)
+                _pb = percentile_bands(node["history"])
+                if _pb:
+                    node["percentile"] = _pb
+                changes.append(
+                    f"{layer_key}.{side}.{ind_key}: 真序列重建 {len(_old)}->{len(_keep)} 点，"
+                    f"-> {_t['value']}@{_t['date']}（{_pb.get('current_rank') if _pb else '-'}）")
+                continue
         src_tail = src_hist[-1]
         src_tail_key = _date_key(src_tail["date"])
         if src_tail_key is None:

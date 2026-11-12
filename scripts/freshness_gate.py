@@ -754,12 +754,24 @@ def api_fetch_file(rel_file: str, ref: str, timeout: int = 45,
 
 
 def git_fetch_file(rel_file: str, ref: str, cwd: Path) -> Any | None:
-    try:
-        raw = subprocess.check_output(
-            ["git", "show", f"{ref}:{rel_file}"], cwd=cwd,
-            stderr=subprocess.DEVNULL)
-    except subprocess.CalledProcessError:
+    """读该 ref 下的文件。文件不存在返回 None；ref 不可解析/读取失败抛异常。
+
+    [P1 补强 2026-11-12] 原实现把「文件不存在」和「git 命令失败」都当成 None，
+    无法区分正常新增文件与基线不可用，导致限流时门禁静默放行。
+    """
+    exists = subprocess.run(
+        ["git", "cat-file", "-e", f"{ref}:{rel_file}"], cwd=cwd,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if exists.returncode != 0:
+        # 再确认 ref 本身是否有效；ref 无效属真故障，必须抛出让上层阻断
+        ref_ok = subprocess.run(
+            ["git", "rev-parse", "--verify", f"{ref}"], cwd=cwd,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if ref_ok.returncode != 0:
+            raise RuntimeError(f"基线 ref 不可解析: {ref}")
         return None
+    raw = subprocess.check_output(
+        ["git", "show", f"{ref}:{rel_file}"], cwd=cwd, stderr=subprocess.DEVNULL)
     return json.loads(raw.decode("utf-8"))
 
 
@@ -812,17 +824,27 @@ def evaluate(args: argparse.Namespace) -> int:
                 base_doc = load_json(bp) if bp.exists() else None
             else:
                 if rel_file not in baseline_cache:
+                    # [P1 补强 2026-11-12] 基线默认走本地 git（git show 不出网，不受
+                    # GitHub Contents API 403 限流影响）。原实现默认 API，11-12 实测
+                    # 51 项因 rate limit 被静默跳过结构检查、仍报 PASS —— 门禁在限流时
+                    # 完全失效。现改为：本地 git 优先 -> API 兜底 -> 都失败则阻断。
+                    base_doc = _BASELINE_ERROR
+                    _errs = []
                     try:
+                        base_doc = git_fetch_file(rel_file, args.baseline_ref,
+                                                  PROJECT_ROOT)
+                    except Exception as exc_git:
+                        _errs.append(f"git={exc_git}")
                         if args.baseline_api:
-                            base_doc = api_fetch_file(rel_file, args.baseline_ref)
-                        else:
-                            base_doc = git_fetch_file(rel_file, args.baseline_ref,
-                                                      PROJECT_ROOT)
-                    except Exception as exc:
+                            try:
+                                base_doc = api_fetch_file(rel_file,
+                                                          args.baseline_ref)
+                            except Exception as exc_api:
+                                _errs.append(f"api={exc_api}")
+                    if base_doc is _BASELINE_ERROR:
                         warnings.append(
-                            f"{iid}: 基线拉取失败（{args.baseline_ref}）: {exc}；"
-                            f"结构检查跳过")
-                        base_doc = _BASELINE_ERROR
+                            f"{iid}: 基线不可用（{args.baseline_ref}）: "
+                            f"{'; '.join(_errs)}；结构检查跳过")
                     baseline_cache[rel_file] = base_doc
                 base_doc = baseline_cache[rel_file]
                 if base_doc is _BASELINE_ERROR:
