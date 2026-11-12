@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T10:01:49+08:00"
+    "v4_built_at": "2026-11-12T10:14:54+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -1723,6 +1723,17 @@
               "p50": 26.17,
               "p75": 33.54,
               "current_rank": ">p75"
+            },
+            "data_quality": {
+              "status": "meta_error",
+              "kind": "date_mismatch",
+              "tail_date": "2026Q2",
+              "tail_value": 33.55,
+              "current": 33.55,
+              "last_updated": "2026-11-12",
+              "gap_months": 7.4,
+              "timestamp_faked": true,
+              "note": "值有效：tail 2026Q2 属正常滞后（FRED W006RC1Q027SBEA 收入分项尚未发 Q3，A091RC1Q027SBEA 已到 Q3 但分子分母须同季）。last_updated 被虚标为构建日，需改回 2026Q2 对应日期。"
             }
           },
           "fiscal_deficit_gdp": {
@@ -1980,6 +1991,17 @@
               "p50": -2.96,
               "p75": -1.55,
               "current_rank": "p50"
+            },
+            "data_quality": {
+              "status": "stub",
+              "kind": "value_mismatch",
+              "tail_date": "2025Q1",
+              "tail_value": -5.76906,
+              "current": 6.5,
+              "last_updated": "2026-08-15",
+              "gap_months": 19.5,
+              "timestamp_faked": false,
+              "note": "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"
             }
           }
         },
@@ -2120,7 +2142,7 @@
                 "value": 0.6
               }
             ],
-            "frequency": "monthly",
+            "frequency": "annual",
             "percentile": {
               "p25": 0.38,
               "p50": 0.45,
@@ -3170,7 +3192,18 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-12"
+              "last_updated": "2026-11-12",
+              "data_quality": {
+                "status": "meta_error",
+                "kind": "date_mismatch",
+                "tail_date": "2024",
+                "tail_value": 0.418,
+                "current": 0.418,
+                "last_updated": "2026-11-12",
+                "gap_months": 34.4,
+                "timestamp_faked": true,
+                "note": "值有效：基尼系数 2 年一更，0.418@2024 为最新可得。last_updated 虚标为构建日。"
+              }
             },
             "cn": {
               "current": 0.36,
@@ -3270,7 +3303,18 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-12"
+              "last_updated": "2026-11-12",
+              "data_quality": {
+                "status": "meta_error",
+                "kind": "date_mismatch",
+                "tail_date": "2022",
+                "tail_value": 0.36,
+                "current": 0.36,
+                "last_updated": "2026-11-12",
+                "gap_months": 58.4,
+                "timestamp_faked": true,
+                "note": "值有效：0.36@2022 为最新可得（统计局基尼系数发布不规律）。last_updated 虚标为构建日。"
+              }
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -4177,7 +4221,7 @@
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
             "last_updated": "2026-11-11",
-            "frequency": "daily",
+            "frequency": "monthly",
             "history": [
               {
                 "date": "2015-01-01",
@@ -49963,7 +50007,7 @@
             "source": "BEA",
             "unit": "%",
             "current": 19.96,
-            "last_updated": "2026Q3",
+            "last_updated": "2026-09-30",
             "history": [
               {
                 "date": "2015Q1",
@@ -50022,7 +50066,7 @@
                 "value": 19.96
               }
             ],
-            "frequency": "monthly",
+            "frequency": "quarterly",
             "percentile": {
               "p25": 3.5,
               "p50": 5.8,
@@ -50036,7 +50080,7 @@
             "current": 8.37,
             "unit": "%",
             "description": "企业资本支出同比增速，朱格拉周期核心驱动指标",
-            "last_updated": "2026Q3",
+            "last_updated": "2026-09-30",
             "frequency": "quarterly",
             "history": [
               {
@@ -50150,6 +50194,17 @@
               "p50": 11.0,
               "p75": 12.0,
               "current_rank": "p50"
+            },
+            "data_quality": {
+              "status": "stub",
+              "kind": "date_mismatch",
+              "tail_date": "2026-01",
+              "tail_value": 12.5,
+              "current": 12.5,
+              "last_updated": "2026-08-06",
+              "gap_months": 7.2,
+              "timestamp_faked": false,
+              "note": "静态桩值：history 尾点 2026-01=12.5，current 标 2026-08-06；NBS data.stats.gov.cn 对本机 IP 返回 403 WAF(UrlACL)，换出口可打通（CIO 批 A 路）。"
             }
           },
           "fixed_asset_investment": {
@@ -50398,6 +50453,17 @@
               "p50": 75.9,
               "p75": 76.8,
               "current_rank": "<=p25"
+            },
+            "data_quality": {
+              "status": "unverified",
+              "kind": "date_mismatch",
+              "tail_date": "2026Q2",
+              "tail_value": 73.0,
+              "current": 73.0,
+              "last_updated": "2026-11-12",
+              "gap_months": 7.4,
+              "timestamp_faked": true,
+              "note": "tail 2026Q2=73.0，需核 NBS 2026Q3 产能利用率是否已发布；last_updated 虚标为构建日。待 CIO 定级。"
             }
           }
         },
@@ -51669,6 +51735,17 @@
               "p50": 7.5,
               "p75": 17.2,
               "current_rank": "p50"
+            },
+            "data_quality": {
+              "status": "stub",
+              "kind": "date_mismatch",
+              "tail_date": "2026-01",
+              "tail_value": 3.2,
+              "current": 3.2,
+              "last_updated": "2026-08-15",
+              "gap_months": 7.5,
+              "timestamp_faked": false,
+              "note": "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"
             }
           },
           "cn_pmi_finished_goods": {
@@ -51795,7 +51872,18 @@
               "p75": 47.8,
               "current_rank": "p50"
             },
-            "current": 46.8
+            "current": 46.8,
+            "data_quality": {
+              "status": "stub",
+              "kind": "date_mismatch",
+              "tail_date": "2026-01",
+              "tail_value": 46.8,
+              "current": 46.8,
+              "last_updated": "2026-08-31",
+              "gap_months": 8.0,
+              "timestamp_faked": false,
+              "note": "静态桩值：history 尾点 2026-01=46.8，current 却标 2026-08-31；从未灌过 2026 年数据，非「停在 8 月」而是从未更新。NBS 分项无源，CIO 已批 A 路补采（P1，截止 11-15）。"
+            }
           }
         }
       }

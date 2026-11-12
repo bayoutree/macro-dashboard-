@@ -877,19 +877,60 @@ def evaluate(args: argparse.Namespace) -> int:
 
     # [P1 补强 2026-11-11] 前后端双副本一致性：前端读 frontend/data/ 副本，
     # 两副本由不同链路各自写入，曾出现强推后单侧丢失（恐贪 11-11 点）。
+    # [CIO 2026-11-12 ②] 级别提升为 CRITICAL 一等公民：计入 critical 统计
+    # （此前只是旁挂 blocks，报告里的 critical 数不含它，容易被读成 WARN 级），
+    # 并新增 ssot_source 标记校验——55c86d1 事故是「值错 + 溯源标记丢失」双失，
+    # 只比值挡不住「值碰巧相同但 ssot_source 被抹掉」的退化。
     _data_dir = current_root / "data"
     _fe_dir = current_root / "frontend" / "data"
+    _fe_drift = 0
     if _data_dir.is_dir() and _fe_dir.is_dir():
+        # ssot_registry 登记的下游 path，用于校验 frontend 副本的 ssot_source 标记
+        _ssot_secs = []
+        try:
+            _reg = load_json(PROJECT_ROOT / "scripts" / "ssot_registry.json")
+            for _ind in _reg.get("indicators", []):
+                for _sec in _ind.get("secondaries", []):
+                    _ssot_secs.append((_sec["file"], _sec["path"], _ind["id"]))
+        except Exception:
+            pass
+
+        def _resolve_path(doc, dotted):
+            node = doc
+            for k in dotted.split("."):
+                if not isinstance(node, dict) or k not in node:
+                    return None
+                node = node[k]
+            return node
+
         for _f in sorted(_data_dir.glob("*.json")):
             _g = _fe_dir / _f.name
-            if _g.exists():
-                try:
-                    # JSON 语义比较（而非字节）：两侧 indent/键序可能不同，内容一致即可
-                    if load_json(_f) != load_json(_g):
-                        blocks.append(
-                            f"BLOCK frontend-drift: data/{_f.name} 与 frontend/data/{_f.name} 内容不一致")
-                except Exception as _exc:
-                    warnings.append(f"frontend-drift 检查异常 {_f.name}: {_exc}")
+            if not _g.exists():
+                continue
+            try:
+                # JSON 语义比较（而非字节）：两侧 indent/键序可能不同，内容一致即可
+                _d_doc, _g_doc = load_json(_f), load_json(_g)
+                if _norm_dates(_d_doc) != _norm_dates(_g_doc):
+                    _fe_drift += 1
+                    blocks.append(
+                        f"BLOCK FE-DRIFT: data/{_f.name} 与 frontend/data/{_f.name} 内容不一致"
+                        f"（前端会展示旧值/错值，须先同步再发布）")
+                else:
+                    # 值一致 → 再验 ssot_source 溯源标记是否被抹掉
+                    for _rel, _dotted, _iid in _ssot_secs:
+                        if _rel != f"data/{_f.name}":
+                            continue
+                        _n = _resolve_path(_g_doc, _dotted)
+                        if isinstance(_n, dict) and _n.get("value") is not None \
+                                and not _n.get("ssot_source"):
+                            _fe_drift += 1
+                            blocks.append(
+                                f"BLOCK FE-DRIFT: frontend/data/{_f.name}#{_dotted}（{_iid}）"
+                                f"缺 ssot_source 溯源标记，疑似被链路覆写丢失")
+            except Exception as _exc:
+                warnings.append(f"FE-DRIFT 检查异常 {_f.name}: {_exc}")
+        if _fe_drift:
+            n_crit += _fe_drift
 
     print("[freshness-gate] 新鲜度状态（评估日 %s，基线 %s）："
           % (eval_date, args.baseline_ref))
@@ -914,6 +955,45 @@ def evaluate(args: argparse.Namespace) -> int:
 
 
 _BASELINE_ERROR = object()
+
+_QUARTER_RE = None
+
+
+def _norm_date_str(v):
+    """把同一语义的三种日期写法归一，用于双副本语义比较。
+
+    '2026-09' / '2026-09-01' / '2026Q3'→'2026-07-01' 视为同一期。
+    [CIO 2026-11-12 ②] data/ 侧保留原始标签（2026Q3、2026-09），frontend/
+    侧经链路规范成 ISO 日期（2026-07-01、2026-09-01），字面不同但语义等价；
+    不做归一会让 FE-DRIFT 每轮误报，反而逼人关掉门禁。只归一 'date' 键，
+    其他字段仍严格比较。
+    """
+    global _QUARTER_RE
+    if not isinstance(v, str):
+        return v
+    t = v.strip()
+    if _QUARTER_RE is None:
+        import re as _re
+        _QUARTER_RE = _re.compile(r'^(\d{4})\s*[Qq]([1-4])$')
+    m = _QUARTER_RE.match(t)
+    if m:
+        return "%s-%02d-01" % (m.group(1), (int(m.group(2)) - 1) * 3 + 1)
+    if len(t) == 7 and t[4] == '-':
+        return t + "-01"
+    return v
+
+
+def _norm_dates(node):
+    """递归归一所有 'date' 键的值（只改比较副本，不改原文件）。"""
+    if isinstance(node, dict):
+        return {k: (_norm_date_str(v) if k == "date" else _norm_dates(v))
+                for k, v in node.items()}
+    if isinstance(node, list):
+        return [_norm_dates(x) for x in node]
+    return node
+
+
+
 
 
 def _today_str() -> str:

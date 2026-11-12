@@ -163,7 +163,21 @@ const CycleV3Module = (() => {
     event_driven: { cycleDays: 365, maxAge: 730, label: '事件驱动' }
   };
 
-  function getFreshness(lastUpdated, frequency, assessmentDate) {
+  function getFreshness(lastUpdated, frequency, assessmentDate, quality) {
+    // [CIO 2026-11-12 准则3红线·全站桩值扫描] 桩值灰灯
+    // 后端 build_cycle_position_v4.py:annotate_data_quality 为每个脱节指标打
+    // data_quality{status:'stub',tail_date,tail_value,note}。status=stub 表示
+    // current 是静态占位值（history 尾点停在更早月份），不是「等待更新」而是
+    // 「不会有更新」。此类必须灰灯明示不可用，禁止以黄灯「⏳等待更新」呈现，
+    // 更禁止直接展示数值让读者误当有效。
+    if (quality && quality.status === 'stub') {
+      return {
+        cls: 'stub',
+        label: `尾点 ${quality.tail_date || '--'} | 静态桩值 | ⚪不可用`,
+        days: null, freqLabel: '桩值', date: quality.tail_date || '',
+        note: quality.note || ''
+      };
+    }
     // [P0-3 修复 2026-11-11] 徽标失真根因：旧逻辑以数据文件 _meta.assessment_date
     // （=数据生成日 2026-09-01）为基准算天数，导致老数据 days≈0 永远显示「✅最新」。
     // 新鲜度必须按「数据 last_updated 距真实今天」实时判定，assessment_date 仅作展示用途。
@@ -183,8 +197,12 @@ const CycleV3Module = (() => {
     return { cls:'expired', label:`${lastUpdated} | ${freqLabel} | ⚠️数据断更`, days, freqLabel, date:lastUpdated };
   }
 
-  function freshnessBadge(lastUpdated, frequency, assessmentDate) {
-    const f = getFreshness(lastUpdated, frequency, assessmentDate);
+  function freshnessBadge(lastUpdated, frequency, assessmentDate, quality) {
+    const f = getFreshness(lastUpdated, frequency, assessmentDate, quality);
+    if (f.cls === 'stub') {
+      // 桩值：灰徽标 + 悬停说明「为何不可用、尾点在哪」
+      return `<span class="freshness-badge stub" title="${escapeHtml(f.note || f.label)}">${f.label}</span>`;
+    }
     if (f.cls === 'no-date') {
       // No last_updated: show frequency tag only, no scary warning
       return `<span class="freshness-badge fresh" title="${f.freqLabel}"><span style="font-size:9px;opacity:0.7">${f.freqLabel}</span></span>`;
@@ -233,7 +251,7 @@ const CycleV3Module = (() => {
       const swColor = sw > 0 ? COLORS.bullish : sw < 0 ? COLORS.bearish : COLORS.neutral;
       const indicators = r.indicators || {};
       const indCards = Object.entries(indicators).map(([k, ind]) => {
-        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const f = freshnessBadge(ind.last_updated, ind.frequency, null, ind.data_quality);
         let threshHtml = '';
         if (ind.threshold) {
           const w = ind.threshold.warning || ind.threshold.critical || '';
@@ -247,7 +265,7 @@ const CycleV3Module = (() => {
           ? `<div id="chart-debt-${key}-${k}" class="chart-container" style="width:100%;height:100px;margin-top:8px;"></div>`
           : '';
         return `
-        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
+        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency, null, ind.data_quality).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           ${threshHtml}
@@ -477,7 +495,7 @@ const CycleV3Module = (() => {
     Object.entries(groups).forEach(([g, items]) => {
       const cards = items.map(ind => {
         const color = ind.status==='green'?'#10b981':ind.status==='yellow'?'#f59e0b':ind.status==='red'?'#ef4444':'#6b7280';
-        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const f = freshnessBadge(ind.last_updated, ind.frequency, null, ind.data_quality);
         const val = ind.current_value ?? ind.current ?? '--';
         const descHtml = ind.description ? `<div class="ri-desc">${escapeHtml(ind.description)}</div>` : '';
         const chartId = 'chart-rate-'+g+'-'+(ind.ind_key !== undefined ? ind.ind_key : ('hrt'+ind._hrt_idx));
@@ -542,10 +560,10 @@ const CycleV3Module = (() => {
         if (pct?.current_rank) {
           pctBadge = `<span class="percentile-badge" title="p25=${pct.p25} p50=${pct.p50} p75=${pct.p75}">${escapeHtml(pct.current_rank)}</span>`;
         }
-        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const f = freshnessBadge(ind.last_updated, ind.frequency, null, ind.data_quality);
         const juglarSourceUrl = ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : '';
         return `
-        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency).cls}">
+        <div class="indicator-card ${getFreshness(ind.last_updated, ind.frequency, null, ind.data_quality).cls}">
           <div class="ind-header"><span class="ind-name">${escapeHtml(ind.name)}</span>${f} ${pctBadge}</div>
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-${prefix}-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
@@ -1125,9 +1143,9 @@ const CycleV3Module = (() => {
       }
       const indicators = r.indicators || {};
       const indHtml = Object.entries(indicators).map(([k, ind]) => {
-        const f = freshnessBadge(ind.last_updated, ind.frequency);
+        const f = freshnessBadge(ind.last_updated, ind.frequency, null, ind.data_quality);
         const merrillSourceUrl = ind.source_url ? '<a href="' + escapeHtml(ind.source_url) + '" target="_blank" class="source-link">📎 数据来源</a>' : '';
-        return '<div class="indicator-card ' + getFreshness(ind.last_updated, ind.frequency).cls + '">' +
+        return '<div class="indicator-card ' + getFreshness(ind.last_updated, ind.frequency, null, ind.data_quality).cls + '">' +
           '<div class="ind-header"><span class="ind-name">' + escapeHtml(ind.name) + '</span>' + f + '</div>' +
           '<div class="ind-value">' + fmtNum(ind.current) + ' <span class="ind-unit">' + escapeHtml(ind.unit||'') + '</span></div>' +
           '<div id="chart-merrill-' + key + '-' + k + '" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>' +

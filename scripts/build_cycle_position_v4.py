@@ -49,6 +49,7 @@ from collect_structural_indicators import percentile_bands  # [CIO 2026-11-12] �
 DATA_DIR = Path(__file__).parent.parent / "data"
 V3_FILE = DATA_DIR / "cycle_position_v3.json"
 V4_FILE = DATA_DIR / "cycle_position_v4.json"
+STUB_FLAGS_FILE = DATA_DIR / "v4_stub_flags.json"  # [CIO 2026-11-12] 全站桩值扫描清单
 
 # ------------------------------------------------------------------
 # 维度名 → dimension_scores 中的 dimension 字段值
@@ -730,6 +731,20 @@ def _date_key(s):
         return None
 
 
+def _iso_date(s):
+    """把季度标签 '2026Q3' 转成可被 JS `new Date()` 解析的该季末 ISO 日期
+    '2026-09-30'；其余（'2026-10' / '2026-10-01'）原样返回。
+    [CIO 2026-11-12] 回归修复：last_updated 写成 '2026Q3' 会让前端
+    new Date('2026Q3')=Invalid Date → days=NaN → 误判「⚠️数据断更」红灯。"""
+    if not isinstance(s, str):
+        return s
+    m = _re.match(r'^(\d{4})\s*[Qq]([1-4])$', s.strip())
+    if not m:
+        return s
+    y, q = int(m.group(1)), int(m.group(2))
+    return {1: f"{y}-03-31", 2: f"{y}-06-30", 3: f"{y}-09-30", 4: f"{y}-12-31"}[q]
+
+
 def _dig(obj, path):
     for k in path:
         if not isinstance(obj, dict):
@@ -794,7 +809,7 @@ def refresh_indicators_from_upstream(layers):
                 node["history"] = [{"date": h["date"], "value": h["value"]} for h in _keep]
                 _t = node["history"][-1]
                 node["current"] = _t["value"]
-                node["last_updated"] = _t["date"]
+                node["last_updated"] = _iso_date(_t["date"])
                 node["source"] = "ISM® Manufacturing PMI®（PR Newswire 分发官方稿）"
                 node["frequency"] = "monthly"
                 node.pop("data_gap_note", None)
@@ -827,7 +842,7 @@ def refresh_indicators_from_upstream(layers):
         if same_date_diff_val:
             hist[-1]["value"] = src_tail["value"]
         node["current"] = src_tail["value"]
-        node["last_updated"] = src_tail["date"]
+        node["last_updated"] = _iso_date(src_tail["date"])
         node.pop("data_gap_note", None)  # 真值回灌后缺口闭合
         # [CIO 2026-11-12] 回灌后必须重算分位带，否则 current 越出 p75 仍标 p50（自相矛盾）
         _pb = percentile_bands(hist)
@@ -965,6 +980,141 @@ def _fix_high_rate_tracker_history(v4_data):
     return fixed
 
 
+
+# ============================================================
+# 桩值检测与标记（CIO 2026-11-12 准则 3 红线 · ④全站桩值扫描）
+# ============================================================
+# 病灶定义（三形态）：
+#   A-值脱节   current 与 history 尾点值不一致 → 数据自相矛盾（最硬）
+#   B-日期脱节 last_updated 距 history 尾点日期超出该频率容差 → 虚标发布日
+#   C-时间戳虚标 last_updated 被写成构建当日，掩盖数据陈旧（B 的子集，单独标注）
+# 处置分级（人工核实后登记于此，机器不自动改数）：
+#   stub        真桩值：current 是静态占位，禁止当有效值展示（前端灰灯）
+#   lag_normal  正常滞后：上游该期确实未发布，值本身有效
+#   meta_error  元数据标错：值有效，frequency / last_updated 字段错误
+#   unverified  未核实：待 CIO 定级
+_STUB_TOL = {"daily": 0.5, "weekly": 1.0, "monthly": 2.2, "quarterly": 5.5, "annual": 20.0}
+
+STUB_REGISTRY = {
+    "cycle_kitchin/cn/indicators/cn_pmi_finished_goods": ("stub",
+        "静态桩值：history 尾点 2026-01=46.8，current 却标 2026-08-31；从未灌过 2026 年数据，非「停在 8 月」而是从未更新。NBS 分项无源，CIO 已批 A 路补采（P1，截止 11-15）。"),
+    "cycle_kitchin/cn/indicators/cn_inventory_cycle": ("stub",
+        "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"),
+    "cycle_juglar/cn/indicators/high_tech_manufacturing_investment": ("stub",
+        "静态桩值：history 尾点 2026-01=12.5，current 标 2026-08-06；NBS data.stats.gov.cn 对本机 IP 返回 403 WAF(UrlACL)，换出口可打通（CIO 批 A 路）。"),
+    "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp": ("stub",
+        "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"),
+    "constraint_debt_cycle/us/indicators/interest_to_revenue": ("meta_error",
+        "值有效：tail 2026Q2 属正常滞后（FRED W006RC1Q027SBEA 收入分项尚未发 Q3，A091RC1Q027SBEA 已到 Q3 但分子分母须同季）。last_updated 被虚标为构建日，需改回 2026Q2 对应日期。"),
+    "constraint_rate_regime/structural/indicators/income_inequality/us": ("meta_error",
+        "值有效：基尼系数 2 年一更，0.418@2024 为最新可得。last_updated 虚标为构建日。"),
+    "constraint_rate_regime/structural/indicators/income_inequality/cn": ("meta_error",
+        "值有效：0.36@2022 为最新可得（统计局基尼系数发布不规律）。last_updated 虚标为构建日。"),
+    "cycle_juglar/cn/indicators/industrial_capacity_utilization": ("unverified",
+        "tail 2026Q2=73.0，需核 NBS 2026Q3 产能利用率是否已发布；last_updated 虚标为构建日。待 CIO 定级。"),
+    "constraint_rate_regime/forward_looking/indicators/breakeven_inflation": ("meta_error",
+        "值有效：T30YIEM 月度序列，2.27@2026-10-01 为最新。frequency 误标 daily（应 monthly）。"),
+    "constraint_debt_cycle/cn/indicators/structural_reform_progress": ("meta_error",
+        "值有效：人工综合评估 0.6@2026。frequency 误标 monthly（应 annual），last_updated 2026-06-01 早于年度口径。"),
+}
+
+FREQ_FIXES = {
+    "cycle_juglar/us/indicators/equipment_investment": "quarterly",
+    "constraint_debt_cycle/cn/indicators/structural_reform_progress": "annual",
+    "constraint_rate_regime/forward_looking/indicators/breakeven_inflation": "monthly",
+}
+
+
+def _gap_months(a_key, b_key):
+    if a_key is None or b_key is None:
+        return None
+    return round(((a_key[0] - b_key[0]) * 12 + (a_key[1] - b_key[1])) + (a_key[2] - b_key[2]) / 30.0, 1)
+
+
+def annotate_data_quality(layers, built_at):
+    """遍历层内全部指标节点，打 data_quality 标记，返回全站桩值扫描清单。
+
+    只标注、不改值：改值必须走 UPSTREAM_REFRESH 真源回灌或人工热修。
+    """
+    flags = []
+
+    def _scan(node, path):
+        hist = node.get("history")
+        if isinstance(hist, list) and hist and isinstance(hist[0], dict):
+            tail = next((x for x in reversed(hist)
+                         if isinstance(x, dict) and x.get("date") and x.get("value") is not None), None)
+            if tail is None:
+                return
+            cur = node.get("current")
+            lu = node.get("last_updated")
+            freq = node.get("frequency") or "monthly"
+            tail_key, lu_key = _date_key(tail["date"]), _date_key(lu)
+            gap = _gap_months(lu_key, tail_key)
+            tol = _STUB_TOL.get(freq, 2.2)
+
+            value_mis = (isinstance(cur, (int, float)) and isinstance(tail["value"], (int, float))
+                         and abs(cur - tail["value"]) > 1e-9)
+            date_mis = gap is not None and gap > tol
+            ts_faked = bool(lu) and isinstance(lu, str) and lu[:10] >= built_at[:10]
+
+            if not (value_mis or date_mis):
+                return
+            kind = "value_mismatch" if value_mis else "date_mismatch"
+            reg = STUB_REGISTRY.get(path)
+            status = reg[0] if reg else "unverified"
+            note = reg[1] if reg else "自动扫描命中，尚未人工核实"
+            dq = {
+                "status": status,
+                "kind": kind,
+                "tail_date": tail["date"],
+                "tail_value": tail["value"],
+                "current": cur,
+                "last_updated": lu,
+                "gap_months": gap,
+                "timestamp_faked": ts_faked,
+                "note": note,
+            }
+            node["data_quality"] = dq
+            flags.append({
+                "path": path,
+                "name": node.get("name") or path.rsplit("/", 1)[-1],
+                "current": cur,
+                "unit": node.get("unit"),
+                "tail_date": tail["date"],
+                "tail_value": tail["value"],
+                "last_updated": lu,
+                "frequency": freq,
+                "gap_months": gap,
+                "kind": kind,
+                "timestamp_faked": ts_faked,
+                "status": status,
+                "collectable": status == "stub" and "无源" not in note,
+                "note": note,
+            })
+            return
+        for k, v in node.items():
+            if isinstance(v, dict):
+                _scan(v, f"{path}/{k}" if path else k)
+
+    for layer_key, layer in (layers or {}).items():
+        if not isinstance(layer, dict):
+            continue
+        _scan(layer, layer_key)
+
+    return flags
+
+
+def _fix_frequency_labels(layers):
+    """frequency 标签修正（与 STUB_REGISTRY 配套，值不动）。"""
+    fixed = 0
+    for path, freq in FREQ_FIXES.items():
+        node = _dig(layers, path.split("/"))
+        if isinstance(node, dict) and node.get("frequency") != freq:
+            node["frequency"] = freq
+            fixed += 1
+    return fixed
+
+
 def build():
     if not V3_FILE.exists():
         print(f"✗ 缺少上游文件 {V3_FILE}", file=sys.stderr)
@@ -1082,6 +1232,28 @@ def build():
     # ---- 5b. high_rate_tracker history 映射（constraint_rate_regime → 交叉分析） ----
     if _fix_high_rate_tracker_history(out):
         print("⚠ high_rate_tracker 修复: 已从 constraint_rate_regime 映射 history")
+
+    # ---- 5c. 桩值检测与标记（CIO 2026-11-12 准则3红线·④全站桩值扫描） ----
+    _nfix = _fix_frequency_labels(out["cycle_layers"])
+    if _nfix:
+        print(f"⚠ frequency 标签修正 {_nfix} 项")
+    _flags = annotate_data_quality(out["cycle_layers"], meta["v4_built_at"])
+    _by_status = {}
+    for _f in _flags:
+        _by_status[_f["status"]] = _by_status.get(_f["status"], 0) + 1
+    save_json(STUB_FLAGS_FILE, {
+        "generated_at": meta["v4_built_at"],
+        "builder": "scripts/build_cycle_position_v4.py:annotate_data_quality",
+        "caliber": "history 尾点日期/值与 last_updated/current 脱节的层内指标全量清单；status: stub=真桩值(前端灰灯) / lag_normal=正常滞后 / meta_error=元数据标错 / unverified=待定级",
+        "summary": {
+            "flagged": len(_flags),
+            "by_status": _by_status,
+            "stub_count": _by_status.get("stub", 0),
+        },
+        "flags": sorted(_flags, key=lambda x: (x["status"] != "stub", -(x["gap_months"] or 0))),
+    })
+    print(f"⚠ 桩值扫描：{len(_flags)} 项脱节（" +
+          ", ".join(f"{k}={v}" for k, v in sorted(_by_status.items())) + "）→ data/v4_stub_flags.json")
 
     save_json(V4_FILE, out)
 

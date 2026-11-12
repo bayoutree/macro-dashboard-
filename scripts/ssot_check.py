@@ -184,6 +184,47 @@ def check(root, registry, verbose=True):
 # ----------------------------------------------------------------------------
 # 回写：把主源值写进下游
 # ----------------------------------------------------------------------------
+def _mirror_to_frontend(root, rel_file, dotted_path, master_ref, m_val, m_date, verbose=True):
+    """把单点修复镜像到 frontend/data/ 副本（只动该 path，不动其他字段）。
+
+    [CIO 2026-11-12 ② ssot_source 覆写·双保险之一]
+    事故根因：ssot_check --fix 只回写 data/ 权威文件，frontend/data/ 镜像由
+    workflow 的 `cp data/*.json frontend/data/` 复制。update-data.yml 的顺序是
+    cp → guard → ssot_check --fix，--fix 发生在 cp 之后，于是修好的值只落在
+    data/，frontend/ 保留修复前的旧值（55c86d1：frontend cpi_yoy=4.0806 且
+    ssot_source 丢失，主源 indicators.json 实为 3.7173@2026-09-01）。
+    本函数让 --fix 顺带把镜像一起修正，与 workflow 侧「--fix 后再 cp 一次」
+    构成双保险，任一失效仍能自愈。
+    """
+    if not rel_file.startswith("data/"):
+        return False
+    dst = os.path.join(root, "frontend", rel_file)
+    if not os.path.exists(dst):
+        return False
+    try:
+        doc = load_json(dst)
+    except Exception:
+        return False
+    parent, key, node = resolve(doc, dotted_path)
+    if parent is None:
+        return False
+    if isinstance(node, dict):
+        if node.get("value") == m_val and node.get("ssot_source") == master_ref:
+            return False
+        node["value"] = m_val
+        if m_date is not None and "date" in node:
+            node["date"] = m_date
+        node["ssot_source"] = master_ref
+    else:
+        if node == m_val:
+            return False
+        parent[key] = m_val
+    save_json(dst, doc)
+    if verbose:
+        print(f"  ↻ 镜像 frontend/{rel_file}#{dotted_path} ← 主源 {m_val}")
+    return True
+
+
 def fix(root, registry, verbose=True):
     changed = 0
     for ind in registry.get("indicators", []):
@@ -200,21 +241,30 @@ def fix(root, registry, verbose=True):
             parent, key, s_node = resolve(s_doc, sec["path"])
             if parent is None:
                 continue
+            master_ref = f"{m['file']}#{m['path']}"
+            touched = False
             if isinstance(s_node, dict):
-                if s_node.get("value") == m_val:
-                    continue
-                s_node["value"] = m_val
-                if m_date is not None and "date" in s_node:
-                    s_node["date"] = m_date
-                s_node["ssot_source"] = f"{m['file']}#{m['path']}"
+                # 值已对齐但缺 ssot_source 也要补标记（否则下游无从追溯主源）
+                if s_node.get("value") != m_val:
+                    s_node["value"] = m_val
+                    if m_date is not None and "date" in s_node:
+                        s_node["date"] = m_date
+                    touched = True
+                if s_node.get("ssot_source") != master_ref:
+                    s_node["ssot_source"] = master_ref
+                    touched = True
             else:
-                if s_node == m_val:
-                    continue
-                parent[key] = m_val
-            save_json(sec_path, s_doc)
-            changed += 1
-            if verbose:
-                print(f"  ↻ 回写 {sec['file']}#{sec['path']} ← 主源 {m_val}")
+                if s_node != m_val:
+                    parent[key] = m_val
+                    touched = True
+            if touched:
+                save_json(sec_path, s_doc)
+                changed += 1
+                if verbose:
+                    print(f"  ↻ 回写 {sec['file']}#{sec['path']} ← 主源 {m_val}")
+            # [CIO 2026-11-12] 双保险：同步 frontend 镜像副本（只动该 path）
+            if _mirror_to_frontend(root, sec["file"], sec["path"], master_ref, m_val, m_date, verbose):
+                changed += 1
 
     # 单位自洽修复：unit 不一致 / 量级超界时按 fix 规则换算
     for rule in registry.get("unit_rules", []):

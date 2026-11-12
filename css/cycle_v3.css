@@ -77,6 +77,10 @@
 .indicator-card.fresh { border-left-color: #10b981; }
 .indicator-card.stale { border-left-color: #f59e0b; opacity: 0.85; }
 .indicator-card.expired { border-left-color: #ef4444; opacity: 0.6; filter: grayscale(0.3); }
+/* [CIO 2026-11-12 准则3红线] 桩值灰灯：current 为静态占位值，非「等待更新」。
+   灰边+整卡降透明+数值划灰，读者一眼可辨「这格不可用」，不误当有效值。 */
+.indicator-card.stub { border-left-color: #6b7280; opacity: 0.55; filter: grayscale(0.85); }
+.indicator-card.stub .ind-value { color: #6b7280; text-decoration: line-through; }
 .ind-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .ind-name { font-size: 11px; color: #94a3b8; font-weight: 500; }
 .ind-value { font-size: 18px; font-weight: 700; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
@@ -90,6 +94,7 @@
 .freshness-badge.fresh { color: #10b981; background: rgba(16,185,129,0.1); }
 .freshness-badge.stale { color: #f59e0b; background: rgba(245,158,11,0.1); }
 .freshness-badge.expired { color: #ef4444; background: rgba(239,68,68,0.1); }
+.freshness-badge.stub { color: #9ca3af; background: rgba(107,114,128,0.15); border: 1px dashed rgba(156,163,175,0.5); }
 
 /* Turning Point signals */
 .tp-section { margin-bottom: 16px; }

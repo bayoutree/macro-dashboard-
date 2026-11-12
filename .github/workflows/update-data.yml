@@ -198,6 +198,11 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           python scripts/ssot_check.py --fix
+          # [CIO 2026-11-12 ② ssot_source 覆写·双保险之二]
+          # --fix 会回写 data/ 权威文件，本步在其后再 cp 一次，保证 frontend/data/
+          # 镜像与修复后的权威文件一致（55c86d1 事故：--fix 在 cp 之后跑，
+          # 修好的值只落 data/，frontend/ 留旧值 4.0806 且丢 ssot_source）。
+          cp data/*.json frontend/data/ 2>/dev/null || true
           python scripts/ssot_check.py
           git add data/ frontend/data/
 

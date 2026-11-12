@@ -45,6 +45,9 @@ jobs:
       - name: SSOT propagate + consistency gate (blocking)
         run: |
           python scripts/ssot_check.py --fix
+          # [CIO 2026-11-12 ②] --fix 后再同步一次镜像（本链路 cp 在其后的
+          # Sync data to frontend/data 步，此处再兜一道，防 --fix 引入新差异）
+          cp data/*.json frontend/data/ 2>/dev/null || true
           python scripts/ssot_check.py
 
       - name: Bump static asset versions

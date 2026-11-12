@@ -39,7 +39,8 @@
     "m2_yoy": {
       "value": 7.2,
       "date": "2026-09",
-      "unit": "%"
+      "unit": "%",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#china.validation.lagging.m2"
     }
   },
   "stock_index": {

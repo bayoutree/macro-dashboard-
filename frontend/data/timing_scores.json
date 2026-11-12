@@ -52312,7 +52312,8 @@
               "date": "2026-11-11",
               "value": 99.21
             }
-          ]
+          ],
+          "ssot_source": "data/feargreed_pointer.json#score"
         },
         "turnover_rate": {
           "name": "全A换手率",
