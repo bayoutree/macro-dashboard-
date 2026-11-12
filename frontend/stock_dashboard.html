@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1a2332">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4218,7 +4219,7 @@ async function renderP213State() {
   el.innerHTML = `<div class="r7-card" style="border-left:3px solid ${lm[1]};">` +
     `<div class="r7-title" style="color:${lm[1]};">${lm[0]} P2-13 信号有效性：${st.status}${dt ? ' ｜ 最近验证 ' + dt : ''}</div>` +
     failHtml +
-    `<div class="r7-note">口径：五重替代检验（IC/ICIR、单调性、端点差NW-t、分档样本量n≥30、样本外稳定），全过方转「已验证」；${st.revalidate_due || ''}。本灯仅呈现验证状态，不构成买卖依据。数据源 p2_13_state.json；与 timing_scores.p2_13_oos_stats（Q8样本外统计）双源正交：本卡=有效性门禁（backtest写），徽标=样本外表现（update_data写），归属已定（P1-9，2026-11-11）。</div></div>`;
+    `<div class="r7-note">口径：五重替代检验（IC/ICIR、单调性、端点差NW-t、分档样本量n≥30、样本外稳定），全过方转「已验证」；${st.revalidate_due || ''}。本灯仅呈现验证状态，不构成买卖依据。数据源：信号有效性检验结果；与择时综合分的样本外统计双源正交——本卡=有效性门禁（回测写入），徽标=样本外表现（日更写入），归属已定（2026-11-11）。</div></div>`;
 }
 
 function safeRender(name, fn) {
