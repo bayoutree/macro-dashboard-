@@ -1,33 +1,15 @@
 {
-  "generated_at": "2026-11-12T10:22:36+08:00",
+  "generated_at": "2026-11-12T11:11:56+08:00",
   "builder": "scripts/build_cycle_position_v4.py:annotate_data_quality",
   "caliber": "history 尾点日期/值与 last_updated/current 脱节的层内指标全量清单；status: stub=真桩值(前端灰灯) / lag_normal=正常滞后 / meta_error=元数据标错 / unverified=待定级",
   "summary": {
-    "flagged": 9,
+    "flagged": 3,
     "by_status": {
-      "meta_error": 3,
-      "stub": 4,
-      "unverified": 2
+      "stub": 3
     },
-    "stub_count": 4
+    "stub_count": 3
   },
   "flags": [
-    {
-      "path": "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp",
-      "name": "财政赤字/GDP",
-      "current": 6.5,
-      "unit": "%",
-      "tail_date": "2025Q1",
-      "tail_value": -5.76906,
-      "last_updated": "2026-08-15",
-      "frequency": "quarterly",
-      "gap_months": 19.5,
-      "kind": "value_mismatch",
-      "timestamp_faked": false,
-      "status": "stub",
-      "collectable": true,
-      "note": "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"
-    },
     {
       "path": "cycle_kitchin/cn/indicators/cn_pmi_finished_goods",
       "name": "PMI产成品库存",
@@ -75,86 +57,6 @@
       "status": "stub",
       "collectable": true,
       "note": "静态桩值：history 尾点 2026-01=12.5，current 标 2026-08-06；NBS data.stats.gov.cn 对本机 IP 返回 403 WAF(UrlACL)，换出口可打通（CIO 批 A 路）。"
-    },
-    {
-      "path": "constraint_rate_regime/structural/indicators/income_inequality/cn",
-      "name": "cn",
-      "current": 0.36,
-      "unit": "分数(0-1)",
-      "tail_date": "2022",
-      "tail_value": 0.36,
-      "last_updated": "2026-11-12",
-      "frequency": "annual",
-      "gap_months": 58.4,
-      "kind": "date_mismatch",
-      "timestamp_faked": true,
-      "status": "meta_error",
-      "collectable": false,
-      "note": "值有效：0.36@2022 为最新可得（统计局基尼系数发布不规律）。last_updated 虚标为构建日。"
-    },
-    {
-      "path": "constraint_rate_regime/structural/indicators/income_inequality/us",
-      "name": "us",
-      "current": 0.418,
-      "unit": "分数(0-1)",
-      "tail_date": "2024",
-      "tail_value": 0.418,
-      "last_updated": "2026-11-12",
-      "frequency": "annual",
-      "gap_months": 34.4,
-      "kind": "date_mismatch",
-      "timestamp_faked": true,
-      "status": "meta_error",
-      "collectable": false,
-      "note": "值有效：基尼系数 2 年一更，0.418@2024 为最新可得。last_updated 虚标为构建日。"
-    },
-    {
-      "path": "constraint_debt_cycle/us/indicators/interest_to_revenue",
-      "name": "利息支出/财政收入",
-      "current": 33.55,
-      "unit": "%",
-      "tail_date": "2026Q2",
-      "tail_value": 33.55,
-      "last_updated": "2026-11-12",
-      "frequency": "quarterly",
-      "gap_months": 7.4,
-      "kind": "date_mismatch",
-      "timestamp_faked": true,
-      "status": "meta_error",
-      "collectable": false,
-      "note": "值有效：tail 2026Q2 属正常滞后（FRED W006RC1Q027SBEA 收入分项尚未发 Q3，A091RC1Q027SBEA 已到 Q3 但分子分母须同季）。last_updated 被虚标为构建日，需改回 2026Q2 对应日期。"
-    },
-    {
-      "path": "cycle_juglar/cn/indicators/industrial_capacity_utilization",
-      "name": "工业产能利用率",
-      "current": 73.0,
-      "unit": "%",
-      "tail_date": "2026Q2",
-      "tail_value": 73.0,
-      "last_updated": "2026-11-12",
-      "frequency": "quarterly",
-      "gap_months": 7.4,
-      "kind": "date_mismatch",
-      "timestamp_faked": true,
-      "status": "unverified",
-      "collectable": false,
-      "note": "tail 2026Q2=73.0，需核 NBS 2026Q3 产能利用率是否已发布；last_updated 虚标为构建日。待 CIO 定级。"
-    },
-    {
-      "path": "narrative_perez/key_ratio",
-      "name": "金融资本/生产资本比值",
-      "current": 2.8,
-      "unit": null,
-      "tail_date": "2026",
-      "tail_value": 2.8,
-      "last_updated": null,
-      "frequency": "annual",
-      "gap_months": null,
-      "kind": "missing_date",
-      "timestamp_faked": false,
-      "status": "unverified",
-      "collectable": false,
-      "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。"
     }
   ]
 }

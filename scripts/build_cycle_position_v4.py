@@ -710,6 +710,10 @@ UPSTREAM_REFRESH = [
     # ---- [CIO 2026-11-12 ISM 方案落地] 美国制造业 PMI 真序列 ----
     # 层内原为 9 个半年采样桩点（2026-01=52.3 系编造，真值 52.6），故用 mode="replace" 整体重建。
     ("cycle_kitchin", "us", "ism_manufacturing", "file", ["ism_pmi.json", "history"], None, "replace"),
+    # ---- [CIO 2026-11-12 ①P1] 联邦赤字/GDP 整段重建为年度口径 ----
+    # 层内原为季度桩点（尾点 2025Q1=-5.76906）+ current=6.5 编造值（符号反），
+    # 故用 mode="replace_annual" 整体重建为 FRED FYFSGDA188S 年度序列。
+    ("constraint_debt_cycle", "us", "fiscal_deficit_gdp", "fred", ["deficit_gdp_fy"], None, "replace_annual"),
 ]
 
 
@@ -801,6 +805,33 @@ def refresh_indicators_from_upstream(layers):
             src_hist = _yoy
         if not src_hist:
             continue
+        if mode == "replace_annual":
+            # 年度口径整段重建：history 只保留 'YYYY' 标签，frequency=annual
+            _keep = [h for h in src_hist if (_date_key(h["date"]) or (0,)) >= (2015, 1, 1)]
+            if len(_keep) >= 5:
+                _old = node.get("history") or []
+                node["history_legacy_stub"] = _old
+                node["history"] = [{"date": str(h["date"])[:4], "value": round(float(h["value"]), 2)}
+                                   for h in _keep]
+                _t = node["history"][-1]
+                node["current"] = _t["value"]
+                # 联邦财年 FY2025 = 2024-10-01~2025-09-30，故 last_updated 取财年末
+                node["last_updated"] = f"{_t['date']}-09-30"
+                node["frequency"] = "annual"
+                node["unit"] = "%"
+                node["source"] = "FRED FYFSGDA188S（Federal Surplus or Deficit as Percent of GDP）"
+                node["caliber"] = ("联邦财政年度赤字/GDP（负值=赤字；正值=盈余）。"
+                                   "财年 10/1–次年 9/30，FY2025 对应 2024-10-01~2025-09-30。"
+                                   "原季度桩点（尾点 2025Q1）与编造值 current=6.5 已废弃。")
+                node.pop("data_gap_note", None)
+                node["current_nulled"] = None
+                _pb = percentile_bands(node["history"])
+                if _pb:
+                    node["percentile"] = _pb
+                changes.append(
+                    f"{layer_key}.{side}.{ind_key}: 年度口径重建 {len(_old)}->{len(_keep)} 点，"
+                    f"-> {_t['value']}@{_t['date']}（{_pb.get('current_rank') if _pb else '-'}）")
+                continue
         if mode == "replace":
             _keep = [h for h in src_hist if (_date_key(h["date"]) or (0,)) >= (2016, 1, 1)]
             if len(_keep) >= 24:
@@ -1124,6 +1155,40 @@ def annotate_data_quality(layers, built_at):
     return flags
 
 
+# [CIO 2026-11-12 ①P0] 假值置空清单：不摘卡，但 current 置 None（前端 fmtNum 显示「--」）
+# 触发条件 = annotate 判出 status=stub 且 kind=value_mismatch；真源回灌成功后自动不再命中。
+NULL_OUT_ON_VALUE_MISMATCH = {
+    "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp":
+        "current=6.5 与自身 history 尾点 -5.76906 符号相反，FRED FYFSGDA188S 2025=-5.7527，属编造值。"
+        "CIO 令不摘卡、置空灰灯，待年度口径整段重建（真值回灌后本项自动失效）。",
+}
+
+
+def apply_null_out(layers, flags, built_at):
+    """对仍处于 value_mismatch 的桩值把 current 置空。
+
+    [CIO 2026-11-12 ①P0] 「假值一天不能留」：宁可显示「--」+ 灰灯，也不显示编造值。
+    回灌成功后 current 为真值，annotate 不再判 value_mismatch，本函数自然不命中。
+    """
+    hit = 0
+    for f in flags:
+        if f.get("status") != "stub" or f.get("kind") != "value_mismatch":
+            continue
+        reason = NULL_OUT_ON_VALUE_MISMATCH.get(f["path"])
+        if not reason:
+            continue
+        node = _dig(layers, f["path"].split("/"))
+        if isinstance(node, dict):
+            node["current_nulled"] = {
+                "reason": reason,
+                "nulled_at": built_at,
+                "ruling": "CIO 2026-11-12 ①P0：不摘卡，置空灰灯",
+            }
+            node["current"] = None
+            hit += 1
+    return hit
+
+
 def _fix_frequency_labels(layers):
     """frequency 标签修正（与 STUB_REGISTRY 配套，值不动）。"""
     fixed = 0
@@ -1254,10 +1319,25 @@ def build():
         print("⚠ high_rate_tracker 修复: 已从 constraint_rate_regime 映射 history")
 
     # ---- 5c. 桩值检测与标记（CIO 2026-11-12 准则3红线·④全站桩值扫描） ----
+    # [CIO 2026-11-12 ③P2] key_ratio 人工汇编·年频：补 last_updated 并注明口径，不冒充日更
+    _kr = _dig(out["cycle_layers"], ["narrative_perez", "key_ratio"])
+    if isinstance(_kr, dict):
+        _kr["last_updated"] = "2026"
+        _kr["frequency"] = "annual"
+        _kr["caliber"] = "人工汇编·年频（全球 VC/PE 年度融资额 ÷ 全球制造业/基建年度资本形成额）；非自动采集，更新随年报发布"
+        _kr["data_quality"] = {
+            "status": "unverified", "kind": "manual_compiled",
+            "tail_date": "2026", "tail_value": _kr.get("current"),
+            "last_updated": "2026", "gap_months": None, "timestamp_faked": False,
+            "note": "人工汇编年度值，无自动数据源；last_updated 标年度而非具体日，避免冒充日更。",
+        }
     _nfix = _fix_frequency_labels(out["cycle_layers"])
     if _nfix:
         print(f"⚠ frequency 标签修正 {_nfix} 项")
     _flags = annotate_data_quality(out["cycle_layers"], meta["v4_built_at"])
+    _nulled = apply_null_out(out["cycle_layers"], _flags, meta["v4_built_at"])
+    if _nulled:
+        print(f"⚪ 假值置空 {_nulled} 项（current -> null，前端显示「--」）")
     _by_status = {}
     for _f in _flags:
         _by_status[_f["status"]] = _by_status.get(_f["status"], 0) + 1

@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T10:22:36+08:00"
+    "v4_built_at": "2026-11-12T11:11:56+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -441,7 +441,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-06-30",
             "history": [
               {
                 "date": "1947Q1",
@@ -1738,11 +1738,76 @@
           },
           "fiscal_deficit_gdp": {
             "name": "财政赤字/GDP",
-            "source": "FRED",
-            "current": 6.5,
+            "source": "FRED FYFSGDA188S（Federal Surplus or Deficit as Percent of GDP）",
+            "current": -5.75,
             "unit": "%",
-            "last_updated": "2026-08-15",
+            "last_updated": "2025-09-30",
             "history": [
+              {
+                "date": "2015",
+                "value": -2.4
+              },
+              {
+                "date": "2016",
+                "value": -3.12
+              },
+              {
+                "date": "2017",
+                "value": -3.39
+              },
+              {
+                "date": "2018",
+                "value": -3.77
+              },
+              {
+                "date": "2019",
+                "value": -4.57
+              },
+              {
+                "date": "2020",
+                "value": -14.65
+              },
+              {
+                "date": "2021",
+                "value": -11.67
+              },
+              {
+                "date": "2022",
+                "value": -5.28
+              },
+              {
+                "date": "2023",
+                "value": -6.09
+              },
+              {
+                "date": "2024",
+                "value": -6.24
+              },
+              {
+                "date": "2025",
+                "value": -5.75
+              }
+            ],
+            "frequency": "annual",
+            "source_url": "https://fred.stlouisfed.org/",
+            "percentile": {
+              "p25": -6.24,
+              "p50": -5.28,
+              "p75": -3.39,
+              "current_rank": "p25-p50"
+            },
+            "data_quality": {
+              "status": "stub",
+              "kind": "value_mismatch",
+              "tail_date": "2025Q1",
+              "tail_value": -5.76906,
+              "current": 6.5,
+              "last_updated": "2026-08-15",
+              "gap_months": 19.5,
+              "timestamp_faked": false,
+              "note": "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"
+            },
+            "history_legacy_stub": [
               {
                 "date": "1966Q1",
                 "value": -0.45463
@@ -1984,25 +2049,8 @@
                 "value": -5.76906
               }
             ],
-            "frequency": "quarterly",
-            "source_url": "https://fred.stlouisfed.org/",
-            "percentile": {
-              "p25": -4.45,
-              "p50": -2.96,
-              "p75": -1.55,
-              "current_rank": "p50"
-            },
-            "data_quality": {
-              "status": "stub",
-              "kind": "value_mismatch",
-              "tail_date": "2025Q1",
-              "tail_value": -5.76906,
-              "current": 6.5,
-              "last_updated": "2026-08-15",
-              "gap_months": 19.5,
-              "timestamp_faked": false,
-              "note": "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"
-            }
+            "caliber": "联邦财政年度赤字/GDP（负值=赤字；正值=盈余）。财年 10/1–次年 9/30，FY2025 对应 2024-10-01~2025-09-30。原季度桩点（尾点 2025Q1）与编造值 current=6.5 已废弃。",
+            "current_nulled": null
           }
         },
         "interest_to_revenue_source": "cycle_layers.layer_0_debt_cycle.us.indicators.interest_to_revenue（FRED A091RC1Q027SBEA / W006RC1Q027SBEA）"
@@ -2809,15 +2857,16 @@
         "current": 2.8,
         "data_quality": {
           "status": "unverified",
-          "kind": "missing_date",
+          "kind": "manual_compiled",
           "tail_date": "2026",
           "tail_value": 2.8,
-          "current": 2.8,
-          "last_updated": null,
+          "last_updated": "2026",
           "gap_months": null,
           "timestamp_faked": false,
-          "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。"
-        }
+          "note": "人工汇编年度值，无自动数据源；last_updated 标年度而非具体日，避免冒充日更。"
+        },
+        "last_updated": "2026",
+        "caliber": "人工汇编·年频（全球 VC/PE 年度融资额 ÷ 全球制造业/基建年度资本形成额）；非自动采集，更新随年报发布"
       },
       "indicators": {
         "vc_pe_funding": {
@@ -3203,7 +3252,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-12",
+              "last_updated": "2024-12-31",
               "data_quality": {
                 "status": "meta_error",
                 "kind": "date_mismatch",
@@ -3314,7 +3363,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-12",
+              "last_updated": "2022-12-31",
               "data_quality": {
                 "status": "meta_error",
                 "kind": "date_mismatch",
@@ -50298,7 +50347,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-06-30",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,

@@ -23,7 +23,7 @@
   "coincident": {
     "gdp_growth": {
       "value": 5.8676,
-      "date": "2026-07-01",
+      "date": "2026Q3",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
     },
     "unemployment": {
@@ -55,7 +55,7 @@
     },
     "ppi_yoy": {
       "value": 6.3463,
-      "date": "2026-09-01",
+      "date": "2026-09",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.ppi"
     },
     "fed_funds_rate": {

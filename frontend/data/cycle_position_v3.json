@@ -439,7 +439,7 @@
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-06-30",
             "history": [
               {
                 "date": "1947Q1",
@@ -3156,7 +3156,7 @@
                   "value": 0.418
                 }
               ],
-              "last_updated": "2026-11-12"
+              "last_updated": "2024-12-31"
             },
             "cn": {
               "current": 0.36,
@@ -3256,7 +3256,7 @@
                   "value": 0.36
                 }
               ],
-              "last_updated": "2026-11-12"
+              "last_updated": "2022-12-31"
             },
             "description": "收入不平等加剧压低储蓄偏好，推高中性利率",
             "last_updated": "2026-06-01",
@@ -50161,7 +50161,7 @@
             "current": 73.0,
             "unit": "%",
             "description": ">76%=产能紧张，扩张动力强；<74%=产能过剩",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-06-30",
             "frequency": "quarterly",
             "threshold": {
               "warning": 76,

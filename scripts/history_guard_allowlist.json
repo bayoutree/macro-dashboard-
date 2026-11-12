@@ -18,6 +18,24 @@
       "to": 228,
       "authorized_at": "2026-10-17",
       "authorized_by": "CIO"
+    },
+    {
+      "file": "data/cycle_position_v4.json",
+      "path": "cycle_layers.constraint_debt_cycle.us.indicators.fiscal_deficit_gdp.history",
+      "reason": "CIO 2026-11-12 ①P1 定级：原 60 点季度序列为桩值（尾点 2025Q1=-5.76906），且 current=6.5 为编造值（与尾点符号相反，FRED FYFSGDA188S 2025 实为 -5.7527）。整段重建为 FRED 联邦财政年度赤字/GDP 口径（FY2015-FY2025 共 11 点，frequency=annual），旧 60 点已完整移入 history_legacy_stub 留档，未丢失。口径由季度切年度，新旧不可比。",
+      "from": 60,
+      "to": 11,
+      "authorized_at": "2026-11-12",
+      "authorized_by": "CIO"
+    },
+    {
+      "file": "frontend/data/cycle_position_v4.json",
+      "path": "cycle_layers.constraint_debt_cycle.us.indicators.fiscal_deficit_gdp.history",
+      "reason": "CIO 2026-11-12 ①P1 定级：原 60 点季度序列为桩值（尾点 2025Q1=-5.76906），且 current=6.5 为编造值（与尾点符号相反，FRED FYFSGDA188S 2025 实为 -5.7527）。整段重建为 FRED 联邦财政年度赤字/GDP 口径（FY2015-FY2025 共 11 点，frequency=annual），旧 60 点已完整移入 history_legacy_stub 留档，未丢失。口径由季度切年度，新旧不可比。",
+      "from": 60,
+      "to": 11,
+      "authorized_at": "2026-11-12",
+      "authorized_by": "CIO"
     }
   ]
 }

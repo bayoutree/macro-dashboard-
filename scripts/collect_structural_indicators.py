@@ -208,6 +208,33 @@ def yoy_monthly(points, decimals=2):
     return out
 
 
+def _iso_from_label(label):
+    """把数据期标签转成前端可解析的 ISO 日期，作为 last_updated。
+
+    [CIO 2026-11-12 ②P1] 禁止用 today_str()（构建日）写 last_updated——
+    会把 2022 年的基尼系数标成今天发布，掩盖数据真实年龄（准则3「时间戳虚标」）。
+    last_updated 的语义是「这期数据是什么时候的」，必须取数据尾点自身日期。
+
+    '2026Q2' -> '2026-06-30'；'2024' -> '2024-12-31'；'2026-09' -> '2026-09-30'
+    前端 new Date('2026Q2') 是 Invalid Date，会误判「⚠️数据断更」红灯，故必须转 ISO。
+    """
+    import re as _re2
+    if label is None:
+        return None
+    t = str(label).strip()
+    m = _re2.match(r'^(\d{4})\s*[Qq]([1-4])$', t)
+    if m:
+        y, q = int(m.group(1)), int(m.group(2))
+        return {1: f"{y}-03-31", 2: f"{y}-06-30", 3: f"{y}-09-30", 4: f"{y}-12-31"}[q]
+    if _re2.match(r'^\d{4}$', t):
+        return f"{t}-12-31"
+    if _re2.match(r'^\d{4}-\d{2}$', t):
+        import calendar
+        y, mo = int(t[:4]), int(t[5:7])
+        return f"{t}-{calendar.monthrange(y, mo)[1]:02d}"
+    return t
+
+
 def percentile_bands(history):
     """分位带 + **按当前值实算** current_rank（#14 CIO 裁决）。
 
@@ -282,7 +309,7 @@ def main():
         ind['history'] = [{'date': d, 'value': v} for d, v in interest_ratio]
         ind['current'] = interest_ratio[-1][1]
         ind['frequency'] = 'quarterly'
-        ind['last_updated'] = today_str()
+        ind['last_updated'] = _iso_from_label(interest_ratio[-1][0])  # [CIO 2026-11-12 ②P1] 禁构建日
         ind['source'] = 'FRED：联邦政府利息支出 A091RC1Q027SBEA / 经常性收入 W006RC1Q027SBEA'
         ind['source_url'] = 'https://fred.stlouisfed.org/series/A091RC1Q027SBEA'
         ind['percentile'] = percentile_bands(ind['history'])
@@ -319,7 +346,7 @@ def main():
         sub['history'] = [{'date': str(y), 'value': round(v / 100, 3)} for y, v in data]
         sub['current'] = round(data[-1][1] / 100, 3)
         sub['unit'] = '分数(0-1)'
-        sub['last_updated'] = today_str()
+        sub['last_updated'] = _iso_from_label(data[-1][0])  # [CIO 2026-11-12 ②P1] 禁构建日
         print(f"  ✅ income_inequality.{region}: {len(data)} 点，最新 {data[-1]}")
     income_ineq['source'] = 'World Bank WDI：SI.POV.GINI（基尼系数）'
     income_ineq['source_url'] = 'https://data.worldbank.org/indicator/SI.POV.GINI'
@@ -371,7 +398,7 @@ def main():
         ind = layers['layer_4_juglar']['cn']['indicators']['industrial_capacity_utilization']
         ind['history'] = [{'date': d, 'value': v} for d, v, _ in capacity]
         ind['current'] = capacity[-1][1]
-        ind['last_updated'] = today_str()
+        ind['last_updated'] = _iso_from_label(capacity[-1][0])  # [CIO 2026-11-12 ②P1] 禁构建日
         ind['source'] = '国家统计局季度规模以上工业产能利用率新闻稿（逐点人工核验）'
         ind['source_url'] = capacity[-1][2]
         ind['percentile'] = percentile_bands(ind['history'])

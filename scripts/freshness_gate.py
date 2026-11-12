@@ -875,6 +875,42 @@ def evaluate(args: argparse.Namespace) -> int:
             if status in ("GAP", "STALE", "WATCH"):
                 warnings.append(f"{iid}: {status}（{rel_file}，不阻断）")
 
+    # [CIO 2026-11-12 ②P1] last_updated 虚标检测
+    # 病灶：v3 上游用 datetime.now() 写 last_updated，把 2022 年的基尼系数标成
+    # 今天发布，掩盖数据真实年龄（准则 3「时间戳虚标」）。freshness gate 原口径
+    # 只看 last_updated 距今天数，正好被虚标喂成「新鲜」，一路绿灯。
+    # 规则：last_updated == 构建日 且 history 尾点 < 构建日 → 记 meta_error，不算 fresh。
+    _v4p = current_root / "data" / "cycle_position_v4.json"
+    if _v4p.exists():
+        try:
+            _v4 = load_json(_v4p)
+            _built = str(((_v4.get("_meta") or {}).get("v4_built_at")) or "")[:10]
+            if _built:
+                _faked = []
+
+                def _scan_lu(node, path):
+                    if not isinstance(node, dict):
+                        return
+                    hist = node.get("history")
+                    if isinstance(hist, list) and hist and isinstance(hist[0], dict):
+                        lu = str(node.get("last_updated") or "")[:10]
+                        tail_raw = str((hist[-1] or {}).get("date") or "")
+                        tail = _norm_date_str(tail_raw)
+                        if lu == _built and tail and isinstance(tail, str) and tail < _built:
+                            _faked.append(f"{path}（last_updated={lu}，history 尾点={tail_raw}）")
+                        return
+                    for k, v in node.items():
+                        _scan_lu(v, f"{path}/{k}" if path else k)
+
+                _scan_lu(_v4.get("cycle_layers") or {}, "")
+                for _x in _faked:
+                    blocks.append(
+                        f"BLOCK META-FAKED-DATE: {_x} —— last_updated 等于构建日但数据尾点更早，"
+                        f"属时间戳虚标，不得计为 fresh（CIO 2026-11-12 ②P1）")
+                n_crit += len(_faked)
+        except Exception as _exc:
+            warnings.append(f"META-FAKED-DATE 检查异常: {_exc}")
+
     # [P1 补强 2026-11-11] 前后端双副本一致性：前端读 frontend/data/ 副本，
     # 两副本由不同链路各自写入，曾出现强推后单侧丢失（恐贪 11-11 点）。
     # [CIO 2026-11-12 ②] 级别提升为 CRITICAL 一等公民：计入 critical 统计

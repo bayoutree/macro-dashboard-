@@ -38,7 +38,9 @@ FRED_SERIES = {
     'businv': 'BUSINV',            # 商业总库存(百万美元)——kitchin.us.manufacturing_inventories 实际口径（/1000=十亿）
     # ---- [CIO 2026-11-12 月频停更清单·有源未灌] 朱格拉层美国投资两项真源 ----
     'equip_inv': 'Y033RC1Q027SBEA',  # 实际私人固定投资:设备(十亿2017$)——juglar.us.equipment_investment 真源
-    'nonres_inv': 'PNFIC1',          # 实际私人非住宅固定投资(十亿2017$)——juglar.us.capex_growth 真源
+    'nonres_inv': 'PNFIC1',
+    # ---- [CIO 2026-11-12 ①P1] 联邦赤字/GDP 年度真源（重建 fiscal_deficit_gdp） ----
+    'deficit_gdp_fy': 'FYFSGDA188S',  # 联邦财政盈余/赤字占GDP（年度，负值=赤字）          # 实际私人非住宅固定投资(十亿2017$)——juglar.us.capex_growth 真源
 }
 
 def fetch_fred_series(series_id, observation_start='2015-01-01', observation_end=None):
