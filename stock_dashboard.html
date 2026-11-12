@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1a2332">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1955,8 +1956,8 @@ function _fillAnchorCard(cfg, ind, valueText) {
 }
 // Fallback data in case fetch fails
 const fedAnchorDataFallback = {
-  history: [5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.13,4.83,4.64,4.48,4.33,4.33,4.33,4.33,4.33,4.33,4.33,4.22,4.09,3.88,3.72,3.64,3.64,3.64,3.64,3.63,3.63,3.63],
-  dates: ['2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07'],
+  history: [5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.33,5.13,4.83,4.64,4.48,4.33,4.33,4.33,4.33,4.33,4.33,4.33,4.22,4.09,3.88,3.72,3.64,3.64,3.64,3.64,3.63,3.63,3.63,3.63,3.75,3.88],
+  dates: ['2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'],
   p25: 3.5, p50: 4.3, p75: 5.0, freq: '月频'
 };
 
@@ -4138,7 +4139,7 @@ async function loadExternalLiqData() {
       // Fallback: use static data
       Object.assign(fedAnchorData, fedAnchorDataFallback);
       const rateEl = document.getElementById('fed-rate-value');
-      if (rateEl) rateEl.textContent = '3.63%';
+      if (rateEl) rateEl.textContent = '3.88%';
       const sigEl = document.getElementById('fed-rate-signal');
       if (sigEl) { sigEl.className = 'ind-signal yellow'; sigEl.textContent = '利率平稳'; }
     }

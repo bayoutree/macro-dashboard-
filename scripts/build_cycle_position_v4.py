@@ -749,36 +749,70 @@ _SOURCE_BACKFILL = {
     "high_rate_tracker": ("高利率跟踪派生序列：由 constraint_rate_regime 的 "
                           "real_rate_forward / term_premium / breakeven_inflation 映射生成，"
                           "非独立采集源。"),
+    "国企利润占比": "国家统计局《全国规模以上工业企业利润》——国企利润占规上工业利润总额比重，月频派生",
+    "民营经济固定投资增速": "国家统计局《固定资产投资》——民间固定资产投资累计同比（月频）",
+    "土地财政依赖度": "财政部《财政收支情况》土地出让收入 ÷ 地方一般公共预算收入（手工计算，年频）",
+    "注册制覆盖率": "证监会/沪深交易所 IPO 统计——注册制项目占 A 股 IPO 比重（手工统计，年频）",
+    "credit_impulse": ("信用脉冲派生序列：由新增社融/GDP 的同比变化计算相位（phase/phase_code），"
+                       "非独立采集源。原始数据=中国人民银行社会融资规模增量、国家统计局 GDP。"),
+    "asset_allocation": ("资产配置建议派生节点：由 transmission_table 传导矩阵 + "
+                         "cycle_consensus 共识度映射生成，非独立采集源。"),
+    "stage_description": ("阶段描述文本派生节点：由 narrative_perez 阶段判定输出，"
+                          "非数值指标、非独立采集源。"),
     "narrative_kondratieff": ("康德拉季耶夫长波层：综合评分序列，由层内 tfp_growth / "
                               "技术扩散等分项加权派生，非独立采集源。"),
 }
 
+_SRC_BY_PREFIX = [
+    ("cross_analysis/high_rate_tracker/",
+     "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/"
+     "信用利差等），非独立采集源"),
+]
+
 
 def _backfill_sources(layers):
-    """给缺 source 的叶子指标补来源说明，容器节点跳过。"""
+    """[CIO 2026-11-12 复验打回] source 覆盖按「任何带 history/current 的节点」口径统计。
+
+    原实现要求节点自带 frequency 字段，导致 18 个节点漏补——多数是子节点未继承父级
+    source（如 cn_pmi_finished_goods/cn 的父级已有 NBS 来源），另有派生节点
+    （credit_impulse 相位、asset_allocation 配置建议）本就不该有独立采集源。
+    现分三层处理：父级继承 → 查表补 → 派生节点写明「非独立采集」。
+    """
     filled = []
 
-    def _scan(node, path):
+    def _scan(node, path, parent_src=None):
         if isinstance(node, dict):
             h = node.get("history")
-            # 叶子指标的键名：多数挂在 <name>/us 或 <name>/cn 下，
-            # 故 side 段要跳过，取真正的指标名段。
-            _segs = [x for x in path.split("/") if x and x not in
-                     ("cycle_layers", "indicators", "us", "cn", "eu")]
-            nm = _segs[-1] if _segs else path.split("/")[-1]
-            if isinstance(h, list) and h and isinstance(h[-1], dict) \
-               and node.get("frequency") and not node.get("source"):
+            cur = node.get("current")
+            has_obs = (isinstance(h, list) and bool(h)) or cur is not None
+            if has_obs and not node.get("source"):
+                _segs = [x for x in path.split("/") if x and x not in
+                         ("cycle_layers", "indicators", "us", "cn", "eu", "global")]
+                # 列表元素（proxy_indicators[i] / high_rate_tracker.indicators[i]）路径段
+                # 只剩容器名，查表查不到 → 优先用节点自带的 name 字段（中文指标名）。
+                nm = node.get("name") or (_segs[-1] if _segs else (path.split("/")[-1] or path))
+                nm = _re.sub(r"\[\d+\]$", "", str(nm))
                 txt = _SOURCE_BACKFILL.get(nm)
+                # 路径前缀特判：high_rate_tracker 的 9 项是派生映射，非独立采集
+                if not txt:
+                    for _pre, _txt in _SRC_BY_PREFIX:
+                        if path.startswith(_pre):
+                            txt = _txt
+                            break
+                if not txt and parent_src:
+                    txt = parent_src
+                    node["source_inherited_from"] = path.split("/")[-2] if "/" in path else "父级"
                 if txt:
                     node["source"] = txt
                     node["source_backfilled"] = "2026-11-12 全站 source 扫描"
-                    filled.append(nm)
+                    filled.append(path or nm)
+            _ps = node.get("source") or parent_src
             for k, v in node.items():
                 if isinstance(v, (dict, list)):
-                    _scan(v, path + "/" + k)
+                    _scan(v, (path + "/" + k) if path else k, _ps)
         elif isinstance(node, list):
-            for v in node:
-                _scan(v, path)
+            for i, v in enumerate(node):
+                _scan(v, f"{path}[{i}]", parent_src)
 
     _scan(layers, "")
     return filled
