@@ -1156,6 +1156,54 @@ def _gap_months(a_key, b_key):
 
 
 
+def _period_end(d, freq):
+    """把序列尾点日期规范成该频率的期末日期。"""
+    s = str(d or "").strip()
+    if freq == "monthly":
+        return _month_end(s)
+    if freq == "quarterly":
+        m = _re.match(r"^(\d{4})Q([1-4])$", s)
+        if m:
+            y, q = int(m.group(1)), int(m.group(2))
+            mo = q * 3
+            return f"{y}-{mo:02d}-{_calendar.monthrange(y, mo)[1]:02d}"
+    if freq == "annual":
+        m = _re.match(r"^(\d{4})$", s)
+        if m:
+            return f"{m.group(1)}-12-31"
+    return s
+
+
+def _fix_low_freq_last_updated(layers, today):
+    """[CIO 2026-11-12] last_updated 禁构建日。
+
+    月/季/年频指标若把 last_updated 写成构建日（构建当天），
+    改为该序列尾点的期末日期；日频指标保留（其数据本就当日可得，
+    且 build 只负责搬运，不是伪造）。
+    """
+    fixed = []
+
+    def _scan(node, path):
+        if isinstance(node, dict):
+            fq = node.get("frequency")
+            h = node.get("history") or []
+            if fq in ("monthly", "quarterly", "annual") and h and \
+               str(node.get("last_updated")) == today and isinstance(h[-1], dict):
+                new = _period_end(h[-1].get("date"), fq)
+                if new and new != node.get("last_updated"):
+                    node["last_updated"] = new
+                    fixed.append(f"{path.split('/')[-1]}: {today} -> {new}")
+            for k, v in node.items():
+                if isinstance(v, (dict, list)):
+                    _scan(v, path + "/" + k)
+        elif isinstance(node, list):
+            for v in node:
+                _scan(v, path)
+
+    _scan(layers, "cycle_layers")
+    return fixed
+
+
 def _assert_no_slope_across_gap(layers):
     """[CIO 2026-11-12] 含 data_gap_note 的指标不得出现斜率/动量字段。"""
     bad = []
@@ -1468,6 +1516,11 @@ def build():
     })
     print(f"⚠ 桩值扫描：{len(_flags)} 项脱节（" +
           ", ".join(f"{k}={v}" for k, v in sorted(_by_status.items())) + "）→ data/v4_stub_flags.json")
+
+    _lu_today = str((out.get("_meta") or {}).get("update_time") or "")[:10]
+    _lu_fixed = _fix_low_freq_last_updated(out["cycle_layers"], _lu_today) if _lu_today else []
+    if _lu_fixed:
+        print("⚠ last_updated 禁构建日：低中频指标回退到序列期末 " + ", ".join(_lu_fixed))
 
     _slope_bad = _assert_no_slope_across_gap(out["cycle_layers"])
     if _slope_bad:
