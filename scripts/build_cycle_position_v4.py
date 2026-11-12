@@ -1156,9 +1156,20 @@ def _gap_months(a_key, b_key):
 
 
 
-def _period_end(d, freq):
-    """把序列尾点日期规范成该频率的期末日期。"""
+def _period_end(d, freq, today=None):
+    """把序列尾点日期规范成该频率的期末日期。
+
+    [CIO 2026-11-12] 年频尾点若等于当前年（年内滚动指标，如 key_ratio），
+    直接算 12-31 会得到未来日期——比伪造构建日更糟。此时夹到 today。
+    """
     s = str(d or "").strip()
+    _v = _period_end_raw(s, freq, today)
+    if today and _v and len(str(_v)) == 10 and str(_v) > str(today):
+        return str(today)
+    return _v
+
+
+def _period_end_raw(s, freq, today=None):
     if freq == "monthly":
         return _month_end(s)
     if freq == "quarterly":
@@ -1170,29 +1181,37 @@ def _period_end(d, freq):
     if freq == "annual":
         m = _re.match(r"^(\d{4})$", s)
         if m:
+            # 年内未结束的年度值（滚动年频，如 key_ratio / cn_savings_rate）：
+            # 算 12-31 是未来日期，夹到 today 又变成构建日虚标 → 保留年份语义。
+            if today and int(m.group(1)) >= int(str(today)[:4]):
+                return s
             return f"{m.group(1)}-12-31"
     return s
 
 
-def _fix_low_freq_last_updated(layers, today):
-    """[CIO 2026-11-12] last_updated 禁构建日。
+def _fix_last_updated_to_tail(layers, today=None):
+    """[CIO 2026-11-12 裁决] last_updated 一律取序列尾点日期，全频率无豁免。
 
-    月/季/年频指标若把 last_updated 写成构建日（构建当天），
-    改为该序列尾点的期末日期；日频指标保留（其数据本就当日可得，
-    且 build 只负责搬运，不是伪造）。
+    原实现只修月/季/年频，给日频留了「数据本就当日可得」的豁免。CIO 指出这条
+    豁免不成立且被数据反驳：term_premium lu=11-12 而尾点 11-06（差 6 天）、
+    credit_spread_ig 差 3 天、yield_curve_2s10s 差 2 天——豁免正好把 6 天陈旧盖住。
+
+    正确规则：尾点等于当日时自然等于构建日，不需要特判；不等时就该如实显示并
+    触发黄灯，那正是要看到的东西。无 history 的对象（如 asset_ranking，是当日
+    计算结果不是序列）跳过。
     """
     fixed = []
 
     def _scan(node, path):
         if isinstance(node, dict):
-            fq = node.get("frequency")
             h = node.get("history") or []
-            if fq in ("monthly", "quarterly", "annual") and h and \
-               str(node.get("last_updated")) == today and isinstance(h[-1], dict):
-                new = _period_end(h[-1].get("date"), fq)
-                if new and new != node.get("last_updated"):
+            fq = node.get("frequency")
+            lu = node.get("last_updated")
+            if fq and lu and h and isinstance(h[-1], dict) and h[-1].get("date"):
+                new = _period_end(h[-1]["date"], fq, today) or str(h[-1]["date"])
+                if new and str(new) != str(lu):
                     node["last_updated"] = new
-                    fixed.append(f"{path.split('/')[-1]}: {today} -> {new}")
+                    fixed.append(f"{path.split('/')[-1]}: {lu} -> {new}")
             for k, v in node.items():
                 if isinstance(v, (dict, list)):
                     _scan(v, path + "/" + k)
@@ -1518,9 +1537,11 @@ def build():
           ", ".join(f"{k}={v}" for k, v in sorted(_by_status.items())) + "）→ data/v4_stub_flags.json")
 
     _lu_today = str((out.get("_meta") or {}).get("update_time") or "")[:10]
-    _lu_fixed = _fix_low_freq_last_updated(out["cycle_layers"], _lu_today) if _lu_today else []
+    _lu_fixed = _fix_last_updated_to_tail(out["cycle_layers"], _lu_today or None)
     if _lu_fixed:
-        print("⚠ last_updated 禁构建日：低中频指标回退到序列期末 " + ", ".join(_lu_fixed))
+        print(f"⚠ last_updated 对齐序列尾点（全频率无豁免，CIO 裁决）：{len(_lu_fixed)} 处")
+        for _x in _lu_fixed[:12]:
+            print("    " + _x)
 
     _slope_bad = _assert_no_slope_across_gap(out["cycle_layers"])
     if _slope_bad:

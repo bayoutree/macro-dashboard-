@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T16:33:17+08:00"
+    "v4_built_at": "2026-11-12T16:46:20+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -88,7 +88,7 @@
               "warning": 100,
               "critical": 130
             },
-            "last_updated": "2026-08-15",
+            "last_updated": "2026-06-30",
             "history": [
               {
                 "date": "2000Q1",
@@ -1730,7 +1730,7 @@
             "source": "FRED FYFSGDA188S（Federal Surplus or Deficit as Percent of GDP）",
             "current": -5.75,
             "unit": "%",
-            "last_updated": "2025-09-30",
+            "last_updated": "2025-12-31",
             "history": [
               {
                 "date": "2015",
@@ -2051,7 +2051,7 @@
               "warning": 60,
               "critical": 80
             },
-            "last_updated": "2026-06-01",
+            "last_updated": "2026",
             "history": [
               {
                 "date": "2015",
@@ -2117,7 +2117,7 @@
             "current": 0.6,
             "unit": "0-1评分",
             "description": "0=未启动，1=基本完成",
-            "last_updated": "2026-06-01",
+            "last_updated": "2026",
             "history": [
               {
                 "date": "2015",
@@ -2267,7 +2267,7 @@
           "us": {
             "current": 0.8,
             "unit": "%",
-            "last_updated": "2026-06-15",
+            "last_updated": "2026",
             "percentile": {
               "p25": 0.5,
               "p50": 1.0,
@@ -2409,7 +2409,7 @@
           "cn": {
             "current": 1.2,
             "unit": "%",
-            "last_updated": "2026-06-15",
+            "last_updated": "2026",
             "percentile": {
               "p25": 0.9,
               "p50": 1.8,
@@ -2876,7 +2876,7 @@
             "current": -0.3,
             "unit": "标准化",
             "description": "劳动年龄人口占比变化率，负值=老龄化拖累自然利率下行",
-            "last_updated": "2026-06-01",
+            "last_updated": "2026",
             "frequency": "annual",
             "history": [
               {
@@ -2940,7 +2940,7 @@
               "description": "China labor productivity growth (GDP/employment, NBS)"
             },
             "description": "TFP+资本深化的综合效率指标",
-            "last_updated": "2026-06-15",
+            "last_updated": "2026-03-31",
             "frequency": "quarterly",
             "history": [
               {
@@ -3375,7 +3375,7 @@
               "frequency": "annual"
             },
             "description": "储蓄-投资差额占GDP比重，反映国内资金供需缺口",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026",
             "frequency": "annual",
             "history": [
               {
@@ -6344,7 +6344,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -19030,7 +19030,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-06",
             "frequency": "daily",
             "history": [
               {
@@ -30960,7 +30960,7 @@
               "frequency": "annual"
             },
             "description": "全要素生产率增速，反映长期增长潜力",
-            "last_updated": "2026-06-15",
+            "last_updated": "2026",
             "frequency": "annual",
             "history": [
               {
@@ -31806,7 +31806,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-10",
             "frequency": "daily",
             "history": [
               {
@@ -44520,7 +44520,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -49557,7 +49557,7 @@
               "frequency": "monthly"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-10-31",
             "frequency": "monthly",
             "history": [
               {
@@ -50398,7 +50398,7 @@
             "current": -10.07,
             "unit": "%",
             "description": "中国固定资产投资累计同比，反映企业扩产意愿",
-            "last_updated": "2026-09",
+            "last_updated": "2026-09-30",
             "frequency": "monthly",
             "history": [
               {
@@ -50847,7 +50847,7 @@
             "source": "ISM® Manufacturing PMI®（PR Newswire 分发官方稿）",
             "unit": "",
             "current": 55.5,
-            "last_updated": "2026-10",
+            "last_updated": "2026-10-31",
             "percentile": {
               "p25": 48.7,
               "p50": 52.7,
@@ -51789,7 +51789,7 @@
             "source": "国家统计局",
             "unit": "",
             "current": 49.3,
-            "last_updated": "2026-10",
+            "last_updated": "2026-10-31",
             "percentile": {
               "p25": 49.3,
               "p50": 50.1,
@@ -51879,7 +51879,7 @@
             "current": 3.2,
             "unit": "%",
             "description": "中国工业企业产成品库存增速，负值=主动去库，回升=被动去库/主动补库",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026-01-31",
             "frequency": "monthly",
             "history": [
               {
@@ -53470,7 +53470,7 @@
               ]
             },
             "description": "实际GDP季度环比年化增速",
-            "last_updated": "2026-08-30",
+            "last_updated": "2026-06-30",
             "frequency": "quarterly",
             "history": [
               {
@@ -53836,7 +53836,7 @@
             "source": "国家统计局/AKShare",
             "unit": "%",
             "current": 0.7,
-            "last_updated": "2026-10",
+            "last_updated": "2026-10-31",
             "history": [
               {
                 "date": "2022-01",
@@ -53924,7 +53924,7 @@
             "source": "国家统计局/AKShare",
             "unit": "%",
             "current": 5.7,
-            "last_updated": "2026-10",
+            "last_updated": "2026-10-31",
             "history": [
               {
                 "date": "2022-01",
@@ -54069,7 +54069,7 @@
               ]
             },
             "description": "规模以上工业增加值同比增速",
-            "last_updated": "2026-09",
+            "last_updated": "2026-09-30",
             "frequency": "monthly",
             "history": [
               {
