@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-12T11:11:56+08:00",
+  "generated_at": "2026-11-12T12:44:13+08:00",
   "builder": "scripts/build_cycle_position_v4.py:annotate_data_quality",
   "caliber": "history 尾点日期/值与 last_updated/current 脱节的层内指标全量清单；status: stub=真桩值(前端灰灯) / lag_normal=正常滞后 / meta_error=元数据标错 / unverified=待定级",
   "summary": {
-    "flagged": 3,
+    "flagged": 2,
     "by_status": {
-      "stub": 3
+      "stub": 2
     },
-    "stub_count": 3
+    "stub_count": 2
   },
   "flags": [
     {
@@ -41,22 +41,6 @@
       "status": "stub",
       "collectable": true,
       "note": "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"
-    },
-    {
-      "path": "cycle_juglar/cn/indicators/high_tech_manufacturing_investment",
-      "name": "高技术制造业投资增速",
-      "current": 12.5,
-      "unit": "%",
-      "tail_date": "2026-01",
-      "tail_value": 12.5,
-      "last_updated": "2026-08-06",
-      "frequency": "monthly",
-      "gap_months": 7.2,
-      "kind": "date_mismatch",
-      "timestamp_faked": false,
-      "status": "stub",
-      "collectable": true,
-      "note": "静态桩值：history 尾点 2026-01=12.5，current 标 2026-08-06；NBS data.stats.gov.cn 对本机 IP 返回 403 WAF(UrlACL)，换出口可打通（CIO 批 A 路）。"
     }
   ]
 }

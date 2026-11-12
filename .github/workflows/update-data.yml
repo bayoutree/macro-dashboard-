@@ -125,6 +125,16 @@ jobs:
         env:
           PYTHONUNBUFFERED: '1'
 
+      # [CIO 2026-11-12 ⑤ 方案 A] 高技术制造业投资：NBS 解读稿解析（www.stats.gov.cn 文章页）
+      # 不走 data.stats.gov.cn easyquery API（UrlACL 403）；WAF 需 cookie 会话 + 退避。
+      - name: Collect NBS high-tech investment
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'full'
+        timeout-minutes: 15
+        continue-on-error: true
+        run: python scripts/fetch_nbs_high_tech.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
       # ----------------------------------------------------------
       # 4. 运行数据更新
       # ----------------------------------------------------------

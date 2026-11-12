@@ -36,6 +36,7 @@ asset_allocation 配置卡口径一致。
 """
 
 import json
+import calendar as _calendar
 import re as _re
 import re
 import sys
@@ -688,6 +689,7 @@ def _fix_credit_spread_units(layers):
 # ------------------------------------------------------------------
 INDICATORS_JSON = DATA_DIR.parent / "macro-econ-dashboard" / "data" / "indicators.json"
 FRED_RAW_JSON = DATA_DIR / "fred_raw.json"
+NBS_RAW_JSON = DATA_DIR / "nbs_high_tech_raw.json"
 
 # 元组: (层, side, 指标键, 源类型, 源路径, 除数换算 or None)
 UPSTREAM_REFRESH = [
@@ -714,6 +716,9 @@ UPSTREAM_REFRESH = [
     # 层内原为季度桩点（尾点 2025Q1=-5.76906）+ current=6.5 编造值（符号反），
     # 故用 mode="replace_annual" 整体重建为 FRED FYFSGDA188S 年度序列。
     ("constraint_debt_cycle", "us", "fiscal_deficit_gdp", "fred", ["deficit_gdp_fy"], None, "replace_annual"),
+    # ---- [CIO 2026-11-12 ⑤ 方案 A] 高技术制造业投资：NBS 解读稿解析的月度累计同比整段重建 ----
+    # 层内原为 3 个年度桩点（11.8/12.0/12.5，与官方年度值 22.2/9.9/7.0 无法调和），故整体替换。
+    ("cycle_juglar", "cn", "high_tech_manufacturing_investment", "nbs", ["high_tech_mfg"], None, "replace_monthly"),
 ]
 
 
@@ -749,6 +754,17 @@ def _iso_date(s):
     return {1: f"{y}-03-31", 2: f"{y}-06-30", 3: f"{y}-09-30", 4: f"{y}-12-31"}[q]
 
 
+def _month_end(s):
+    """'2026-09' -> '2026-09-30'（前端 new Date 可解析且不虚标到构建日）。"""
+    if not isinstance(s, str):
+        return s
+    m = _re.match(r"^(\d{4})-(\d{2})$", s.strip())
+    if not m:
+        return _iso_date(s)
+    y, mo = int(m.group(1)), int(m.group(2))
+    return f"{y}-{mo:02d}-{_calendar.monthrange(y, mo)[1]:02d}"
+
+
 def _dig(obj, path):
     for k in path:
         if not isinstance(obj, dict):
@@ -781,6 +797,11 @@ def refresh_indicators_from_upstream(layers):
             _node = _dig(_doc, path[1:]) if len(path) > 1 else _doc
             src_hist = [h for h in (_node or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
+        elif src_kind == "nbs":
+            # [CIO 2026-11-12 ⑤] data/nbs_high_tech_raw.json 由 fetch_nbs_high_tech.py 生成
+            _nd = load_json(NBS_RAW_JSON) if NBS_RAW_JSON.exists() else {}
+            src_hist = [h for h in ((_nd.get("series") or {}).get(path[0]) or [])
+                        if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
         else:  # fred_raw
             src_hist = [h for h in ((fred.get("series") or {}).get(path[0]) or [])
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
@@ -805,6 +826,38 @@ def refresh_indicators_from_upstream(layers):
             src_hist = _yoy
         if not src_hist:
             continue
+        if mode == "replace_monthly":
+            # [CIO 2026-11-12 ⑤ 方案 A] 月度累计同比整段重建。
+            # 序列允许存在官方停发造成的断档（2024-12~2026-01），不插值、不补造，
+            # 断档原因写入 data_gap_note 随数据交付。
+            _keep = [h for h in src_hist if (_date_key(h["date"]) or (0,)) >= (2016, 1, 1)]
+            if len(_keep) >= 24:
+                _old = node.get("history") or []
+                node["history_legacy_stub"] = _old
+                node["history"] = [{"date": h["date"], "value": round(float(h["value"]), 2)}
+                                   for h in _keep]
+                _t = node["history"][-1]
+                node["current"] = _t["value"]
+                node["last_updated"] = _month_end(_t["date"])
+                node["frequency"] = "monthly"
+                node["unit"] = "%"
+                node["source"] = ("国家统计局 固定资产投资统计司 投资数据解读稿"
+                                  "（www.stats.gov.cn/sj/sjjd/，月度/季度累计同比）")
+                node["caliber"] = ("1—N 月累计同比（%），全国固定资产投资（不含农户）口径下的"
+                                   "高技术制造业投资。注意：与「高技术产业投资」不同口径"
+                                   "（后者 = 高技术制造业 + 高技术服务业），2026 年 1—9 月两者差 0.9pp。")
+                node["data_gap_note"] = (
+                    "2024-12 ~ 2026-01 共 14 个月官方未发布该口径总量增速（仅发布高技术服务业"
+                    "投资与分行业分项），属国家统计局发布口径变更，非采集缺失；2026-02 起恢复。"
+                    "断档期不做插值。")
+                node["current_nulled"] = None
+                _pb = percentile_bands(node["history"])
+                if _pb:
+                    node["percentile"] = _pb
+                changes.append(
+                    f"{layer_key}.{side}.{ind_key}: 月度累计同比重建 {len(_old)}->{len(_keep)} 点，"
+                    f"-> {_t['value']}@{_t['date']}（{_pb.get('current_rank') if _pb else '-'}）")
+                continue
         if mode == "replace_annual":
             # 年度口径整段重建：history 只保留 'YYYY' 标签，frequency=annual
             _keep = [h for h in src_hist if (_date_key(h["date"]) or (0,)) >= (2015, 1, 1)]
@@ -1031,8 +1084,6 @@ STUB_REGISTRY = {
         "静态桩值：history 尾点 2026-01=46.8，current 却标 2026-08-31；从未灌过 2026 年数据，非「停在 8 月」而是从未更新。NBS 分项无源，CIO 已批 A 路补采（P1，截止 11-15）。"),
     "cycle_kitchin/cn/indicators/cn_inventory_cycle": ("stub",
         "静态桩值：history 尾点 2026-01=3.2，current 标 2026-08-15；同 cn_pmi_finished_goods 病灶。"),
-    "cycle_juglar/cn/indicators/high_tech_manufacturing_investment": ("stub",
-        "静态桩值：history 尾点 2026-01=12.5，current 标 2026-08-06；NBS data.stats.gov.cn 对本机 IP 返回 403 WAF(UrlACL)，换出口可打通（CIO 批 A 路）。"),
     "constraint_debt_cycle/us/indicators/fiscal_deficit_gdp": ("stub",
         "current=6.5 与 history 尾点 2025Q1=-5.76906 符号相反；FRED FYFSGDA188S（联邦赤字/GDP）2025 实为 -5.7527，current=6.5 属编造值，必须摘除或改正。"),
     "constraint_debt_cycle/us/indicators/interest_to_revenue": ("meta_error",
@@ -1109,6 +1160,8 @@ def annotate_data_quality(layers, built_at):
             ts_faked = bool(lu) and isinstance(lu, str) and lu[:10] >= built_at[:10]
 
             if not (value_mis or date_mis):
+                # 已对齐：清掉上一轮遗留的 data_quality（否则重建后仍挂旧灰灯）
+                node.pop("data_quality", None)
                 return
             kind = "value_mismatch" if value_mis else "date_mismatch"
             reg = STUB_REGISTRY.get(path)
