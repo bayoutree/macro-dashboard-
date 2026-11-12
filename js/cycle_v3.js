@@ -197,6 +197,20 @@ const CycleV3Module = (() => {
     return { cls:'expired', label:`${lastUpdated} | ${freqLabel} | ⚠️数据断更`, days, freqLabel, date:lastUpdated };
   }
 
+  /**
+   * [CIO 2026-11-12 口径裁决] 官方断档可视提示。
+   * 指标带 data_gap_note 时，在卡片内显式标注断档区间，
+   * 避免读者把「断档后的跳变」误读成连续趋势。
+   */
+  function gapBadge(ind) {
+    const g = ind && ind.data_gap_note;
+    if (!g) return '';
+    const m = String(g).match(/(\d{4}-\d{2})\s*[~～至\-—]+\s*(\d{4}-\d{2})/);
+    const label = m ? (m[1] + ' ~ ' + m[2] + ' 官方断档') : '官方断档';
+    return '<div class="data-gap-note" title="' + escapeHtml(String(g)) + '">⚠️ ' +
+      escapeHtml(label) + '（不插值）</div>';
+  }
+
   function freshnessBadge(lastUpdated, frequency, assessmentDate, quality) {
     const f = getFreshness(lastUpdated, frequency, assessmentDate, quality);
     if (f.cls === 'stub') {
@@ -270,6 +284,7 @@ const CycleV3Module = (() => {
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           ${threshHtml}
           <div class="ind-source" title="${escapeHtml(ind.source||'')}">来源: ${escapeHtml((ind.source||'').split('(')[0])}</div>
+          ${gapBadge(ind)}
           ${debtChart}
           ${ind.source_url ? `<a href="${escapeHtml(ind.source_url)}" target="_blank" class="source-link">📎 数据来源</a>` : ''}
         </div>`;
@@ -511,6 +526,7 @@ const CycleV3Module = (() => {
           ${descHtml}
           <div id="${chartId}" class="chart-container" style="width:100%;height:100px;margin-top:4px;"></div>
           ${sourceUrlHtml}
+          ${gapBadge(ind)}
           ${f}
         </div>`;
       }).join('');
@@ -568,6 +584,7 @@ const CycleV3Module = (() => {
           <div class="ind-value">${fmtNum(ind.current)} <span class="ind-unit">${escapeHtml(ind.unit||'')}</span></div>
           <div id="chart-${prefix}-${key}-${k}" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>
           ${juglarSourceUrl}
+          ${gapBadge(ind)}
         </div>`;
       }).join('');
       return `
@@ -1150,6 +1167,7 @@ const CycleV3Module = (() => {
           '<div class="ind-value">' + fmtNum(ind.current) + ' <span class="ind-unit">' + escapeHtml(ind.unit||'') + '</span></div>' +
           '<div id="chart-merrill-' + key + '-' + k + '" class="chart-container" style="width:100%;height:120px;margin-top:8px;"></div>' +
           merrillSourceUrl +
+          gapBadge(ind) +
           '</div>';
       }).join('');
       return '<div class="region-card">' +

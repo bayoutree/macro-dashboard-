@@ -850,6 +850,14 @@ def refresh_indicators_from_upstream(layers):
                     "2024-12 ~ 2026-01 共 14 个月官方未发布该口径总量增速（仅发布高技术服务业"
                     "投资与分行业分项），属国家统计局发布口径变更，非采集缺失；2026-02 起恢复。"
                     "断档期不做插值。")
+                # [CIO 2026-11-12 口径裁决] 断档期禁做趋势外推：
+                # 层内打分只允许用 percentile（值分布，与时间连续性无关），
+                # 禁止跨断档区间计算斜率/动量/环比，否则会把 14 个月空洞当成真实跳变。
+                node["score_policy"] = {
+                    "mode": "percentile_only",
+                    "slope_across_gap": "forbidden",
+                    "reason": "2024-12~2026-01 官方停发，跨该区间算斜率会把断档当跳变",
+                }
                 node["current_nulled"] = None
                 _pb = percentile_bands(node["history"])
                 if _pb:
@@ -1112,6 +1120,25 @@ def _gap_months(a_key, b_key):
         return None
     return round(((a_key[0] - b_key[0]) * 12 + (a_key[1] - b_key[1])) + (a_key[2] - b_key[2]) / 30.0, 1)
 
+
+
+def _assert_no_slope_across_gap(layers):
+    """[CIO 2026-11-12] 含 data_gap_note 的指标不得出现斜率/动量字段。"""
+    bad = []
+
+    def _scan(node, path):
+        if not isinstance(node, dict):
+            return
+        if node.get("data_gap_note"):
+            for k in ("slope", "trend_slope", "momentum", "mom_3m", "delta_qoq"):
+                if k in node:
+                    bad.append(f"{path}.{k}")
+        for k, v in node.items():
+            if isinstance(v, dict):
+                _scan(v, f"{path}.{k}")
+
+    _scan(layers, "cycle_layers")
+    return bad
 
 def annotate_data_quality(layers, built_at):
     """遍历层内全部指标节点，打 data_quality 标记，返回全站桩值扫描清单。
@@ -1407,6 +1434,11 @@ def build():
     })
     print(f"⚠ 桩值扫描：{len(_flags)} 项脱节（" +
           ", ".join(f"{k}={v}" for k, v in sorted(_by_status.items())) + "）→ data/v4_stub_flags.json")
+
+    _slope_bad = _assert_no_slope_across_gap(out["cycle_layers"])
+    if _slope_bad:
+        print("❌ 断档指标出现斜率字段（CIO 2026-11-12 裁决禁止）：" + ", ".join(_slope_bad))
+        return 1
 
     save_json(V4_FILE, out)
 

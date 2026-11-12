@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T12:44:13+08:00"
+    "v4_built_at": "2026-11-12T15:58:26+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -50385,7 +50385,12 @@
             ],
             "caliber": "1—N 月累计同比（%），全国固定资产投资（不含农户）口径下的高技术制造业投资。注意：与「高技术产业投资」不同口径（后者 = 高技术制造业 + 高技术服务业），2026 年 1—9 月两者差 0.9pp。",
             "data_gap_note": "2024-12 ~ 2026-01 共 14 个月官方未发布该口径总量增速（仅发布高技术服务业投资与分行业分项），属国家统计局发布口径变更，非采集缺失；2026-02 起恢复。断档期不做插值。",
-            "current_nulled": null
+            "current_nulled": null,
+            "score_policy": {
+              "mode": "percentile_only",
+              "slope_across_gap": "forbidden",
+              "reason": "2024-12~2026-01 官方停发，跨该区间算斜率会把断档当跳变"
+            }
           },
           "fixed_asset_investment": {
             "name": "固定资产投资增速",

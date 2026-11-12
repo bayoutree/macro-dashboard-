@@ -685,3 +685,15 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* [CIO 2026-11-12 口径裁决] 官方断档可视提示：有洞就标，禁止让读者误读为连续趋势 */
+.data-gap-note {
+  margin-top: 6px;
+  padding: 3px 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.45);
+  border-radius: 4px;
+}
