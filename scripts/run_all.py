@@ -108,7 +108,15 @@ def main():
     if success_count == len(results):
         logger.info("🎉 所有数据更新成功!")
     else:
-        logger.warning(f"⚠️ {len(results) - success_count} 个脚本执行失败")
+        failed = [r["script"] for r in results if not r["success"]]
+        logger.error(f"❌ {len(failed)} 个脚本执行失败: " + ", ".join(failed))
+
+    # [2026-11-12 修复] 原实现失败只 warning、退出码仍 0，CI 认为整批成功，
+    # 失败脚本被静默吞掉（缺数无人知）。改为非零退出，让 CI 亮红。
+    if success_count != len(results):
+        _failed = [r["script"] for r in results if not r["success"]]
+        logger.error("批次失败，退出码 1。失败脚本：" + ", ".join(_failed))
+        sys.exit(1)
 
     # 检查输出文件
     expected_files = [

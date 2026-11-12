@@ -1,0 +1,39 @@
+{
+ "generated_at": "2026-11-12T19:29:27+08:00",
+ "file": "data/timing_history.json",
+ "caliber": "timing_history 是「A股择时综合评分」的日频序列（composite_score/stage/dimensions）。本文件只记录该序列的断档说明，不做插值、不回补。",
+ "rule": "缺口如实保留；跨缺口禁止计算斜率/动量/环比（与 v4 data_gap_note 的 score_policy 同规则）。",
+ "gaps": [
+  {
+   "start": "2026-11-03",
+   "end": "2026-11-06",
+   "trading_days": 4,
+   "kind": "pipeline_gap",
+   "reason": "该期间日更链路未成功产出 composite（跑批未跑通/未落盘），属采集中断，不是上游数据停发。",
+   "action": "不插值、不回补；前端曲线按真实点连线，不补虚拟点",
+   "verified_by": "松子 2026-11-12"
+  },
+  {
+   "start": "2026-10-01",
+   "end": "2026-10-07",
+   "trading_days": 0,
+   "kind": "holiday",
+   "reason": "国庆假期休市，非缺口",
+   "action": "无需处理"
+  },
+  {
+   "start": "2026-11-12",
+   "end": "2026-11-12",
+   "trading_days": 1,
+   "kind": "same_day_pending",
+   "reason": "当日跑批尚未产出（本文件生成于当日盘中/盘后早期）",
+   "action": "待当日跑批产出后自动补齐；若次日仍缺，按 pipeline_gap 处理"
+  }
+ ],
+ "summary": {
+  "real_gaps": 1,
+  "holiday": 1,
+  "pending": 1,
+  "note": "唯一真缺口 = 2026-11-03~06 四个交易日"
+ }
+}

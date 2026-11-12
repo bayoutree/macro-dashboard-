@@ -2,7 +2,7 @@
   "update_time": "2026-11-12",
   "us_stock": {
     "shiller_pe": {
-      "value": null,
+      "value": 40.24,
       "percentile": null,
       "history": []
     },
@@ -119,8 +119,8 @@
   },
   "cn_stock": {
     "hs300_pe": {
-      "value": 12.64,
-      "percentile": 52.3077,
+      "value": 12.6,
+      "percentile": 51.1538,
       "history": [
         {
           "date": "2021-12-31",
@@ -359,8 +359,8 @@
           "value": 12.17
         },
         {
-          "date": "2026-11-11",
-          "value": 12.64
+          "date": "2026-11-12",
+          "value": 12.6
         }
       ]
     },
@@ -370,7 +370,7 @@
       "history": []
     },
     "csi500_pe": {
-      "value": 22.94,
+      "value": 22.6,
       "percentile": null,
       "history": []
     }

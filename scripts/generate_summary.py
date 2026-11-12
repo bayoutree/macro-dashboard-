@@ -13,8 +13,52 @@ from config import logger, today_str, save_json, load_json
 # ============================================================
 # 规则引擎
 # ============================================================
+def _analyze_cycle_v4():
+    """[2026-11-12 修复] L1 优先读 v4 的 cycle_layers + cycle_consensus。
+
+    原实现只读 cycle_position.json 并取 resonance.regime，而 v4 架构下该字段
+    不存在（v4 用 cycle_layers.*.current_phase + cycle_consensus），导致 L1 结论
+    长期恒为「周期共振: 未知」。改为优先读 v4，回退旧结构。
+    """
+    v4 = load_json("cycle_position_v4.json")
+    if not v4:
+        return None
+    cl = v4.get("cycle_layers") or {}
+    cc = v4.get("cycle_consensus") or {}
+    if not cl and not cc:
+        return None
+    jg = (cl.get("cycle_juglar") or {}).get("cn") or {}
+    kt = (cl.get("cycle_kitchin") or {}).get("cn") or {}
+    parts = []
+    if jg.get("current_phase"):
+        parts.append("朱格拉" + str(jg["current_phase"]).split("（")[0])
+    if kt.get("current_phase"):
+        parts.append("基钦" + str(kt["current_phase"]))
+    score = cc.get("overall_score")
+    tail = f"（共识度 {score}/100）" if score is not None else ""
+    if parts:
+        concl = "周期共振: " + " + ".join(parts) + tail
+    elif cc.get("overall_assessment"):
+        concl = "周期共振: " + str(cc["overall_assessment"]).split("，")[0] + tail
+    else:
+        return None
+    # 资产含义按「朱格拉+基钦同向上行」判定，与旧逻辑口径一致
+    jb = any(k in str(jg.get("current_phase") or "") for k in ("上升", "上行", "扩张"))
+    ib = any(k in str(kt.get("current_phase") or "") for k in ("补库", "扩张"))
+    if jb and ib:
+        sig, imp = "bullish", {"stock": "+", "bond": "-", "commodity": "+", "gold": "0"}
+    elif jb:
+        sig, imp = "neutral_bullish", {"stock": "+", "bond": "0", "commodity": "+", "gold": "0"}
+    else:
+        sig, imp = "neutral", {"stock": "0", "bond": "+", "commodity": "-", "gold": "+"}
+    return {"conclusion": concl, "signal": sig, "assets_impact": imp}
+
+
 def analyze_cycle(cycle_data):
     """L1: 周期信号分析"""
+    _v4 = _analyze_cycle_v4()
+    if _v4:
+        return _v4
     if not cycle_data:
         return {
             "conclusion": "周期数据未加载",

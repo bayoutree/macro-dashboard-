@@ -56,17 +56,20 @@ def get_shiller_cape():
         resp = requests.get(url, headers=headers, timeout=15)
         if resp.status_code == 200:
             import re
-            # 查找页面中的 PE 值
+            # [2026-11-12 修复] multpl.com 改版：原 id="current_val" 已不存在，
+            # 导致长期返回 None（shiller_pe 一直是 null）。改从 meta description 取：
+            #   "Current Shiller PE Ratio is 40.24, a change of +0.54 from previous market close."
+            match = re.search(
+                r'Current Shiller PE Ratio is ([\d.]+)', resp.text)
+            if match:
+                val = float(match.group(1))
+                logger.info(f"  ✓ Shiller CAPE from multpl.com (meta): {val}")
+                return val
+            # 兼容旧版
             match = re.search(r'id="current_val"[^>]*>([\d.]+)', resp.text)
             if match:
                 val = float(match.group(1))
                 logger.info(f"  ✓ Shiller CAPE from multpl.com: {val}")
-                return val
-            # 备用匹配
-            match = re.search(r'([\d.]+)</h1>', resp.text)
-            if match:
-                val = float(match.group(1))
-                logger.info(f"  ✓ Shiller CAPE from multpl.com (alt): {val}")
                 return val
     except Exception as e:
         logger.warning(f"  ✗ multpl.com 获取失败: {e}")

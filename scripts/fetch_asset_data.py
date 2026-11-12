@@ -170,10 +170,19 @@ def download_with_retry(symbol, period="5y", max_retries=MAX_RETRIES):
                 return hist
             else:
                 logger.warning(f"  ⚠ {symbol}: 返回空数据 (attempt {attempt+1})")
+                # [2026-11-12 修复] 空数据分支原来不 sleep，下一轮立刻重打，
+                # 正是触发 yfinance 429 限流的原因之一。一并退避。
+                if attempt < max_retries - 1:
+                    _d = RETRY_DELAY * (2 ** attempt)
+                    logger.info(f"    退避 {_d}s 后重试")
+                    time.sleep(_d)
         except Exception as e:
             logger.warning(f"  ✗ {symbol}: {e} (attempt {attempt+1})")
             if attempt < max_retries - 1:
-                time.sleep(RETRY_DELAY * (attempt + 1))
+                # 指数退避 5s → 10s → 20s，替代原线性 5s → 10s
+                _d = RETRY_DELAY * (2 ** attempt)
+                logger.info(f"    退避 {_d}s 后重试")
+                time.sleep(_d)
     logger.error(f"  ❌ {symbol}: 所有重试均失败")
     return pd.DataFrame()
 
