@@ -652,11 +652,20 @@ def layer_render(root: Path, base: str, registry: dict, results: list, coverage:
                                               {"shown": dm.group(0), "source": src_d}))
                     continue
 
-                num = re.search(v["pattern"] if v.get("pattern") else r"-?\d+(?:\.\d+)?", txt.replace(",", ""))
+                # 正则取值：优先用捕获组（如 r"当前\s*([\d.]+)\s*分"），否则取整个匹配
+                _pat = v.get("pattern") or r"-?\d+(?:\.\d+)?"
+                num = re.search(_pat, txt.replace(",", ""))
                 if not num:
                     results.append(Result(code, "L3", v["label"], R["FAIL"], f"页面无数值：{txt!r}"))
                     continue
-                shown = float(num.group(0))
+                _raw = num.group(1) if num.groups() else num.group(0)
+                _raw = re.sub(r"[^0-9.\-]", "", _raw or "")
+                try:
+                    shown = float(_raw)
+                except Exception:
+                    results.append(Result(code, "L3", v["label"], R["FAIL"],
+                                          f"页面文本无法解析为数值：{txt!r}"))
+                    continue
                 rel = v["file"]
                 if rel not in cache:
                     try:
@@ -867,8 +876,14 @@ def main():
             log(f"   本地静态服务 {base}")
         try:
             registry = load_json(Path(args.registry))
-            layer_render(root, base, registry, results, coverage,
-                         Path(args.out) / "screenshots")
+            try:
+                layer_render(root, base, registry, results, coverage,
+                             Path(args.out) / "screenshots")
+            except Exception as exc:
+                # 单点异常不得让整层静默丢失：记 FAIL 后继续出报告，保留已有证据
+                results.append(Result("HC-R-ERR", "L3", "呈现层",
+                                      R["FAIL"],
+                                      f"呈现层运行中断：{type(exc).__name__}: {exc}（已采集结果仍留档，须修复后复跑）"))
         finally:
             if httpd:
                 httpd.shutdown()
