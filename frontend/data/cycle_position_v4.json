@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T16:24:51+08:00",
+    "update_time": "2026-11-13T00:49:07+08:00",
     "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T22:13:17+08:00"
+    "v4_built_at": "2026-11-12T16:49:07+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2778,11 +2778,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.34,
+          "current_value": 3.3,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-09"
+          "last_updated": "2026-11-11"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -44574,7 +44574,7 @@
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -47744,11 +47744,15 @@
               {
                 "date": "2026-11-09",
                 "value": 0.91
+              },
+              {
+                "date": "2026-11-11",
+                "value": 0.9
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.91
+            "current": 0.9
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48571,7 +48575,7 @@
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -49549,10 +49553,14 @@
               {
                 "date": "2026-11-11",
                 "value": 22.12
+              },
+              {
+                "date": "2026-11-12",
+                "value": 22.43
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.12
+            "current": 22.43
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -84705,6 +84713,10 @@
             {
               "date": "2026-11-09",
               "value": 0.91
+            },
+            {
+              "date": "2026-11-11",
+              "value": 0.9
             }
           ],
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",

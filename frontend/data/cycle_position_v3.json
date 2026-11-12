@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T16:24:51+08:00",
+    "update_time": "2026-11-13T00:49:07+08:00",
     "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -47624,11 +47624,15 @@
               {
                 "date": "2026-11-09",
                 "value": 0.91
+              },
+              {
+                "date": "2026-11-11",
+                "value": 0.9
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.91
+            "current": 0.9
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48449,7 +48453,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -49427,10 +49431,14 @@
               {
                 "date": "2026-11-11",
                 "value": 22.12
+              },
+              {
+                "date": "2026-11-12",
+                "value": 22.43
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.12
+            "current": 22.43
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",

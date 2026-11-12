@@ -1,13 +1,13 @@
 {
   "version": "0.1-prep",
-  "generated_at": "2026-11-12 08:10:25",
+  "generated_at": "2026-11-12 16:46:45",
   "note": "P0-⑤ 数据通路准备：三看板方向信号归一化。conflicts 恒为空——冲突判定规则待 CIO 规则规格；direction_provisional 为临时映射，未做投资判断，禁止前端据此直接展示方向结论。",
   "sources": {
     "macro_econ": {
       "board": "宏观截面",
       "file": "macro-econ-dashboard/data/indicators.json",
-      "as_of": "2026-11-11",
-      "age_days": 1,
+      "as_of": "2026-11-12",
+      "age_days": 0,
       "raw": {
         "cn_phase": "复苏酝酿",
         "cn_monetary": "宽货币",
@@ -34,10 +34,10 @@
     "a_share_timing": {
       "board": "A股择时",
       "file": "data/timing_scores.json + data/timing_right_scores.json",
-      "as_of": "2026-11-11",
-      "age_days": 1,
+      "as_of": "2026-11-12",
+      "age_days": 0,
       "raw": {
-        "composite_score": 50.4,
+        "composite_score": 50.7,
         "stage": "C",
         "position_range": "32%",
         "market_status": "中性偏贪婪，逐步兑现",
