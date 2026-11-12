@@ -1,7 +1,7 @@
 {
   "_meta": {
     "update_time": "2026-11-12T00:03:10+08:00",
-    "data_freshness_score": 100,
+    "data_freshness_score": 99,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 100
+          "score": 99
         },
         "narrative_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 100
+          "score": 99
         },
         "narrative_perez": {
           "last_updated": "2026-11-11",
-          "score": 100
+          "score": 99
         },
         "constraint_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 100
+          "score": 99
         }
       },
       "excluded_no_date": [
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-11T16:03:10+08:00"
+    "v4_built_at": "2026-11-12T09:58:53+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -49764,7 +49764,7 @@
               "p25": 75.39,
               "p50": 75.8,
               "p75": 76.45,
-              "current_rank": "p50"
+              "current_rank": "p50-p75"
             },
             "history": [
               {
@@ -49962,8 +49962,8 @@
             "name": "设备投资增速",
             "source": "BEA",
             "unit": "%",
-            "current": 6.2,
-            "last_updated": "2026-08-06",
+            "current": 19.96,
+            "last_updated": "2026Q3",
             "history": [
               {
                 "date": "2015Q1",
@@ -50012,23 +50012,31 @@
               {
                 "date": "2026Q1",
                 "value": 6.2
+              },
+              {
+                "date": "2026Q2",
+                "value": 16.4
+              },
+              {
+                "date": "2026Q3",
+                "value": 19.96
               }
             ],
             "frequency": "monthly",
             "percentile": {
               "p25": 3.5,
-              "p50": 5.5,
-              "p75": 7.0,
-              "current_rank": "p50"
+              "p50": 5.8,
+              "p75": 7.5,
+              "current_rank": ">p75"
             }
           },
           "capex_growth": {
             "name": "资本开支增速",
             "source": "FRED (nonresidential fixed investment)",
-            "current": 5.8,
+            "current": 8.37,
             "unit": "%",
             "description": "企业资本支出同比增速，朱格拉周期核心驱动指标",
-            "last_updated": "2026-08-15",
+            "last_updated": "2026Q3",
             "frequency": "quarterly",
             "history": [
               {
@@ -50054,6 +50062,14 @@
               {
                 "date": "2026Q1",
                 "value": 5.8
+              },
+              {
+                "date": "2026Q2",
+                "value": 6.16
+              },
+              {
+                "date": "2026Q3",
+                "value": 8.37
               }
             ],
             "threshold": {
@@ -50061,10 +50077,10 @@
               "critical": -5
             },
             "percentile": {
-              "p25": 4,
-              "p50": 5.8,
-              "p75": 8,
-              "current_rank": "p50"
+              "p25": 5,
+              "p50": 6.16,
+              "p75": 8.37,
+              "current_rank": "p50-p75"
             }
           }
         },
@@ -50204,10 +50220,10 @@
             ],
             "source_url": "https://data.stats.gov.cn/",
             "percentile": {
-              "p25": 3.0,
-              "p50": 3.6,
-              "p75": 4.9,
-              "current_rank": "p50"
+              "p25": -8.96,
+              "p50": 0.19,
+              "p75": 3.2,
+              "current_rank": "<=p25"
             }
           },
           "industrial_capacity_utilization": {
@@ -50579,7 +50595,7 @@
               "p25": 1.33,
               "p50": 1.38,
               "p75": 1.4,
-              "current_rank": "p50"
+              "current_rank": "<=p25"
             }
           },
           "ism_manufacturing": {
@@ -50814,10 +50830,10 @@
             ],
             "source_url": "https://www.census.gov/economic-indicators/",
             "percentile": {
-              "p25": 286972.0,
-              "p50": 293985.0,
-              "p75": 316215.0,
-              "current_rank": "p50"
+              "p25": 287.0,
+              "p50": 295.2,
+              "p75": 316.2,
+              "current_rank": ">p75"
             }
           },
           "manufacturing_inventories": {
@@ -50985,9 +51001,9 @@
             "source_url": "https://fred.stlouisfed.org/series/BUSINV",
             "percentile": {
               "p25": 2599.6,
-              "p50": 2649.5,
-              "p75": 2676.6,
-              "current_rank": "p50"
+              "p50": 2653.2,
+              "p75": 2676.7,
+              "current_rank": ">p75"
             },
             "caliber_note": "序列为 FRED BUSINV 商业总库存（2026-11-11 补采工单核正名实：原指标名\"制造业库存总量\"与序列口径不符，序列本身延续未混填）"
           }
@@ -51009,10 +51025,10 @@
             "current": 49.3,
             "last_updated": "2026-10",
             "percentile": {
-              "p25": 49.4,
+              "p25": 49.3,
               "p50": 50.1,
-              "p75": 50.2,
-              "current_rank": "p50"
+              "p75": 50.3,
+              "current_rank": "<=p25"
             },
             "history": [
               {
@@ -51404,10 +51420,10 @@
             ],
             "frequency": "monthly",
             "percentile": {
-              "p25": 309.58,
-              "p50": 319.75,
-              "p75": 329.7,
-              "current_rank": "p50"
+              "p25": 2.65,
+              "p50": 2.91,
+              "p75": 3.29,
+              "current_rank": "<=p25"
             }
           },
           "unemployment_rate": {
@@ -52919,10 +52935,10 @@
             ],
             "frequency": "monthly",
             "percentile": {
-              "p25": 0.4,
-              "p50": 0.5,
-              "p75": 0.9,
-              "current_rank": "p50"
+              "p25": 0.5,
+              "p50": 0.9,
+              "p75": 1.2,
+              "current_rank": "p25-p50"
             }
           },
           "cn_ppi": {
@@ -53007,10 +53023,10 @@
             ],
             "frequency": "monthly",
             "percentile": {
-              "p25": -2.3,
-              "p50": -0.8,
-              "p75": -0.6,
-              "current_rank": "p50"
+              "p25": -0.8,
+              "p50": 2.8,
+              "p75": 4.1,
+              "current_rank": ">p75"
             }
           },
           "cn_industrial_va": {
@@ -53160,10 +53176,10 @@
               }
             ],
             "percentile": {
-              "p25": 3.8,
+              "p25": 4.5,
               "p50": 5.3,
-              "p75": 6.4,
-              "current_rank": "p50"
+              "p75": 5.9,
+              "current_rank": "p50-p75"
             },
             "current": 5.5
           }
@@ -89065,7 +89081,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-11",
+    "last_updated": "2026-11-12",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=1 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:扩张早期+被动补库（当前美国）(P1=2,P2=1); CN:扩张早期+被动补库(P1=2,P2=1)",

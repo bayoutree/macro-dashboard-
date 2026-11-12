@@ -19,9 +19,10 @@
   },
   "coincident": {
     "gdp_growth": {
-      "value": 4.5,
-      "date": "2026Q3",
-      "unit": "%"
+      "value": 4.6,
+      "date": "2026-09",
+      "unit": "%",
+      "ssot_source": "macro-econ-dashboard/data/indicators.json#china.validation.coincident.gdp"
     }
   },
   "lagging": {

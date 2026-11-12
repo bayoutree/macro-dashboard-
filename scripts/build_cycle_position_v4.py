@@ -36,6 +36,7 @@ asset_allocation 配置卡口径一致。
 """
 
 import json
+import re as _re
 import re
 import sys
 from datetime import datetime
@@ -43,6 +44,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))  # 保证任意 cwd 下可 import
 from freshness_score import compute_freshness, is_assessment_overdue  # P0-1 单一真值
+from collect_structural_indicators import percentile_bands  # [CIO 2026-11-12] 分位带单一真值（#14 裁决）
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 V3_FILE = DATA_DIR / "cycle_position_v3.json"
@@ -700,13 +702,21 @@ UPSTREAM_REFRESH = [
     ("cycle_kitchin", "us", "manufacturing_inventories", "fred", ["businv"], 1000.0),  # 百万→十亿；实为商业总库存口径
     # FAI 累计同比（fetch_china gdzctz 自年初累计自算）
     ("cycle_juglar", "cn", "fixed_asset_investment", "ind", ["china", "sectors", "corporate", "fai_yoy_cum"], None),
+    # ---- [CIO 2026-11-12 月频停更清单·有源未灌 → 回灌] 朱格拉层美国投资两项 ----
+    # BEA 实际值季度序列 → 同比% 后灌入（mode="yoy_q"，日期统一为 'YYYYQn'）
+    ("cycle_juglar", "us", "equipment_investment", "fred", ["equip_inv"], None, "yoy_q"),
+    ("cycle_juglar", "us", "capex_growth", "fred", ["nonres_inv"], None, "yoy_q"),
 ]
 
 
 def _date_key(s):
-    """'2026-10'/'2026-10-01' -> (2026,10,1) 可比较元组；失败 None。"""
+    """'2026-10'/'2026-10-01'/'2026Q3' -> (2026,10,1) 可比较元组；失败 None。"""
     if not isinstance(s, str):
         return None
+    # [CIO 2026-11-12] 季度标签兼容：'2026Q3' 等价于 '2026-07-01'
+    _qm = _re.match(r'^(\d{4})\s*[Qq]([1-4])$', s.strip())
+    if _qm:
+        return (int(_qm.group(1)), (int(_qm.group(2)) - 1) * 3 + 1, 1)
     parts = s.strip()[:10].split("-")
     try:
         y = int(parts[0])
@@ -732,7 +742,9 @@ def refresh_indicators_from_upstream(layers):
     ind = load_json(INDICATORS_JSON)
     fred = load_json(FRED_RAW_JSON) if FRED_RAW_JSON.exists() else {}
     changes = []
-    for layer_key, side, ind_key, src_kind, path, div in UPSTREAM_REFRESH:
+    for _item in UPSTREAM_REFRESH:
+        layer_key, side, ind_key, src_kind, path, div = _item[:6]
+        mode = _item[6] if len(_item) > 6 else "raw"
         node = _dig(layers, [layer_key, side, "indicators", ind_key])
         if not isinstance(node, dict):
             continue
@@ -745,6 +757,23 @@ def refresh_indicators_from_upstream(layers):
                         if isinstance(h, dict) and h.get("value") is not None and h.get("date")]
         if div:
             src_hist = [{"date": h["date"], "value": round(h["value"] / div, 4)} for h in src_hist]
+        # [CIO 2026-11-12] 原值季度序列 → 同比%（层内指标是增速口径，不能直接灌原值）
+        if mode == "yoy_q":
+            _by = {h["date"]: h["value"] for h in src_hist}
+            _yoy = []
+            for h in src_hist:
+                _dk = _date_key(h["date"])
+                if _dk is None:
+                    continue
+                _prev = f"{_dk[0] - 1}-{_dk[1]:02d}-{_dk[2]:02d}"
+                _pv = _by.get(_prev)
+                if not _pv:
+                    continue
+                _yoy.append({
+                    "date": f"{_dk[0]}Q{(_dk[1] - 1) // 3 + 1}",
+                    "value": round((h["value"] / _pv - 1) * 100, 2),
+                })
+            src_hist = _yoy
         if not src_hist:
             continue
         src_tail = src_hist[-1]
@@ -771,9 +800,13 @@ def refresh_indicators_from_upstream(layers):
         node["current"] = src_tail["value"]
         node["last_updated"] = src_tail["date"]
         node.pop("data_gap_note", None)  # 真值回灌后缺口闭合
+        # [CIO 2026-11-12] 回灌后必须重算分位带，否则 current 越出 p75 仍标 p50（自相矛盾）
+        _pb = percentile_bands(hist)
+        if _pb:
+            node["percentile"] = _pb
         if appended or same_date_diff_val:
             changes.append(
-                f"{layer_key}.{side}.{ind_key}: -> {src_tail['value']}@{src_tail['date']} (+{appended} points)")
+                f"{layer_key}.{side}.{ind_key}: -> {src_tail['value']}@{src_tail['date']} (+{appended} points, {_pb.get('current_rank') if _pb else '-'})")
     # Perez 高收益债利差（turning_point_signals 为列表结构，特判）
     perez = layers.get("narrative_perez") or {}
     hy = (fred.get("series") or {}).get("bamlh0a0hym2") or []
