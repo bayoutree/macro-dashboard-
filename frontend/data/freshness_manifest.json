@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-11-11",
+  "updated": "2026-11-12",
   "calendar": "CN",
   "items": [
     {
@@ -481,10 +481,10 @@
       "stale_max_missing_periods": 3,
       "history_path": "leading.oecd_cli.history",
       "value_path": "leading.oecd_cli.value",
-      "note": "OECD CLI；自然日兜底，末点2023-11已长期stale(源访问受限)，warn不阻断",
+      "note": "OECD CLI；自然日兜底，末点2023-11已长期stale(源访问受限)，warn不阻断｜[裁决③ 2026-11-12] 源访问受限，标 deprecated 摘出活跃指标，页面灰灯\"源已停更\"，每季度复评，不进 FAIL。",
       "critical": false,
       "severity_on_gap": "warn",
-      "status": "active"
+      "status": "deprecated"
     },
     {
       "id": "timing_right",
@@ -565,14 +565,14 @@
       "freq": "weekly",
       "calendar": "CN",
       "lag_days": 14,
-      "fresh_max_trading_days": 14,
-      "watch_max_trading_days": 21,
       "history_path": "history",
       "value_path": null,
-      "note": "股债利差(legulegu股息率-10Y国债)；14/21；无标量快照，value_path=null（仅history检查）",
+      "note": "legulegu源停2026-09-11；[裁决④ 2026-11-12] 全仓 py/js/html 零引用、无采集器、页面无卡位=孤儿文件，换源不适用→直接下线存档，不进 FAIL。同文件重复登记（all_a_gxl_spread）已合并。",
       "critical": false,
-      "severity_on_gap": "warn",
-      "status": "active"
+      "severity_on_gap": "report",
+      "status": "deprecated",
+      "fresh_max_days": 9999,
+      "watch_max_days": 9999
     },
     {
       "id": "legulegu_break_net",
@@ -581,14 +581,14 @@
       "freq": "weekly",
       "calendar": "CN",
       "lag_days": 14,
-      "fresh_max_trading_days": 14,
-      "watch_max_trading_days": 21,
       "history_path": "history",
       "value_path": null,
-      "note": "破净率(legulegu)；14/21；无标量快照，value_path=null（仅history检查）",
+      "note": "legulegu源停2026-09-11；[裁决④ 2026-11-12] 零引用孤儿文件→下线存档，不进 FAIL。破净率替代链在跑：akshare 自算 timing_scores.valuation.break_net_rate（9.2@2026-11-12）。同文件重复登记（break_net_asset_rate）已合并。",
       "critical": false,
-      "severity_on_gap": "warn",
-      "status": "active"
+      "severity_on_gap": "report",
+      "status": "deprecated",
+      "fresh_max_days": 9999,
+      "watch_max_days": 9999
     },
     {
       "id": "pe_percentile",
@@ -673,36 +673,6 @@
       "critical": false,
       "severity_on_gap": "warn",
       "status": "active"
-    },
-    {
-      "id": "all_a_gxl_spread",
-      "name": "全A股息率-10Y利差",
-      "status": "deprecated",
-      "severity_on_gap": "report",
-      "note": "legulegu源停2026-09-11；全仓py/js/html零引用=孤儿文件，保留存档不评估（V22-3审计登记）",
-      "file": "data/all_a_gxl_spread.json",
-      "date_path": "history",
-      "freq": "monthly",
-      "calendar": "CN",
-      "lag_days": 0,
-      "fresh_max_days": 9999,
-      "watch_max_days": 9999,
-      "critical": false
-    },
-    {
-      "id": "break_net_asset_rate",
-      "name": "全A破净率",
-      "status": "deprecated",
-      "severity_on_gap": "report",
-      "note": "legulegu源停2026-09-11；全仓零引用=孤儿文件（update_data.py破净率为akshare自算链不用本文件），保留存档不评估（V22-3审计登记）",
-      "file": "data/break_net_asset_rate.json",
-      "date_path": "history",
-      "freq": "monthly",
-      "calendar": "CN",
-      "lag_days": 0,
-      "fresh_max_days": 9999,
-      "watch_max_days": 9999,
-      "critical": false
     },
     {
       "id": "cn_pmi",

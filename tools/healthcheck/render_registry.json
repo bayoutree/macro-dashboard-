@@ -1,7 +1,7 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "updated": "2026-11-12",
-  "note": "呈现层断言登记表：页面实际显示值 ←→ 数据源值。新增卡片必须在此登记，未登记卡片不计入覆盖率，制度要求覆盖率≥已上线数值卡 60%。tolerance 为绝对容差（渲染四舍五入后允许的误差）。",
+  "note": "呈现层断言登记表：页面实际显示值 ←→ 数据源值。新增卡片必须在此登记，未登记卡片不计覆盖率。制度裁决⑤：核心卡 12 张 100% 覆盖，分三步 12月6张/1月9张/3月12张。tolerance 为绝对容差（渲染四舍五入后允许的误差）。取值方式：selector（CSS，可选 index）/ card_name（指标卡 .ind-name 精确匹配）/ 缺省用 DOM id；pattern 为正则第 1 组。",
   "pages": [
     {
       "name": "stock",
@@ -52,6 +52,27 @@
           "tolerance": 0.02,
           "decimals": 2,
           "suffix": "%"
+        },
+        {
+          "id": "feargreed",
+          "label": "恐贪指数",
+          "card_name": "恐贪指数",
+          "file": "data/feargreed_pointer.json",
+          "path": "score",
+          "tolerance": 0.26,
+          "decimals": 1,
+          "note": "指标卡按 .ind-name 精确匹配取 .ind-value；源=QVIX 单因子恐贪指针"
+        },
+        {
+          "id": "composite",
+          "label": "择时综合分",
+          "selector": "#bucket-dist .bd-summary",
+          "pattern": "当前\\s*([\\d.]+)\\s*分",
+          "file": "data/timing_scores.json",
+          "path": "composite_score",
+          "tolerance": 0.15,
+          "decimals": 1,
+          "note": "分桶分布摘要行的『当前 X 分』，直接来自 timing_scores.composite_score"
         }
       ]
     },
@@ -61,7 +82,37 @@
       "title_sub": "宏观",
       "click": "button[data-tab=cycle]",
       "wait_ms": 6000,
-      "values": []
+      "values": [
+        {
+          "id": "cycle-us",
+          "label": "周期定位-美国共识分",
+          "selector": ".v4-hero-score",
+          "index": 0,
+          "file": "data/cycle_position_v4.json",
+          "path": "cycle_consensus.united_states.consensus_score",
+          "tolerance": 0.15,
+          "decimals": 1
+        },
+        {
+          "id": "cycle-cn",
+          "label": "周期定位-中国共识分",
+          "selector": ".v4-hero-score",
+          "index": 1,
+          "file": "data/cycle_position_v4.json",
+          "path": "cycle_consensus.china.consensus_score",
+          "tolerance": 0.15,
+          "decimals": 1
+        },
+        {
+          "id": "cycle-date",
+          "label": "周期定位-更新日期",
+          "selector": ".v4-hero-date",
+          "file": "data/cycle_position_v4.json",
+          "path": "cycle_consensus.last_updated",
+          "type": "date",
+          "note": "防 F10 类『更新于 vs 数据尾错位』"
+        }
+      ]
     },
     {
       "name": "macro_econ",
@@ -95,5 +146,63 @@
       "2026Q3 (季频)",
       "2026-08 (月频)"
     ]
-  }
+  },
+  "core_cards": [
+    {
+      "name": "恐贪指数",
+      "covered": true,
+      "assertion": "stock/feargreed"
+    },
+    {
+      "name": "择时综合分",
+      "covered": true,
+      "assertion": "stock/composite"
+    },
+    {
+      "name": "周期定位",
+      "covered": true,
+      "assertion": "cycle_global/cycle-us+cycle-cn+cycle-date"
+    },
+    {
+      "name": "股债性价比(ERP)",
+      "covered": false
+    },
+    {
+      "name": "A股情绪",
+      "covered": false
+    },
+    {
+      "name": "融资余额",
+      "covered": false
+    },
+    {
+      "name": "美债10Y",
+      "covered": true,
+      "assertion": "stock/ust10y-value"
+    },
+    {
+      "name": "VIX",
+      "covered": false
+    },
+    {
+      "name": "美元人民币",
+      "covered": true,
+      "assertion": "stock/usdcny-value"
+    },
+    {
+      "name": "破净率",
+      "covered": true,
+      "assertion": "stock/break-net-rate-value"
+    },
+    {
+      "name": "股息率利差",
+      "covered": true,
+      "assertion": "stock/dividend-spread-value"
+    },
+    {
+      "name": "联邦基金利率",
+      "covered": true,
+      "assertion": "stock/fed-rate-value"
+    }
+  ]
 }

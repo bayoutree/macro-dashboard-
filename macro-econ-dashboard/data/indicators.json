@@ -5342,7 +5342,7 @@
               "value": -10.07
             }
           ],
-          "name": "fai_yoy_cum",
+          "name": "固定资产投资累计同比",
           "source": "NBS 固定资产投资(不含农户)（akshare macro_china_gdzctz 自年初累计额自算同比）",
           "caliber": "累计同比 %"
         },

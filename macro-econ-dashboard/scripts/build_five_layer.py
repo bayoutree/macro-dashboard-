@@ -57,6 +57,7 @@ NAME_MAP = {
     "house_price": "70城房价同比",
     "house_price_index": "70城房价同比",
     "industrial_profit": "工业企业利润同比",
+    "fai_yoy_cum": "固定资产投资累计同比",
     "mfg_investment": "制造业投资同比",
     "industrial_prod": "工业产出同比",
     "nonfarm": "非农就业同比",

@@ -232,11 +232,11 @@ def _period_verdict(item, last, eval_date: dt.date):
         expected -= 1
     gap = expected - start_idx
     if gap <= 0:
-        return R["PASS"], f"期次对齐：数据期 {y}-{m:02d}，应已发布最新期 {period_end(expected).strftime('%Y-%m')}"
+        return R["PASS"], f"期次对齐：数据期 {y}-{m:02d}，应已发布最新期 {period_end(expected).strftime('%Y-%m')}", 0
     if gap == 1:
-        return R["WARN"], f"期次落后 1 期：数据期 {y}-{m:02d}，应已发布至 {period_end(expected).strftime('%Y-%m')}（发布窗口内）"
+        return R["WARN"], f"期次落后 1 期：数据期 {y}-{m:02d}，应已发布至 {period_end(expected).strftime('%Y-%m')}（发布窗口内）", 1
     return R["FAIL"], (f"期次落后 {gap} 期：数据期 {y}-{m:02d}，应已发布至 "
-                       f"{period_end(expected).strftime('%Y-%m')}（真实断更）")
+                       f"{period_end(expected).strftime('%Y-%m')}（真实断更）"), gap
 
 
 def layer_data(root: Path, eval_key, eval_date, results: list, coverage: dict, strict: bool = False):
@@ -290,29 +290,40 @@ def layer_data(root: Path, eval_key, eval_date, results: list, coverage: dict, s
         dates = [d for d in dates if d]
         last = max(dates) if dates else None
 
-        critical = bool(item.get("critical"))
+        # ── 分级阻断（CIO 裁决①，2026-11-12）─────────────────────────────
+        #   critical（severity=block）STALE/GAP → FAIL，阻断发布与当月数据类交付
+        #   非 critical STALE/GAP → WARN，进待处置清单；超 60 天未处置升 FAIL
+        #   strict 不再一刀切：strict 只影响"是否把 WARN 计入阻断"，不影响 warn 级定级
+        critical = bool(item.get("critical")) or item.get("severity_on_gap") == "block"
         sev = item.get("severity_on_gap")
-        if status == "FRESH":
-            st = R["PASS"]
-        elif status == "WATCH":
-            st = R["WARN"]
-        else:  # STALE / GAP
-            if strict:
-                st = R["FAIL"]
-            else:
-                st = R["FAIL"] if (critical or sev == "block") else R["WARN"]
 
         detail = (f"{item.get('freq')} · 末点 {fmt_key(last)} · lag={item.get('lag_days')}d · "
                   f"critical={critical} · sev={sev}")
 
         # 月频/季频以"期次口径"为准（避免期初日期表示导致系统性误报）
         pv = _period_verdict(item, last, eval_date)
+        gap = None
+        base = status
         if pv:
-            pst, pdetail = pv
-            if pst == R["FAIL"] and not (critical or sev == "block") and not strict:
-                pst = R["WARN"]
-            st = pst
+            pst, pdetail, gap = pv
+            base = {R["PASS"]: "FRESH", R["WARN"]: "WATCH"}.get(pst, "STALE")
             detail = f"{pdetail} | 自然日口径={status} · {detail}"
+
+        if base == "FRESH":
+            st = R["PASS"]
+        elif base == "WATCH":
+            st = R["WARN"]
+        else:  # STALE / GAP
+            age = (eval_date - dt.date(*last)).days if last else None
+            overdue = (gap is not None and gap >= 2) or (age is not None and age > 60)
+            if critical or overdue:
+                st = R["FAIL"]
+                if not critical:
+                    detail += "｜⚠ 非 critical 但已超 60 天未处置，按裁决①升 FAIL"
+            else:
+                st = R["WARN"]
+                left = f"剩余 {60 - age} 天" if age is not None else "期限未知"
+                detail += f"｜待处置清单（非 critical 不阻断，{left} 后升 FAIL）"
 
         results.append(Result(code, "L1", mid, st, f"{status} | {detail}",
                               {"status": status, "last": fmt_key(last), "freq": item.get("freq"),
@@ -526,6 +537,30 @@ def _serve(root: Path, port: int):
     return httpd
 
 
+def _extract_text(page, spec):
+    """按登记表取 DOM 文本。支持 DOM id / CSS 选择器 / 卡片名 / 第 n 个匹配。"""
+    sel = spec.get("selector")
+    if sel is None and spec.get("card_name"):
+        # 指标卡：.indicator-card 内 .ind-name 命中后取其 .ind-value
+        txt = page.evaluate(
+            """(nm) => {
+                 const cards = [...document.querySelectorAll('.indicator-card')];
+                 const hit = cards.find(c => (c.querySelector('.ind-name')?.innerText || '').trim() === nm);
+                 return hit ? (hit.querySelector('.ind-value')?.innerText || '') : null;
+               }""", spec["card_name"])
+        return txt
+    if sel is None:
+        sel = "#" + spec["id"]
+    loc = page.locator(sel)
+    n = loc.count()
+    if n == 0:
+        return None
+    idx = int(spec.get("index", 0))
+    if idx >= n:
+        return None
+    return loc.nth(idx).inner_text()
+
+
 def layer_render(root: Path, base: str, registry: dict, results: list, coverage: dict, shots: Path):
     """真实浏览器：页面显示值 ←→ 数据源值；徽标失真；mock 静默；占位符/裸标识符。"""
     try:
@@ -581,15 +616,43 @@ def layer_render(root: Path, base: str, registry: dict, results: list, coverage:
                                   R["PASS"] if not real else R["FAIL"],
                                   f"Console 真实错误 {len(real)} 个" + (f"：{real[:3]}" if real else "")))
 
-            # 3b 显示值 ←→ 源值
+            # 3b 显示值 ←→ 源值（统一取值：DOM id / CSS 选择器 / 卡片名 / 第 n 个 / 正则组）
             for v in page_def.get("values", []):
                 code = f"HC-R-{name}-{v['id']}"
                 try:
-                    txt = page.inner_text(f"#{v['id']}").strip()
+                    txt = _extract_text(page, v)
                 except Exception:
+                    results.append(Result(code, "L3", v["label"], R["FAIL"],
+                                          f"DOM 元素不存在（{v.get('selector') or v.get('card_name') or v['id']} 未渲染）"))
+                    continue
+                if txt is None:
                     results.append(Result(code, "L3", v["label"], R["FAIL"], "DOM 元素不存在（卡片未渲染）"))
                     continue
-                num = re.search(r"-?\d+(?:\.\d+)?", txt.replace(",", ""))
+                txt = txt.strip()
+
+                # 日期型断言（防「更新于 vs 数据尾」错位）
+                if v.get("type") == "date":
+                    try:
+                        cache.setdefault(v["file"], load_json(root / v["file"]))
+                        src_d = resolve(cache[v["file"]], v["path"])
+                    except Exception as exc:
+                        results.append(Result(code, "L3", v["label"], R["FAIL"], f"源文件读取失败：{exc}"))
+                        continue
+                    dm = re.search(r"\d{4}-\d{2}(?:-\d{2})?", txt)
+                    if not dm:
+                        results.append(Result(code, "L3", v["label"], R["FAIL"], f"页面无日期：{txt[:40]!r}"))
+                        continue
+                    checked += 1
+                    if dm.group(0) == str(src_d)[:len(dm.group(0))]:
+                        results.append(Result(code, "L3", v["label"], R["PASS"],
+                                              f"页面日期 {dm.group(0)} == 源 {src_d}"))
+                    else:
+                        results.append(Result(code, "L3", v["label"], R["FAIL"],
+                                              f"页面日期 {dm.group(0)} ≠ 源 {src_d}（G3 一律阻断）",
+                                              {"shown": dm.group(0), "source": src_d}))
+                    continue
+
+                num = re.search(v["pattern"] if v.get("pattern") else r"-?\d+(?:\.\d+)?", txt.replace(",", ""))
                 if not num:
                     results.append(Result(code, "L3", v["label"], R["FAIL"], f"页面无数值：{txt!r}"))
                     continue
@@ -685,6 +748,11 @@ def layer_render(root: Path, base: str, registry: dict, results: list, coverage:
         browser.close()
 
     coverage["l3_value_assertions"] = checked
+    cc = registry.get("core_cards") or []
+    if cc:
+        coverage["core_cards_total"] = len(cc)
+        coverage["core_cards_covered"] = sum(1 for c in cc if c.get("covered"))
+        coverage["core_cards_uncovered"] = [c["name"] for c in cc if not c.get("covered")]
     coverage["l3_badges"] = badges_checked
 
 

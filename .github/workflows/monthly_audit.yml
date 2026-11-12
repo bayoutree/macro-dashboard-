@@ -19,7 +19,7 @@ on:
         required: false
         default: "false"
       strict:
-        description: "严格模式：任何 STALE/GAP 均判 FAIL"
+        description: "严格模式：critical 项 STALE/GAP 判 FAIL、非 critical 超 60 天升 FAIL（裁决①分级阻断，不再一刀切）"
         required: false
         default: "true"
   schedule:
@@ -61,6 +61,13 @@ jobs:
           python tools/healthcheck/monthly_audit.py $ARGS | tee audit_console.log
           echo "exit=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
 
+      - name: Probe legulegu dependency & csindex alternative
+        id: probe
+        continue-on-error: true
+        run: |
+          python -m pip install --quiet pandas openpyxl xlrd requests akshare
+          python tools/healthcheck/probe_legulegu_alt.py | tee legulegu_probe.log
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,6 +76,7 @@ jobs:
           path: |
             tools/healthcheck/output/
             audit_console.log
+            legulegu_probe.log
           retention-days: 90
 
       - name: Gate
