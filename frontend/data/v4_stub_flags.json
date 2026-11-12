@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-12T10:14:54+08:00",
+  "generated_at": "2026-11-12T10:22:36+08:00",
   "builder": "scripts/build_cycle_position_v4.py:annotate_data_quality",
   "caliber": "history 尾点日期/值与 last_updated/current 脱节的层内指标全量清单；status: stub=真桩值(前端灰灯) / lag_normal=正常滞后 / meta_error=元数据标错 / unverified=待定级",
   "summary": {
-    "flagged": 8,
+    "flagged": 9,
     "by_status": {
       "meta_error": 3,
       "stub": 4,
-      "unverified": 1
+      "unverified": 2
     },
     "stub_count": 4
   },
@@ -139,6 +139,22 @@
       "status": "unverified",
       "collectable": false,
       "note": "tail 2026Q2=73.0，需核 NBS 2026Q3 产能利用率是否已发布；last_updated 虚标为构建日。待 CIO 定级。"
+    },
+    {
+      "path": "narrative_perez/key_ratio",
+      "name": "金融资本/生产资本比值",
+      "current": 2.8,
+      "unit": null,
+      "tail_date": "2026",
+      "tail_value": 2.8,
+      "last_updated": null,
+      "frequency": "annual",
+      "gap_months": null,
+      "kind": "missing_date",
+      "timestamp_faked": false,
+      "status": "unverified",
+      "collectable": false,
+      "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。"
     }
   ]
 }

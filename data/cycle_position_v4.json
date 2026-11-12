@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T10:14:54+08:00"
+    "v4_built_at": "2026-11-12T10:22:36+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2806,7 +2806,18 @@
           }
         ],
         "frequency": "annual",
-        "current": 2.8
+        "current": 2.8,
+        "data_quality": {
+          "status": "unverified",
+          "kind": "missing_date",
+          "tail_date": "2026",
+          "tail_value": 2.8,
+          "current": 2.8,
+          "last_updated": null,
+          "gap_months": null,
+          "timestamp_faked": false,
+          "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。"
+        }
       },
       "indicators": {
         "vc_pe_funding": {

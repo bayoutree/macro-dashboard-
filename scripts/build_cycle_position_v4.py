@@ -1052,6 +1052,26 @@ def annotate_data_quality(layers, built_at):
             gap = _gap_months(lu_key, tail_key)
             tol = _STUB_TOL.get(freq, 2.2)
 
+            # 缺 last_updated：前端渲染为「无日期」，读者无从判断新旧（准则3变种）
+            if not lu:
+                node["data_quality"] = {
+                    "status": "unverified", "kind": "missing_date",
+                    "tail_date": tail["date"], "tail_value": tail["value"],
+                    "current": cur, "last_updated": None, "gap_months": None,
+                    "timestamp_faked": False,
+                    "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。",
+                }
+                flags.append({
+                    "path": path, "name": node.get("name") or path.rsplit("/", 1)[-1],
+                    "current": cur, "unit": node.get("unit"),
+                    "tail_date": tail["date"], "tail_value": tail["value"],
+                    "last_updated": None, "frequency": freq, "gap_months": None,
+                    "kind": "missing_date", "timestamp_faked": False,
+                    "status": "unverified", "collectable": False,
+                    "note": node["data_quality"]["note"],
+                })
+                return
+
             value_mis = (isinstance(cur, (int, float)) and isinstance(tail["value"], (int, float))
                          and abs(cur - tail["value"]) > 1e-9)
             date_mis = gap is not None and gap > tol
