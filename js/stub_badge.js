@@ -9,6 +9,11 @@
   'use strict';
   var LABEL = {
     stub: '桩值（静态占位，非官方观测）',
+    // [2026-11-13] 补三类非官方观测的中文名：原先直接吐英文 key
+    // （manual_compiled / rolling_single / non_numeric），读者看不懂。
+    manual_compiled: '手工汇编估算（有公开来源、无历史序列）',
+    rolling_single: '滚动单值（区间计算值，非当期观测）',
+    non_numeric: '文本派生（定性判断，非数值观测）',
     unverified: '未核实（来源待定级）',
     meta_error: '元数据待修（值有效、时间戳有误）',
     lag_normal: '正常滞后'

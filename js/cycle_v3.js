@@ -346,7 +346,9 @@ const CycleV3Module = (() => {
     
     const proxies = (sr.proxy_indicators || []).map(p => {
       if (p.quantifiable) {
-        const f = freshnessBadge(p.last_updated, p.frequency);
+        // [2026-11-13] 补 data_quality：结构性改革 4 张 proxy 卡此前不传，manual_compiled
+        // 仍按日期算天数 → 显示「✅最新」，与顶部警示条矛盾。
+        const f = freshnessBadge(p.last_updated, p.frequency, null, p.data_quality);
         return `<div class="reform-card">
           <div class="reform-name">${escapeHtml(p.name)} ${f}</div>
           <div class="reform-value">${p.current}${escapeHtml(p.unit||'')}</div>
