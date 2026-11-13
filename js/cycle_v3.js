@@ -178,6 +178,31 @@ const CycleV3Module = (() => {
         note: quality.note || ''
       };
     }
+    // [2026-11-13] 非官方观测值一律灰灯。
+    // 原逻辑只对 status==='stub' 灰灯，manual_compiled / rolling_single /
+    // non_numeric 仍按日期算天数——手工估算值只要父级 last_updated 新就显示
+    // 「✅最新」。主人 13:35 截图里「中国盈亏平衡通胀 2.1 @2026-11-12 日频 ✅最新」
+    // 就是这么来的：值是中国侧手工估算、日期是从父级继承的，却挂着最新绿标。
+    // 页面顶部本来就有「本看板有 N 项指标不是官方观测值」的警示条，
+    // 卡片再挂绿标是自相矛盾的。
+    const NON_OFFICIAL = {
+      manual_compiled: '手工汇编估算',
+      rolling_single:  '滚动单值',
+      non_numeric:     '文本派生',
+      unverified:      '未核实'
+    };
+    if (quality && NON_OFFICIAL[quality.status]) {
+      const tag = NON_OFFICIAL[quality.status];
+      const stamp = quality.tail_date || quality.last_updated || '--';
+      // 用 nonofficial 而非 stub：stub 的样式带删除线+强灰度，暗示「数值无效」；
+      // 这些是有效估算值，只是不可当官方观测，需要可读但要卸掉「最新」绿标。
+      return {
+        cls: 'nonofficial',
+        label: `${stamp} | ${tag} | ⚪非官方观测`,
+        days: null, freqLabel: tag, date: stamp,
+        note: quality.note || ''
+      };
+    }
     // [P0-3 修复 2026-11-11] 徽标失真根因：旧逻辑以数据文件 _meta.assessment_date
     // （=数据生成日 2026-09-01）为基准算天数，导致老数据 days≈0 永远显示「✅最新」。
     // 新鲜度必须按「数据 last_updated 距真实今天」实时判定，assessment_date 仅作展示用途。
@@ -213,9 +238,9 @@ const CycleV3Module = (() => {
 
   function freshnessBadge(lastUpdated, frequency, assessmentDate, quality) {
     const f = getFreshness(lastUpdated, frequency, assessmentDate, quality);
-    if (f.cls === 'stub') {
-      // 桩值：灰徽标 + 悬停说明「为何不可用、尾点在哪」
-      return `<span class="freshness-badge stub" title="${escapeHtml(f.note || f.label)}">${f.label}</span>`;
+    if (f.cls === 'stub' || f.cls === 'nonofficial') {
+      // 桩值 / 非官方观测：灰徽标 + 悬停说明「为何不可用、尾点在哪」
+      return `<span class="freshness-badge ${f.cls}" title="${escapeHtml(f.note || f.label)}">${f.label}</span>`;
     }
     if (f.cls === 'no-date') {
       // No last_updated: show frequency tag only, no scary warning

@@ -81,6 +81,11 @@
    灰边+整卡降透明+数值划灰，读者一眼可辨「这格不可用」，不误当有效值。 */
 .indicator-card.stub { border-left-color: #6b7280; opacity: 0.55; filter: grayscale(0.85); }
 .indicator-card.stub .ind-value { color: #6b7280; text-decoration: line-through; }
+/* [2026-11-13] 非官方观测（manual_compiled/rolling_single/non_numeric/unverified）：
+   值是有效估算，不能划删除线、不做强灰度，只把边框和徽标降为灰、去掉「最新」绿标。
+   与桩值区分：桩值是占位数（不更新），非官方观测是有来源的估算（口径不同）。 */
+.indicator-card.nonofficial { border-left-color: #6b7280; opacity: 0.9; }
+.indicator-card.nonofficial .ind-value { color: #cbd5e1; }
 .ind-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .ind-name { font-size: 11px; color: #94a3b8; font-weight: 500; }
 .ind-value { font-size: 18px; font-weight: 700; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
@@ -95,6 +100,7 @@
 .freshness-badge.stale { color: #f59e0b; background: rgba(245,158,11,0.1); }
 .freshness-badge.expired { color: #ef4444; background: rgba(239,68,68,0.1); }
 .freshness-badge.stub { color: #9ca3af; background: rgba(107,114,128,0.15); border: 1px dashed rgba(156,163,175,0.5); }
+.freshness-badge.nonofficial { color: #9ca3af; background: rgba(107,114,128,0.15); border: 1px dashed rgba(156,163,175,0.5); }
 
 /* Turning Point signals */
 .tp-section { margin-bottom: 16px; }
