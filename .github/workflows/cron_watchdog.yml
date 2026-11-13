@@ -40,6 +40,16 @@ jobs:
         run: |
           TODAY=$(date -u +%Y-%m-%d)
           DOW=$(date -u +%u)
+          # [2026-11-13 修复] 原逻辑在 UTC 当天 08:00 未到时也做判断：此时 scheduled run
+          # 尚未到点，runs 里要么为空（判 dead）要么只有凌晨的非窗口 run（判 late），
+          # 必然误报。issue #74 即此因——UTC 03:07 报「UTC 08:00 未在 4h 宽限内触发」。
+          # 宽限窗口 08:00~12:00，只有 UTC >= 12:00 才有资格判 late/dead。
+          NOW_H=$(date -u +%H)
+          if [ "$NOW_H" -lt 12 ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::当前 UTC ${NOW_H} 时，宽限窗口（08:00~12:00）未结束，跳过存活检测"
+            exit 0
+          fi
           if [ "$DOW" -gt 5 ] && [ "${{ github.event_name }}" = "schedule" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "::notice::周末不做存活检测"
