@@ -1499,7 +1499,7 @@ def annotate_no_history(layers, built_at):
                 }
                 flags.append({
                     "path": path,
-                    "name": node.get("name") or path.rsplit("/", 1)[-1],
+                    "name": _flag_display_name(layers, node, path),
                     "current": cur,
                     "unit": node.get("unit"),
                     "tail_date": None,
@@ -1605,6 +1605,98 @@ def fix_high_rate_tracker_dates(out):
     return fixed
 
 
+# ---------------------------------------------------------------- 镜像对齐
+_REGION_CN = {"us": "美国", "cn": "中国"}
+
+# 桩值清单里少数节点没有 name，靠 path 叶子命名会输出 `stage_description` 这种裸 key
+_FLAG_NAME_FALLBACK = {
+    "narrative_perez/stage_description": "佩雷斯阶段描述",
+    "narrative_perez/indicators/vc_pe_funding": "全球VC/PE年度融资额",
+}
+
+def _flag_display_name(layers, node, path):
+    """桩值清单的可读名（2026-11-13 修）。
+
+    原实现 `node.get("name") or path.rsplit("/")[-1]`：us/cn 镜像子对象自身没有 name，
+    清单里就出现「us：rolling_single，当前显示 2.2%」——读者不知道是哪条指标。
+    """
+    nm = node.get("name")
+    if isinstance(nm, str) and nm.strip() and nm not in ("us", "cn"):
+        return nm
+    parts = path.split("/")
+    leaf = parts[-1]
+    if leaf in _REGION_CN:
+        parent = _dig(layers, parts[:-1])
+        pname = (parent.get("name") if isinstance(parent, dict) else None) or parts[-2]
+        return "%s（%s）" % (pname, _REGION_CN[leaf])
+    return _FLAG_NAME_FALLBACK.get(path) or (nm if isinstance(nm, str) and nm.strip() else leaf)
+
+
+def _sync_region_mirrors(layers):
+    """把 us/cn 镜像对齐到顶层规范序列（2026-11-13 修，第五起数据事故）。
+
+    ⚠ 事故：前端 `js/cycle_v3.js:renderConstraintRate()` 对同时带 us/cn 的指标
+    优先渲染镜像对象（`if (ind.us || ind.cn)`），而各 `_fix_*` 热修只更新顶层
+    `current`/`history`。结果顶层已是 2026-11-12 的真值，镜像却冻结在 2026-09-02，
+    前端据镜像判「⚠️数据断更」——主人 13:35 截图里那一片断更就是它。
+    实测 9 个指标受影响：收益率曲线(2s10s)、投资级信用利差、realized波动率、
+    盈亏平衡通胀率(10Y)、远期实际利率(1Y5Y)、期限溢价(10Y)、实际利率(1Y存款-CPI)、
+    中国PMI产成品库存、中国工业增加值。
+
+    规则（只动「能确定是同一序列的镜像」，宁可漏不可错）：
+      1. 镜像自身 history 非空——空 history 代表手工单值（如劳动生产率中国侧），绝不覆盖；
+      2. 顶层 history 尾点日期晚于镜像尾点；
+      3. 顶层点数 >= 镜像点数（防用短序列覆盖长序列）。
+    满足即用顶层 history/current/last_updated/frequency/unit 覆盖镜像。
+    """
+    healed = []
+
+    def _tail_date(h):
+        for x in reversed(h or []):
+            if isinstance(x, dict) and x.get("date"):
+                return str(x["date"])
+        return None
+
+    def _scan(node, path):
+        if not isinstance(node, dict):
+            return
+        top_h = node.get("history")
+        if isinstance(top_h, list) and top_h:
+            tdate = _tail_date(top_h)
+            for rk in ("us", "cn"):
+                r = node.get(rk)
+                if not isinstance(r, dict):
+                    continue
+                rh = r.get("history")
+                if not isinstance(rh, list) or not rh:
+                    continue                      # 规则 1
+                rdate = _tail_date(rh)
+                if not tdate or (rdate and rdate >= tdate):
+                    continue                      # 规则 2
+                if len(top_h) < len(rh):
+                    continue                      # 规则 3
+                r["history"] = [dict(x) for x in top_h]
+                r["current"] = node.get("current")
+                r["last_updated"] = node.get("last_updated")
+                if node.get("frequency"):
+                    r["frequency"] = node["frequency"]
+                if node.get("unit"):
+                    r["unit"] = node["unit"]
+                r.pop("data_quality", None)
+                healed.append("%s/%s  %s→%s（%d→%d 点）"
+                              % (path, rk, rdate, tdate, len(rh), len(top_h)))
+        for k, v in node.items():
+            if k == "history":
+                continue
+            if isinstance(v, dict):
+                _scan(v, "%s/%s" % (path, k) if path else k)
+
+    for lk, lv in (layers or {}).items():
+        if isinstance(lv, dict):
+            _scan(lv, lk)
+    return healed
+
+
 def annotate_data_quality(layers, built_at):
     """遍历层内全部指标节点，打 data_quality 标记，返回全站桩值扫描清单。
 
@@ -1636,7 +1728,7 @@ def annotate_data_quality(layers, built_at):
                     "note": "缺 last_updated 字段，前端显示「无日期」，读者无法判断数据新旧；需补发布日或标记口径。",
                 }
                 flags.append({
-                    "path": path, "name": node.get("name") or path.rsplit("/", 1)[-1],
+                    "path": path, "name": _flag_display_name(layers, node, path),
                     "current": cur, "unit": node.get("unit"),
                     "tail_date": tail["date"], "tail_value": tail["value"],
                     "last_updated": None, "frequency": freq, "gap_months": None,
@@ -1673,7 +1765,7 @@ def annotate_data_quality(layers, built_at):
             node["data_quality"] = dq
             flags.append({
                 "path": path,
-                "name": node.get("name") or path.rsplit("/", 1)[-1],
+                "name": _flag_display_name(layers, node, path),
                 "current": cur,
                 "unit": node.get("unit"),
                 "tail_date": tail["date"],
@@ -1906,6 +1998,13 @@ def build():
         print(f"⚠ last_updated 继承父级补全：{len(_lu_inh)} 处")
         for _x in _lu_inh[:8]:
             print("    " + _x)
+    # [2026-11-13] us/cn 镜像对齐顶层（前端优先渲染镜像，不对齐就显示 09-02 旧值）
+    _mirror = _sync_region_mirrors(out["cycle_layers"])
+    if _mirror:
+        print(f"⚠ us/cn 镜像落后顶层，已对齐：{len(_mirror)} 项")
+        for _x in _mirror:
+            print("    " + _x)
+
     _flags = annotate_data_quality(out["cycle_layers"], meta["v4_built_at"])
     # [2026-11-13] 补扫 hist 为空的单值节点（原入口条件 `hist` 非空，14 个节点漏检）
     _nh_flags = annotate_no_history(out["cycle_layers"], meta["v4_built_at"])

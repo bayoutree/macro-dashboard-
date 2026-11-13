@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T12:56:04+08:00",
+  "generated_at": "2026-11-13T13:37:55+08:00",
   "builder": "scripts/build_cycle_position_v4.py:annotate_data_quality",
   "caliber": "history 尾点日期/值与 last_updated/current 脱节的层内指标全量清单；status: stub=真桩值(前端灰灯) / lag_normal=正常滞后 / meta_error=元数据标错 / unverified=待定级",
   "summary": {
@@ -128,7 +128,7 @@
     },
     {
       "path": "narrative_kondratieff/indicators/gdp_10y_avg/us",
-      "name": "us",
+      "name": "GDP 10年移动平均增速（美国）",
       "current": 2.2,
       "unit": "%",
       "tail_date": null,
@@ -144,7 +144,7 @@
     },
     {
       "path": "narrative_kondratieff/indicators/gdp_10y_avg/cn",
-      "name": "cn",
+      "name": "GDP 10年移动平均增速（中国）",
       "current": 4.5,
       "unit": "%",
       "tail_date": null,
@@ -160,7 +160,7 @@
     },
     {
       "path": "narrative_kondratieff/indicators/capital_deepening/us",
-      "name": "us",
+      "name": "资本深化速度（美国）",
       "current": 2.1,
       "unit": "%",
       "tail_date": null,
@@ -176,7 +176,7 @@
     },
     {
       "path": "narrative_kondratieff/indicators/capital_deepening/cn",
-      "name": "cn",
+      "name": "资本深化速度（中国）",
       "current": 3.5,
       "unit": "%",
       "tail_date": null,
@@ -192,7 +192,7 @@
     },
     {
       "path": "narrative_perez/stage_description",
-      "name": "stage_description",
+      "name": "佩雷斯阶段描述",
       "current": "Frenzy后期",
       "unit": null,
       "tail_date": null,
@@ -208,7 +208,7 @@
     },
     {
       "path": "constraint_rate_regime/structural/indicators/productivity_growth/cn",
-      "name": "cn",
+      "name": "劳动生产率增速（中国）",
       "current": 5.5,
       "unit": "%",
       "tail_date": null,
@@ -224,7 +224,7 @@
     },
     {
       "path": "constraint_rate_regime/forward_looking/indicators/breakeven_inflation/cn",
-      "name": "cn",
+      "name": "盈亏平衡通胀率(10Y)（中国）",
       "current": 2.1,
       "unit": "%",
       "tail_date": null,
