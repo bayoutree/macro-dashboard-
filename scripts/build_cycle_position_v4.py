@@ -599,6 +599,83 @@ def _fix_productivity_descriptions(layers):
     return layers, changed
 
 
+def _fix_productivity_growth(layers, fred_raw):
+    """劳动生产率增速(us) —— 用 FRED OPHNFB 真源重建（2026-11-13 修）。
+
+    ⚠ 历史事故（假数据事故 4）：constraint_rate_regime.structural.indicators
+    .productivity_growth.us 的 history 只有 4 个点
+    （2010Q1=3.0 / 2015Q1=1.8 / 2020Q1=1.0 / 2026Q1=1.2），间隔 5 年、全为 Q1。
+    这是从 data/cycle_position.json（v1 原始文件）一路继承下来的手编示意序列，
+    全仓无任何脚本采集过该指标，source 却写着「BLS / 国家统计局」。
+    真值：OPHNFB 2026Q3 同比 = 2.06%、Q2 = 2.29%、Q1 = 2.81%，
+    与写死的 1.2% 差 0.86 个百分点，且 1.2% 恰好落在「低生产率」叙事上，
+    会实质性影响自然利率/利率范式层的判断。
+
+    修复：OPHNFB（Nonfarm Business Sector: Real Output Per Hour, 2017=100）
+    季频指数 → 同季同比增速，全量替换 history 与 current。
+    cn 侧仍为手工汇编（无官方季度序列），保留原值但如实标注。
+    """
+    crr = layers.get("constraint_rate_regime", {})
+    ind = (crr.get("structural", {}) or {}).get("indicators", {}).get("productivity_growth")
+    if not isinstance(ind, dict):
+        return layers, False
+    us = ind.get("us")
+    if not isinstance(us, dict):
+        return layers, False
+
+    series = ((fred_raw or {}).get("series") or {}).get("ophnfb") or []
+    pts = [x for x in series
+           if isinstance(x, dict) and x.get("date") and x.get("value") is not None]
+    if len(pts) < 5:
+        return layers, False
+
+    by_date = {str(x["date"])[:10]: float(x["value"]) for x in pts}
+    hist = []
+    for d in sorted(by_date):
+        m = _re.match(r"^(\d{4})-(\d{2})", d)
+        if not m:
+            continue
+        y, mo = int(m.group(1)), int(m.group(2))
+        if mo not in (1, 4, 7, 10):
+            continue
+        py = "%d-%02d-01" % (y - 1, mo)
+        if py not in by_date or not by_date[py]:
+            continue
+        yoy = round((by_date[d] / by_date[py] - 1) * 100, 2)
+        hist.append({"date": "%dQ%d" % (y, (mo - 1) // 3 + 1), "value": yoy})
+    if len(hist) < 4:
+        return layers, False
+
+    us["history"] = hist
+    us["current"] = hist[-1]["value"]
+    us["last_updated"] = _period_end(hist[-1]["date"], "quarterly")
+    us["unit"] = "%"
+    us["frequency"] = "quarterly"
+    us["source"] = ("FRED OPHNFB（Nonfarm Business Sector: Real Output Per Hour, "
+                    "2017=100）季度指数同比增速，BLS 原始发布")
+    us["source_url"] = "https://fred.stlouisfed.org/series/OPHNFB"
+    us["caliber_corrected"] = True
+    us["caliber_note"] = (
+        "原 history 为 4 点手编示意序列（2010Q1/2015Q1/2020Q1/2026Q1，间隔 5 年），"
+        "全仓无采集脚本，source 却标 BLS。2026-11-13 起改用 OPHNFB 季度同比真值，"
+        "尾点 %s = %.2f%%。" % (hist[-1]["date"], hist[-1]["value"]))
+    ind["last_updated"] = us["last_updated"]
+    ind["current"] = us["current"]
+    ind["history"] = hist
+    ind["frequency"] = "quarterly"
+    ind["source"] = us["source"]
+    ind["source_url"] = us["source_url"]
+    ind["caliber_corrected"] = True
+    ind["caliber_note"] = us["caliber_note"]
+
+    cn = ind.get("cn")
+    if isinstance(cn, dict):
+        cn["source"] = ("手工汇编估算：GDP/就业人数，国家统计局。"
+                        "中国无官方季度劳动生产率序列，不可自动采集。")
+        cn["data_quality"] = dict(cn.get("data_quality") or {}, status="manual_compiled")
+
+    return layers, True
+
 
 def _fix_new_orders_units(layers):
     """修复 Kitchin us.new_orders 单位混入。
@@ -1722,6 +1799,13 @@ def build():
     out["cycle_layers"], pg_fixed = _fix_productivity_descriptions(out["cycle_layers"])
     if pg_fixed:
         print("⚠ productivity_growth 修复: 添加 us/cn per-region description")
+    out["cycle_layers"], pgv_fixed = _fix_productivity_growth(
+        out["cycle_layers"], load_json(FRED_RAW_JSON) if FRED_RAW_JSON.exists() else {})
+    if pgv_fixed:
+        _pg = out["cycle_layers"]["constraint_rate_regime"]["structural"]["indicators"]["productivity_growth"]
+        print("⚠ productivity_growth 修复: 手编 4 点示意序列 → OPHNFB 季度同比真值，"
+              "尾点 %s = %.2f%%（原写死 1.2%%）"
+              % (_pg["us"]["history"][-1]["date"], _pg["us"]["current"]))
     out["cycle_layers"], no_fixed = _fix_new_orders_units(out["cycle_layers"])
     if no_fixed:
         print("⚠ new_orders 修复: 百万美元→十亿美元")

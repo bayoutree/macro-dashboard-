@@ -41,6 +41,13 @@ FRED_SERIES = {
     'nonres_inv': 'PNFIC1',
     # ---- [CIO 2026-11-12 ①P1] 联邦赤字/GDP 年度真源（重建 fiscal_deficit_gdp） ----
     'deficit_gdp_fy': 'FYFSGDA188S',  # 联邦财政盈余/赤字占GDP（年度，负值=赤字）          # 实际私人非住宅固定投资(十亿2017$)——juglar.us.capex_growth 真源
+    # ---- [2026-11-13 假数据事故4] 非农劳动生产率真源 ----
+    # 根因：constraint_rate_regime.productivity_growth.us 的 history 只有 4 个点
+    # （2010Q1=3.0 / 2015Q1=1.8 / 2020Q1=1.0 / 2026Q1=1.2），间隔 5 年、全为 Q1，
+    # 是从 data/cycle_position.json（v1 原始文件）继承下来的手编示意序列，
+    # 全仓无任何脚本采集过该指标。真值 2026Q3 YoY = 2.06%，与写死的 1.2% 差 0.86pct。
+    # OPHNFB = Nonfarm Business Sector: Real Output Per Hour (index 2017=100)，季频。
+    'ophnfb': 'OPHNFB',
 }
 
 def fetch_fred_series(series_id, observation_start='2015-01-01', observation_end=None):

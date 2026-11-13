@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-12T16:24:51+08:00",
+    "update_time": "2026-11-13T00:49:07+08:00",
     "data_freshness_score": 98,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-13T12:01:12+08:00"
+    "v4_built_at": "2026-11-13T12:56:04+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2884,11 +2884,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.34,
+          "current_value": 3.3,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-09"
+          "last_updated": "2026-11-11"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -3096,41 +3096,200 @@
           },
           "productivity_growth": {
             "name": "劳动生产率增速",
-            "source": "BLS / 国家统计局",
+            "source": "FRED OPHNFB（Nonfarm Business Sector: Real Output Per Hour, 2017=100）季度指数同比增速，BLS 原始发布",
             "us": {
-              "current": 1.2,
+              "current": 2.06,
               "unit": "%",
               "history": [
                 {
-                  "date": "2010Q1",
-                  "value": 3.0
+                  "date": "2016Q1",
+                  "value": 0.58
                 },
                 {
-                  "date": "2015Q1",
-                  "value": 1.8
+                  "date": "2016Q2",
+                  "value": 0.15
+                },
+                {
+                  "date": "2016Q3",
+                  "value": 0.21
+                },
+                {
+                  "date": "2016Q4",
+                  "value": 1.52
+                },
+                {
+                  "date": "2017Q1",
+                  "value": 1.25
+                },
+                {
+                  "date": "2017Q2",
+                  "value": 1.24
+                },
+                {
+                  "date": "2017Q3",
+                  "value": 1.71
+                },
+                {
+                  "date": "2017Q4",
+                  "value": 1.77
+                },
+                {
+                  "date": "2018Q1",
+                  "value": 1.94
+                },
+                {
+                  "date": "2018Q2",
+                  "value": 1.9
+                },
+                {
+                  "date": "2018Q3",
+                  "value": 1.37
+                },
+                {
+                  "date": "2018Q4",
+                  "value": 0.45
+                },
+                {
+                  "date": "2019Q1",
+                  "value": 0.97
+                },
+                {
+                  "date": "2019Q2",
+                  "value": 1.58
+                },
+                {
+                  "date": "2019Q3",
+                  "value": 2.42
+                },
+                {
+                  "date": "2019Q4",
+                  "value": 3.56
                 },
                 {
                   "date": "2020Q1",
-                  "value": 1.0
+                  "value": 2.29
+                },
+                {
+                  "date": "2020Q2",
+                  "value": 6.6
+                },
+                {
+                  "date": "2020Q3",
+                  "value": 7.07
+                },
+                {
+                  "date": "2020Q4",
+                  "value": 5.23
+                },
+                {
+                  "date": "2021Q1",
+                  "value": 6.65
+                },
+                {
+                  "date": "2021Q2",
+                  "value": 1.96
+                },
+                {
+                  "date": "2021Q3",
+                  "value": -0.25
+                },
+                {
+                  "date": "2021Q4",
+                  "value": 1.08
+                },
+                {
+                  "date": "2022Q1",
+                  "value": -1.1
+                },
+                {
+                  "date": "2022Q2",
+                  "value": -2.09
+                },
+                {
+                  "date": "2022Q3",
+                  "value": -1.46
+                },
+                {
+                  "date": "2022Q4",
+                  "value": -1.41
+                },
+                {
+                  "date": "2023Q1",
+                  "value": 0.17
+                },
+                {
+                  "date": "2023Q2",
+                  "value": 1.77
+                },
+                {
+                  "date": "2023Q3",
+                  "value": 2.98
+                },
+                {
+                  "date": "2023Q4",
+                  "value": 3.46
+                },
+                {
+                  "date": "2024Q1",
+                  "value": 3.41
+                },
+                {
+                  "date": "2024Q2",
+                  "value": 3.45
+                },
+                {
+                  "date": "2024Q3",
+                  "value": 3.11
+                },
+                {
+                  "date": "2024Q4",
+                  "value": 2.58
+                },
+                {
+                  "date": "2025Q1",
+                  "value": 2.27
+                },
+                {
+                  "date": "2025Q2",
+                  "value": 2.41
+                },
+                {
+                  "date": "2025Q3",
+                  "value": 2.66
+                },
+                {
+                  "date": "2025Q4",
+                  "value": 2.43
                 },
                 {
                   "date": "2026Q1",
-                  "value": 1.2
+                  "value": 2.81
+                },
+                {
+                  "date": "2026Q2",
+                  "value": 2.29
+                },
+                {
+                  "date": "2026Q3",
+                  "value": 2.06
                 }
               ],
               "frequency": "quarterly",
               "description": "US nonfarm business sector labor productivity growth (BLS)",
-              "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
+              "source": "FRED OPHNFB（Nonfarm Business Sector: Real Output Per Hour, 2017=100）季度指数同比增速，BLS 原始发布",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-03-31",
-              "last_updated_inherited_from": "productivity_growth"
+              "last_updated": "2026-09-30",
+              "last_updated_inherited_from": "productivity_growth",
+              "source_url": "https://fred.stlouisfed.org/series/OPHNFB",
+              "caliber_corrected": true,
+              "caliber_note": "原 history 为 4 点手编示意序列（2010Q1/2015Q1/2020Q1/2026Q1，间隔 5 年），全仓无采集脚本，source 却标 BLS。2026-11-13 起改用 OPHNFB 季度同比真值，尾点 2026Q3 = 2.06%。"
             },
             "cn": {
               "current": 5.5,
               "unit": "%",
               "frequency": "quarterly",
               "description": "China labor productivity growth (GDP/employment, NBS)",
-              "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
+              "source": "手工汇编估算：GDP/就业人数，国家统计局。中国无官方季度劳动生产率序列，不可自动采集。",
               "source_backfilled": "2026-11-12 全站 source 扫描",
               "data_quality": {
                 "status": "manual_compiled",
@@ -3142,35 +3301,193 @@
                 "timestamp_faked": false,
                 "note": "分国别手工汇编单值：中国劳动生产率增速按 GDP/就业人数估算，无官方季度序列，不可自动采集；last_updated 继承父级发布日（见 last_updated_inherited_from）。",
                 "source_inherited_from": "cn",
-                "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
+                "source": "手工汇编估算：GDP/就业人数，国家统计局。中国无官方季度劳动生产率序列，不可自动采集。",
                 "source_backfilled": "2026-11-12 全站 source 扫描"
               },
               "last_updated": "2026-06-15",
               "last_updated_inherited_from": "productivity_growth"
             },
             "description": "TFP+资本深化的综合效率指标",
-            "last_updated": "2026-03-31",
+            "last_updated": "2026-09-30",
             "frequency": "quarterly",
             "history": [
               {
-                "date": "2010Q1",
-                "value": 3.0
+                "date": "2016Q1",
+                "value": 0.58
               },
               {
-                "date": "2015Q1",
-                "value": 1.8
+                "date": "2016Q2",
+                "value": 0.15
+              },
+              {
+                "date": "2016Q3",
+                "value": 0.21
+              },
+              {
+                "date": "2016Q4",
+                "value": 1.52
+              },
+              {
+                "date": "2017Q1",
+                "value": 1.25
+              },
+              {
+                "date": "2017Q2",
+                "value": 1.24
+              },
+              {
+                "date": "2017Q3",
+                "value": 1.71
+              },
+              {
+                "date": "2017Q4",
+                "value": 1.77
+              },
+              {
+                "date": "2018Q1",
+                "value": 1.94
+              },
+              {
+                "date": "2018Q2",
+                "value": 1.9
+              },
+              {
+                "date": "2018Q3",
+                "value": 1.37
+              },
+              {
+                "date": "2018Q4",
+                "value": 0.45
+              },
+              {
+                "date": "2019Q1",
+                "value": 0.97
+              },
+              {
+                "date": "2019Q2",
+                "value": 1.58
+              },
+              {
+                "date": "2019Q3",
+                "value": 2.42
+              },
+              {
+                "date": "2019Q4",
+                "value": 3.56
               },
               {
                 "date": "2020Q1",
-                "value": 1.0
+                "value": 2.29
+              },
+              {
+                "date": "2020Q2",
+                "value": 6.6
+              },
+              {
+                "date": "2020Q3",
+                "value": 7.07
+              },
+              {
+                "date": "2020Q4",
+                "value": 5.23
+              },
+              {
+                "date": "2021Q1",
+                "value": 6.65
+              },
+              {
+                "date": "2021Q2",
+                "value": 1.96
+              },
+              {
+                "date": "2021Q3",
+                "value": -0.25
+              },
+              {
+                "date": "2021Q4",
+                "value": 1.08
+              },
+              {
+                "date": "2022Q1",
+                "value": -1.1
+              },
+              {
+                "date": "2022Q2",
+                "value": -2.09
+              },
+              {
+                "date": "2022Q3",
+                "value": -1.46
+              },
+              {
+                "date": "2022Q4",
+                "value": -1.41
+              },
+              {
+                "date": "2023Q1",
+                "value": 0.17
+              },
+              {
+                "date": "2023Q2",
+                "value": 1.77
+              },
+              {
+                "date": "2023Q3",
+                "value": 2.98
+              },
+              {
+                "date": "2023Q4",
+                "value": 3.46
+              },
+              {
+                "date": "2024Q1",
+                "value": 3.41
+              },
+              {
+                "date": "2024Q2",
+                "value": 3.45
+              },
+              {
+                "date": "2024Q3",
+                "value": 3.11
+              },
+              {
+                "date": "2024Q4",
+                "value": 2.58
+              },
+              {
+                "date": "2025Q1",
+                "value": 2.27
+              },
+              {
+                "date": "2025Q2",
+                "value": 2.41
+              },
+              {
+                "date": "2025Q3",
+                "value": 2.66
+              },
+              {
+                "date": "2025Q4",
+                "value": 2.43
               },
               {
                 "date": "2026Q1",
-                "value": 1.2
+                "value": 2.81
+              },
+              {
+                "date": "2026Q2",
+                "value": 2.29
+              },
+              {
+                "date": "2026Q3",
+                "value": 2.06
               }
             ],
-            "source_url": "https://data.stats.gov.cn/",
-            "current": 1.2
+            "source_url": "https://fred.stlouisfed.org/series/OPHNFB",
+            "current": 2.06,
+            "caliber_corrected": true,
+            "caliber_note": "原 history 为 4 点手编示意序列（2010Q1/2015Q1/2020Q1/2026Q1，间隔 5 年），全仓无采集脚本，source 却标 BLS。2026-11-13 起改用 OPHNFB 季度同比真值，尾点 2026Q3 = 2.06%。"
           },
           "income_inequality": {
             "name": "基尼系数",
@@ -44778,7 +45095,7 @@
               "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -47948,11 +48265,15 @@
               {
                 "date": "2026-11-09",
                 "value": 0.91
+              },
+              {
+                "date": "2026-11-11",
+                "value": 0.9
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.91
+            "current": 0.9
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48777,7 +49098,7 @@
               "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-12",
             "frequency": "daily",
             "history": [
               {
@@ -49755,10 +50076,14 @@
               {
                 "date": "2026-11-11",
                 "value": 22.12
+              },
+              {
+                "date": "2026-11-12",
+                "value": 22.43
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.12
+            "current": 22.43
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -54758,7 +55083,7 @@
       "implication_for_a_stock": "9个维度中4个中美反向、2个错位、3个共振。对中国而言，反向维度中多数指向中国方向更优，叠加共振维度均为积极信号，A股相对美股具有周期位置优势。核心风险在于大债务周期和利率范式层面的全球性约束。"
     },
     "high_rate_tracker": {
-      "last_updated": "2026-11-09",
+      "last_updated": "2026-11-11",
       "indicators": [
         {
           "name": "全球储蓄-投资缺口",
@@ -84940,10 +85265,14 @@
             {
               "date": "2026-11-09",
               "value": 0.91
+            },
+            {
+              "date": "2026-11-11",
+              "value": 0.9
             }
           ],
-          "last_updated": "2026-11-09",
-          "last_updated_raw": "2026-11-09",
+          "last_updated": "2026-11-11",
+          "last_updated_raw": "2026-11-11",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"

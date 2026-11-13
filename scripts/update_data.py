@@ -283,6 +283,16 @@ def merge_history_description(new_data: dict) -> dict:
                         ind["history"] = [{"date": p["date"], "value": p["value"]}
                                           for p in _fg_hist if p.get("date") and p.get("value") is not None]
                         logger.info(f"    📈 fear_greed_index history 从 feargreed_pointer 同步: {len(ind['history'])}点")
+                        # [2026-11-13 修] 原逻辑只同步 history、不同步 value/score，
+                        # 导致 pointer 刷新后 timing_scores 的 value 停在旧日、与主源打架
+                        # （实测 11-12：主源 94.44 vs timing_scores 99.21，ssot_check FAIL）。
+                        # history 尾点即当日真值，value/score 一并跟上。
+                        _tail = ind["history"][-1] if ind["history"] else None
+                        if _tail and isinstance(_tail.get("value"), (int, float)):
+                            if ind.get("value") != _tail["value"]:
+                                logger.info(f"    🔧 fear_greed_index value {ind.get('value')} → {_tail['value']}（{_tail['date']}）")
+                            ind["value"] = _tail["value"]
+                            ind["score"] = _tail["value"]
                 except Exception as _e:
                     logger.warning(f"    fear_greed_index 同步异常: {_e}")
                 continue
