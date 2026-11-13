@@ -362,6 +362,14 @@
 }
 .reform-card:hover { border-left-color: #06b6d4; transform: translateX(2px); }
 .reform-card.reform-qualitative { border-left-color: #f59e0b; }
+/* [2026-11-13] 结构性改革卡的新鲜度配色，与 .indicator-card 同口径：
+   非官方观测灰边（不划删除线、不强灰度），断更红边，等待更新黄边。 */
+.reform-card.nonofficial { border-left-color: #6b7280; opacity: 0.9; }
+.reform-card.nonofficial:hover { border-left-color: #06b6d4; }
+.reform-card.expired { border-left-color: #ef4444; }
+.reform-card.stale { border-left-color: #f59e0b; }
+.reform-card.stub { border-left-color: #6b7280; opacity: 0.6; }
+.reform-card.stub .reform-value { color: #6b7280; text-decoration: line-through; }
 .reform-name { font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px; }
 .reform-value { font-size: 20px; font-weight: 700; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
 .reform-assessment { font-size: 16px; font-weight: 600; color: #f59e0b; }

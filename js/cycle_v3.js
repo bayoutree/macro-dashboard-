@@ -349,7 +349,10 @@ const CycleV3Module = (() => {
         // [2026-11-13] 补 data_quality：结构性改革 4 张 proxy 卡此前不传，manual_compiled
         // 仍按日期算天数 → 显示「✅最新」，与顶部警示条矛盾。
         const f = freshnessBadge(p.last_updated, p.frequency, null, p.data_quality);
-        return `<div class="reform-card">
+        // [2026-11-13] 卡容器也带上新鲜度 class：否则徽标灰了、左边框还是绿的，
+        // 视觉上仍在暗示「这条是好的」。与 .indicator-card 口径统一。
+        const fcls = getFreshness(p.last_updated, p.frequency, null, p.data_quality).cls;
+        return `<div class="reform-card ${fcls}">
           <div class="reform-name">${escapeHtml(p.name)} ${f}</div>
           <div class="reform-value">${p.current}${escapeHtml(p.unit||'')}</div>
           <div class="reform-trend">${escapeHtml(p.trend||'')}</div>
