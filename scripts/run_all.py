@@ -28,6 +28,10 @@ SCRIPTS = [
     ("update_json.py", "V3周期-更新v3 JSON"),
     ("calculate_indicators.py", "V3周期-衍生指标计算"),
     ("validate_json.py", "V3周期-JSON格式校验"),
+    # ISM 制造业PMI 续采（CIO 2026-11-12 写脚本，2026-11-13 接线）
+    # 断链根因：脚本写了但 run_all 未挂载 + bridge 未读 ism_pmi.json，
+    # 导致真序列（683 点）躺在仓库里没人用，前端拿 null 后兜底成硬编码假序列。
+    ("fetch_ism_pmi.py", "ISM制造业PMI-PRNewswire官方稿续采"),
     # QVIX 恐贪指针日频更新（2026-09-26 批准恢复）
     ("collect_qvix.py", "QVIX恐贪指针-日频更新"),
     # 12 个无趋势图指标的真源历史采集（达里奥/HRT/基尼/产能利用率）

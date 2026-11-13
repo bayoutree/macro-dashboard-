@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-13T00:49:07+08:00",
-    "data_freshness_score": 99,
+    "update_time": "2026-11-12T16:24:51+08:00",
+    "data_freshness_score": 98,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-12",
+      "as_of": "2026-11-13",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 99
+          "score": 98
         },
         "narrative_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 99
+          "score": 98
         },
         "narrative_perez": {
           "last_updated": "2026-11-11",
-          "score": 99
+          "score": 98
         },
         "constraint_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 99
+          "score": 98
         }
       },
       "excluded_no_date": [
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-12T16:49:07+08:00"
+    "v4_built_at": "2026-11-13T11:17:31+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2191,6 +2191,19 @@
               "quantifiable": true,
               "frequency": "quarterly",
               "last_updated": "2026-08-27",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 28,
+                "unit": "%",
+                "last_updated": "2026-08-27",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "手工汇编单值：有公开来源（统计局/财政部/证监会）但无历史序列，需手工计算，不可自动采集。仅代表当前时点，不能用于趋势或分位判断。",
+                "source_inherited_from": "proxy_indicators[0]",
+                "source": "国家统计局《全国规模以上工业企业利润》——国企利润占规上工业利润总额比重，月频派生",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
               "source": "国家统计局《全国规模以上工业企业利润》——国企利润占规上工业利润总额比重，月频派生",
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
@@ -2203,6 +2216,19 @@
               "quantifiable": true,
               "frequency": "monthly",
               "last_updated": "2026-08-15",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 5.2,
+                "unit": "%",
+                "last_updated": "2026-08-15",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "手工汇编单值：有公开来源（统计局/财政部/证监会）但无历史序列，需手工计算，不可自动采集。仅代表当前时点，不能用于趋势或分位判断。",
+                "source_inherited_from": "proxy_indicators[1]",
+                "source": "国家统计局《固定资产投资》——民间固定资产投资累计同比（月频）",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
               "source": "国家统计局《固定资产投资》——民间固定资产投资累计同比（月频）",
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
@@ -2215,6 +2241,19 @@
               "quantifiable": true,
               "frequency": "quarterly",
               "last_updated": "2026-09-01",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 22,
+                "unit": "%",
+                "last_updated": "2026-09-01",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "手工汇编单值：有公开来源（统计局/财政部/证监会）但无历史序列，需手工计算，不可自动采集。仅代表当前时点，不能用于趋势或分位判断。",
+                "source_inherited_from": "proxy_indicators[2]",
+                "source": "财政部《财政收支情况》土地出让收入 ÷ 地方一般公共预算收入（手工计算，年频）",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
               "source": "财政部《财政收支情况》土地出让收入 ÷ 地方一般公共预算收入（手工计算，年频）",
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
@@ -2227,6 +2266,19 @@
               "quantifiable": true,
               "frequency": "annual",
               "last_updated": "2026-06-01",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 95,
+                "unit": "%",
+                "last_updated": "2026-06-01",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "手工汇编单值：有公开来源（统计局/财政部/证监会）但无历史序列，需手工计算，不可自动采集。仅代表当前时点，不能用于趋势或分位判断。",
+                "source_inherited_from": "proxy_indicators[3]",
+                "source": "证监会/沪深交易所 IPO 统计——注册制项目占 A 股 IPO 比重（手工统计，年频）",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
               "source": "证监会/沪深交易所 IPO 统计——注册制项目占 A 股 IPO 比重（手工统计，年频）",
               "source_backfilled": "2026-11-12 全站 source 扫描"
             },
@@ -2608,7 +2660,9 @@
               "value": 0.83
             }
           ],
-          "current": 108.441
+          "current": 108.441,
+          "last_updated": "2026-11-11",
+          "last_updated_inherited_from": "indicators"
         },
         "gdp_10y_avg": {
           "name": "GDP 10年移动平均增速",
@@ -2619,7 +2673,20 @@
             "last_updated": "2026-06-15",
             "source_inherited_from": "gdp_10y_avg",
             "source": "世界银行",
-            "source_backfilled": "2026-11-12 全站 source 扫描"
+            "source_backfilled": "2026-11-12 全站 source 扫描",
+            "data_quality": {
+              "status": "rolling_single",
+              "kind": "no_history",
+              "current": 2.2,
+              "unit": "%",
+              "last_updated": "2026-06-15",
+              "history_points": 0,
+              "timestamp_faked": false,
+              "note": "世界银行 10 年滚动均值，单值口径本身不保留历史序列，属合法单值。",
+              "source_inherited_from": "us",
+              "source": "世界银行",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
+            }
           },
           "cn": {
             "current": 4.5,
@@ -2627,7 +2694,20 @@
             "last_updated": "2026-06-15",
             "source_inherited_from": "gdp_10y_avg",
             "source": "世界银行",
-            "source_backfilled": "2026-11-12 全站 source 扫描"
+            "source_backfilled": "2026-11-12 全站 source 扫描",
+            "data_quality": {
+              "status": "rolling_single",
+              "kind": "no_history",
+              "current": 4.5,
+              "unit": "%",
+              "last_updated": "2026-06-15",
+              "history_points": 0,
+              "timestamp_faked": false,
+              "note": "世界银行 10 年滚动均值，单值口径本身不保留历史序列，属合法单值。",
+              "source_inherited_from": "cn",
+              "source": "世界银行",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
+            }
           },
           "frequency": "quarterly",
           "source_url": "https://data.worldbank.org/"
@@ -2641,7 +2721,20 @@
             "last_updated": "2026-06-15",
             "source_inherited_from": "capital_deepening",
             "source": "各国央行",
-            "source_backfilled": "2026-11-12 全站 source 扫描"
+            "source_backfilled": "2026-11-12 全站 source 扫描",
+            "data_quality": {
+              "status": "rolling_single",
+              "kind": "no_history",
+              "current": 2.1,
+              "unit": "%",
+              "last_updated": "2026-06-15",
+              "history_points": 0,
+              "timestamp_faked": false,
+              "note": "各国央行资本深化指标，单值口径本身不保留历史序列，属合法单值。",
+              "source_inherited_from": "us",
+              "source": "各国央行",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
+            }
           },
           "cn": {
             "current": 3.5,
@@ -2649,7 +2742,20 @@
             "last_updated": "2026-06-15",
             "source_inherited_from": "capital_deepening",
             "source": "各国央行",
-            "source_backfilled": "2026-11-12 全站 source 扫描"
+            "source_backfilled": "2026-11-12 全站 source 扫描",
+            "data_quality": {
+              "status": "rolling_single",
+              "kind": "no_history",
+              "current": 3.5,
+              "unit": "%",
+              "last_updated": "2026-06-15",
+              "history_points": 0,
+              "timestamp_faked": false,
+              "note": "各国央行资本深化指标，单值口径本身不保留历史序列，属合法单值。",
+              "source_inherited_from": "cn",
+              "source": "各国央行",
+              "source_backfilled": "2026-11-12 全站 source 扫描"
+            }
           },
           "frequency": "monthly"
         }
@@ -2778,11 +2884,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.3,
+          "current_value": 3.34,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-11"
+          "last_updated": "2026-11-09"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -2808,7 +2914,20 @@
         "description": "AI概念估值扩张已持续3年+，部分细分领域出现泡沫迹象，但核心AI基础设施仍有真实需求支撑。",
         "last_updated": "2026-08-06",
         "source": "阶段描述文本派生节点：由 narrative_perez 阶段判定输出，非数值指标、非独立采集源。",
-        "source_backfilled": "2026-11-12 全站 source 扫描"
+        "source_backfilled": "2026-11-12 全站 source 扫描",
+        "data_quality": {
+          "status": "non_numeric",
+          "kind": "no_history",
+          "current": "Frenzy后期",
+          "unit": null,
+          "last_updated": "2026-08-06",
+          "history_points": 0,
+          "timestamp_faked": false,
+          "note": "阶段描述文本派生节点，非数值指标、非独立采集源，不参与桩值判定。",
+          "source_inherited_from": "stage_description",
+          "source": "阶段描述文本派生节点：由 narrative_perez 阶段判定输出，非数值指标、非独立采集源。",
+          "source_backfilled": "2026-11-12 全站 source 扫描"
+        }
       },
       "key_ratio": {
         "name": "金融资本/生产资本比值",
@@ -2873,7 +2992,20 @@
           "current": 720,
           "unit": "Billion USD",
           "last_updated": "2026-08-06",
-          "frequency": "monthly"
+          "frequency": "monthly",
+          "data_quality": {
+            "status": "stub",
+            "kind": "no_history",
+            "current": 720,
+            "unit": "Billion USD",
+            "last_updated": "2026-08-06",
+            "history_points": 0,
+            "timestamp_faked": false,
+            "note": "付费库静态占位：Crunchbase/PitchBook 需订阅、无公开 API，历史序列无法采集。且 name 称「年度融资额」而 frequency 标 monthly，口径自相矛盾，需人工核实取一。",
+            "source_inherited_from": "vc_pe_funding",
+            "source": "Crunchbase/PitchBook",
+            "source_backfilled": "2026-11-12 全站 source 扫描"
+          }
         },
         "ipo_count": {
           "name": "全球IPO数量",
@@ -2881,7 +3013,20 @@
           "current": 312,
           "unit": "count",
           "last_updated": "2026-08-06",
-          "frequency": "monthly"
+          "frequency": "monthly",
+          "data_quality": {
+            "status": "stub",
+            "kind": "no_history",
+            "current": 312,
+            "unit": "count",
+            "last_updated": "2026-08-06",
+            "history_points": 0,
+            "timestamp_faked": false,
+            "note": "付费库静态占位：Renaissance Capital 需订阅、无公开 API，历史序列无法采集。",
+            "source_inherited_from": "ipo_count",
+            "source": "Renaissance Capital",
+            "source_backfilled": "2026-11-12 全站 source 扫描"
+          }
         },
         "passive_fund_share": {
           "name": "被动基金占美股市值比例",
@@ -2889,7 +3034,20 @@
           "current": 52,
           "unit": "%",
           "last_updated": "2026-08-06",
-          "frequency": "monthly"
+          "frequency": "monthly",
+          "data_quality": {
+            "status": "stub",
+            "kind": "no_history",
+            "current": 52,
+            "unit": "%",
+            "last_updated": "2026-08-06",
+            "history_points": 0,
+            "timestamp_faked": false,
+            "note": "付费库静态占位：ICI/EPFR 需订阅、无公开 API，历史序列无法采集。",
+            "source_inherited_from": "passive_fund_share",
+            "source": "ICI/EPFR",
+            "source_backfilled": "2026-11-12 全站 source 扫描"
+          }
         }
       }
     },
@@ -2963,7 +3121,9 @@
               "frequency": "quarterly",
               "description": "US nonfarm business sector labor productivity growth (BLS)",
               "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-03-31",
+              "last_updated_inherited_from": "productivity_growth"
             },
             "cn": {
               "current": 5.5,
@@ -2971,7 +3131,22 @@
               "frequency": "quarterly",
               "description": "China labor productivity growth (GDP/employment, NBS)",
               "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 5.5,
+                "unit": "%",
+                "last_updated": "2026-06-15",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "分国别手工汇编单值：中国劳动生产率增速按 GDP/就业人数估算，无官方季度序列，不可自动采集；last_updated 继承父级发布日（见 last_updated_inherited_from）。",
+                "source_inherited_from": "cn",
+                "source": "劳动生产率增速（%），手工汇编：BLS（美国）/ 统计局（中国）年度数据。",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
+              "last_updated": "2026-06-15",
+              "last_updated_inherited_from": "productivity_growth"
             },
             "description": "TFP+资本深化的综合效率指标",
             "last_updated": "2026-03-31",
@@ -3412,7 +3587,9 @@
               ],
               "frequency": "annual",
               "source": "国民储蓄率（%），统计局资金流量表（年频，滞后约 18 个月）。",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026",
+              "last_updated_inherited_from": "cn_savings_rate"
             },
             "description": "储蓄-投资差额占GDP比重，反映国内资金供需缺口",
             "last_updated": "2026",
@@ -4260,14 +4437,31 @@
               ],
               "frequency": "daily",
               "source": "FRED T30YIEM / T10YIE（通胀预期，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-10-01",
+              "last_updated_inherited_from": "breakeven_inflation"
             },
             "cn": {
               "current": 2.1,
               "unit": "%",
               "frequency": "daily",
               "source": "FRED T30YIEM / T10YIE（通胀预期，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "data_quality": {
+                "status": "manual_compiled",
+                "kind": "no_history",
+                "current": 2.1,
+                "unit": "%",
+                "last_updated": "2026-11-12",
+                "history_points": 0,
+                "timestamp_faked": false,
+                "note": "分国别手工汇编单值：中国盈亏平衡通胀率无 TIPS 类可交易通胀挂钩债，按 CPI 预期与国债收益率差估算，无历史序列；last_updated 继承父级发布日。",
+                "source_inherited_from": "cn",
+                "source": "FRED T30YIEM / T10YIE（通胀预期，日频）",
+                "source_backfilled": "2026-11-12 全站 source 扫描"
+              },
+              "last_updated": "2026-11-12",
+              "last_updated_inherited_from": "breakeven_inflation"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
             "last_updated": "2026-10-01",
@@ -6387,7 +6581,9 @@
               ],
               "frequency": "daily",
               "source": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-11-09",
+              "last_updated_inherited_from": "real_rate_forward"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
             "last_updated": "2026-11-09",
@@ -19075,7 +19271,9 @@
               ],
               "frequency": "daily",
               "source": "FRED ACMTP10（ACM 10 年期期限溢价，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-11-06",
+              "last_updated_inherited_from": "term_premium"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
             "last_updated": "2026-11-06",
@@ -31007,7 +31205,9 @@
               ],
               "frequency": "annual",
               "source": "中国 TFP 趋势项，手工汇编：由统计局年度资本/劳动/产出数据测算。",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026",
+              "last_updated_inherited_from": "cn_tfp_trend"
             },
             "description": "全要素生产率增速，反映长期增长潜力",
             "last_updated": "2026",
@@ -31855,7 +32055,9 @@
               ],
               "frequency": "daily",
               "source": "FRED T10Y2Y（10Y-2Y 利差，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-11-10",
+              "last_updated_inherited_from": "yield_curve_2s10s"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
             "last_updated": "2026-11-10",
@@ -44571,10 +44773,12 @@
               ],
               "frequency": "daily",
               "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-11-09",
+              "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-09",
             "frequency": "daily",
             "history": [
               {
@@ -47744,15 +47948,11 @@
               {
                 "date": "2026-11-09",
                 "value": 0.91
-              },
-              {
-                "date": "2026-11-11",
-                "value": 0.9
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.9
+            "current": 0.91
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48572,10 +48772,12 @@
               ],
               "frequency": "daily",
               "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-11-11",
+              "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-11",
             "frequency": "daily",
             "history": [
               {
@@ -49553,14 +49755,10 @@
               {
                 "date": "2026-11-11",
                 "value": 22.12
-              },
-              {
-                "date": "2026-11-12",
-                "value": 22.43
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.43
+            "current": 22.12
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -49620,7 +49818,9 @@
               ],
               "frequency": "monthly",
               "source": "中国实际利率，统计局 CPI + 政策利率手工计算（月频）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-10-31",
+              "last_updated_inherited_from": "cn_real_rate"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
             "last_updated": "2026-10-31",
@@ -52165,7 +52365,9 @@
               ],
               "source_inherited_from": "cn_pmi_finished_goods",
               "source": "国家统计局 服务业调查中心、中国物流与采购联合会《中国采购经理指数运行情况》（www.stats.gov.cn/sj/zxfb/，月度）",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-10-31",
+              "last_updated_inherited_from": "cn_pmi_finished_goods"
             },
             "description": "PMI产成品库存分项，<50=库存收缩",
             "last_updated": "2026-10-31",
@@ -53650,7 +53852,9 @@
               ],
               "source_inherited_from": "us_gdp_growth",
               "source": "BEA/FRED",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-06-30",
+              "last_updated_inherited_from": "us_gdp_growth"
             },
             "description": "实际GDP季度环比年化增速",
             "last_updated": "2026-06-30",
@@ -54252,7 +54456,9 @@
               ],
               "source_inherited_from": "cn_industrial_va",
               "source": "NBS",
-              "source_backfilled": "2026-11-12 全站 source 扫描"
+              "source_backfilled": "2026-11-12 全站 source 扫描",
+              "last_updated": "2026-09-30",
+              "last_updated_inherited_from": "cn_industrial_va"
             },
             "description": "规模以上工业增加值同比增速",
             "last_updated": "2026-09-30",
@@ -84713,10 +84919,6 @@
             {
               "date": "2026-11-09",
               "value": 0.91
-            },
-            {
-              "date": "2026-11-11",
-              "value": 0.9
             }
           ],
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
@@ -90275,7 +90477,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-12",
+    "last_updated": "2026-11-13",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=1 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:扩张早期+被动补库（当前美国）(P1=2,P2=1); CN:扩张早期+被动补库(P1=2,P2=1)",

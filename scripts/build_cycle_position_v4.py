@@ -1334,6 +1334,163 @@ def _assert_no_slope_across_gap(layers):
     _scan(layers, "cycle_layers")
     return bad
 
+# ----------------------------------------------------------------------------
+# [2026-11-13] 无 history 单值节点处置表
+# ----------------------------------------------------------------------------
+# 事故：annotate_data_quality 的入口条件是 `history` 非空且首元素为 dict，
+# hist=[] 的节点直接 return，导致 14 个「只有 current、没有历史序列」的节点
+# 从未被桩值扫描覆盖。其中 3 个是付费库手工占位值（Crunchbase/PitchBook、
+# Renaissance Capital、ICI/EPFR，均无公开 API、不可能自动采集），却以月频
+# 「正常指标」的形态挂在前端，读者无从判断它其实是静态快照。
+#
+# 处置原则：不删值、不猜值，只打标记说明性质与限制。
+_NO_HIST_POLICY = {
+    "narrative_perez/indicators/vc_pe_funding": (
+        "stub",
+        "付费库静态占位：Crunchbase/PitchBook 需订阅、无公开 API，历史序列无法采集。"
+        "且 name 称「年度融资额」而 frequency 标 monthly，口径自相矛盾，需人工核实取一。"
+    ),
+    "narrative_perez/indicators/ipo_count": (
+        "stub",
+        "付费库静态占位：Renaissance Capital 需订阅、无公开 API，历史序列无法采集。"
+    ),
+    "narrative_perez/indicators/passive_fund_share": (
+        "stub",
+        "付费库静态占位：ICI/EPFR 需订阅、无公开 API，历史序列无法采集。"
+    ),
+    "constraint_debt_cycle/cn/structural_reform/proxy_indicators": (
+        "manual_compiled",
+        "手工汇编单值：有公开来源（统计局/财政部/证监会）但无历史序列，需手工计算，"
+        "不可自动采集。仅代表当前时点，不能用于趋势或分位判断。"
+    ),
+    "narrative_kondratieff/indicators/gdp_10y_avg": (
+        "rolling_single",
+        "世界银行 10 年滚动均值，单值口径本身不保留历史序列，属合法单值。"
+    ),
+    "narrative_kondratieff/indicators/capital_deepening": (
+        "rolling_single",
+        "各国央行资本深化指标，单值口径本身不保留历史序列，属合法单值。"
+    ),
+    "constraint_rate_regime/structural/indicators/productivity_growth/cn": (
+        "manual_compiled",
+        "分国别手工汇编单值：中国劳动生产率增速按 GDP/就业人数估算，无官方季度序列，"
+        "不可自动采集；last_updated 继承父级发布日（见 last_updated_inherited_from）。"
+    ),
+    "constraint_rate_regime/forward_looking/indicators/breakeven_inflation/cn": (
+        "manual_compiled",
+        "分国别手工汇编单值：中国盈亏平衡通胀率无 TIPS 类可交易通胀挂钩债，"
+        "按 CPI 预期与国债收益率差估算，无历史序列；last_updated 继承父级发布日。"
+    ),
+    "narrative_perez/stage_description": (
+        "non_numeric",
+        "阶段描述文本派生节点，非数值指标、非独立采集源，不参与桩值判定。"
+    ),
+}
+
+
+def annotate_no_history(layers, built_at):
+    """[2026-11-13] 补扫「有 current 但无 history」的单值节点。
+
+    annotate_data_quality 只处理 hist 非空的节点；本函数专治 hist 为空的盲区。
+    按 _NO_HIST_POLICY 前缀匹配打 data_quality 标记，未命中的一律标
+    no_history 待核实（不静默放过）。
+    """
+    flags = []
+
+    def _scan(node, path):
+        if isinstance(node, dict):
+            h = node.get("history")
+            cur = node.get("current")
+            has_hist = isinstance(h, list) and bool(h) and isinstance(h[0], dict)
+            if cur is not None and not has_hist and not isinstance(cur, bool):
+                status, note = "unverified", "无 history 的单值节点，尚未归类核实"
+                for pre, (st, tx) in _NO_HIST_POLICY.items():
+                    # 支持容器本身、容器子键、以及列表元素 proxy_indicators[0]
+                    if (path == pre or path.startswith(pre + "/")
+                            or path.startswith(pre + "[")):
+                        status, note = st, tx
+                        break
+                node["data_quality"] = {
+                    "status": status,
+                    "kind": "no_history",
+                    "current": cur,
+                    "unit": node.get("unit"),
+                    "last_updated": node.get("last_updated"),
+                    "history_points": 0,
+                    "timestamp_faked": False,
+                    "note": note,
+                }
+                flags.append({
+                    "path": path,
+                    "name": node.get("name") or path.rsplit("/", 1)[-1],
+                    "current": cur,
+                    "unit": node.get("unit"),
+                    "tail_date": None,
+                    "tail_value": None,
+                    "last_updated": node.get("last_updated"),
+                    "frequency": node.get("frequency") or "unknown",
+                    "gap_months": None,
+                    "kind": "no_history",
+                    "timestamp_faked": False,
+                    "status": status,
+                    "collectable": status in ("stub", "manual_compiled"),
+                    "note": note,
+                })
+            # 快照 items：本函数会往 node 里写 data_quality，直接遍历会踩
+            # 「dictionary changed size during iteration」
+            for k, v in list(node.items()):
+                if k == "data_quality":
+                    continue
+                if isinstance(v, (dict, list)):
+                    _scan(v, f"{path}/{k}" if path else k)
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                if isinstance(v, (dict, list)):
+                    _scan(v, f"{path}[{i}]")
+
+    for layer_key, layer in (layers or {}).items():
+        if isinstance(layer, dict):
+            _scan(layer, layer_key)
+    return flags
+
+
+# [2026-11-13] 分国别单值缺 last_updated 的补日期（继承父级，不编新日期）
+def fix_inherit_last_updated(layers):
+    """子节点缺 last_updated 时继承父级日期（不新造日期）。
+
+    分国别/分市场的子节点（productivity_growth.us、breakeven_inflation.cn 等）
+    通常只有 current（部分带 history），last_updated 挂在父级。前端逐节点渲染时
+    读到 None 就显示「无日期」，读者无法判断这批数字是哪天的。
+    _fix_last_updated_to_tail 要求 lu 非空才修，对这类节点天然跳过，故单列此函数。
+    """
+    fixed = []
+
+    def _scan(node, path, parent_lu=None):
+        if isinstance(node, dict):
+            lu = node.get("last_updated")
+            if node.get("current") is not None and not lu and parent_lu:
+                node["last_updated"] = parent_lu
+                node["last_updated_inherited_from"] = (
+                    path.rsplit("/", 2)[-2] if path.count("/") >= 1 else "父级")
+                fixed.append(path)
+                lu = parent_lu
+            cur_lu = lu or parent_lu
+            for k, v in list(node.items()):
+                if k in ("data_quality", "current_nulled"):
+                    continue
+                if isinstance(v, (dict, list)):
+                    _scan(v, f"{path}/{k}" if path else k, cur_lu)
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                if isinstance(v, (dict, list)):
+                    _scan(v, f"{path}[{i}]", parent_lu)
+
+    for layer_key, layer in (layers or {}).items():
+        if isinstance(layer, dict):
+            _scan(layer, layer_key)
+    return fixed
+
+
 def annotate_data_quality(layers, built_at):
     """遍历层内全部指标节点，打 data_quality 标记，返回全站桩值扫描清单。
 
@@ -1608,7 +1765,29 @@ def build():
     _nfix = _fix_frequency_labels(out["cycle_layers"])
     if _nfix:
         print(f"⚠ frequency 标签修正 {_nfix} 项")
+    _lu_today = str((out.get("_meta") or {}).get("update_time") or "")[:10]
+    _lu_fixed = _fix_last_updated_to_tail(out["cycle_layers"], _lu_today or None)
+    if _lu_fixed:
+        print(f"⚠ last_updated 对齐序列尾点（全频率无豁免，CIO 裁决）：{len(_lu_fixed)} 处")
+        for _x in _lu_fixed[:12]:
+            print("    " + _x)
+
+    # [2026-11-13] 子节点继承父级 last_updated（父级已对齐尾点后执行，避免继承旧日期）
+    _lu_inh = fix_inherit_last_updated(out["cycle_layers"])
+    if _lu_inh:
+        print(f"⚠ last_updated 继承父级补全：{len(_lu_inh)} 处")
+        for _x in _lu_inh[:8]:
+            print("    " + _x)
     _flags = annotate_data_quality(out["cycle_layers"], meta["v4_built_at"])
+    # [2026-11-13] 补扫 hist 为空的单值节点（原入口条件 `hist` 非空，14 个节点漏检）
+    _nh_flags = annotate_no_history(out["cycle_layers"], meta["v4_built_at"])
+    if _nh_flags:
+        _nh_by = {}
+        for _f in _nh_flags:
+            _nh_by[_f["status"]] = _nh_by.get(_f["status"], 0) + 1
+        print(f"⚠ 无 history 单值节点 {len(_nh_flags)} 个（" +
+              ", ".join(f"{k}={v}" for k, v in sorted(_nh_by.items())) + "）")
+    _flags = _flags + _nh_flags
     _nulled = apply_null_out(out["cycle_layers"], _flags, meta["v4_built_at"])
     if _nulled:
         print(f"⚪ 假值置空 {_nulled} 项（current -> null，前端显示「--」）")
@@ -1623,18 +1802,13 @@ def build():
             "flagged": len(_flags),
             "by_status": _by_status,
             "stub_count": _by_status.get("stub", 0),
+            "no_history_count": len(_nh_flags),
         },
         "flags": sorted(_flags, key=lambda x: (x["status"] != "stub", -(x["gap_months"] or 0))),
     })
     print(f"⚠ 桩值扫描：{len(_flags)} 项脱节（" +
           ", ".join(f"{k}={v}" for k, v in sorted(_by_status.items())) + "）→ data/v4_stub_flags.json")
 
-    _lu_today = str((out.get("_meta") or {}).get("update_time") or "")[:10]
-    _lu_fixed = _fix_last_updated_to_tail(out["cycle_layers"], _lu_today or None)
-    if _lu_fixed:
-        print(f"⚠ last_updated 对齐序列尾点（全频率无豁免，CIO 裁决）：{len(_lu_fixed)} 处")
-        for _x in _lu_fixed[:12]:
-            print("    " + _x)
 
     _src_filled = _backfill_sources(out)
     if _src_filled:

@@ -133,8 +133,28 @@ def fix_c3_us_macro():
         print("✗ us_macro.json not found")
         return
     
-    # Fix ISM PMI from cn_macro_v2
-    if cn_macro_v2 and "indicators" in cn_macro_v2:
+    # Fix ISM PMI —— 优先级（2026-11-13 修）：
+    #   ① data/ism_pmi.json（fetch_ism_pmi.py 直采，ISM 官方稿经 PR Newswire 分发，683 点）
+    #   ② cn_macro_v2.json 的 us_ism_pmi（akshare 金十源，已停 2025-09，仅作兜底）
+    # 断链根因：原实现只读 ②，而 ② 已断档，于是 us_macro.leading.ism_pmi 恒为 null，
+    # 前端 js/app.js 用 `?? 51.8` + 12 个月硬编码序列兜底 → 展示编造数据（真值 55.5@2026-10）。
+    ism_direct = load_json("ism_pmi.json")
+    ism_done = False
+    if ism_direct and ism_direct.get("latest"):
+        _lat = ism_direct["latest"]
+        us_macro.setdefault("leading", {})["ism_pmi"] = {
+            "value": _lat.get("value"),
+            "date": _lat.get("date"),
+            "trend": "expanding" if (_lat.get("value") or 0) > 50 else "contracting",
+            "source": ism_direct.get("source"),
+            "caliber": ism_direct.get("caliber"),
+        }
+        _h = ism_direct.get("history") or []
+        if _h:
+            us_macro.setdefault("history", {})["ism_pmi"] = _h
+        print(f"✓ ISM PMI(直采): {_lat.get('value')} @ {_lat.get('date')}, history {len(_h)} 点")
+        ism_done = True
+    if not ism_done and cn_macro_v2 and "indicators" in cn_macro_v2:
         ism = cn_macro_v2["indicators"].get("us_ism_pmi", {})
         if ism.get("current"):
             us_macro["leading"]["ism_pmi"] = {
@@ -142,13 +162,11 @@ def fix_c3_us_macro():
                 "date": ism.get("date", "2026-08-01"),
                 "trend": "expanding" if ism["current"] > 50 else "contracting"
             }
-            print(f"✓ ISM PMI: {ism['current']}")
-        
-        # Copy ISM history
+            print(f"✓ ISM PMI(兜底): {ism['current']}")
         ism_hist = cn_macro_v2["history"].get("us_ism_pmi", [])
         if ism_hist:
             us_macro["history"]["ism_pmi"] = ism_hist
-            print(f"✓ ISM PMI history: {len(ism_hist)} entries")
+            print(f"✓ ISM PMI history(兜底): {len(ism_hist)} entries")
     
     # LEI - no data source available, leave as None
     print("⚠ LEI: no data source, keeping null")

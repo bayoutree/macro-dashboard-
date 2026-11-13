@@ -7,12 +7,13 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import json
 import pandas as pd
 import numpy as np
 from datetime import datetime
 from config import (
     FRED_API_KEY, logger, today_str, safe_float, save_json,
-    series_to_history, ts_to_date_str
+    series_to_history, ts_to_date_str, DATA_DIR
 )
 
 # ============================================================
@@ -176,6 +177,29 @@ def main():
         return safe_float(s.iloc[-1]), pd.Timestamp(dt).strftime("%Y-%m")
 
     pmi_val, pmi_date = latest_month(pmi)
+
+    # [2026-11-13 修·数据真实性] FRED 已因版权下架 ISM 系列（NAPM / MANPISMI 均取不到），
+    # leading.ism_pmi 恒为 null、history.ism_pmi 恒为空；前端此前用 `?? 51.8` 加 12 个月
+    # 编造序列兜底，与真值 55.5@2026-10 相差 3.7 点且方向相反。此处回落到
+    # data/ism_pmi.json —— fetch_ism_pmi.py 经 PR Newswire 的 ISM 官方稿续采，
+    # 683 点、1969-12 起，与 akshare 金十源在重叠月 2025-08 互验一致（48.7）。
+    _ism_direct_hist = None
+    if pmi_val is None:
+        try:
+            _p = DATA_DIR / "ism_pmi.json"
+            if _p.exists():
+                _d = json.loads(_p.read_text(encoding="utf-8"))
+                _lat = _d.get("latest") or {}
+                if _lat.get("value") is not None:
+                    pmi_val = _lat["value"]
+                    pmi_date = _lat.get("date")
+                    _ism_direct_hist = _d.get("history") or []
+                    logger.info(f"  ISM PMI 回落直采源: {pmi_val} @ {pmi_date}"
+                                f"（{len(_ism_direct_hist)} 点，{_d.get('source')}）")
+            else:
+                logger.warning("  ISM PMI: FRED 无数据且 data/ism_pmi.json 不存在，保持 null")
+        except Exception as _e:
+            logger.warning(f"  ISM PMI 直采源读取失败: {type(_e).__name__}: {_e}")
     unemp_val, unemp_date = latest_month(unemployment)
     gdp_val, gdp_date_raw = latest_val(gdp_yoy if not gdp_yoy.empty else gdp)
     cpi_yoy_val, cpi_yoy_date = latest_month(cpi_yoy)
@@ -241,7 +265,9 @@ def main():
     history["lei"] = series_to_history(lei, freq="monthly", max_points=36)
 
     # PMI 历史
-    history["ism_pmi"] = series_to_history(pmi, freq="monthly", max_points=36)
+    history["ism_pmi"] = (_ism_direct_hist
+                          if _ism_direct_hist
+                          else series_to_history(pmi, freq="monthly", max_points=36))
 
     # 联邦基金利率历史
     history["fed_funds"] = series_to_history(fed_funds, freq="monthly", max_points=36)

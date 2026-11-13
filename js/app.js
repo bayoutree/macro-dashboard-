@@ -802,23 +802,29 @@ const TabRenderers = {
 
     // OECD CLI replaced by ISM PMI (OECD CLI stale since 2023-11)
     // ISM Manufacturing PMI - real-time leading indicator
-    const ismValue = data.leading?.ism_pmi?.value ?? 51.8;
-    const ismDate = data.leading?.ism_pmi?.date ?? '2026-06';
-    const ismHist = data.history?.ism_pmi?.length > 0 ? data.history.ism_pmi : [
-      {date: '2025-07', value: 46.8}, {date: '2025-08', value: 47.2}, {date: '2025-09', value: 47.3},
-      {date: '2025-10', value: 46.5}, {date: '2025-11', value: 48.4}, {date: '2025-12', value: 49.3},
-      {date: '2026-01', value: 50.1}, {date: '2026-02', value: 50.3}, {date: '2026-03', value: 51.3},
-      {date: '2026-04', value: 52.7}, {date: '2026-05', value: 52.7}, {date: '2026-06', value: 51.8}
-    ];
+    // [2026-11-13 修·数据真实性] 删除硬编码兜底。
+    // 原实现在 leading.ism_pmi 为 null 时用 `?? 51.8` 加 12 个月编造序列渲染，
+    // 而仓库 data/ism_pmi.json 已有真序列（683 点，尾点 55.5@2026-10）——
+    // 差值 3.7 点且方向相反，属编造数据展示。现改为：无数据即显示 --，
+    // signalText 明示数据源不可用，不以任何形式给出估算或占位值。
+    const ismRaw = data.leading?.ism_pmi;
+    const ismValue = (ismRaw?.value === null || ismRaw?.value === undefined) ? null : ismRaw.value;
+    const ismDate = ismRaw?.date || '--';
+    const ismHist = data.history?.ism_pmi || [];
+    const ismHas = ismValue !== null;
     leadingCards.push(Components.indicatorCard('us-ism-pmi', {
       title: 'ISM 制造业PMI',
       date: ismDate,
       value: ismValue,
       change: Utils.computeChange(ismHist),
       history: ismHist,
-      chartColor: ismValue >= 50 ? CONFIG.chartColorUp : CONFIG.chartColorDown,
+      chartColor: ismHas
+        ? (ismValue >= 50 ? CONFIG.chartColorUp : CONFIG.chartColorDown)
+        : CONFIG.chartColorNeutral,
       assetImpacts: { '美股': '+', '美债': '-', '黄金': '0', '商品': '+', '美元': '0' },
-      signalText: `ISM制造业PMI ${ismValue}，${ismValue >= 50 ? '扩张区间' : '收缩区间'}`,
+      signalText: ismHas
+        ? `ISM制造业PMI ${ismValue}，${ismValue >= 50 ? '扩张区间（>50）' : '收缩区间（<50）'}`
+        : 'ISM 数据源暂不可用：本卡不展示数值，不提供估算或占位值（真源见 data/ism_pmi.json）',
     }));
 
     const yieldSpreadHist = data.history?.yield_spread_10y_2y || [];
