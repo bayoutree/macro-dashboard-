@@ -47,21 +47,13 @@ jobs:
       - name: History deletion guard (pre-commit)
         run: python scripts/history_guard.py --baseline-ref HEAD
 
-      # ---- 0b) 同步到 frontend/data/ ----
-      # [P1 补强 2026-11-11] 同 daily_update：本链路也只写 data/，前端副本需同步，
-      # 否则前端展示与后端真值脱节。
-      - name: Sync data to frontend/data
-        run: |
-          cp data/*.json frontend/data/ 2>/dev/null || true
-          echo "✅ Data synced to frontend/data/"
-
       # ---- 1) 先 commit/push 入库 ----
       - name: Commit data
         id: commit
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add macro-econ-dashboard/data/ data/ frontend/data/
+          git add macro-econ-dashboard/data/ data/
           if git diff --cached --quiet; then
             echo "committed=false" >> "$GITHUB_OUTPUT"
             echo "📋 数据无变更，跳过提交"

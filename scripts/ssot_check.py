@@ -181,6 +181,61 @@ def check(root, registry, verbose=True):
     return violations
 
 
+
+# ----------------------------------------------------------------------------
+# 同名双副本检查（主人 2026-11-13 批准）
+# ----------------------------------------------------------------------------
+_DUAL_EXT = (".html", ".js", ".css")
+# macro-econ-dashboard/ 是独立看板（宏观经济看板），与主站同名文件属不同站点，合法
+_DUAL_SKIP_PREFIX = ("macro-econ-dashboard/",)
+
+
+def check_no_dual_copies(root, verbose=True):
+    """仓库里不得存在「同名同扩展、内容不同」的 HTML/JS/CSS 平行副本。
+
+    事故根因（2026-11-12）：frontend/stock_dashboard.html 与根目录同名文件并存，
+    且两者是不同代的前端架构（frontend 为 11-07 之前的旧快照）。前端改动落在
+    frontend/ 而线上 iframe 加载的是根目录那份，导致两次「改了没上线」：
+      · fedAnchorDataFallback 修复（fedAnchor 仍停在 2026-07=3.63）
+      · stub_badge.js 挂载（线上提示条一直不存在）
+    两次都是 CIO 复验才发现。此检查把这类分叉变成提交前阻断，不再靠人记。
+
+    frontend/ 已于 2026-11-13 整目录删除，并打包为
+    frontend_旧版快照_20261113_DEPRECATED.zip（含 README 标注不可再更新）。
+    本检查用于防止它或同类副本复活。
+    """
+    import hashlib
+    by_name = {}
+    skip_dirs = {".git", "node_modules", "__pycache__", ".skills", ".venv"}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+        for fn in filenames:
+            if not fn.endswith(_DUAL_EXT):
+                continue
+            rel = os.path.relpath(os.path.join(dirpath, fn), root).replace(os.sep, "/")
+            if rel.startswith(_DUAL_SKIP_PREFIX):
+                continue
+            by_name.setdefault(fn, []).append(rel)
+    bad = []
+    for fn, paths in by_name.items():
+        if len(paths) < 2:
+            continue
+        digests = set()
+        for rel in paths:
+            try:
+                digests.add(hashlib.sha1(open(os.path.join(root, rel), "rb").read()).hexdigest())
+            except Exception:
+                pass
+        if len(digests) > 1:
+            bad.append(f"[双副本] {fn} 存在 {len(paths)} 份且内容不同: " + ", ".join(sorted(paths)))
+    if verbose:
+        _multi = sum(1 for v in by_name.values() if len(v) > 1)
+        print(f"[双副本检查] 同名 HTML/JS/CSS {_multi} 组，内容分叉 {len(bad)} 组")
+        for b in bad:
+            print("  - " + b)
+    return bad
+
+
 # ----------------------------------------------------------------------------
 # 回写：把主源值写进下游
 # ----------------------------------------------------------------------------
@@ -376,6 +431,8 @@ def main():
     if args.fix:
         fix(REPO_ROOT, registry)
     violations = check(REPO_ROOT, registry)
+    # [2026-11-13] 同名双副本分叉检查：与 SSOT 冲突一并阻断
+    violations = list(violations) + check_no_dual_copies(REPO_ROOT)
     sys.exit(1 if violations else 0)
 
 
