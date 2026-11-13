@@ -1491,6 +1491,43 @@ def fix_inherit_last_updated(layers):
     return fixed
 
 
+def fix_high_rate_tracker_dates(out):
+    """[2026-11-13] high_rate_tracker.indicators 补 last_updated = 自身 history 尾点。
+
+    事故：父级 high_rate_tracker.last_updated 停在 2026-09-01（73 天前），
+    9 个指标自身 last_updated 全为 None，前端 `ind.last_updated || hrtDate`
+    于是全部继承这个旧日期 → 5Y-5Y远期实际利率（真数据 11-09）、ACM期限溢价
+    （11-06）、高收益债利差（11-09）被统一误标「⚠️数据断更」。
+    主人 11-13 截图里那一片断更，大部分是这个日期继承 bug，不是数据真断。
+    """
+    hrt = (out.get("cross_analysis") or {}).get("high_rate_tracker") or {}
+    inds = hrt.get("indicators") or []
+    fixed, maxd = [], ""
+    for n in inds:
+        if not isinstance(n, dict):
+            continue
+        tail = None
+        for x in reversed(n.get("history") or []):
+            if isinstance(x, dict) and x.get("date") and x.get("value") is not None:
+                tail = x
+                break
+        if tail:
+            raw_d = str(tail["date"])
+            fq = n.get("frequency") or "monthly"
+            # 规范成 YYYY-MM-DD：前端 new Date('2026Q2') 是 Invalid Date，
+            # 算出 NaN 天数后必然落到「⚠️数据断更」，把真数据误标成断更。
+            d = _period_end(raw_d, fq) or raw_d
+            n["last_updated"] = d
+            n["last_updated_raw"] = raw_d
+            n["last_updated_from"] = "history_tail"
+            fixed.append(f"{n.get('name')}: {raw_d} -> {d}")
+            if len(d) == 10 and d > maxd:
+                maxd = d
+    if maxd:
+        hrt["last_updated"] = maxd
+    return fixed
+
+
 def annotate_data_quality(layers, built_at):
     """遍历层内全部指标节点，打 data_quality 标记，返回全站桩值扫描清单。
 
@@ -1770,6 +1807,13 @@ def build():
     if _lu_fixed:
         print(f"⚠ last_updated 对齐序列尾点（全频率无豁免，CIO 裁决）：{len(_lu_fixed)} 处")
         for _x in _lu_fixed[:12]:
+            print("    " + _x)
+
+    # [2026-11-13] high_rate_tracker 9 个指标用自己的 history 尾点，不继承父级旧日期
+    _hrt_fixed = fix_high_rate_tracker_dates(out)
+    if _hrt_fixed:
+        print(f"⚠ high_rate_tracker 日期按自身序列尾点回填：{len(_hrt_fixed)} 项")
+        for _x in _hrt_fixed:
             print("    " + _x)
 
     # [2026-11-13] 子节点继承父级 last_updated（父级已对齐尾点后执行，避免继承旧日期）

@@ -40,6 +40,12 @@ SCRIPTS = [
     ("build_cycle_position_v4.py", "V4周期-生成v4前端契约JSON"),
     # ---- v3.4.6 第三步：微观结构+估值真采集 ----
     ("collect_microstructure.py", "v3.4.6-拥挤度/破净率/集中度真采集"),
+    # ---- 股市锚点真源续采（2026-11-13 新建，必须在 sync_timing_scores_history 之前）----
+    # 断链根因：all_a_gxl_spread.json / break_net_asset_rate.json 停在 2026-09-11，
+    # 全仓无脚本写它们（9月重构摘掉未补回）；而 sync_timing_scores_history 用
+    # HS300 反比例「推算」破净率与股息率利差序列，硬编码基准值，整条序列是编造的。
+    # 本脚本恢复真源采集，sync 侧改为优先读真源，不再推算。
+    ("fetch_stock_anchor_gxl_breaknet.py", "股市锚点-股息率利差/破净率真源日频续采"),
     # ---- 修复timing_scores历史数据 ----
     ("sync_timing_scores_history.py", "同步timing_scores历史数据"),
     # 股票看板基金仓位锚点卡 —— 乐咕乐股真源周频续采（2026-09-27）

@@ -262,7 +262,8 @@ def main():
     # P2-1 补齐历史：工业产出 / 非农 / 领先指标
     history["industrial_production"] = series_to_history(indpro_yoy, freq="monthly", max_points=36)
     history["nonfarm_payrolls_yoy"] = series_to_history(payems_yoy, freq="monthly", max_points=36)
-    history["lei"] = series_to_history(lei, freq="monthly", max_points=36)
+    # [2026-11-13 主人令] lei 已删除：Conference Board 收回 USSLIND 版权，FRED 止于
+    # 2020-02（约 2480 天），前端从未渲染。不再输出该字段，避免以陈旧数据冒充有效。
 
     # PMI 历史
     history["ism_pmi"] = (_ism_direct_hist
@@ -306,7 +307,8 @@ def main():
     history["yield_spread_10y_2y"] = series_to_history(yield_spread, freq="daily", max_points=250)
 
     # OECD CLI 历史
-    history["oecd_cli"] = series_to_history(oecd_cli, freq="monthly", max_points=36)
+    # [2026-11-13 主人令] oecd_cli 已删除：FRED 该系列止于 2023-11（1108 天），
+    # 前端 js/app.js 早已摘除该卡。不再输出，防止陈旧值被误接回渲染。
 
     # v3.4: USD/CNY 汇率历史
     history["usdcny"] = series_to_history(dexchus, freq="daily", max_points=250)
@@ -318,11 +320,8 @@ def main():
         "update_time": today_str(),
         "leading": {
             "ism_pmi": {"value": pmi_val, "date": pmi_date, "trend": pmi_trend},
-            "oecd_cli": {"value": safe_float(oecd_cli.iloc[-1]) if not oecd_cli.empty else None,
-                         "date": ts_to_date_str(oecd_cli.index[-1]) if not oecd_cli.empty else None,
-                         "stale": oecd_cli_stale if not oecd_cli.empty else True},
             "yield_curve_10y_2y": {"value": safe_float(spread_val), "date": ts_to_date_str(yield_spread.index[-1]) if not yield_spread.empty else None},
-            "lei": {"value": lei_val, "date": lei_date}
+            # [2026-11-13 主人令] lei / oecd_cli 已删除（上游永久停更，前端不渲染）
         },
         "coincident": {
             "gdp_growth": {"value": gdp_val, "date": gdp_date_str},

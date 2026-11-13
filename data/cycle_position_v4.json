@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-13T11:17:31+08:00"
+    "v4_built_at": "2026-11-13T12:01:12+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2661,7 +2661,7 @@
             }
           ],
           "current": 108.441,
-          "last_updated": "2026-11-11",
+          "last_updated": "2025-12-31",
           "last_updated_inherited_from": "indicators"
         },
         "gdp_10y_avg": {
@@ -4438,7 +4438,7 @@
               "frequency": "daily",
               "source": "FRED T30YIEM / T10YIE（通胀预期，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-10-01",
+              "last_updated": "2026-09-02",
               "last_updated_inherited_from": "breakeven_inflation"
             },
             "cn": {
@@ -6582,7 +6582,7 @@
               "frequency": "daily",
               "source": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-09",
+              "last_updated": "2026-09-01",
               "last_updated_inherited_from": "real_rate_forward"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
@@ -19272,7 +19272,7 @@
               "frequency": "daily",
               "source": "FRED ACMTP10（ACM 10 年期期限溢价，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-06",
+              "last_updated": "2026-08-28",
               "last_updated_inherited_from": "term_premium"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
@@ -32056,7 +32056,7 @@
               "frequency": "daily",
               "source": "FRED T10Y2Y（10Y-2Y 利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-10",
+              "last_updated": "2026-09-02",
               "last_updated_inherited_from": "yield_curve_2s10s"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
@@ -44774,7 +44774,7 @@
               "frequency": "daily",
               "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-09",
+              "last_updated": "2026-09-02",
               "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
@@ -48773,7 +48773,7 @@
               "frequency": "daily",
               "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-11",
+              "last_updated": "2026-09-02",
               "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
@@ -49819,7 +49819,7 @@
               "frequency": "monthly",
               "source": "中国实际利率，统计局 CPI + 政策利率手工计算（月频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-10-31",
+              "last_updated": "2026-01-31",
               "last_updated_inherited_from": "cn_real_rate"
             },
             "description": "1年期存款利率减CPI，反映真实资金成本",
@@ -54758,7 +54758,7 @@
       "implication_for_a_stock": "9个维度中4个中美反向、2个错位、3个共振。对中国而言，反向维度中多数指向中国方向更优，叠加共振维度均为积极信号，A股相对美股具有周期位置优势。核心风险在于大债务周期和利率范式层面的全球性约束。"
     },
     "high_rate_tracker": {
-      "last_updated": "2026-09-01",
+      "last_updated": "2026-11-09",
       "indicators": [
         {
           "name": "全球储蓄-投资缺口",
@@ -54950,6 +54950,9 @@
               "value": 0.43
             }
           ],
+          "last_updated": "2024-12-31",
+          "last_updated_raw": "2024",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -56239,6 +56242,9 @@
               "value": 33.55
             }
           ],
+          "last_updated": "2026-06-30",
+          "last_updated_raw": "2026Q2",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -56500,6 +56506,9 @@
               "value": 0.66
             }
           ],
+          "last_updated": "2019-12-31",
+          "last_updated_raw": "2019",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -56617,6 +56626,9 @@
               "value": -2.71
             }
           ],
+          "last_updated": "2024-12-31",
+          "last_updated_raw": "2024",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -68514,6 +68526,9 @@
               "value": 2.66
             }
           ],
+          "last_updated": "2026-11-09",
+          "last_updated_raw": "2026-11-09",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -80407,6 +80422,9 @@
               "value": 0.8738
             }
           ],
+          "last_updated": "2026-11-06",
+          "last_updated_raw": "2026-11-06",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -81736,6 +81754,9 @@
               "value": 2.27
             }
           ],
+          "last_updated": "2026-10-01",
+          "last_updated_raw": "2026-10-01",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -84921,6 +84942,9 @@
               "value": 0.91
             }
           ],
+          "last_updated": "2026-11-09",
+          "last_updated_raw": "2026-11-09",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         },
@@ -88142,6 +88166,9 @@
               "value": 3.12
             }
           ],
+          "last_updated": "2026-09-30",
+          "last_updated_raw": "2026-09",
+          "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
         }

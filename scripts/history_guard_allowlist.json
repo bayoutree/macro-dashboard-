@@ -36,6 +36,24 @@
       "to": 11,
       "authorized_at": "2026-11-12",
       "authorized_by": "CIO"
+    },
+    {
+      "file": "data/us_macro.json",
+      "path": "history.lei",
+      "reason": "主人 2026-11-13 11:53 明令「上游永久停更（2 个）删除吧，反正也没数据了」。oecd_cli：FRED 该系列止于 2023-11-01（1108 天），前端 js/app.js 早已摘除该卡；lei：Conference Board 收回 USSLIND 版权，FRED 止于 2020-02（约 2480 天），前端从未渲染。两者均无任何消费方，保留只会被误接回渲染，故整字段删除，非采集能力下降。",
+      "from": 14,
+      "to": 0,
+      "authorized_at": "2026-11-13",
+      "authorized_by": "主人 Bayoutree（会话指令）"
+    },
+    {
+      "file": "data/us_macro.json",
+      "path": "history.oecd_cli",
+      "reason": "主人 2026-11-13 11:53 明令「上游永久停更（2 个）删除吧，反正也没数据了」。oecd_cli：FRED 该系列止于 2023-11-01（1108 天），前端 js/app.js 早已摘除该卡；lei：Conference Board 收回 USSLIND 版权，FRED 止于 2020-02（约 2480 天），前端从未渲染。两者均无任何消费方，保留只会被误接回渲染，故整字段删除，非采集能力下降。",
+      "from": 36,
+      "to": 0,
+      "authorized_at": "2026-11-13",
+      "authorized_by": "主人 Bayoutree（会话指令）"
     }
   ]
 }

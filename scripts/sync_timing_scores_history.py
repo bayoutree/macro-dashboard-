@@ -260,12 +260,48 @@ def fix_buffett_ratio(timing: dict, cn_macro: dict):
 # 5. 破净率 (break_net_rate)
 # ================================================================
 def fix_break_net_rate(timing: dict, cn_macro: dict):
-    """当前只有1个点，用 HS300 PB 趋势近似构造更多点。"""
+    """破净率 —— 优先读真源 data/break_net_asset_rate.json（2026-11-13 修）。
+
+    ⚠ 历史事故：本函数原实现 `current_val = 7.73` 硬编码，再用 HS300 指数
+    反比例「推算」全部历史点，还做 max(3,min(15)) 截断 —— 整条序列是编造的。
+    真值（乐咕乐股 stock_a_below_net_asset_statistics，全A PB<1 个股占比）：
+    2026-11-11 = 9.65%、2026-11-12 = 9.72%，与硬编码 7.73 相差近 2 个百分点，
+    且 indicator["value"]=9.2 与 history 尾点 7.73 自相矛盾。
+    现改为：真源存在即全量替换 history 与 value，不再推算。
+    """
     key_path = ("dimensions", "valuation", "indicators", "break_net_rate")
     indicator = timing
     for k in key_path:
         indicator = indicator.get(k, {})
 
+    # ---- 真源分支 ----
+    _src = DATA_DIR / "break_net_asset_rate.json"
+    if _src.exists():
+        try:
+            _d = json.loads(_src.read_text(encoding="utf-8"))
+            _h = [{"date": str(x["date"])[:10], "value": x["value"]}
+                  for x in (_d.get("history") or [])
+                  if x.get("date") and x.get("value") is not None]
+            if len(_h) >= 2:
+                indicator["history"] = _h
+                indicator["value"] = _h[-1]["value"]
+                indicator["last_updated"] = _h[-1]["date"]
+                indicator["unit"] = "%"
+                indicator["caliber"] = _d.get("caliber")
+                indicator["_history_meta"] = {
+                    "source": _d.get("source"),
+                    "synced_at": _d.get("update_time"),
+                    "replaces": "原 HS300 反比例推算序列（已废弃，属编造数据）",
+                }
+                logger.info("  ✅ break_net_rate: 真源 %d 点，尾点 %s（value 同步为 %s）",
+                            len(_h), _h[-1], _h[-1]["value"])
+                return True
+        except Exception as _e:
+            logger.warning("  break_net_rate 真源读取失败: %s: %s", type(_e).__name__, _e)
+    logger.warning("  ⚠️ break_net_rate: 真源不可用，保留原值，不做推算（不编造）")
+    return False
+
+    # ---- 以下原推算逻辑已废弃，保留仅为对照 ----
     existing = indicator.get("history", [])
     current_val = 7.73  # 从现有数据
 
@@ -303,10 +339,72 @@ def fix_break_net_rate(timing: dict, cn_macro: dict):
 # 6. 股息率利差 (dividend_bond_spread_hs300 / dividend_bond_spread_red)
 # ================================================================
 def fix_dividend_spread(timing: dict, cn_macro: dict):
+    """股息率利差 = 股息率 − 10Y国债收益率 —— 优先读真源（2026-11-13 修）。
+
+    ⚠ 历史事故：原实现把 `current_spread_hs300 = 1.12`、`current_bond = 1.69`
+    硬编码，再假设「总股息不变」，用 2.81 × (current_hs300 / hs300_at_date)
+    反推整条历史股息率；红利指数更是「没有直接价格数据，用 hs300 近似」。
+    两条序列都是假设推演，不是采集。
+
+    真源 data/all_a_gxl_spread.json（akshare stock_a_gxl_lg(上证A股) +
+    bond_zh_us_rate 中国10Y国债，日频 5066 点，2006-01 起）：
+    2026-11-11 ≈ 1.24%、2026-11-12 = 1.24%。
     """
-    股息率利差 = 股息率 - 10Y国债收益率
-    用 hs300 价格反推股息率变化 + cn_10y_bond 历史。
-    """
+    # ---- 真源分支：锚点卡用的 dividend_bond_spread_red 直接换真源 ----
+    _sp_src = DATA_DIR / "all_a_gxl_spread.json"
+    if _sp_src.exists():
+        try:
+            _sd = json.loads(_sp_src.read_text(encoding="utf-8"))
+            _sh = [{"date": str(x["date"])[:10], "value": x["value"]}
+                   for x in (_sd.get("history") or [])
+                   if x.get("date") and x.get("value") is not None]
+            if len(_sh) >= 2:
+                _ind_red = timing
+                for _k in ("dimensions", "equity_bond", "indicators",
+                           "dividend_bond_spread_red"):
+                    _ind_red = _ind_red.get(_k, {})
+                _ind_red["history"] = _sh
+                _ind_red["value"] = _sh[-1]["value"]
+                _ind_red["last_updated"] = _sh[-1]["date"]
+                _ind_red["unit"] = "%"
+                _ind_red["name"] = "股息率利差（上证A股 − 10Y国债）"
+                _ind_red["caliber"] = _sd.get("caliber")
+                _ind_red["caliber_corrected"] = True
+                _ind_red["caliber_note"] = (
+                    "原名为「红利指数股债利差」，但历史值为硬编码 2.91%+1.69% "
+                    "反推的合成序列。2026-11-13 起改用真源：上证A股股息率 − "
+                    "中债10Y国债收益率（日频，2006-01 起）。legulegu 无「全部A股」"
+                    "股息率口径，故取上证A股，已如实标注。")
+                _ind_red["_history_meta"] = {
+                    "source": _sd.get("source"),
+                    "synced_at": _sd.get("update_time"),
+                    "replaces": "原 hs300 近似推算序列（已废弃，属合成数据）",
+                }
+                logger.info("  ✅ dividend_bond_spread_red: 真源 %d 点，尾点 %s",
+                            len(_sh), _sh[-1])
+
+                # hs300 同名口径卡：同一真源，如实改名，避免两套编造值
+                _ind_h = timing
+                for _k in ("dimensions", "equity_bond", "indicators",
+                           "dividend_bond_spread_hs300"):
+                    _ind_h = _ind_h.get(_k, {})
+                _ind_h["history"] = _sh
+                _ind_h["value"] = _sh[-1]["value"]
+                _ind_h["last_updated"] = _sh[-1]["date"]
+                _ind_h["unit"] = "%"
+                _ind_h["name"] = "股息率利差（上证A股 − 10Y国债）"
+                _ind_h["caliber"] = _sd.get("caliber")
+                _ind_h["caliber_corrected"] = True
+                _ind_h["caliber_note"] = _ind_red["caliber_note"]
+                _ind_h["_history_meta"] = dict(_ind_red["_history_meta"])
+                logger.info("  ✅ dividend_bond_spread_hs300: 同真源 %d 点", len(_sh))
+                return True
+        except Exception as _e:
+            logger.warning("  股息率利差真源读取失败: %s: %s", type(_e).__name__, _e)
+    logger.warning("  ⚠️ 股息率利差: 真源不可用，保留原值，不做推算（不编造）")
+    return False
+
+    # ---- 以下原推算逻辑已废弃，保留仅为对照 ----
     bond_history = cn_macro.get("history", {}).get("cn_10y_bond", [])
     hs300_hist = cn_macro.get("history", {}).get("hs300_index", [])
 

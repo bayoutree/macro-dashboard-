@@ -470,23 +470,6 @@
       "note": "GDP；BEA首轮预估约季末后27-28日。日期格式2026Q2，门禁支持季度格式"
     },
     {
-      "id": "oecd_cli",
-      "file": "data/us_macro.json",
-      "date_path": "leading.oecd_cli.date",
-      "freq": "monthly",
-      "calendar": "US",
-      "lag_days": 60,
-      "fresh_max_days": 60,
-      "watch_max_days": 90,
-      "stale_max_missing_periods": 3,
-      "history_path": "leading.oecd_cli.history",
-      "value_path": "leading.oecd_cli.value",
-      "note": "OECD CLI；自然日兜底，末点2023-11已长期stale(源访问受限)，warn不阻断",
-      "critical": false,
-      "severity_on_gap": "warn",
-      "status": "active"
-    },
-    {
       "id": "timing_right",
       "file": "data/timing_right_scores.json",
       "date_path": "update_date",
