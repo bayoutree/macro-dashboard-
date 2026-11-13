@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-13T13:37:55+08:00"
+    "v4_built_at": "2026-11-13T13:40:23+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -117442,7 +117442,7 @@
           "status": "green",
           "status_label": "安全",
           "is_breached": false,
-          "frequency": "daily",
+          "frequency": "monthly",
           "history": [
             {
               "date": "2015-01-01",

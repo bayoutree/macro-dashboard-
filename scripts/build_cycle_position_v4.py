@@ -2005,6 +2005,20 @@ def build():
         for _x in _mirror:
             print("    " + _x)
 
+    # [2026-11-13] high_rate_tracker 里「30Y 盈亏平衡通胀」实为月频序列（FRED T30YIE，
+    # 2015-01 起逐月），却标成 daily → 43 天被判「⚠️数据断更」，属口径标错而非断供。
+    # 顶层 breakeven_inflation 已在 FREQ_FIXES 里改 monthly，这里补齐 hrt 副本。
+    _hrt_ind = (out.get("cross_analysis", {}) or {}).get("high_rate_tracker", {}) or {}
+    _freq_fixed = 0
+    for _ind in (_hrt_ind.get("indicators") or []):
+        if not isinstance(_ind, dict):
+            continue
+        if "盈亏平衡" in str(_ind.get("name") or "") and _ind.get("frequency") == "daily":
+            _ind["frequency"] = "monthly"
+            _freq_fixed += 1
+    if _freq_fixed:
+        print(f"⚠ high_rate_tracker frequency 修正：{_freq_fixed} 项（盈亏平衡通胀月频标成日频）")
+
     _flags = annotate_data_quality(out["cycle_layers"], meta["v4_built_at"])
     # [2026-11-13] 补扫 hist 为空的单值节点（原入口条件 `hist` 非空，14 个节点漏检）
     _nh_flags = annotate_no_history(out["cycle_layers"], meta["v4_built_at"])
