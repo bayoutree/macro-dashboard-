@@ -34,13 +34,22 @@ def parse_month(s: str) -> str:
 
 def main():
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
+
+    # [2026-11-17 删史防线] 先读存档：任何一段采集失败都继承上期，绝不用空数组覆盖历史
+    prev_doc = {}
+    if OUT.exists():
+        try:
+            prev_doc = json.loads(OUT.read_text(encoding="utf-8"))
+        except Exception:
+            prev_doc = {}
 
     out = {
         "as_of": datetime.now().strftime("%Y-%m-%d"),
         "source": "akshare (macro_china_fx_gold + macro_china_money_supply)",
-        "fx_reserves": [],
-        "m1_yoy": [],
-        "m1_m2_scissors": [],
+        "fx_reserves": list(prev_doc.get("fx_reserves") or []),
+        "m1_yoy": list(prev_doc.get("m1_yoy") or []),
+        "m1_m2_scissors": list(prev_doc.get("m1_m2_scissors") or []),
         "shrzgm_stock": [],
         "note": "F3①-3+R7：外储/ M1同比/ M1-M2剪刀差；P1-10b：社融存量存档（央行官方，自算同比见 fetch_china 回退路径）",
     }
@@ -56,7 +65,7 @@ def main():
         out["fx_reserves"] = rows
         print(f"OK fx_reserves: {len(rows)} 条 (最新 {rows[-1] if rows else 'N/A'})")
     except Exception as e:
-        print(f"FAIL fx_reserves: {e}", file=sys.stderr)
+        print(f"FAIL fx_reserves: {e}（继承上期 {len(out['fx_reserves'])} 条）", file=sys.stderr)
 
     # 2. M1/M2 同比
     try:
@@ -77,16 +86,10 @@ def main():
         print(f"OK m1_yoy: {len(m1)} 条 (最新 {m1[-1] if m1 else 'N/A'})")
         print(f"OK m1_m2_scissors: {len(scissors)} 条 (最新 {scissors[-1] if scissors else 'N/A'})")
     except Exception as e:
-        print(f"FAIL m1/m2: {e}", file=sys.stderr)
+        print(f"FAIL m1/m2: {e}（继承上期 m1={len(out['m1_yoy'])} 剪刀差={len(out['m1_m2_scissors'])}）", file=sys.stderr)
 
     # 3. 社融存量存档（P1-10b：央行官方存量表，2016-01 起；2016-2019 为 .xls 旧格式）
     # 首次全量抓 2016 起；已有存档时仅抓最近 4 年并与存档合并（历史段不变，新抓优先）。
-    prev_doc = {}
-    if OUT.exists():
-        try:
-            prev_doc = json.loads(OUT.read_text(encoding="utf-8"))
-        except Exception:
-            prev_doc = {}
     try:
         _rs = str(Path(__file__).parent)
         if _rs not in sys.path:

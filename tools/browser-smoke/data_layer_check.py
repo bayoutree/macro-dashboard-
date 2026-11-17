@@ -242,6 +242,15 @@ def stage1_exim(repo, g):
         sys.path.insert(0, os.path.join(repo, "macro-econ-dashboard", "scripts"))
         import fetch_china as FC
         import akshare as ak
+        try:
+            import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
+        except ImportError:  # 兜底：向上找到仓库 scripts/ 再导入
+            import os as _os_c, sys as _sys_c
+            _p_c = _os_c.path.dirname(_os_c.path.abspath(__file__))
+            while _p_c not in ("/", "") and not _os_c.path.exists(_os_c.path.join(_p_c, "scripts", "ak_compat.py")):
+                _p_c = _os_c.path.dirname(_p_c)
+            _sys_c.path.insert(0, _os_c.path.join(_p_c, "scripts"))
+            import ak_compat  # noqa: F401,E402
         nbs = FC.grab_series(lambda: ak.macro_china_nbs_nation(
             kind="月度数据", path=FC.NBS_EXIM_PATH, period="2026-"))
         em = FC.grab_series(FC.fetch_em_external)

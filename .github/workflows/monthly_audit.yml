@@ -65,7 +65,7 @@ jobs:
         id: probe
         continue-on-error: true
         run: |
-          python -m pip install --quiet pandas openpyxl xlrd requests akshare
+          python -m pip install --quiet pandas openpyxl xlrd requests "akshare==1.20.65"
           python tools/healthcheck/probe_legulegu_alt.py | tee legulegu_probe.log
 
       - name: Upload evidence

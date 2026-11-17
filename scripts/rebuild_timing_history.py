@@ -67,6 +67,7 @@ def load_stage_machine():
 def fetch_index_daily():
     """中证全指日K（P1-6 同数据源 tencent_tx）"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = ak.stock_zh_index_daily_tx(symbol="sh000985")
     df = df[["date", "close"]].copy()
     df["date"] = df["date"].astype(str).str[:10]

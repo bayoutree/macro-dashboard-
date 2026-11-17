@@ -484,6 +484,7 @@ def fix_dividend_spread(timing: dict, cn_macro: dict):
 def fix_hs300_pe_percentile(timing: dict):
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         import pandas as pd
     except ImportError:
         logger.warning("  akshare/pandas 不可用，跳过 PE 分位")

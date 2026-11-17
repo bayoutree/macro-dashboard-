@@ -49,6 +49,7 @@ INDICATORS = [
 
 def fetch_series(ak_func: str):
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = getattr(ak, ak_func)()
     pts = []
     for _, row in df.iterrows():

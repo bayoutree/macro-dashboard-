@@ -914,6 +914,7 @@ def compute_f3_usdcny_and_fx(us_macro_data):
     # --- 外储月度（akshare macro_china_fx_gold）---
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         df = safe_ak_call(ak.macro_china_fx_gold)
         if df is not None and not df.empty:
             last_row = df.iloc[-1]
@@ -1795,6 +1796,7 @@ def apply_fed_layer(fed_watch, us_macro, prev_fed_state, manual_cfg, today=None)
 def fetch_trend_index_daily():
     """P1-6: 拉取中证全指日K（腾讯源，CI 已验证可用）。失败返回 None。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = safe_ak_call(ak.stock_zh_index_daily_tx, symbol=P16_INDEX_SYMBOL)
     if df is None or len(df) < P16_MOMENTUM_LOOKBACK + 1:
         return None
@@ -1884,6 +1886,7 @@ class TimingScoreEngine:
         """延迟加载 akshare"""
         if self.ak is None:
             import akshare as ak
+            import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
             self.ak = ak
         return self.ak
 
@@ -4205,6 +4208,7 @@ class TimingRightEngine:
     def init_akshare(self):
         if self.ak is None:
             import akshare as ak
+            import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
             self.ak = ak
         return self.ak
 
@@ -4982,6 +4986,7 @@ def dry_run_check():
     logger.info("\n[AKShare] 检查接口...")
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         logger.info(f"  akshare 版本: {ak.__version__}")
 
         # 测试核心接口

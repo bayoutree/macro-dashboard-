@@ -19,6 +19,7 @@ JSON_PATH = os.path.join(PROJECT_DIR, 'data', 'timing_scores.json')
 def collect_confirm_signals():
     """采集确认信号三卡数据（沪深300月线）"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     import pandas as pd
     import numpy as np
 

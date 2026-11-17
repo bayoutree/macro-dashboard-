@@ -143,6 +143,7 @@ def fetch_all_a_stocks_akshare():
     logger.info("📡 [主源] 尝试 akshare stock_zh_a_spot_em()...")
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         import pandas as pd
         df = ak.stock_zh_a_spot_em()
         if df is None or df.empty:
@@ -243,6 +244,7 @@ def fetch_industry_boards_akshare():
     logger.info("📡 [行业] 尝试 akshare stock_board_industry_name_em()...")
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         df = ak.stock_board_industry_name_em()
         if df is None or df.empty:
             raise ValueError("返回空数据")

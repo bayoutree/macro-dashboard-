@@ -45,6 +45,7 @@ def percentile_rank(window, value):
 def main():
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     except ImportError:
         print("❌ akshare 未安装")
         sys.exit(1)

@@ -33,6 +33,7 @@ def safe_call(func, *args, **kwargs):
 def fetch_cn_macro():
     """获取中国宏观经济数据（扩展版）"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     print(f"📡 Fetching 中国宏观数据 v2 ({datetime.now().strftime('%Y-%m-%d %H:%M')})")
     
     result = {

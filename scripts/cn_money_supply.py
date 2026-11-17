@@ -17,6 +17,7 @@ import pandas as pd
 def fetch_money_supply() -> list:
     """返回 [{'date':'YYYY-MM','m1_yoy':..,'m2_yoy':..}]，按时间升序。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
 
     df = ak.macro_china_money_supply()
     rows = []

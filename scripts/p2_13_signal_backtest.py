@@ -128,6 +128,7 @@ def load_signal_monthly():
 
 def load_hs300():
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     cache = DATA / "external" / "hs300_daily_cache.json"
     df = None
     try:

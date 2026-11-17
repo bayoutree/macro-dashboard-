@@ -144,6 +144,7 @@ def calc_pe_percentile():
     """计算沪深300 PE 历史分位 (使用 stock_index_pe_lg)"""
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         pe_df = ak.stock_index_pe_lg(symbol="沪深300")
         if pe_df.empty:
             return None, None, []
@@ -241,6 +242,7 @@ def main():
     csi500_pe = None
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
         pe500 = ak.stock_index_pe_lg(symbol="中证500")
         if not pe500.empty:
             csi500_pe = safe_float(pe500['滚动市盈率'].dropna().iloc[-1])

@@ -70,6 +70,7 @@ def _load(path):
 def fetch_gxl():
     """上证A股股息率 {date: value}。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = ak.stock_a_gxl_lg(symbol="上证A股")
     out = {}
     for _, r in df.iterrows():
@@ -84,6 +85,7 @@ def fetch_gxl():
 def fetch_bond10y():
     """中国10年期国债收益率 {date: value}。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = ak.bond_zh_us_rate(start_date="20060101")
     out = {}
     for _, r in df.iterrows():
@@ -98,6 +100,7 @@ def fetch_bond10y():
 def fetch_breaknet():
     """全A破净率 {date: (ratio%, below, total)}。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     df = ak.stock_a_below_net_asset_statistics(symbol="全部A股")
     out = {}
     for _, r in df.iterrows():

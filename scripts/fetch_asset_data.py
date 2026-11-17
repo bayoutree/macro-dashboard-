@@ -72,10 +72,15 @@ def _daily_tail(hist, n=60):
     return [{"date": idx.strftime("%Y-%m-%d"), "value": safe_float(v)} for idx, v in close.items()]
 
 
-def fill_cn_assets(prices):
-    """采集 hs300（沪深300 价格指数）+ cn_10y_yield（中债10Y收益率）写入 prices。"""
+def fill_cn_assets(prices, prev_prices=None):
+    """采集 hs300（沪深300 价格指数）+ cn_10y_yield（中债10Y收益率）写入 prices。
+
+    [2026-11-17 删史防线] prev_prices=上期存档 prices 段：任一序列采集失败时整体继承上期，
+    绝不以 {"daily": []} 覆盖历史（此前 hs300.daily 被清空 → history_guard 阻断提交）。
+    """
     try:
         import akshare as ak
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     except ImportError:
         logger.warning("  akshare 不可用，跳过 A股资产采集")
         return
@@ -104,6 +109,7 @@ def fill_cn_assets(prices):
     # --- 中债10Y：月批回填 62 个月（5年窗冗余），限流+重试 ---
     try:
         frames = []
+        consecutive_fail = 0  # [2026-11-17] 熔断：源整体不可用时不再空跑 62 个月批（每次 3 重试≈3 分钟）
         for start, end in _month_ranges(62):
             sub = None
             for attempt in range(MAX_RETRIES):
@@ -118,6 +124,12 @@ def fill_cn_assets(prices):
                 gov = sub[sub["曲线名称"] == "中债国债收益率曲线"]
                 if not gov.empty:
                     frames.append(gov[["日期", "10年"]])
+                    consecutive_fail = 0
+            else:
+                consecutive_fail += 1
+                if consecutive_fail >= 3:
+                    logger.warning("  ⚠ 中债源连续 3 个月批无数据，熔断本轮回填（余下月份跳过）")
+                    break
             time.sleep(0.5)  # 限流（回填限流方案，CIO 2026-11-01 批复）
         if frames:
             all_df = (pd.concat(frames)
@@ -137,6 +149,19 @@ def fill_cn_assets(prices):
     except Exception as e:
         logger.warning(f"  ✗ 中债10Y 采集失败: {e}")
 
+    # 采集失败 → 继承上期存档（不得清空）
+    for k in ("hs300", "cn_10y_yield"):
+        if k in prices:
+            continue
+        prev = (prev_prices or {}).get(k)
+        if prev:
+            inherited = dict(prev)
+            inherited["_source"] = f"{prev.get('_source', 'unknown')} (继承上期)"
+            prices[k] = inherited
+            logger.warning(f"  ↺ {k} 采集失败，继承上期存档（{len(prev.get('daily') or [])} 点）")
+        else:
+            logger.warning(f"  ↺ {k} 采集失败且无存档可继承（本轮该卡降级为缺失）")
+
 
 def main_cn_only():
     """回填模式：仅采集 A股两序列 merge 进现有 asset_prices.json（保留 CI 产的其他序列原样）。
@@ -145,7 +170,7 @@ def main_cn_only():
     with open(path, encoding="utf-8") as f:
         output = json.load(f)
     prices = {}
-    fill_cn_assets(prices)
+    fill_cn_assets(prices, prev_prices=(output.get("prices") or {}))
     merged = []
     for k in ("hs300", "cn_10y_yield"):
         if prices.get(k, {}).get("latest") is not None:
@@ -306,6 +331,16 @@ def main():
 
     prices = {}
 
+    # [2026-11-17 删史防线] 上期存档：任一标的下载/采集失败时继承上期，不以空数组覆盖历史
+    prev_prices = {}
+    try:
+        prev_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "asset_prices.json")
+        if os.path.exists(prev_path):
+            with open(prev_path, encoding="utf-8") as f:
+                prev_prices = (json.load(f) or {}).get("prices") or {}
+    except Exception as e:
+        logger.warning(f"  ⚠ 上期 asset_prices.json 读取失败，本轮无继承底稿: {e}")
+
     # ============================================================
     # 下载所有标的 (yfinance)
     # ============================================================
@@ -329,6 +364,14 @@ def main():
                 {"date": idx.strftime("%Y-%m-%d"), "value": safe_float(val)}
                 for idx, val in close.items()
             ]
+
+        if not daily_data and prev_prices.get(key):
+            prev = dict(prev_prices[key])
+            prev["_source"] = f"{prev.get('_source', 'unknown')} (继承上期)"
+            prices[key] = prev
+            logger.warning(f"  ↺ {cfg['name']} 无数据，继承上期存档（{len(prev.get('daily') or [])} 点）")
+            time.sleep(1)
+            continue
 
         prices[key] = {
             "latest": latest,
@@ -355,7 +398,7 @@ def main():
     # A股资产采集（akshare：沪深300 + 中债10Y）
     # ============================================================
     logger.info("\n[A股资产] 采集沪深300/中债10Y（akshare）...")
-    fill_cn_assets(prices)
+    fill_cn_assets(prices, prev_prices=prev_prices)
 
     # ============================================================
     # VIX 单独处理 (history)

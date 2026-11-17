@@ -24,6 +24,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
     import akshare as ak
+    try:
+        import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
+    except ImportError:  # 兜底：向上找到仓库 scripts/ 再导入
+        import os as _os_c, sys as _sys_c
+        _p_c = _os_c.path.dirname(_os_c.path.abspath(__file__))
+        while _p_c not in ("/", "") and not _os_c.path.exists(_os_c.path.join(_p_c, "scripts", "ak_compat.py")):
+            _p_c = _os_c.path.dirname(_p_c)
+        _sys_c.path.insert(0, _os_c.path.join(_p_c, "scripts"))
+        import ak_compat  # noqa: F401,E402
 except Exception:
     ak = None
 
@@ -435,8 +444,13 @@ def get_china_groups():
     df = grab(ak.macro_china_pmi)
     add("leading", "pmi", extract_series(df, ["月份"], ["制造业-指数", "制造业 PMI"]), unit="")
 
+    # [2026-11-17 AKShare 1.20.42 改名] macro_china_caijin_pmi -> macro_china_pmi_manufacturing_cx
+    # 列口径同时变化：旧「月份 / 制造业-指数」→ 新「日期(月末) / 制造业PMI」，日期归一到 YYYY-MM
     df = grab(lambda: ak.macro_china_caijin_pmi())
-    add("leading", "caixin_pmi", extract_series(df, ["月份"], ["制造业-指数", "制造业- PMI"]), unit="")
+    add("leading", "caixin_pmi",
+        extract_series(df, ["月份", "日期"], ["制造业-指数", "制造业- PMI", "制造业PMI"],
+                       date_fn=lambda s: (cn_date(s) or "")[:7]),
+        unit="")
 
     df = grab(ak.macro_china_shrzgm)
     add("leading", "shrzgm", extract_series(df, ["月份"], ["同比增速", "同比"]), unit="%", hist_limit=300)

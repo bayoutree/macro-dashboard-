@@ -56,6 +56,7 @@ def _cn_quarter_sort_key(label):
 def _fetch_cn_gdp_index():
     """国家统计局季度数据：国内生产总值指数(上年同期=100)当季值 → 单季同比。"""
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
     return ak.macro_china_nbs_nation(
         kind="季度数据",
         path="国民经济核算>国内生产总值指数",
@@ -70,6 +71,7 @@ def main():
     logger.info("=" * 60)
 
     import akshare as ak
+    import ak_compat  # noqa: F401  AKShare 改名兼容层（2026-11-17，scripts/ak_compat.py）
 
     # ============================================================
     # 获取数据
