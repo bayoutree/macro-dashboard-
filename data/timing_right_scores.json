@@ -20,7 +20,7 @@
         "name": "周线MACD金叉",
         "triggered": false,
         "score": 10,
-        "current_value": "DIFF=-177.71, DEA=-121.70",
+        "current_value": "DIFF=-177.98, DEA=-121.75",
         "data_source": "交易所行情",
         "update_time": "2026-11-17"
       },
@@ -70,7 +70,7 @@
         "name": "突破年线并站稳",
         "triggered": false,
         "score": 15,
-        "current_value": "未站稳250日线, 当前3980 vs MA250=4617",
+        "current_value": "未站稳250日线, 当前3976 vs MA250=4614",
         "data_source": "交易所行情",
         "update_time": "2026-11-17"
       },
@@ -78,7 +78,7 @@
         "name": "月线MACD金叉",
         "triggered": false,
         "score": 10,
-        "current_value": "月DIFF=83.29, DEA=172.57",
+        "current_value": "月DIFF=83.02, DEA=172.52",
         "data_source": "交易所行情",
         "update_time": "2026-11-17"
       },
@@ -114,7 +114,7 @@
         "name": "周线MACD死叉",
         "triggered": false,
         "score": 10,
-        "current_value": "DIFF=-177.71, DEA=-121.70",
+        "current_value": "DIFF=-177.98, DEA=-121.75",
         "data_source": "交易所行情",
         "update_time": "2026-11-17"
       },
@@ -172,7 +172,7 @@
         "name": "月线MACD死叉",
         "triggered": false,
         "score": 10,
-        "current_value": "月DIFF=83.29, DEA=172.57",
+        "current_value": "月DIFF=83.02, DEA=172.52",
         "data_source": "交易所行情",
         "update_time": "2026-11-17"
       },
@@ -198,7 +198,7 @@
   },
   "style_rotation": {
     "large_small": {
-      "ratio": 1.549,
+      "ratio": 1.5321,
       "trend": "大盘占优",
       "signal": "小盘偏弱"
     },

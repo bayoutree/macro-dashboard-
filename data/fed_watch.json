@@ -16,7 +16,7 @@
     },
     {
       "date": "2027-01-27",
-      "hike_prob": 1.001
+      "hike_prob": 1.0
     }
   ],
   "cumulative_hike_prob": 1.0,
