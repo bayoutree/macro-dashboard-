@@ -1,23 +1,23 @@
 {
   "update_date": "2026-11-19",
   "version": "v4.1",
-  "composite_score": 50.4,
+  "composite_score": 49.3,
   "stage": "C",
   "position_range": "32%",
-  "market_status": "中性偏贪婪，逐步兑现",
+  "market_status": "中性偏恐惧，正常配置",
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 50.0,
+      "score": 46.7,
       "weight": 18,
-      "weighted_score": 9.0,
+      "weighted_score": 8.41,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 52.3,
+          "value": 53.1,
           "unit": "%分位",
-          "score": 52.0,
+          "score": 53.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -23706,14 +23706,12 @@
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-19"
           },
-          "data_source": "sina",
-          "collect_time": "2026-11-19T14:40:13",
           "last_updated": "2026-11-18",
           "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
-          "value": 34.97,
+          "value": 32.09,
           "unit": "倍",
           "score": null,
           "sub_weight": 0,
@@ -23779,6 +23777,10 @@
             {
               "date": "2026-11-11",
               "value": 34.97
+            },
+            {
+              "date": "2026-11-19",
+              "value": 32.09
             }
           ],
           "_history_meta": {
@@ -23951,7 +23953,7 @@
         },
         "interest_rate": {
           "name": "利率水平",
-          "value": "极低/偏热(1.59%)",
+          "value": "极低/偏热(1.61%)",
           "score": 60,
           "sub_weight": 35,
           "bottom_signal": "降息周期",
@@ -24165,6 +24167,10 @@
             {
               "date": "2026-11-11",
               "value": 1.59
+            },
+            {
+              "date": "2026-11-19",
+              "value": 1.61
             }
           ],
           "_history_meta": {
@@ -24176,7 +24182,7 @@
         "m1_m2_scissors": {
           "name": "M1-M2剪刀差",
           "value": "-2.7%(2026-10)",
-          "score": 31,
+          "score": 41,
           "sub_weight": 0,
           "note": "【参考】M1-M2剪刀差仅作辅助参考",
           "bottom_signal": "从-8%收窄",
@@ -24597,10 +24603,10 @@
     },
     "equity_bond": {
       "name": "股债性价比",
-      "score": 29.0,
+      "score": 31.0,
       "weight": 20,
-      "weighted_score": 5.8,
-      "signal": "股票极具吸引力",
+      "weighted_score": 6.2,
+      "signal": "股票有吸引力",
       "indicators": {
         "hs300_erp": {
           "name": "沪深300 ERP (参考)",
@@ -25621,8 +25627,8 @@
         },
         "wanda_erp": {
           "name": "中证800 ERP ★主指标（全A代理）",
-          "value": "5.66%",
-          "percentile": "46.9%",
+          "value": "5.69%",
+          "percentile": "47.3%",
           "score": 20,
           "sub_weight": 40,
           "note": "【P1-10⑦ 2026-10-18裁决】乐咕下线全A口径，切中证800（市值覆盖70%，19.7年月频）；分位口径股债拐点与全A一致",
@@ -25633,7 +25639,7 @@
         "dividend_bond_spread_red": {
           "name": "股息率利差（上证A股 − 10Y国债）",
           "value": 1.2745,
-          "score": 20,
+          "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
           "top_threshold": "<0.5%",
@@ -66454,6 +66460,10 @@
             {
               "date": "2026-11-11",
               "value": 3.26
+            },
+            {
+              "date": "2026-11-19",
+              "value": 3.52
             }
           ],
           "_history_meta": {
@@ -66473,10 +66483,10 @@
       "indicators": {
         "margin_ratio": {
           "name": "融资余额250日分位（沪市）",
-          "value": "0.8%分位",
-          "value_numeric": 0.8,
+          "value": "0.4%分位",
+          "value_numeric": 0.4,
           "unit": "分位%",
-          "score": 99.2,
+          "score": 99.6,
           "sub_weight": 0,
           "note": "【P1-10① 2026-10-18裁决】口径=沪市融资余额250日分位（逆向：分位高=杠杆热=score低）。原两融/流通市值分母无源弃用。局限：仅沪市（深市45%缺失偏保守）；250日窗口无法识别跨周期泡沫（2015式），V2恢复ratio口径",
           "bottom_threshold": "分位<10%（冰点）",
@@ -97451,6 +97461,10 @@
             {
               "date": "2026-11-11",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-19",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -99319,38 +99333,14 @@
         },
         "margin_balance": {
           "name": "两融余额（沪市）",
-          "value": "1.17万亿",
-          "week_change": "-22亿",
+          "value": "1.15万亿",
+          "week_change": "-281亿",
           "score": 50,
           "sub_weight": 0,
           "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
-          "as_of": "2026-11-10",
+          "as_of": "2026-11-18",
           "freq": "日频",
           "history": [
-            {
-              "date": "2025-10-30",
-              "value": 12536.0
-            },
-            {
-              "date": "2025-10-31",
-              "value": 12499.0
-            },
-            {
-              "date": "2025-11-03",
-              "value": 12553.0
-            },
-            {
-              "date": "2025-11-04",
-              "value": 12546.0
-            },
-            {
-              "date": "2025-11-05",
-              "value": 12549.0
-            },
-            {
-              "date": "2025-11-06",
-              "value": 12612.0
-            },
             {
               "date": "2025-11-07",
               "value": 12567.0
@@ -100326,6 +100316,30 @@
             {
               "date": "2026-11-10",
               "value": 11744.0
+            },
+            {
+              "date": "2026-11-11",
+              "value": 11767.0
+            },
+            {
+              "date": "2026-11-12",
+              "value": 11779.0
+            },
+            {
+              "date": "2026-11-13",
+              "value": 11693.0
+            },
+            {
+              "date": "2026-11-16",
+              "value": 11598.0
+            },
+            {
+              "date": "2026-11-17",
+              "value": 11520.0
+            },
+            {
+              "date": "2026-11-18",
+              "value": 11487.0
             }
           ],
           "description": "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。"
@@ -101064,14 +101078,14 @@
     },
     "sentiment": {
       "name": "市场情绪",
-      "score": 59.2,
+      "score": 53.8,
       "weight": 16,
-      "weighted_score": 9.47,
+      "weighted_score": 8.61,
       "signal": "中性",
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
-          "value": "4.79%",
+          "value": "3.16%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": "<-10%",
@@ -101727,6 +101741,10 @@
             {
               "date": "2026-11-11",
               "value": 4.79
+            },
+            {
+              "date": "2026-11-19",
+              "value": 3.16
             }
           ],
           "_history_meta": {
@@ -112108,7 +112126,7 @@
             },
             {
               "date": "2026-11-02",
-              "value": 68.25
+              "value": 67.86
             },
             {
               "date": "2026-11-06",
@@ -112129,13 +112147,29 @@
             {
               "date": "2026-11-12",
               "value": 94.44
+            },
+            {
+              "date": "2026-11-13",
+              "value": 99.21
+            },
+            {
+              "date": "2026-11-16",
+              "value": 94.05
+            },
+            {
+              "date": "2026-11-17",
+              "value": 89.68
+            },
+            {
+              "date": "2026-11-18",
+              "value": 83.73
             }
           ],
           "ssot_source": "data/feargreed_pointer.json#score"
         },
         "turnover_rate": {
           "name": "全A换手率",
-          "value": "1.4%",
+          "value": "1.3%",
           "score": 30,
           "sub_weight": 25,
           "bottom_threshold": "<1.5%",
@@ -112465,6 +112499,10 @@
             {
               "date": "2026-11-11",
               "value": 1.4
+            },
+            {
+              "date": "2026-11-19",
+              "value": 1.3
             }
           ],
           "_history_meta": {
@@ -126503,6 +126541,10 @@
             {
               "date": "2026-11-11",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-19",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -127137,13 +127179,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-19T14:40:13"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129071,14 +129111,12 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-19T14:40:13"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
-          "value": "小盘中性(%B=0.33)",
-          "score": 45,
+          "value": "小盘极弱(%B=-0.14)",
+          "score": 55,
           "sub_weight": 0,
           "note": "【参考】中证1000/沪深300比值仅作辅助参考",
           "bottom_signal": "比值触底回升",
@@ -131977,10 +132015,10 @@
     "_style_rotation": {
       "large_small": {
         "indicator": "中证1000/沪深300比值",
-        "current_value": "小盘中性(%B=0.33)",
-        "status": "大小盘均衡",
-        "signal": "中性均衡",
-        "detail": "小盘风格小盘中性(%B=0.33)"
+        "current_value": "小盘极弱(%B=-0.14)",
+        "status": "小盘偏弱",
+        "signal": "不追涨",
+        "detail": "小盘风格小盘极弱(%B=-0.14)"
       },
       "value_growth": {
         "indicator": "中证红利/全市场相对强弱",
@@ -132001,10 +132039,10 @@
   "style_rotation": {
     "large_small": {
       "indicator": "中证1000/沪深300比值",
-      "current_value": "小盘中性(%B=0.33)",
-      "status": "大小盘均衡",
-      "signal": "中性均衡",
-      "detail": "小盘风格小盘中性(%B=0.33)"
+      "current_value": "小盘极弱(%B=-0.14)",
+      "status": "小盘偏弱",
+      "signal": "不追涨",
+      "detail": "小盘风格小盘极弱(%B=-0.14)"
     },
     "value_growth": {
       "indicator": "中证红利/全市场相对强弱",
@@ -132033,7 +132071,7 @@
         "dimension": "估值",
         "signal": "破净率>10%",
         "stars": 4,
-        "active": false
+        "active": true
       },
       {
         "dimension": "估值",
@@ -132063,7 +132101,7 @@
         "dimension": "股债性价比",
         "signal": "红利指数股债利差>3%",
         "stars": 3,
-        "active": true
+        "active": false
       },
       {
         "dimension": "市场情绪",
@@ -132095,7 +132133,7 @@
         "dimension": "市场情绪",
         "signal": "恐贪指数>85且QVIX<14(极度贪婪)",
         "stars": 4,
-        "active": true
+        "active": false
       },
       {
         "dimension": "市场情绪",
@@ -132155,7 +132193,7 @@
       },
       {
         "condition": "恐贪指数>85且QVIX<14(极度贪婪双确认)",
-        "met": true
+        "met": false
       },
       {
         "condition": "社融增速进一步下行",
@@ -132187,11 +132225,11 @@
         "note": "维持"
       },
       "小盘_中证1000": {
-        "range": "8%-12%",
-        "note": "大小盘均衡，中性配置"
+        "range": "5%-8%",
+        "note": "比值仍处下行通道，暂不追涨"
       },
       "现金_债券": {
-        "range": "63%-78%",
+        "range": "48%-63%",
         "note": "防御配置"
       }
     },
@@ -132243,29 +132281,29 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": 1.1,
+    "weekly_change": 2.5,
     "trigger_reason": ""
   },
   "p1_6_state": {
     "trend": "strong_bear",
     "annotation": "",
-    "close": 5207.16,
-    "ma120": 5894.66,
+    "close": 4877.36,
+    "ma120": 5818.79,
     "ma120_direction": "down",
-    "momentum_12m": -0.1173,
-    "as_of": "2026-11-11",
+    "momentum_12m": -0.1738,
+    "as_of": "2026-11-19",
     "source": "tencent_tx sh000985"
   },
   "p1_8_state": {
     "layer": "event_soft",
     "cap": 32,
     "cumulative_hike_prob": 1.0,
-    "yield_10y": 4.88,
+    "yield_10y": 5.1,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
       "累计加息概率100%>85%（概率单路·A1）"
     ],
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-19",
     "cooldown_until": null,
     "growth_ban": [
       "创业板指",
@@ -132277,36 +132315,36 @@
     "fomc_auto": false
   },
   "global_dominance": {
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-19",
     "thresholds": {
       "a_hike_slope_or_qt": {
         "met": false,
         "slope_bp_annualized": 100.0,
-        "qt_3m_pct": -0.006,
-        "detail": "加息斜率年化 100bp（阈值 300bp）；fed_balance 近3月 -0.01%（QT 阈值 -0.5%）"
+        "qt_3m_pct": -0.016,
+        "detail": "加息斜率年化 100bp（阈值 300bp）；fed_balance 近3月 -0.02%（QT 阈值 -0.5%）"
       },
       "b_fx_valve": {
         "met": false,
         "data_status": "ok",
         "valve_open": false,
-        "usdcny_annual_deprec_pct": -6.261,
+        "usdcny_annual_deprec_pct": -6.032,
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -0.6,
+        "cnh_cny_spread_latest_bp": 5.2,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -1bp（阈值：单日>70bp 或 连续5日>40bp）；序列 12 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 +5bp（阈值：单日>70bp 或 连续5日>40bp）；序列 16 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {
         "met": false,
         "m2_yoy_2m_up": false,
-        "m2_sf_gap_pp": 0.09,
+        "m2_sf_gap_pp": -0.09,
         "threshold_gap_pp": 2.0
       }
     },
@@ -132318,7 +132356,7 @@
     "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
   },
   "catalyst_state": {
-    "asof": "2026-11-11",
+    "asof": "2026-11-19",
     "policy": {
       "pass": false,
       "manual_pivot": false,
@@ -132330,7 +132368,7 @@
       "pass": false,
       "m1_turn": false,
       "spread_narrow": false,
-      "latest_m1_yoy": 3.2
+      "latest_m1_yoy": 4.4
     },
     "earnings": {
       "pass": true,
@@ -132347,7 +132385,7 @@
     }
   },
   "r7_state": {
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-19",
     "position_pct": 50.0,
     "position_zone": "high",
     "window_n": 36,
@@ -132355,10 +132393,10 @@
     "ref_span": "2023-10→2026-09",
     "trend": "strong_bear",
     "trend_negative": true,
-    "bear_form": "none",
+    "bear_form": "fast_bear",
     "bear_detail": {
-      "decline_3m_pct": -11.7,
-      "monthly_neg_streak": 0
+      "decline_3m_pct": -18.6,
+      "monthly_neg_streak": 3
     },
     "conflict": null,
     "verdict": "按既有框架（P1-7/P1-9 信号）",

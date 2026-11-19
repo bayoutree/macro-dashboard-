@@ -46,7 +46,7 @@
     },
     "ppi_yoy": {
       "value": 6.5242,
-      "date": "2026-10-01",
+      "date": "2026-10",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.validation.lagging.ppi"
     },
     "fed_funds_rate": {
@@ -86,8 +86,8 @@
       "date": "2026-11-18"
     },
     "vix": {
-      "value": 25.46,
-      "date": "2026-11-17"
+      "value": 24.56,
+      "date": "2026-11-18"
     },
     "fed_balance": {
       "value": 6758867.0,
@@ -10937,10 +10937,6 @@
     ],
     "vix": [
       {
-        "date": "2025-11-28",
-        "value": 16.35
-      },
-      {
         "date": "2025-12-01",
         "value": 17.24
       },
@@ -11935,6 +11931,10 @@
       {
         "date": "2026-11-17",
         "value": 25.46
+      },
+      {
+        "date": "2026-11-18",
+        "value": 24.56
       }
     ],
     "fed_balance": [
