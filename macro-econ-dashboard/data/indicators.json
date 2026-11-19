@@ -76,10 +76,10 @@
       "pct_10y": 95,
       "note": "近5年分位89%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -0.312,
-        "dd_52w_pct": -6.3346,
-        "mom_3m_pct": -4.1555,
-        "date": "2026-11-18",
+        "ma200_dev_pct": 0.4663,
+        "dd_52w_pct": -5.5711,
+        "mom_3m_pct": -3.7924,
+        "date": "2026-11-19",
         "caliber": "price",
         "approx": false
       }
@@ -90,9 +90,9 @@
       "pct_10y": 99,
       "note": "近5年分位98%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 10.4444,
-        "dd_52w_pct": -4.3495,
-        "mom_3m_pct": 7.2182,
+        "ma200_dev_pct": 10.814,
+        "dd_52w_pct": -4.0294,
+        "mom_3m_pct": 7.577,
         "date": "2026-11-19",
         "caliber": "yield",
         "approx": false
@@ -100,13 +100,13 @@
     },
     "usd": {
       "name": "美元指数DXY",
-      "pct_5y": 63,
-      "pct_10y": 81,
-      "note": "近5年分位63%，中性区间",
+      "pct_5y": 64,
+      "pct_10y": 82,
+      "note": "近5年分位64%，中性区间",
       "trend": {
-        "ma200_dev_pct": 3.7122,
-        "dd_52w_pct": -0.1646,
-        "mom_3m_pct": 4.9484,
+        "ma200_dev_pct": 3.757,
+        "dd_52w_pct": -0.1213,
+        "mom_3m_pct": 4.9939,
         "date": "2026-11-19",
         "caliber": "price",
         "approx": false
@@ -118,9 +118,9 @@
       "pct_10y": 89,
       "note": "近5年分位78%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -16.5599,
-        "dd_52w_pct": -30.1576,
-        "mom_3m_pct": -20.6405,
+        "ma200_dev_pct": -16.7881,
+        "dd_52w_pct": -30.3494,
+        "mom_3m_pct": -20.8584,
         "date": "2026-11-19",
         "caliber": "price",
         "approx": false
@@ -132,9 +132,9 @@
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -9.0687,
-        "dd_52w_pct": -16.7928,
-        "mom_3m_pct": -13.96,
+        "ma200_dev_pct": -9.1486,
+        "dd_52w_pct": -16.8663,
+        "mom_3m_pct": -14.036,
         "date": "2026-11-19",
         "caliber": "price",
         "approx": false
@@ -18133,12 +18133,12 @@
           "caliber": "10Y 美债收益率 %"
         },
         "hy_spread": {
-          "value": 3.43,
+          "value": 3.47,
           "unit": "%",
-          "change": 0.09,
-          "pct_5y": 89,
-          "pct_10y": 89,
-          "date": "2026-11-17",
+          "change": 0.04,
+          "pct_5y": 90,
+          "pct_10y": 90,
+          "date": "2026-11-18",
           "history": [
             {
               "date": "2023-11-20",
@@ -21279,6 +21279,10 @@
             {
               "date": "2026-11-17",
               "value": 3.43
+            },
+            {
+              "date": "2026-11-18",
+              "value": 3.47
             }
           ],
           "name": "HY信用利差(HY OAS)",
@@ -25796,11 +25800,11 @@
           "caliber": "2Y 美债收益率 %"
         },
         "dxy": {
-          "value": 103.654,
+          "value": 103.842,
           "unit": "",
-          "change": -0.206,
-          "pct_5y": 63,
-          "pct_10y": 81,
+          "change": -0.018,
+          "pct_5y": 64,
+          "pct_10y": 82,
           "date": "2026-11-19",
           "history": [
             {
@@ -30841,7 +30845,7 @@
             },
             {
               "date": "2026-11-19",
-              "value": 103.654
+              "value": 103.842
             }
           ],
           "name": "美元指数DXY",
@@ -35898,7 +35902,7 @@
             }
           ],
           "name": "广义美元指数(叙事参考)",
-          "delta_vs_dxy_pp": 12,
+          "delta_vs_dxy_pp": 11,
           "source": "FRED DTWEXBGS",
           "caliber": "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）"
         }
