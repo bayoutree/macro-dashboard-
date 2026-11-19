@@ -497,6 +497,9 @@ def get_china_groups():
                 if _pp:
                     _yoy.append((d["date"], round((d["value"] / _pp - 1) * 100, 2)))
             add("leading", "shrzgm", _yoy, unit="%", hist_limit=300)
+            # 回退成功则撤销首轮 akshare 空列口径留下的失败标记（否则报告误报缺失）
+            if "shrzgm" in groups.get("leading", {}) and "leading.shrzgm" in fail:
+                fail.remove("leading.shrzgm")
         except Exception as _e:
             print(f"[fetch_china] 社融央行回退失败(降级缺口): {_e}")
 
@@ -531,8 +534,26 @@ def get_china_groups():
         extract_series(df, ["月份"], ["货币和准货币(M2)-同比增长", "M2-同比增长"]), unit="%")
 
     df = grab(ak.macro_china_urban_unemployment)
-    add("lagging", "unemployment",
-        extract_series(df, ["月份"], ["今值", "失业率", "调查失业率", "城镇调查"]), unit="%")
+    # [2026-11-19 AKShare 1.20.42 结构变更] 由「月份/今值」宽表改为长表 date/item/value，
+    # 旧 extract_series 取不到列 → 失业率长期置灰。现按 item 取「全国城镇调查失业率」主口径，
+    # date=YYYYMM 归一 YYYY-MM；接口若回退旧结构仍走原解析。
+    _unemp = None
+    if df is not None and len(df) > 0:
+        if {"date", "item", "value"} <= set(df.columns):
+            _u = df[df["item"].astype(str).str.contains("全国城镇调查失业率", na=False)]
+            _pts = []
+            for _, _row in _u.iterrows():
+                _d = str(_row["date"])[:6]
+                try:
+                    _v = float(_row["value"])
+                except (TypeError, ValueError):
+                    continue
+                if len(_d) == 6 and _d.isdigit():
+                    _pts.append((f"{_d[:4]}-{_d[4:6]}", _v))
+            _unemp = sorted(_pts) or None
+        else:
+            _unemp = extract_series(df, ["月份"], ["今值", "失业率", "调查失业率", "城镇调查"])
+    add("lagging", "unemployment", _unemp, unit="%")
 
     # ---- 金融条件 ----
     # Bug 1 修复：DR007 使用 Shibor 1W 作为代理

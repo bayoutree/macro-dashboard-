@@ -103,9 +103,23 @@ def main():
         print("❌ 未从 PR Newswire 取到任何稿件，中止（不写空文件）")
         sys.exit(1)
     hist = fetch_akshare_history()
+    # [2026-11-19 删史防线] akshare macro_usa_ism_pmi 已随金十源整体移除（1.20.42+），
+    # 若只用 akshare 补历史，hist 为空 → 只剩 PRN 的十余个月 → ism_pmi.json 683→15 点被 history_guard 阻断。
+    # 故以**本地既有存档**为底（append-only），akshare 有数据时再叠加。
+    prev = {}
+    if OUT.exists():
+        try:
+            _p = json.loads(OUT.read_text(encoding="utf-8"))
+            prev = {r["date"]: float(r["value"]) for r in (_p.get("history") or [])
+                    if r.get("date") and r.get("value") is not None}
+        except Exception as e:
+            print(f"  ⚠️ 既有 ism_pmi.json 读取失败（忽略）：{type(e).__name__}: {e}")
+    if prev:
+        print(f"  本地存档: {len(prev)} 个月（{min(prev)} ~ {max(prev)}）→ 作为 append-only 底稿")
 
-    # PR Newswire 为准（官方稿），akshare 只补 PRN 未覆盖的更早月份
-    merged = dict(hist)
+    # PR Newswire 为准（官方稿），akshare / 存档只补 PRN 未覆盖的更早月份
+    merged = dict(prev)
+    merged.update(hist)
     overlap_conflict = []
     for d, v in prn.items():
         if d in merged and abs(merged[d] - v) > 1e-9:
@@ -117,13 +131,16 @@ def main():
             print(f"     {d}: akshare={a} -> PRN={b}")
 
     rows = [{"date": d, "value": merged[d]} for d in sorted(merged)]
+    if len(rows) < len(prev):
+        print(f"❌ 合并后 {len(rows)} 点 < 存档 {len(prev)} 点，拒绝写回（删史防线）")
+        sys.exit(1)
     tail = rows[-1]
     payload = {
         "source": "ISM® Manufacturing PMI®（ISM 官方新闻稿，PR Newswire 分发）",
         "caliber": "扩散指数，季调，50 为荣枯线；月度",
         "note": ("ISM 官网已 SSO 付费墙、akshare 金十源停 2025-09、FRED 因版权下架 ISM 系列；"
                  "本序列经 PR Newswire 的 ISM 官方稿续采，与原 ISM 序列同源，无断点。"
-                 "2025-09 及之前来自 akshare（金十），重叠月 2025-08 双方一致（48.7）已互验。"),
+                 "2025-09 及之前来自本地存档（原 akshare 金十源，2026-11 起该接口已被移除），重叠月 2025-08 双方一致（48.7）已互验。"),
         "update_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         "latest": tail,
         "history": rows,
