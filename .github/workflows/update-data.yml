@@ -38,6 +38,15 @@ on:
           - timing
           - dry-run
 
+# [2026-11-19 并发写库互斥] daily_update / update-data / macro-econ 三条链路都会写同一批
+# data/*.json（asset_prices、asset_valuation、dashboard_summary、timing_scores…）。
+# 本地 cron_watchdog 每轮会在同一秒 dispatch 三条，导致先跑完的那条把数据推上去后，
+# 后跑完的 rebase 到冲突 → 「Commit and push data changes」失败并天天发失败邮件。
+# 统一 concurrency group 串行化，杜绝并发写库。
+concurrency:
+  group: data-write-main
+  cancel-in-progress: false
+
 permissions:
   contents: write
   issues: write

@@ -53,8 +53,39 @@ print(len(good))" 2>/dev/null)
   fi
 }
 
+# [2026-11-19 串行化] 三条链路写同一批 data/*.json，同秒 dispatch 会并发写库 →
+# 后完成的那条 rebase 冲突、commit 失败、天天发失败邮件。改为「一条跑完再下一条」。
+wait_run_done(){
+  local wf="$1" label="$2" waited=0 max=2400
+  while [ "$waited" -lt "$max" ]; do
+    local st
+    st=$(curl -s --max-time 30 -H "Authorization: Bearer ${TOKEN}" -H "Accept: application/vnd.github+json" \
+      "${API}/${wf}/runs?created=%3E%3D${TODAY}&per_page=5" \
+      | python3 -c "
+import json,sys
+try:
+    runs=json.load(sys.stdin).get('workflow_runs',[])
+except Exception:
+    print('unknown'); raise SystemExit
+if not runs: print('none'); raise SystemExit
+r=runs[0]
+print(r.get('status'), r.get('conclusion') or '')
+" 2>/dev/null)
+    case "$st" in
+      completed*) log "DONE ${label} -> ${st}"; return 0 ;;
+      none|unknown) log "WAIT ${label} 未查到 run（${waited}s）" ;;
+      *) : ;;
+    esac
+    sleep 30; waited=$((waited+30))
+  done
+  log "TIMEOUT ${label} 等待 ${max}s 仍未结束（继续下一条）"
+}
+
 log "---- 本轮检查开始（${TODAY} UTC, dry_run=${DRY_RUN}）----"
 check_and_dispatch "daily_update.yml"         "daily_update(主数据)"
+[ "$DRY_RUN" = "1" ] || wait_run_done "daily_update.yml" "daily_update(主数据)"
 check_and_dispatch "macro-econ-dashboard.yml" "macro-econ(宏观)"
+[ "$DRY_RUN" = "1" ] || wait_run_done "macro-econ-dashboard.yml" "macro-econ(宏观)"
 check_and_dispatch "update-data.yml"          "update-data(frontend同步)"
+[ "$DRY_RUN" = "1" ] || wait_run_done "update-data.yml" "update-data(frontend同步)"
 log "---- 本轮检查结束 ----"
