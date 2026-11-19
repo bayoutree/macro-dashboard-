@@ -2,7 +2,7 @@
   "source": "ISM® Manufacturing PMI®（ISM 官方新闻稿，PR Newswire 分发）",
   "caliber": "扩散指数，季调，50 为荣枯线；月度",
   "note": "ISM 官网已 SSO 付费墙、akshare 金十源停 2025-09、FRED 因版权下架 ISM 系列；本序列经 PR Newswire 的 ISM 官方稿续采，与原 ISM 序列同源，无断点。2025-09 及之前来自本地存档（原 akshare 金十源，2026-11 起该接口已被移除），重叠月 2025-08 双方一致（48.7）已互验。",
-  "update_time": "2026-11-19T14:37:04",
+  "update_time": "2026-11-19T17:17:56",
   "latest": {
     "date": "2026-10",
     "value": 55.5
