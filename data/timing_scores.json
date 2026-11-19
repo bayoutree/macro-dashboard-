@@ -2513,9 +2513,9 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 9.72,
+          "value": 10.39,
           "unit": "%",
-          "score": 35,
+          "score": 25,
           "sub_weight": 25,
           "bottom_threshold": ">10%",
           "top_threshold": "<3%",
@@ -23684,6 +23684,22 @@
             {
               "date": "2026-11-12",
               "value": 9.72
+            },
+            {
+              "date": "2026-11-13",
+              "value": 10.11
+            },
+            {
+              "date": "2026-11-16",
+              "value": 10.16
+            },
+            {
+              "date": "2026-11-17",
+              "value": 10.24
+            },
+            {
+              "date": "2026-11-18",
+              "value": 10.39
             }
           ],
           "_history_meta": {
@@ -23691,8 +23707,8 @@
             "synced_at": "2026-11-19"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-12T08:13:50",
-          "last_updated": "2026-11-12",
+          "collect_time": "2026-11-19T14:40:13",
+          "last_updated": "2026-11-18",
           "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
         },
         "median_pe_all_a": {
@@ -25616,7 +25632,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "股息率利差（上证A股 − 10Y国债）",
-          "value": 1.2368,
+          "value": 1.2745,
           "score": 20,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -45886,13 +45902,33 @@
             {
               "date": "2026-11-12",
               "value": 1.2368
+            },
+            {
+              "date": "2026-11-13",
+              "value": 1.2277
+            },
+            {
+              "date": "2026-11-16",
+              "value": 1.2215
+            },
+            {
+              "date": "2026-11-17",
+              "value": 1.2445
+            },
+            {
+              "date": "2026-11-18",
+              "value": 1.2608
+            },
+            {
+              "date": "2026-11-19",
+              "value": 1.2745
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-19"
           },
-          "last_updated": "2026-11-12",
+          "last_updated": "2026-11-19",
           "unit": "%",
           "caliber": "上证A股股息率（非全A）− 中债10年期国债到期收益率；日频",
           "caliber_corrected": true,
@@ -45900,7 +45936,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率利差（上证A股 − 10Y国债）",
-          "value": 1.2368,
+          "value": 1.2745,
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -66170,13 +66206,33 @@
             {
               "date": "2026-11-12",
               "value": 1.2368
+            },
+            {
+              "date": "2026-11-13",
+              "value": 1.2277
+            },
+            {
+              "date": "2026-11-16",
+              "value": 1.2215
+            },
+            {
+              "date": "2026-11-17",
+              "value": 1.2445
+            },
+            {
+              "date": "2026-11-18",
+              "value": 1.2608
+            },
+            {
+              "date": "2026-11-19",
+              "value": 1.2745
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-19"
           },
-          "last_updated": "2026-11-12",
+          "last_updated": "2026-11-19",
           "unit": "%",
           "caliber": "上证A股股息率（非全A）− 中债10年期国债到期收益率；日频",
           "caliber_corrected": true,
@@ -81508,7 +81564,7 @@
         },
         "equity_fund_position": {
           "name": "股基仓位",
-          "value": 97.19,
+          "value": 97.06,
           "score": 85,
           "sub_weight": 25,
           "bottom_signal": "仓位极低(恐慌)",
@@ -83354,6 +83410,10 @@
             {
               "date": "2026-11-06",
               "value": 97.19
+            },
+            {
+              "date": "2026-11-13",
+              "value": 97.06
             }
           ],
           "_history_meta": {
@@ -97400,7 +97460,7 @@
         },
         "flexible_fund_position": {
           "name": "灵基仓位",
-          "value": 88.05,
+          "value": 88.7,
           "score": 75,
           "sub_weight": 20,
           "bottom_signal": "仓位极低",
@@ -99246,6 +99306,10 @@
             {
               "date": "2026-11-06",
               "value": 88.05
+            },
+            {
+              "date": "2026-11-13",
+              "value": 88.7
             }
           ],
           "_history_meta": {
@@ -101674,8 +101738,8 @@
         },
         "fear_greed_index": {
           "name": "恐贪指数",
-          "value": 94.44,
-          "score": 94.44,
+          "value": 83.73,
+          "score": 83.73,
           "sub_weight": 35,
           "bottom_threshold": "<20",
           "top_threshold": ">85且QVIX<14",
@@ -127037,7 +127101,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "47.27%",
+          "value": "46.21%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -127064,6 +127128,10 @@
             {
               "date": "2026-11-12",
               "value": 47.27
+            },
+            {
+              "date": "2026-11-19",
+              "value": 46.21
             }
           ],
           "_history_meta": {
@@ -127071,7 +127139,7 @@
             "inherited_at": "2026-10-17"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-12T08:13:50"
+          "collect_time": "2026-11-19T14:40:13"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -129005,7 +129073,7 @@
             "original_count": 228
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-12T08:13:50"
+          "collect_time": "2026-11-19T14:40:13"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

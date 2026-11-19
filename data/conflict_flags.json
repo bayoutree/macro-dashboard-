@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-13T00:46:45+08:00",
+  "generated_at": "2026-11-19T22:36:43+08:00",
   "boards": [
     {
       "board": "macro_cross",
-      "direction": -1,
-      "raw_value": "滞胀加剧/现金>黄金>商品>债券>股票",
-      "as_of": "2026-11-12",
+      "direction": 1,
+      "raw_value": "复苏/股票>债券>现金>商品",
+      "as_of": "2026-11-19",
       "effective": true,
       "status": "normal"
     },
@@ -20,8 +20,8 @@
     {
       "board": "a_timing",
       "direction": 0,
-      "raw_value": "50.7/orange",
-      "as_of": "2026-11-12",
+      "raw_value": "50.4/orange",
+      "as_of": "2026-11-19",
       "effective": true,
       "status": "normal"
     }
@@ -53,14 +53,14 @@
         "b": "cycle_v4",
         "type": "divergence",
         "both_effective": true,
-        "note": "宏观截面 -1 vs 全球周期v4 +0"
+        "note": "宏观截面 +1 vs 全球周期v4 +0"
       },
       {
         "a": "macro_cross",
         "b": "a_timing",
         "type": "divergence",
         "both_effective": true,
-        "note": "宏观截面 -1 vs A股择时 +0"
+        "note": "宏观截面 +1 vs A股择时 +0"
       }
     ]
   },

@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-13T00:49:07+08:00",
-    "data_freshness_score": 98,
+    "update_time": "2026-11-19T22:38:41+08:00",
+    "data_freshness_score": 92,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-13",
+      "as_of": "2026-11-19",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 98
+          "score": 92
         },
         "narrative_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 98
+          "score": 92
         },
         "narrative_perez": {
           "last_updated": "2026-11-11",
-          "score": 98
+          "score": 92
         },
         "constraint_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 98
+          "score": 92
         }
       },
       "excluded_no_date": [
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-13T13:40:23+08:00"
+    "v4_built_at": "2026-11-19T14:38:41+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2884,11 +2884,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.3,
+          "current_value": 3.43,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-11"
+          "last_updated": "2026-11-17"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -6628,7 +6628,7 @@
             "name": "远期实际利率(1Y5Y)",
             "source": "FRED",
             "us": {
-              "current": 2.66,
+              "current": 2.89,
               "unit": "%",
               "history": [
                 {
@@ -18510,16 +18510,36 @@
                 {
                   "date": "2026-11-09",
                   "value": 2.66
+                },
+                {
+                  "date": "2026-11-10",
+                  "value": 2.78
+                },
+                {
+                  "date": "2026-11-12",
+                  "value": 2.86
+                },
+                {
+                  "date": "2026-11-13",
+                  "value": 2.91
+                },
+                {
+                  "date": "2026-11-16",
+                  "value": 2.92
+                },
+                {
+                  "date": "2026-11-17",
+                  "value": 2.89
                 }
               ],
               "frequency": "daily",
               "source": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-09",
+              "last_updated": "2026-11-17",
               "last_updated_inherited_from": "real_rate_forward"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-09",
+            "last_updated": "2026-11-17",
             "frequency": "daily",
             "history": [
               {
@@ -30401,16 +30421,36 @@
               {
                 "date": "2026-11-09",
                 "value": 2.66
+              },
+              {
+                "date": "2026-11-10",
+                "value": 2.78
+              },
+              {
+                "date": "2026-11-12",
+                "value": 2.86
+              },
+              {
+                "date": "2026-11-13",
+                "value": 2.91
+              },
+              {
+                "date": "2026-11-16",
+                "value": 2.92
+              },
+              {
+                "date": "2026-11-17",
+                "value": 2.89
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 2.66
+            "current": 2.89
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
             "source": "ACM模型/FRED",
             "us": {
-              "current": 0.8738,
+              "current": 0.9864,
               "unit": "%",
               "history": [
                 {
@@ -42288,16 +42328,32 @@
                 {
                   "date": "2026-11-06",
                   "value": 0.8738
+                },
+                {
+                  "date": "2026-11-09",
+                  "value": 0.8854
+                },
+                {
+                  "date": "2026-11-10",
+                  "value": 0.9177
+                },
+                {
+                  "date": "2026-11-12",
+                  "value": 0.9656
+                },
+                {
+                  "date": "2026-11-13",
+                  "value": 0.9864
                 }
               ],
               "frequency": "daily",
               "source": "FRED ACMTP10（ACM 10 年期期限溢价，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-06",
+              "last_updated": "2026-11-13",
               "last_updated_inherited_from": "term_premium"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-06",
+            "last_updated": "2026-11-13",
             "frequency": "daily",
             "history": [
               {
@@ -54175,10 +54231,26 @@
               {
                 "date": "2026-11-06",
                 "value": 0.8738
+              },
+              {
+                "date": "2026-11-09",
+                "value": 0.8854
+              },
+              {
+                "date": "2026-11-10",
+                "value": 0.9177
+              },
+              {
+                "date": "2026-11-12",
+                "value": 0.9656
+              },
+              {
+                "date": "2026-11-13",
+                "value": 0.9864
               }
             ],
             "source_url": "https://fred.stlouisfed.org/series/TSYOREA01",
-            "current": 0.8738
+            "current": 0.9864
           },
           "cn_tfp_trend": {
             "name": "TFP增速",
@@ -54282,7 +54354,7 @@
             "name": "收益率曲线(2s10s)",
             "source": "FRED",
             "us": {
-              "current": 0.25,
+              "current": 0.27,
               "unit": "%",
               "history": [
                 {
@@ -66168,16 +66240,36 @@
                 {
                   "date": "2026-11-10",
                   "value": 0.25
+                },
+                {
+                  "date": "2026-11-12",
+                  "value": 0.24
+                },
+                {
+                  "date": "2026-11-13",
+                  "value": 0.27
+                },
+                {
+                  "date": "2026-11-16",
+                  "value": 0.29
+                },
+                {
+                  "date": "2026-11-17",
+                  "value": 0.3
+                },
+                {
+                  "date": "2026-11-18",
+                  "value": 0.27
                 }
               ],
               "frequency": "daily",
               "source": "FRED T10Y2Y（10Y-2Y 利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-10",
+              "last_updated": "2026-11-18",
               "last_updated_inherited_from": "yield_curve_2s10s"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-10",
+            "last_updated": "2026-11-18",
             "frequency": "daily",
             "history": [
               {
@@ -78063,16 +78155,36 @@
               {
                 "date": "2026-11-10",
                 "value": 0.25
+              },
+              {
+                "date": "2026-11-12",
+                "value": 0.24
+              },
+              {
+                "date": "2026-11-13",
+                "value": 0.27
+              },
+              {
+                "date": "2026-11-16",
+                "value": 0.29
+              },
+              {
+                "date": "2026-11-17",
+                "value": 0.3
+              },
+              {
+                "date": "2026-11-18",
+                "value": 0.27
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.25
+            "current": 0.27
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
             "source": "FRED BAMLC0A0CM",
             "us": {
-              "current": 0.9,
+              "current": 0.92,
               "unit": "%",
               "history": [
                 {
@@ -81244,18 +81356,38 @@
                   "value": 0.91
                 },
                 {
+                  "date": "2026-11-10",
+                  "value": 0.9
+                },
+                {
                   "date": "2026-11-11",
                   "value": 0.9
+                },
+                {
+                  "date": "2026-11-12",
+                  "value": 0.89
+                },
+                {
+                  "date": "2026-11-13",
+                  "value": 0.89
+                },
+                {
+                  "date": "2026-11-16",
+                  "value": 0.9
+                },
+                {
+                  "date": "2026-11-17",
+                  "value": 0.92
                 }
               ],
               "frequency": "daily",
               "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-11",
+              "last_updated": "2026-11-17",
               "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-11",
+            "last_updated": "2026-11-17",
             "frequency": "daily",
             "history": [
               {
@@ -84427,19 +84559,39 @@
                 "value": 0.91
               },
               {
+                "date": "2026-11-10",
+                "value": 0.9
+              },
+              {
                 "date": "2026-11-11",
                 "value": 0.9
+              },
+              {
+                "date": "2026-11-12",
+                "value": 0.89
+              },
+              {
+                "date": "2026-11-13",
+                "value": 0.89
+              },
+              {
+                "date": "2026-11-16",
+                "value": 0.9
+              },
+              {
+                "date": "2026-11-17",
+                "value": 0.92
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.9
+            "current": 0.92
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
             "source": "自算: sp500日收益20日年化(资产价格层)",
             "us": {
-              "current": 22.43,
+              "current": 22.93,
               "unit": "",
               "history": [
                 {
@@ -85421,16 +85573,36 @@
                 {
                   "date": "2026-11-12",
                   "value": 22.43
+                },
+                {
+                  "date": "2026-11-13",
+                  "value": 22.4
+                },
+                {
+                  "date": "2026-11-16",
+                  "value": 22.13
+                },
+                {
+                  "date": "2026-11-17",
+                  "value": 23.01
+                },
+                {
+                  "date": "2026-11-18",
+                  "value": 23.13
+                },
+                {
+                  "date": "2026-11-19",
+                  "value": 22.93
                 }
               ],
               "frequency": "daily",
               "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-12",
+              "last_updated": "2026-11-19",
               "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-12",
+            "last_updated": "2026-11-19",
             "frequency": "daily",
             "history": [
               {
@@ -86412,10 +86584,30 @@
               {
                 "date": "2026-11-12",
                 "value": 22.43
+              },
+              {
+                "date": "2026-11-13",
+                "value": 22.4
+              },
+              {
+                "date": "2026-11-16",
+                "value": 22.13
+              },
+              {
+                "date": "2026-11-17",
+                "value": 23.01
+              },
+              {
+                "date": "2026-11-18",
+                "value": 23.13
+              },
+              {
+                "date": "2026-11-19",
+                "value": 22.93
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.43
+            "current": 22.93
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -86903,11 +87095,11 @@
             "name": "制造业产能利用率",
             "source": "美联储",
             "unit": "%",
-            "current": 75.9245,
-            "last_updated": "2026-09-01",
+            "current": 76.0772,
+            "last_updated": "2026-10-01",
             "percentile": {
               "p25": 75.39,
-              "p50": 75.8,
+              "p50": 75.86,
               "p75": 76.45,
               "current_rank": "p50-p75"
             },
@@ -87094,11 +87286,15 @@
               },
               {
                 "date": "2026-08-01",
-                "value": 75.793
+                "value": 75.8074
               },
               {
                 "date": "2026-09-01",
-                "value": 75.9245
+                "value": 75.9373
+              },
+              {
+                "date": "2026-10-01",
+                "value": 76.0772
               }
             ],
             "frequency": "monthly"
@@ -87256,8 +87452,8 @@
             "name": "高技术制造业投资增速",
             "source": "国家统计局 固定资产投资统计司 投资数据解读稿（www.stats.gov.cn/sj/sjjd/，月度/季度累计同比）",
             "unit": "%",
-            "current": 4.0,
-            "last_updated": "2026-09-30",
+            "current": 3.0,
+            "last_updated": "2026-10-31",
             "history": [
               {
                 "date": "2020-05",
@@ -87438,12 +87634,16 @@
               {
                 "date": "2026-09",
                 "value": 4.0
+              },
+              {
+                "date": "2026-10",
+                "value": 3.0
               }
             ],
             "frequency": "monthly",
             "source_url": "https://data.stats.gov.cn/",
             "percentile": {
-              "p25": 8.8,
+              "p25": 7.4,
               "p50": 10.5,
               "p75": 22.2,
               "current_rank": "<=p25"
@@ -87490,10 +87690,10 @@
           "fixed_asset_investment": {
             "name": "固定资产投资增速",
             "source": "国家统计局",
-            "current": -10.07,
+            "current": -10.78,
             "unit": "%",
             "description": "中国固定资产投资累计同比，反映企业扩产意愿",
-            "last_updated": "2026-09-30",
+            "last_updated": "2026-10-31",
             "frequency": "monthly",
             "history": [
               {
@@ -87551,12 +87751,16 @@
               {
                 "date": "2026-09",
                 "value": -10.07
+              },
+              {
+                "date": "2026-10",
+                "value": -10.78
               }
             ],
             "source_url": "https://data.stats.gov.cn/",
             "percentile": {
-              "p25": -8.96,
-              "p50": 0.19,
+              "p25": -9.68,
+              "p50": -0.45,
               "p75": 3.2,
               "current_rank": "<=p25"
             }
@@ -87762,7 +87966,7 @@
             "source": "美国人口普查局",
             "unit": "倍",
             "current": 1.33,
-            "last_updated": "2026-08-01",
+            "last_updated": "2026-09-01",
             "history": [
               {
                 "date": "2022-01",
@@ -87922,10 +88126,14 @@
               },
               {
                 "date": "2026-07-01",
-                "value": 1.34
+                "value": 1.36
               },
               {
                 "date": "2026-08-01",
+                "value": 1.35
+              },
+              {
+                "date": "2026-09-01",
                 "value": 1.33
               }
             ],
@@ -88700,10 +88908,10 @@
           "manufacturing_inventories": {
             "name": "商业总库存",
             "source": "FRED (BUSINV)",
-            "current": 2818.757,
+            "current": 2873.438,
             "unit": "billion USD",
             "threshold": null,
-            "last_updated": "2026-08-01",
+            "last_updated": "2026-09-01",
             "history": [
               {
                 "date": "2023-07",
@@ -88851,11 +89059,15 @@
               },
               {
                 "date": "2026-07-01",
-                "value": 2807.083
+                "value": 2847.6
               },
               {
                 "date": "2026-08-01",
-                "value": 2818.757
+                "value": 2858.902
+              },
+              {
+                "date": "2026-09-01",
+                "value": 2873.438
               }
             ],
             "frequency": "monthly",
@@ -88863,7 +89075,7 @@
             "percentile": {
               "p25": 2599.6,
               "p50": 2653.2,
-              "p75": 2676.7,
+              "p75": 2676.9,
               "current_rank": ">p75"
             },
             "caliber_note": "序列为 FRED BUSINV 商业总库存（2026-11-11 补采工单核正名实：原指标名\"制造业库存总量\"与序列口径不符，序列本身延续未混填）"
@@ -91372,7 +91584,7 @@
             "name": "工业增加值同比",
             "source": "NBS",
             "cn": {
-              "current": 5.5,
+              "current": 4.8,
               "unit": "%",
               "history": [
                 {
@@ -91454,17 +91666,21 @@
                 {
                   "date": "2026-09",
                   "value": 5.5
+                },
+                {
+                  "date": "2026-10",
+                  "value": 4.8
                 }
               ],
               "source_inherited_from": "cn_industrial_va",
               "source": "NBS",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-09-30",
+              "last_updated": "2026-10-31",
               "last_updated_inherited_from": "cn_industrial_va",
               "frequency": "monthly"
             },
             "description": "规模以上工业增加值同比增速",
-            "last_updated": "2026-09-30",
+            "last_updated": "2026-10-31",
             "frequency": "monthly",
             "history": [
               {
@@ -91546,15 +91762,19 @@
               {
                 "date": "2026-09",
                 "value": 5.5
+              },
+              {
+                "date": "2026-10",
+                "value": 4.8
               }
             ],
             "percentile": {
               "p25": 4.5,
-              "p50": 5.3,
-              "p75": 5.9,
-              "current_rank": "p50-p75"
+              "p50": 5.2,
+              "p75": 5.7,
+              "current_rank": "p25-p50"
             },
-            "current": 5.5
+            "current": 4.8
           }
         },
         "quadrant_trajectory": [
@@ -91761,7 +91981,7 @@
       "implication_for_a_stock": "9个维度中4个中美反向、2个错位、3个共振。对中国而言，反向维度中多数指向中国方向更优，叠加共振维度均为积极信号，A股相对美股具有周期位置优势。核心风险在于大债务周期和利率范式层面的全球性约束。"
     },
     "high_rate_tracker": {
-      "last_updated": "2026-11-11",
+      "last_updated": "2026-11-17",
       "indicators": [
         {
           "name": "全球储蓄-投资缺口",
@@ -105527,10 +105747,30 @@
             {
               "date": "2026-11-09",
               "value": 2.66
+            },
+            {
+              "date": "2026-11-10",
+              "value": 2.78
+            },
+            {
+              "date": "2026-11-12",
+              "value": 2.86
+            },
+            {
+              "date": "2026-11-13",
+              "value": 2.91
+            },
+            {
+              "date": "2026-11-16",
+              "value": 2.92
+            },
+            {
+              "date": "2026-11-17",
+              "value": 2.89
             }
           ],
-          "last_updated": "2026-11-09",
-          "last_updated_raw": "2026-11-09",
+          "last_updated": "2026-11-17",
+          "last_updated_raw": "2026-11-17",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -117423,10 +117663,26 @@
             {
               "date": "2026-11-06",
               "value": 0.8738
+            },
+            {
+              "date": "2026-11-09",
+              "value": 0.8854
+            },
+            {
+              "date": "2026-11-10",
+              "value": 0.9177
+            },
+            {
+              "date": "2026-11-12",
+              "value": 0.9656
+            },
+            {
+              "date": "2026-11-13",
+              "value": 0.9864
             }
           ],
-          "last_updated": "2026-11-06",
-          "last_updated_raw": "2026-11-06",
+          "last_updated": "2026-11-13",
+          "last_updated_raw": "2026-11-13",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -121945,12 +122201,32 @@
               "value": 0.91
             },
             {
+              "date": "2026-11-10",
+              "value": 0.9
+            },
+            {
               "date": "2026-11-11",
               "value": 0.9
+            },
+            {
+              "date": "2026-11-12",
+              "value": 0.89
+            },
+            {
+              "date": "2026-11-13",
+              "value": 0.89
+            },
+            {
+              "date": "2026-11-16",
+              "value": 0.9
+            },
+            {
+              "date": "2026-11-17",
+              "value": 0.92
             }
           ],
-          "last_updated": "2026-11-11",
-          "last_updated_raw": "2026-11-11",
+          "last_updated": "2026-11-17",
+          "last_updated_raw": "2026-11-17",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -127511,7 +127787,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-13",
+    "last_updated": "2026-11-19",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=1 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:扩张早期+被动补库（当前美国）(P1=2,P2=1); CN:扩张早期+被动补库(P1=2,P2=1)",
