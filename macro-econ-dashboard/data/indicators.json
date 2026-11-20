@@ -90,9 +90,9 @@
       "pct_10y": 99,
       "note": "近5年分位98%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 8.0964,
-        "dd_52w_pct": -6.3077,
-        "mom_3m_pct": 5.7823,
+        "ma200_dev_pct": 8.1833,
+        "dd_52w_pct": -6.2323,
+        "mom_3m_pct": 5.8673,
         "date": "2026-11-20",
         "caliber": "yield",
         "approx": false
@@ -104,9 +104,9 @@
       "pct_10y": 81,
       "note": "近5年分位63%，中性区间",
       "trend": {
-        "ma200_dev_pct": 3.617,
-        "dd_52w_pct": -0.2647,
-        "mom_3m_pct": 4.6717,
+        "ma200_dev_pct": 3.6568,
+        "dd_52w_pct": -0.2262,
+        "mom_3m_pct": 4.7121,
         "date": "2026-11-20",
         "caliber": "price",
         "approx": false
@@ -118,9 +118,9 @@
       "pct_10y": 88,
       "note": "近5年分位77%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -19.9441,
-        "dd_52w_pct": -33.0927,
-        "mom_3m_pct": -24.2539,
+        "ma200_dev_pct": -19.738,
+        "dd_52w_pct": -32.9197,
+        "mom_3m_pct": -24.0581,
         "date": "2026-11-20",
         "caliber": "price",
         "approx": false
@@ -132,9 +132,9 @@
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -11.703,
-        "dd_52w_pct": -19.2254,
-        "mom_3m_pct": -16.7222,
+        "ma200_dev_pct": -10.8792,
+        "dd_52w_pct": -18.4684,
+        "mom_3m_pct": -15.9418,
         "date": "2026-11-20",
         "caliber": "price",
         "approx": false
@@ -15477,16 +15477,16 @@
       "liquidity": {
         "state": "紧流动性",
         "icon": "🔴",
-        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-19）；2Y美债=4.8%（近5年分位88%，紧）",
+        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-20）；2Y美债=4.8%（近5年分位88%，紧）",
         "score": 1,
         "reasons": [
-          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-19）；2Y美债=4.8%（近5年分位88%，紧）"
+          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-20）；2Y美债=4.8%（近5年分位88%，紧）"
         ],
         "target_rate_mid": {
           "name": "Fed目标区间中值",
           "value": 3.875,
           "unit": "%",
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "decimals": 2,
           "source": "data/fed_watch.json (CME FedWatch target_range)"
         },
@@ -18133,17 +18133,13 @@
           "caliber": "10Y 美债收益率 %"
         },
         "hy_spread": {
-          "value": 3.47,
+          "value": 3.52,
           "unit": "%",
-          "change": 0.04,
-          "pct_5y": 90,
-          "pct_10y": 90,
-          "date": "2026-11-18",
+          "change": 0.05,
+          "pct_5y": 92,
+          "pct_10y": 92,
+          "date": "2026-11-19",
           "history": [
-            {
-              "date": "2023-11-20",
-              "value": 3.92
-            },
             {
               "date": "2023-11-21",
               "value": 3.95
@@ -21283,6 +21279,10 @@
             {
               "date": "2026-11-18",
               "value": 3.47
+            },
+            {
+              "date": "2026-11-19",
+              "value": 3.52
             }
           ],
           "name": "HY信用利差(HY OAS)",
@@ -25800,9 +25800,9 @@
           "caliber": "2Y 美债收益率 %"
         },
         "dxy": {
-          "value": 103.644,
+          "value": 103.74,
           "unit": "",
-          "change": -0.256,
+          "change": -0.16,
           "pct_5y": 63,
           "pct_10y": 81,
           "date": "2026-11-20",
@@ -30845,7 +30845,7 @@
             },
             {
               "date": "2026-11-20",
-              "value": 103.644
+              "value": 103.74
             }
           ],
           "name": "美元指数DXY",
