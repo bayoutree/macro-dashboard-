@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-20T21:45:59+08:00",
+    "update_time": "2026-11-21T00:55:58+08:00",
     "data_freshness_score": 91,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-20T13:45:59+08:00"
+    "v4_built_at": "2026-11-20T16:55:58+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -2884,11 +2884,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.47,
+          "current_value": 3.52,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-18"
+          "last_updated": "2026-11-19"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -78200,7 +78200,7 @@
             "name": "投资级信用利差",
             "source": "FRED BAMLC0A0CM",
             "us": {
-              "current": 0.93,
+              "current": 0.94,
               "unit": "%",
               "history": [
                 {
@@ -81398,16 +81398,20 @@
                 {
                   "date": "2026-11-18",
                   "value": 0.93
+                },
+                {
+                  "date": "2026-11-19",
+                  "value": 0.94
                 }
               ],
               "frequency": "daily",
               "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-18",
+              "last_updated": "2026-11-19",
               "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-18",
+            "last_updated": "2026-11-19",
             "frequency": "daily",
             "history": [
               {
@@ -84605,17 +84609,21 @@
               {
                 "date": "2026-11-18",
                 "value": 0.93
+              },
+              {
+                "date": "2026-11-19",
+                "value": 0.94
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.93
+            "current": 0.94
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
             "source": "自算: sp500日收益20日年化(资产价格层)",
             "us": {
-              "current": 22.93,
+              "current": 23.55,
               "unit": "",
               "history": [
                 {
@@ -85617,16 +85625,20 @@
                 {
                   "date": "2026-11-19",
                   "value": 22.93
+                },
+                {
+                  "date": "2026-11-20",
+                  "value": 23.55
                 }
               ],
               "frequency": "daily",
               "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-19",
+              "last_updated": "2026-11-20",
               "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-19",
+            "last_updated": "2026-11-20",
             "frequency": "daily",
             "history": [
               {
@@ -86628,10 +86640,14 @@
               {
                 "date": "2026-11-19",
                 "value": 22.93
+              },
+              {
+                "date": "2026-11-20",
+                "value": 23.55
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 22.93
+            "current": 23.55
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -92005,7 +92021,7 @@
       "implication_for_a_stock": "9个维度中4个中美反向、2个错位、3个共振。对中国而言，反向维度中多数指向中国方向更优，叠加共振维度均为积极信号，A股相对美股具有周期位置优势。核心风险在于大债务周期和利率范式层面的全球性约束。"
     },
     "high_rate_tracker": {
-      "last_updated": "2026-11-18",
+      "last_updated": "2026-11-19",
       "indicators": [
         {
           "name": "全球储蓄-投资缺口",
@@ -122255,10 +122271,14 @@
             {
               "date": "2026-11-18",
               "value": 0.93
+            },
+            {
+              "date": "2026-11-19",
+              "value": 0.94
             }
           ],
-          "last_updated": "2026-11-18",
-          "last_updated_raw": "2026-11-18",
+          "last_updated": "2026-11-19",
+          "last_updated_raw": "2026-11-19",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
