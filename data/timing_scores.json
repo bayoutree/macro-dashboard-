@@ -23717,7 +23717,7 @@
           "last_updated": "2026-11-20",
           "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
           "data_source": "sina",
-          "collect_time": "2026-11-21T15:48:30"
+          "collect_time": "2026-11-21T16:00:21"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -127263,7 +127263,7 @@
             "inherited_at": "2026-10-17"
           },
           "data_source": "sina",
-          "collect_time": "2026-11-21T15:48:30"
+          "collect_time": "2026-11-21T16:00:21"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
@@ -129197,7 +129197,7 @@
             "original_count": 228
           },
           "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-21T15:48:30"
+          "collect_time": "2026-11-21T16:00:21"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
