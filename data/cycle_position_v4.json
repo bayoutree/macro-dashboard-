@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-21T00:55:58+08:00",
-    "data_freshness_score": 91,
+    "update_time": "2026-11-21T23:46:41+08:00",
+    "data_freshness_score": 90,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-20",
+      "as_of": "2026-11-21",
       "layers": {
         "constraint_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 91
+          "score": 90
         },
         "narrative_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 91
+          "score": 90
         },
         "narrative_perez": {
           "last_updated": "2026-11-11",
-          "score": 91
+          "score": 90
         },
         "constraint_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 91
+          "score": 90
         }
       },
       "excluded_no_date": [
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-20T16:55:58+08:00"
+    "v4_built_at": "2026-11-21T15:46:41+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -18534,16 +18534,20 @@
                 {
                   "date": "2026-11-18",
                   "value": 2.88
+                },
+                {
+                  "date": "2026-11-19",
+                  "value": 2.88
                 }
               ],
               "frequency": "daily",
               "source": "FRED DFII10（10 年期 TIPS 实际利率，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-18",
+              "last_updated": "2026-11-19",
               "last_updated_inherited_from": "real_rate_forward"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-18",
+            "last_updated": "2026-11-19",
             "frequency": "daily",
             "history": [
               {
@@ -30448,6 +30452,10 @@
               },
               {
                 "date": "2026-11-18",
+                "value": 2.88
+              },
+              {
+                "date": "2026-11-19",
                 "value": 2.88
               }
             ],
@@ -54362,7 +54370,7 @@
             "name": "收益率曲线(2s10s)",
             "source": "FRED",
             "us": {
-              "current": 0.28,
+              "current": 0.29,
               "unit": "%",
               "history": [
                 {
@@ -66272,16 +66280,20 @@
                 {
                   "date": "2026-11-19",
                   "value": 0.28
+                },
+                {
+                  "date": "2026-11-20",
+                  "value": 0.29
                 }
               ],
               "frequency": "daily",
               "source": "FRED T10Y2Y（10Y-2Y 利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-19",
+              "last_updated": "2026-11-20",
               "last_updated_inherited_from": "yield_curve_2s10s"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-19",
+            "last_updated": "2026-11-20",
             "frequency": "daily",
             "history": [
               {
@@ -78191,10 +78203,14 @@
               {
                 "date": "2026-11-19",
                 "value": 0.28
+              },
+              {
+                "date": "2026-11-20",
+                "value": 0.29
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.28
+            "current": 0.29
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -105811,10 +105827,14 @@
             {
               "date": "2026-11-18",
               "value": 2.88
+            },
+            {
+              "date": "2026-11-19",
+              "value": 2.88
             }
           ],
-          "last_updated": "2026-11-18",
-          "last_updated_raw": "2026-11-18",
+          "last_updated": "2026-11-19",
+          "last_updated_raw": "2026-11-19",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -127839,7 +127859,7 @@
   },
   "asset_ranking": {
     "version": "3.1",
-    "last_updated": "2026-11-20",
+    "last_updated": "2026-11-21",
     "description": "8资产相对强弱排序（生成器按 US/CN 分区域现态重算）",
     "calculation_method": "transmission_table(US P1=2,P2=1 / CN P1=2,P2=1) + constraint_degradation(C1+C2)",
     "base_scenario": "US:扩张早期+被动补库（当前美国）(P1=2,P2=1); CN:扩张早期+被动补库(P1=2,P2=1)",

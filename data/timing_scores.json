@@ -23715,7 +23715,9 @@
             "synced_at": "2026-11-21"
           },
           "last_updated": "2026-11-20",
-          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
+          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
+          "data_source": "sina",
+          "collect_time": "2026-11-21T15:48:30"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -81614,7 +81616,7 @@
         },
         "equity_fund_position": {
           "name": "股基仓位",
-          "value": 97.06,
+          "value": 96.5,
           "score": 85,
           "sub_weight": 25,
           "bottom_signal": "仓位极低(恐慌)",
@@ -83464,6 +83466,10 @@
             {
               "date": "2026-11-13",
               "value": 97.06
+            },
+            {
+              "date": "2026-11-20",
+              "value": 96.5
             }
           ],
           "_history_meta": {
@@ -97522,7 +97528,7 @@
         },
         "flexible_fund_position": {
           "name": "灵基仓位",
-          "value": 88.7,
+          "value": 89.58,
           "score": 75,
           "sub_weight": 20,
           "bottom_signal": "仓位极低",
@@ -99372,6 +99378,10 @@
             {
               "date": "2026-11-13",
               "value": 88.7
+            },
+            {
+              "date": "2026-11-20",
+              "value": 89.58
             }
           ],
           "_history_meta": {
@@ -127244,18 +127254,20 @@
               "value": 47.27
             },
             {
-              "date": "2026-11-20",
+              "date": "2026-11-21",
               "value": 44.0
             }
           ],
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "sina",
+          "collect_time": "2026-11-21T15:48:30"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129183,7 +129195,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-11-21T15:48:30"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
