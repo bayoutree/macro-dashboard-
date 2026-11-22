@@ -23715,9 +23715,7 @@
             "synced_at": "2026-11-22"
           },
           "last_updated": "2026-11-20",
-          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
-          "data_source": "sina",
-          "collect_time": "2026-11-22T13:48:58"
+          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -23798,6 +23796,10 @@
             },
             {
               "date": "2026-11-21",
+              "value": 30.08
+            },
+            {
+              "date": "2026-11-22",
               "value": 30.08
             }
           ],
@@ -24196,6 +24198,10 @@
             },
             {
               "date": "2026-11-21",
+              "value": 1.58
+            },
+            {
+              "date": "2026-11-22",
               "value": 1.58
             }
           ],
@@ -66506,6 +66512,10 @@
             {
               "date": "2026-11-21",
               "value": 3.49
+            },
+            {
+              "date": "2026-11-22",
+              "value": 3.46
             }
           ],
           "_history_meta": {
@@ -97519,6 +97529,10 @@
             {
               "date": "2026-11-21",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-22",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -101810,6 +101824,10 @@
             },
             {
               "date": "2026-11-21",
+              "value": 3.24
+            },
+            {
+              "date": "2026-11-22",
               "value": 3.24
             }
           ],
@@ -112576,6 +112594,10 @@
             },
             {
               "date": "2026-11-21",
+              "value": 1.4
+            },
+            {
+              "date": "2026-11-22",
               "value": 1.4
             }
           ],
@@ -126627,6 +126649,10 @@
             {
               "date": "2026-11-21",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-22",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -127261,13 +127287,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-22T13:48:58"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129195,9 +129219,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-22T13:48:58"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -132367,7 +132389,7 @@
     "current": "normal",
     "since": null,
     "target_equity": null,
-    "weekly_change": -1.4,
+    "weekly_change": -1.5,
     "trigger_reason": ""
   },
   "p1_6_state": {
@@ -132384,12 +132406,12 @@
     "layer": "event_soft",
     "cap": 32,
     "cumulative_hike_prob": 0.9945,
-    "yield_10y": 5.07,
+    "yield_10y": 5.04,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
       "累计加息概率99%>85%（概率单路·A1）"
     ],
-    "as_of": "2026-11-21",
+    "as_of": "2026-11-22",
     "cooldown_until": null,
     "growth_ban": [
       "创业板指",
@@ -132401,7 +132423,7 @@
     "fomc_auto": false
   },
   "global_dominance": {
-    "as_of": "2026-11-21",
+    "as_of": "2026-11-22",
     "thresholds": {
       "a_hike_slope_or_qt": {
         "met": false,
@@ -132442,7 +132464,7 @@
     "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
   },
   "catalyst_state": {
-    "asof": "2026-11-21",
+    "asof": "2026-11-22",
     "policy": {
       "pass": false,
       "manual_pivot": false,
@@ -132471,7 +132493,7 @@
     }
   },
   "r7_state": {
-    "as_of": "2026-11-21",
+    "as_of": "2026-11-22",
     "position_pct": 47.2,
     "position_zone": "normal",
     "window_n": 36,

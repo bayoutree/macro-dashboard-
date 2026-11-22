@@ -749,11 +749,11 @@
       ]
     },
     "copper": {
-      "latest": 12074.7043,
-      "ma200": 13721.0864,
-      "drawdown_from_high": -19.4973,
-      "momentum_3m": -17.0026,
-      "ma200_dev_pct": -11.9989,
+      "latest": 12092.341,
+      "ma200": 13721.1746,
+      "drawdown_from_high": -19.3797,
+      "momentum_3m": -16.8813,
+      "ma200_dev_pct": -11.8709,
       "daily": [
         {
           "date": "2026-08-28",
@@ -993,18 +993,18 @@
         },
         {
           "date": "2026-11-20",
-          "value": 12074.7043
+          "value": 12092.341
         }
       ],
       "unit": "USD/t",
       "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
     },
     "crude_oil": {
-      "latest": 83.98,
-      "ma200": 88.2933,
-      "drawdown_from_high": -25.6485,
-      "momentum_3m": -1.2116,
-      "ma200_dev_pct": -4.8852,
+      "latest": 83.41,
+      "ma200": 88.2904,
+      "drawdown_from_high": -26.1532,
+      "momentum_3m": -1.8821,
+      "ma200_dev_pct": -5.5277,
       "daily": [
         {
           "date": "2026-08-28",
@@ -1244,7 +1244,7 @@
         },
         {
           "date": "2026-11-20",
-          "value": 83.98
+          "value": 83.41
         }
       ]
     },
@@ -1747,11 +1747,11 @@
       ]
     },
     "btc": {
-      "latest": 60734.4883,
-      "ma200": 72323.9427,
-      "drawdown_from_high": -29.8702,
-      "momentum_3m": -25.1509,
-      "ma200_dev_pct": -16.0244,
+      "latest": 60724.5312,
+      "ma200": 72323.8929,
+      "drawdown_from_high": -29.8817,
+      "momentum_3m": -25.1632,
+      "ma200_dev_pct": -16.0381,
       "daily": [
         {
           "date": "2026-09-24",
@@ -1991,7 +1991,7 @@
         },
         {
           "date": "2026-11-22",
-          "value": 60734.4883
+          "value": 60724.5312
         }
       ]
     },
