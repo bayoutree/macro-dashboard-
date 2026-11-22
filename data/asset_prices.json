@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-21",
+  "update_time": "2026-11-22",
   "prices": {
     "sp500": {
       "latest": 6910.3901,
@@ -1747,16 +1747,12 @@
       ]
     },
     "btc": {
-      "latest": 59843.7305,
-      "ma200": 72426.1562,
-      "drawdown_from_high": -30.8987,
-      "momentum_3m": -26.3314,
-      "ma200_dev_pct": -17.3728,
+      "latest": 60734.4883,
+      "ma200": 72323.9427,
+      "drawdown_from_high": -29.8702,
+      "momentum_3m": -25.1509,
+      "ma200_dev_pct": -16.0244,
       "daily": [
-        {
-          "date": "2026-09-23",
-          "value": 84383.0078
-        },
         {
           "date": "2026-09-24",
           "value": 84379.0625
@@ -1991,7 +1987,11 @@
         },
         {
           "date": "2026-11-21",
-          "value": 59843.7305
+          "value": 60094.0898
+        },
+        {
+          "date": "2026-11-22",
+          "value": 60734.4883
         }
       ]
     },
@@ -2245,7 +2245,7 @@
       ],
       "name": "沪深300",
       "symbol": "akshare:sh000300",
-      "update_time": "2026-11-21",
+      "update_time": "2026-11-22",
       "_source": "akshare(新浪)"
     },
     "cn_10y_yield": {
@@ -2500,7 +2500,7 @@
       "symbol": "akshare:bond_china_yield",
       "unit": "%",
       "unit_note": "收益率口径：收益率↑=债价↓（与价格类资产反向，同美债卡）",
-      "update_time": "2026-11-21",
+      "update_time": "2026-11-22",
       "_source": "akshare(中债登)"
     }
   },

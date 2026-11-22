@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-21T15:58:18",
+  "update_time": "2026-11-22T13:46:09",
   "generated_by": "scripts/build_asset_prices_monthly.py (P0-2: 日频聚合+口径闸门)",
   "prices": {
     "sp500": [
@@ -9171,7 +9171,7 @@
         "source": "legacy_preserved(FRED DTWEXBGS 月均，P0-2 裁决降级为叙事参考)",
         "caliber": "叙事参考=DTWEXBGS(美联储广义贸易加权, 2006起, H.10周频) | 展示位=C2利率层/美元环流叙事，不进信号灯、不进 asset_valuation 分位",
         "effective_last_date": "2026-09-30",
-        "trading_days_stale": 37,
+        "trading_days_stale": 38,
         "stale_10td": true
       }
     },
