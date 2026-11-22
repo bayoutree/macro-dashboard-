@@ -132,9 +132,9 @@
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -11.9989,
-        "dd_52w_pct": -19.4973,
-        "mom_3m_pct": -17.0026,
+        "ma200_dev_pct": -11.8709,
+        "dd_52w_pct": -19.3797,
+        "mom_3m_pct": -16.8813,
         "date": "2026-11-20",
         "caliber": "price",
         "approx": false
@@ -15477,16 +15477,16 @@
       "liquidity": {
         "state": "紧流动性",
         "icon": "🔴",
-        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-21）；2Y美债=4.76%（近5年分位86%，紧）",
+        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-22）；2Y美债=4.76%（近5年分位86%，紧）",
         "score": 1,
         "reasons": [
-          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-21）；2Y美债=4.76%（近5年分位86%，紧）"
+          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-22）；2Y美债=4.76%（近5年分位86%，紧）"
         ],
         "target_rate_mid": {
           "name": "Fed目标区间中值",
           "value": 3.875,
           "unit": "%",
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "decimals": 2,
           "source": "data/fed_watch.json (CME FedWatch target_range)"
         },
