@@ -72,9 +72,9 @@
     },
     "us_stock": {
       "name": "美股(标普500)",
-      "pct_5y": 89,
-      "pct_10y": 94,
-      "note": "近5年分位89%，处相对高位",
+      "pct_5y": 86,
+      "pct_10y": 93,
+      "note": "近5年分位86%，处相对高位",
       "trend": {
         "ma200_dev_pct": -5.9629,
         "dd_52w_pct": -11.6197,
@@ -90,9 +90,9 @@
       "pct_10y": 99,
       "note": "近5年分位98%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 7.0638,
-        "dd_52w_pct": -7.1361,
-        "mom_3m_pct": 6.316,
+        "ma200_dev_pct": 6.6754,
+        "dd_52w_pct": -7.475,
+        "mom_3m_pct": 5.928,
         "date": "2026-11-23",
         "caliber": "yield",
         "approx": false
@@ -100,13 +100,13 @@
     },
     "usd": {
       "name": "美元指数DXY",
-      "pct_5y": 67,
-      "pct_10y": 84,
-      "note": "近5年分位67%，处相对高位",
+      "pct_5y": 72,
+      "pct_10y": 86,
+      "note": "近5年分位72%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 4.0206,
-        "dd_52w_pct": -0.0,
-        "mom_3m_pct": 5.1992,
+        "ma200_dev_pct": 4.1957,
+        "dd_52w_pct": 0.0,
+        "mom_3m_pct": 5.3771,
         "date": "2026-11-23",
         "caliber": "price",
         "approx": false
@@ -118,9 +118,9 @@
       "pct_10y": 88,
       "note": "近5年分位77%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -18.3308,
-        "dd_52w_pct": -31.8517,
-        "mom_3m_pct": -22.7948,
+        "ma200_dev_pct": -18.5552,
+        "dd_52w_pct": -32.0397,
+        "mom_3m_pct": -23.0078,
         "date": "2026-11-23",
         "caliber": "price",
         "approx": false
@@ -132,9 +132,9 @@
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -11.8516,
-        "dd_52w_pct": -19.3871,
-        "mom_3m_pct": -18.2577,
+        "ma200_dev_pct": -12.3156,
+        "dd_52w_pct": -19.8133,
+        "mom_3m_pct": -18.6899,
         "date": "2026-11-23",
         "caliber": "price",
         "approx": false
@@ -15477,16 +15477,16 @@
       "liquidity": {
         "state": "紧流动性",
         "icon": "🔴",
-        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-22）；2Y美债=4.76%（近5年分位86%，紧）",
+        "desc": "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-23）；2Y美债=4.76%（近5年分位86%，紧）",
         "score": 1,
         "reasons": [
-          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-22）；2Y美债=4.76%（近5年分位86%，紧）"
+          "Fed目标区间中值=3.875%（3.75~4.0%，fed_watch 2026-11-23）；2Y美债=4.76%（近5年分位86%，紧）"
         ],
         "target_rate_mid": {
           "name": "Fed目标区间中值",
           "value": 3.875,
           "unit": "%",
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "decimals": 2,
           "source": "data/fed_watch.json (CME FedWatch target_range)"
         },
@@ -18133,25 +18133,13 @@
           "caliber": "10Y 美债收益率 %"
         },
         "hy_spread": {
-          "value": 3.52,
+          "value": 3.76,
           "unit": "%",
-          "change": 0.05,
-          "pct_5y": 92,
-          "pct_10y": 92,
-          "date": "2026-11-19",
+          "change": 0.24,
+          "pct_5y": 96,
+          "pct_10y": 96,
+          "date": "2026-11-20",
           "history": [
-            {
-              "date": "2023-11-21",
-              "value": 3.95
-            },
-            {
-              "date": "2023-11-22",
-              "value": 3.9
-            },
-            {
-              "date": "2023-11-23",
-              "value": 3.9
-            },
             {
               "date": "2023-11-24",
               "value": 3.85
@@ -21283,6 +21271,10 @@
             {
               "date": "2026-11-19",
               "value": 3.52
+            },
+            {
+              "date": "2026-11-20",
+              "value": 3.76
             }
           ],
           "name": "HY信用利差(HY OAS)",
@@ -25800,11 +25792,11 @@
           "caliber": "2Y 美债收益率 %"
         },
         "dxy": {
-          "value": 104.064,
+          "value": 104.348,
           "unit": "",
-          "change": 0.254,
-          "pct_5y": 67,
-          "pct_10y": 84,
+          "change": 0.538,
+          "pct_5y": 72,
+          "pct_10y": 86,
           "date": "2026-11-23",
           "history": [
             {
@@ -30845,7 +30837,7 @@
             },
             {
               "date": "2026-11-23",
-              "value": 104.064
+              "value": 104.348
             }
           ],
           "name": "美元指数DXY",
@@ -35902,7 +35894,7 @@
             }
           ],
           "name": "广义美元指数(叙事参考)",
-          "delta_vs_dxy_pp": 8,
+          "delta_vs_dxy_pp": 3,
           "source": "FRED DTWEXBGS",
           "caliber": "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）"
         }
