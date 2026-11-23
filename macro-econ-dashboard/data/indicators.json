@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-22",
+  "update_time": "2026-11-23",
   "frequency_policy": {
     "daily": [
       "dr007",
@@ -37,14 +37,14 @@
   "asset_valuation": {
     "cn_stock": {
       "name": "A股(沪深300)",
-      "pct_5y": 77,
-      "pct_10y": 65,
-      "note": "近5年分位77%，处相对高位",
+      "pct_5y": 75,
+      "pct_10y": 62,
+      "note": "近5年分位75%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -14.0447,
-        "dd_52w_pct": -21.8413,
-        "mom_3m_pct": -16.5897,
-        "date": "2026-11-20",
+        "ma200_dev_pct": -13.892,
+        "dd_52w_pct": -21.7676,
+        "mom_3m_pct": -16.241,
+        "date": "2026-11-23",
         "caliber": "price",
         "approx": false
       }
@@ -55,10 +55,10 @@
       "pct_10y": 0,
       "note": "近5年分位0%，处相对低位",
       "trend": {
-        "ma200_dev_pct": -8.5686,
-        "dd_52w_pct": -16.9094,
-        "mom_3m_pct": -6.1078,
-        "date": "2026-11-20",
+        "ma200_dev_pct": -8.1746,
+        "dd_52w_pct": -16.6044,
+        "mom_3m_pct": -5.7688,
+        "date": "2026-11-23",
         "caliber": "yield",
         "approx": false
       }
@@ -90,24 +90,24 @@
       "pct_10y": 99,
       "note": "近5年分位98%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 6.7153,
-        "dd_52w_pct": -7.5127,
-        "mom_3m_pct": 4.4218,
-        "date": "2026-11-20",
+        "ma200_dev_pct": 7.0638,
+        "dd_52w_pct": -7.1361,
+        "mom_3m_pct": 6.316,
+        "date": "2026-11-23",
         "caliber": "yield",
         "approx": false
       }
     },
     "usd": {
       "name": "美元指数DXY",
-      "pct_5y": 63,
-      "pct_10y": 82,
-      "note": "近5年分位63%，中性区间",
+      "pct_5y": 67,
+      "pct_10y": 84,
+      "note": "近5年分位67%，处相对高位",
       "trend": {
-        "ma200_dev_pct": 3.8011,
-        "dd_52w_pct": -0.0866,
-        "mom_3m_pct": 4.8586,
-        "date": "2026-11-20",
+        "ma200_dev_pct": 4.0206,
+        "dd_52w_pct": -0.0,
+        "mom_3m_pct": 5.1992,
+        "date": "2026-11-23",
         "caliber": "price",
         "approx": false
       }
@@ -118,10 +118,10 @@
       "pct_10y": 88,
       "note": "近5年分位77%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -20.9077,
-        "dd_52w_pct": -33.9012,
-        "mom_3m_pct": -25.1692,
-        "date": "2026-11-20",
+        "ma200_dev_pct": -18.3308,
+        "dd_52w_pct": -31.8517,
+        "mom_3m_pct": -22.7948,
+        "date": "2026-11-23",
         "caliber": "price",
         "approx": false
       }
@@ -132,10 +132,10 @@
       "pct_10y": 100,
       "note": "近5年分位100%，处相对高位",
       "trend": {
-        "ma200_dev_pct": -11.8709,
-        "dd_52w_pct": -19.3797,
-        "mom_3m_pct": -16.8813,
-        "date": "2026-11-20",
+        "ma200_dev_pct": -11.8516,
+        "dd_52w_pct": -19.3871,
+        "mom_3m_pct": -18.2577,
+        "date": "2026-11-23",
         "caliber": "price",
         "approx": false
       }
@@ -25800,17 +25800,13 @@
           "caliber": "2Y 美债收益率 %"
         },
         "dxy": {
-          "value": 103.81,
+          "value": 104.064,
           "unit": "",
-          "change": -0.09,
-          "pct_5y": 63,
-          "pct_10y": 82,
-          "date": "2026-11-20",
+          "change": 0.254,
+          "pct_5y": 67,
+          "pct_10y": 84,
+          "date": "2026-11-23",
           "history": [
-            {
-              "date": "2021-11-17",
-              "value": 95.83
-            },
             {
               "date": "2021-11-18",
               "value": 95.54
@@ -30846,6 +30842,10 @@
             {
               "date": "2026-11-20",
               "value": 103.81
+            },
+            {
+              "date": "2026-11-23",
+              "value": 104.064
             }
           ],
           "name": "美元指数DXY",
@@ -35902,7 +35902,7 @@
             }
           ],
           "name": "广义美元指数(叙事参考)",
-          "delta_vs_dxy_pp": 12,
+          "delta_vs_dxy_pp": 8,
           "source": "FRED DTWEXBGS",
           "caliber": "美联储广义贸易加权美元指数、2006 起、H.10 周频；叙事参考（C2 利率层/美元环流），不进信号灯、不进 asset_valuation 分位（P0-2 裁决 2026-11-01）"
         }
@@ -42562,17 +42562,13 @@
       "caliber": "利差 bps（pp ×100）"
     },
     "usdcny": {
-      "value": 6.7131,
+      "value": 6.712,
       "unit": "",
-      "change": 0.0003,
-      "pct_5y": 12,
-      "pct_10y": 28,
-      "date": "2026-11-20",
+      "change": -0.0011,
+      "pct_5y": 11,
+      "pct_10y": 27,
+      "date": "2026-11-23",
       "history": [
-        {
-          "date": "2026-05-28",
-          "value": 6.824
-        },
         {
           "date": "2026-05-29",
           "value": 6.8176
@@ -43048,6 +43044,10 @@
         {
           "date": "2026-11-20",
           "value": 6.7131
+        },
+        {
+          "date": "2026-11-23",
+          "value": 6.712
         }
       ],
       "source": "中国外汇交易中心 USDCNY 即期",
