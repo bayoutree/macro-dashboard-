@@ -9777,7 +9777,7 @@
   },
   {
     "date": "2026-11-23",
-    "composite_score": 47.2,
+    "composite_score": 48.9,
     "stage": "B",
     "dimensions": {
       "valuation": 46.3,
@@ -9785,13 +9785,13 @@
       "equity_bond": 29.0,
       "capital_flow": 72.5,
       "sentiment": 53.8,
-      "micro_structure": 41.4
+      "micro_structure": 53.4
     },
     "triggers": {
       "add_position": {
         "社融增速触底回升(连续3个月环比改善)": false,
         "恐贪指数回落至20以下(极度恐惧)": false,
-        "交易拥挤度回落至40%以下": true,
+        "交易拥挤度回落至40%以下": false,
         "ERP突破6%": true
       },
       "reduce_position": {
@@ -9840,7 +9840,7 @@
       "current": "normal",
       "since": null,
       "target_equity": null,
-      "weekly_change": -2.1,
+      "weekly_change": -0.1,
       "trigger_reason": ""
     },
     "trend_state": {

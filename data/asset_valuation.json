@@ -2,7 +2,7 @@
   "update_time": "2026-11-23",
   "us_stock": {
     "shiller_pe": {
-      "value": 36.44,
+      "value": 38.21,
       "percentile": null,
       "history": []
     },
@@ -109,7 +109,7 @@
       ]
     },
     "erp": {
-      "value": -1.04,
+      "value": -0.92,
       "history": []
     },
     "forward_pe": {
@@ -377,12 +377,8 @@
   },
   "us_bond": {
     "yield_10y": {
-      "value": 5.04,
+      "value": 4.92,
       "history": [
-        {
-          "date": "2025-11-20",
-          "value": 4.1
-        },
         {
           "date": "2025-11-21",
           "value": 4.06
@@ -1378,16 +1374,16 @@
         {
           "date": "2026-11-19",
           "value": 5.04
+        },
+        {
+          "date": "2026-11-20",
+          "value": 4.92
         }
       ]
     },
     "real_rate_10y": {
-      "value": 2.88,
+      "value": 2.77,
       "history": [
-        {
-          "date": "2025-11-20",
-          "value": 1.86
-        },
         {
           "date": "2025-11-21",
           "value": 1.82
@@ -2383,6 +2379,10 @@
         {
           "date": "2026-11-19",
           "value": 2.88
+        },
+        {
+          "date": "2026-11-20",
+          "value": 2.77
         }
       ]
     },
@@ -5406,7 +5406,7 @@
   },
   "gold": {
     "price_usd": {
-      "value": 3641.5,
+      "value": 3631.8999,
       "history": [
         {
           "date": "2026-08-31",
@@ -5646,7 +5646,7 @@
         },
         {
           "date": "2026-11-23",
-          "value": 3641.5
+          "value": 3631.8999
         }
       ]
     },
@@ -5679,10 +5679,6 @@
     },
     "real_rate_vs_gold": {
       "history": [
-        {
-          "date": "2025-11-20",
-          "real_rate": 1.86
-        },
         {
           "date": "2025-11-21",
           "real_rate": 1.82
@@ -6678,13 +6674,17 @@
         {
           "date": "2026-11-19",
           "real_rate": 2.88
+        },
+        {
+          "date": "2026-11-20",
+          "real_rate": 2.77
         }
       ]
     }
   },
   "commodity": {
     "copper": {
-      "price": 12376.7363,
+      "price": 12365.714,
       "inventory": null,
       "history": [
         {
@@ -6925,12 +6925,12 @@
         },
         {
           "date": "2026-11-23",
-          "value": 12376.7363
+          "value": 12365.714
         }
       ]
     },
     "crude_oil": {
-      "brent": 80.03,
+      "brent": 80.38,
       "history": [
         {
           "date": "2026-08-31",
@@ -7170,7 +7170,7 @@
         },
         {
           "date": "2026-11-23",
-          "value": 80.03
+          "value": 80.38
         }
       ]
     }
