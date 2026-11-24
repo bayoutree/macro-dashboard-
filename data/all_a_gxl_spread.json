@@ -1,6 +1,6 @@
 {
-  "update_date": "2026-11-23",
-  "update_time": "2026-11-23T20:05:47",
+  "update_date": "2026-11-24",
+  "update_time": "2026-11-24T13:48:24",
   "source": "akshare stock_a_gxl_lg(上证A股) + bond_zh_us_rate(中国国债收益率10年)",
   "formula": "上证A股股息率 − 中国10Y国债收益率",
   "unit": "%",
@@ -30445,6 +30445,12 @@
       "gxl": 2.87,
       "bond10y": 1.5861,
       "value": 1.2839
+    },
+    {
+      "date": "2026-11-24",
+      "gxl": 2.86,
+      "bond10y": 1.5853,
+      "value": 1.2747
     }
   ]
 }

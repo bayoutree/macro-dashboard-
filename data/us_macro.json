@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-23",
+  "update_time": "2026-11-24",
   "leading": {
     "ism_pmi": {
       "value": 55.5,
@@ -72,8 +72,8 @@
       "date": "2026-11-20"
     },
     "inflation_expectation": {
-      "value": 2.15,
-      "date": "2026-11-20"
+      "value": 2.13,
+      "date": "2026-11-23"
     },
     "term_premium": {
       "value": 0.9864,
@@ -7931,10 +7931,6 @@
     ],
     "inflation_expectation": [
       {
-        "date": "2025-11-21",
-        "value": 2.24
-      },
-      {
         "date": "2025-11-24",
         "value": 2.23
       },
@@ -8929,6 +8925,10 @@
       {
         "date": "2026-11-20",
         "value": 2.15
+      },
+      {
+        "date": "2026-11-23",
+        "value": 2.13
       }
     ],
     "real_rate_10y": [
