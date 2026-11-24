@@ -8,16 +8,16 @@
   "dimensions": {
     "valuation": {
       "name": "估值",
-      "score": 46.3,
+      "score": 46.7,
       "weight": 18,
-      "weighted_score": 8.33,
+      "weighted_score": 8.41,
       "signal": "中性",
       "indicators": {
         "hs300_pe_percentile": {
           "name": "沪深300 PE分位",
-          "value": 52.3,
+          "value": 53.1,
           "unit": "%分位",
-          "score": 52.0,
+          "score": 53.0,
           "sub_weight": 40,
           "bottom_threshold": "<10%",
           "top_threshold": ">90%",
@@ -23719,9 +23719,7 @@
             "synced_at": "2026-11-24"
           },
           "last_updated": "2026-11-23",
-          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
-          "data_source": "sina",
-          "collect_time": "2026-11-24T13:48:24"
+          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -23810,6 +23808,10 @@
             },
             {
               "date": "2026-11-23",
+              "value": 30.9
+            },
+            {
+              "date": "2026-11-24",
               "value": 30.9
             }
           ],
@@ -24216,6 +24218,10 @@
             },
             {
               "date": "2026-11-23",
+              "value": 1.58
+            },
+            {
+              "date": "2026-11-24",
               "value": 1.58
             }
           ],
@@ -25673,7 +25679,7 @@
         },
         "wanda_erp": {
           "name": "中证800 ERP ★主指标（全A代理）",
-          "value": "5.76%",
+          "value": "5.75%",
           "percentile": "47.7%",
           "score": 20,
           "sub_weight": 40,
@@ -66550,6 +66556,10 @@
             {
               "date": "2026-11-23",
               "value": 3.45
+            },
+            {
+              "date": "2026-11-24",
+              "value": 3.33
             }
           ],
           "_history_meta": {
@@ -97571,6 +97581,10 @@
             {
               "date": "2026-11-23",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-24",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -99444,17 +99458,13 @@
         "margin_balance": {
           "name": "两融余额（沪市）",
           "value": "1.12万亿",
-          "week_change": "-485亿",
+          "week_change": "-409亿",
           "score": 50,
           "sub_weight": 0,
           "note": "【P1-10④】外资流卡位替代：沪市融资余额（深市仅单日查询无法历史回填），周变化=杠杆资金进出方向",
-          "as_of": "2026-11-20",
+          "as_of": "2026-11-23",
           "freq": "日频",
           "history": [
-            {
-              "date": "2025-11-11",
-              "value": 12632.0
-            },
             {
               "date": "2025-11-12",
               "value": 12609.0
@@ -100450,6 +100460,10 @@
             {
               "date": "2026-11-20",
               "value": 11208.0
+            },
+            {
+              "date": "2026-11-23",
+              "value": 11189.0
             }
           ],
           "description": "沪市融资融券余额绝对水平(参考权重0)。持续上行=杠杆资金进场，快速下行=去杠杆风险。"
@@ -101195,7 +101209,7 @@
       "indicators": {
         "fund_3y_annual": {
           "name": "偏股基金滚动3年年化",
-          "value": "2.16%",
+          "value": "2.42%",
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": "<-10%",
@@ -101871,6 +101885,10 @@
             {
               "date": "2026-11-23",
               "value": 2.16
+            },
+            {
+              "date": "2026-11-24",
+              "value": 2.42
             }
           ],
           "_history_meta": {
@@ -112644,6 +112662,10 @@
             },
             {
               "date": "2026-11-23",
+              "value": 1.4
+            },
+            {
+              "date": "2026-11-24",
               "value": 1.4
             }
           ],
@@ -126703,6 +126725,10 @@
             {
               "date": "2026-11-23",
               "value": 7.54
+            },
+            {
+              "date": "2026-11-24",
+              "value": 7.54
             }
           ],
           "_history_meta": {
@@ -127341,13 +127367,11 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          },
-          "data_source": "sina",
-          "collect_time": "2026-11-24T13:48:24"
+          }
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": "HHI=933@2026-10-18（派生）",
+          "value": 933.4,
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129275,9 +129299,7 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          },
-          "data_source": "derived_from_hhi",
-          "collect_time": "2026-11-24T13:48:24"
+          }
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",
@@ -132453,23 +132475,23 @@
   "p1_6_state": {
     "trend": "strong_bear",
     "annotation": "",
-    "close": 4813.17,
-    "ma120": 5790.74,
+    "close": 4812.85,
+    "ma120": 5777.77,
     "ma120_direction": "down",
-    "momentum_12m": -0.1836,
-    "as_of": "2026-11-23",
+    "momentum_12m": -0.1803,
+    "as_of": "2026-11-24",
     "source": "tencent_tx sh000985"
   },
   "p1_8_state": {
     "layer": "event_soft",
     "cap": 32,
-    "cumulative_hike_prob": 0.9945,
-    "yield_10y": 5.04,
+    "cumulative_hike_prob": 1.0,
+    "yield_10y": 4.92,
     "triggers": [
       "fed_funds 3.88% > 3月前 3.63% + 10.0bp（加息周期确认）",
-      "累计加息概率99%>85%（概率单路·A1）"
+      "累计加息概率100%>85%（概率单路·A1）"
     ],
-    "as_of": "2026-11-23",
+    "as_of": "2026-11-24",
     "cooldown_until": null,
     "growth_ban": [
       "创业板指",
@@ -132481,7 +132503,7 @@
     "fomc_auto": false
   },
   "global_dominance": {
-    "as_of": "2026-11-23",
+    "as_of": "2026-11-24",
     "thresholds": {
       "a_hike_slope_or_qt": {
         "met": false,
@@ -132493,11 +132515,11 @@
         "met": false,
         "data_status": "ok",
         "valve_open": false,
-        "usdcny_annual_deprec_pct": -6.032,
+        "usdcny_annual_deprec_pct": -6.045,
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -0.5,
+        "cnh_cny_spread_latest_bp": -0.3,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
@@ -132522,7 +132544,7 @@
     "note": "F3④ 全球主导权仲裁（主人裁决 2026-10-23 B1+豁免）：≥2/3 满足→仓位上限25%+冻结全部加仓触发器；R7 has_catalyst=true 时保留 A 段左侧布局（其余加仓仍冻结）。数据缺失腿按未知处理不计满足。"
   },
   "catalyst_state": {
-    "asof": "2026-11-23",
+    "asof": "2026-11-24",
     "policy": {
       "pass": false,
       "manual_pivot": false,
@@ -132551,8 +132573,8 @@
     }
   },
   "r7_state": {
-    "as_of": "2026-11-23",
-    "position_pct": 44.4,
+    "as_of": "2026-11-24",
+    "position_pct": 47.2,
     "position_zone": "normal",
     "window_n": 36,
     "ref_anchor": "rolling_36m_completed",
@@ -132561,7 +132583,7 @@
     "trend_negative": true,
     "bear_form": "fast_bear",
     "bear_detail": {
-      "decline_3m_pct": -21.1,
+      "decline_3m_pct": -17.7,
       "monthly_neg_streak": 3
     },
     "conflict": "A",
@@ -133390,7 +133412,7 @@
         229.801,
         193.228,
         132.687,
-        81.572
+        82.013
       ],
       "dea": [
         -105.808,
@@ -133601,7 +133623,7 @@
         214.747,
         210.443,
         194.892,
-        172.228
+        172.316
       ],
       "histogram": [
         112.218,
@@ -133812,7 +133834,7 @@
         30.109,
         -34.43,
         -124.41,
-        -181.312
+        -180.606
       ],
       "source": "沪深300月K线·腾讯",
       "caliber": "标准MACD(12,26,9)"
@@ -134287,7 +134309,7 @@
         132466985.0,
         94974254.0,
         73240148.0,
-        74907264.0
+        79975923.0
       ],
       "historyMA": [
         15669995.0,
@@ -134521,7 +134543,7 @@
         132137520.0,
         127897928.0,
         125112437.0,
-        123624668.0
+        124047056.0
       ],
       "source": "沪深300月K线·腾讯",
       "caliber": "月成交额(亿)+12月均线"
@@ -134549,7 +134571,7 @@
     },
     "ic": {
       "ic20": null,
-      "ic20_n": 1,
+      "ic20_n": 2,
       "ic60": null,
       "ic60_n": 0
     },
