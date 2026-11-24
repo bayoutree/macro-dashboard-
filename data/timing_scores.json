@@ -23723,7 +23723,7 @@
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
-          "value": 30.9,
+          "value": 30.82,
           "unit": "倍",
           "score": null,
           "sub_weight": 0,
@@ -23812,7 +23812,7 @@
             },
             {
               "date": "2026-11-24",
-              "value": 30.9
+              "value": 30.82
             }
           ],
           "_history_meta": {
@@ -132519,14 +132519,14 @@
         "threshold_deprec_pct": 4.5,
         "usdcny_source": "us_macro.history.usdcny",
         "fx_reserve_3m_decline": false,
-        "cnh_cny_spread_latest_bp": -0.3,
+        "cnh_cny_spread_latest_bp": 0.3,
         "cnh_cny_spread_triggered": false,
         "cnh_cny_params": {
           "streak_bp": 40,
           "streak_days": 5,
           "single_bp": 70
         },
-        "cnh_cny_detail": "最新价差 -0bp（阈值：单日>70bp 或 连续5日>40bp）；序列 20 日（连判已可判）",
+        "cnh_cny_detail": "最新价差 +0bp（阈值：单日>70bp 或 连续5日>40bp）；序列 21 日（连判已可判）",
         "note": "USDCNY年贬>4.5% ∧（外储3月连降 ∨ CNH-CNY价差触发）；原外资流代理已废弃（无数据源）"
       },
       "c_credit_form": {
