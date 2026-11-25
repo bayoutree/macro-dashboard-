@@ -13,7 +13,7 @@
   },
   "coincident": {
     "gdp_growth": {
-      "value": 5.8676,
+      "value": 6.0157,
       "date": "2026-07-01",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
     },
