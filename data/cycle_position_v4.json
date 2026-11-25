@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-25T21:46:21+08:00",
+    "update_time": "2026-11-26T02:38:11+08:00",
     "data_freshness_score": 86,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -62,7 +62,7 @@
     },
     "assessment_overdue": false,
     "v4_builder": "scripts/build_cycle_position_v4.py",
-    "v4_built_at": "2026-11-25T13:46:22+08:00"
+    "v4_built_at": "2026-11-25T18:38:11+08:00"
   },
   "cycle_layers": {
     "constraint_debt_cycle": {
@@ -74,7 +74,7 @@
         "phase_code": "late_deleveraging_to_smooth",
         "signal_weight": -2,
         "debt_to_gdp": 121.19,
-        "interest_to_revenue": 33.55,
+        "interest_to_revenue": 34.61,
         "fiscal_deficit_gdp": 6.5,
         "description": "债务/GDP超130%，利息支出占财政收入>20%",
         "implication": "利率敏感资产持续承压；硬资产和现金流资产修复",
@@ -435,13 +435,13 @@
           "interest_to_revenue": {
             "name": "利息支出/财政收入",
             "source": "FRED：联邦政府利息支出 A091RC1Q027SBEA / 经常性收入 W006RC1Q027SBEA",
-            "current": 33.55,
+            "current": 34.61,
             "unit": "%",
             "threshold": {
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-06-30",
+            "last_updated": "2026-09-30",
             "history": [
               {
                 "date": "1947Q1",
@@ -1713,7 +1713,11 @@
               },
               {
                 "date": "2026Q2",
-                "value": 33.55
+                "value": 33.59
+              },
+              {
+                "date": "2026Q3",
+                "value": 34.61
               }
             ],
             "frequency": "quarterly",
@@ -1721,7 +1725,7 @@
             "percentile": {
               "p25": 19.75,
               "p50": 26.17,
-              "p75": 33.54,
+              "p75": 33.59,
               "current_rank": ">p75"
             }
           },
@@ -2884,11 +2888,11 @@
         {
           "indicator": "高收益债利差走阔",
           "metric": "HY spread",
-          "current_value": 3.63,
+          "current_value": 3.72,
           "threshold": 4.0,
           "status": "green",
           "description": "利差<4%正常；>4%预警；>6%确认TP",
-          "last_updated": "2026-11-23"
+          "last_updated": "2026-11-24"
         },
         {
           "indicator": "10Y-2Y利差倒挂",
@@ -78288,7 +78292,7 @@
             "name": "投资级信用利差",
             "source": "FRED BAMLC0A0CM",
             "us": {
-              "current": 0.97,
+              "current": 0.98,
               "unit": "%",
               "history": [
                 {
@@ -81498,16 +81502,20 @@
                 {
                   "date": "2026-11-23",
                   "value": 0.97
+                },
+                {
+                  "date": "2026-11-24",
+                  "value": 0.98
                 }
               ],
               "frequency": "daily",
               "source": "FRED BAMLC0A0CM（ICE BofA 美国投资级企业债期权调整利差，日频）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-23",
+              "last_updated": "2026-11-24",
               "last_updated_inherited_from": "credit_spread_ig"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-23",
+            "last_updated": "2026-11-24",
             "frequency": "daily",
             "history": [
               {
@@ -84717,17 +84725,21 @@
               {
                 "date": "2026-11-23",
                 "value": 0.97
+              },
+              {
+                "date": "2026-11-24",
+                "value": 0.98
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.97
+            "current": 0.98
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
             "source": "自算: sp500日收益20日年化(资产价格层)",
             "us": {
-              "current": 31.96,
+              "current": 31.79,
               "unit": "",
               "history": [
                 {
@@ -85741,16 +85753,20 @@
                 {
                   "date": "2026-11-24",
                   "value": 31.96
+                },
+                {
+                  "date": "2026-11-25",
+                  "value": 31.79
                 }
               ],
               "frequency": "daily",
               "source": "FRED VIXCLS（VIX 收盘，日频；波动率由该序列派生）",
               "source_backfilled": "2026-11-12 全站 source 扫描",
-              "last_updated": "2026-11-24",
+              "last_updated": "2026-11-25",
               "last_updated_inherited_from": "realized_volatility"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -86764,10 +86780,14 @@
               {
                 "date": "2026-11-24",
                 "value": 31.96
+              },
+              {
+                "date": "2026-11-25",
+                "value": 31.79
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 31.96
+            "current": 31.79
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -87463,7 +87483,7 @@
             "name": "设备投资增速",
             "source": "BEA",
             "unit": "%",
-            "current": 19.96,
+            "current": 20.16,
             "last_updated": "2026-09-30",
             "history": [
               {
@@ -87520,7 +87540,7 @@
               },
               {
                 "date": "2026Q3",
-                "value": 19.96
+                "value": 20.16
               }
             ],
             "frequency": "quarterly",
@@ -87534,7 +87554,7 @@
           "capex_growth": {
             "name": "资本开支增速",
             "source": "FRED (nonresidential fixed investment)",
-            "current": 8.37,
+            "current": 9.16,
             "unit": "%",
             "description": "企业资本支出同比增速，朱格拉周期核心驱动指标",
             "last_updated": "2026-09-30",
@@ -87570,7 +87590,7 @@
               },
               {
                 "date": "2026Q3",
-                "value": 8.37
+                "value": 9.16
               }
             ],
             "threshold": {
@@ -87580,7 +87600,7 @@
             "percentile": {
               "p25": 5,
               "p50": 6.16,
-              "p75": 8.37,
+              "p75": 9.16,
               "current_rank": "p50-p75"
             }
           }
@@ -92145,7 +92165,7 @@
       "implication_for_a_stock": "9个维度中4个中美反向、2个错位、3个共振。对中国而言，反向维度中多数指向中国方向更优，叠加共振维度均为积极信号，A股相对美股具有周期位置优势。核心风险在于大债务周期和利率范式层面的全球性约束。"
     },
     "high_rate_tracker": {
-      "last_updated": "2026-11-23",
+      "last_updated": "2026-11-24",
       "indicators": [
         {
           "name": "全球储蓄-投资缺口",
@@ -92346,7 +92366,7 @@
         {
           "name": "美国利息/财政收入",
           "layer": "structural",
-          "current_value": 33.55,
+          "current_value": 34.61,
           "unit": "%",
           "threshold": "> 20%",
           "threshold_type": "greater_than",
@@ -93626,11 +93646,15 @@
             },
             {
               "date": "2026Q2",
-              "value": 33.55
+              "value": 33.59
+            },
+            {
+              "date": "2026Q3",
+              "value": 34.61
             }
           ],
-          "last_updated": "2026-06-30",
-          "last_updated_raw": "2026Q2",
+          "last_updated": "2026-09-30",
+          "last_updated_raw": "2026Q3",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -122439,10 +122463,14 @@
             {
               "date": "2026-11-23",
               "value": 0.97
+            },
+            {
+              "date": "2026-11-24",
+              "value": 0.98
             }
           ],
-          "last_updated": "2026-11-23",
-          "last_updated_raw": "2026-11-23",
+          "last_updated": "2026-11-24",
+          "last_updated_raw": "2026-11-24",
           "last_updated_from": "history_tail",
           "source": "派生：映射自 constraint_rate_regime 的高利率跟踪指标（盈亏平衡通胀/期限溢价/远期实际利率/信用利差等），非独立采集源",
           "source_backfilled": "2026-11-12 全站 source 扫描"
@@ -127812,7 +127840,7 @@
       "currently_triggered": true,
       "current_values": {
         "debt_to_gdp": 121.19,
-        "interest_to_revenue": 33.55
+        "interest_to_revenue": 34.61
       },
       "degradation_rules": {
         "us_equity": {

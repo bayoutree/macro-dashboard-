@@ -2513,7 +2513,7 @@
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 12.33,
+          "value": 12.88,
           "unit": "%",
           "score": 25,
           "sub_weight": 25,
@@ -23716,14 +23716,20 @@
             {
               "date": "2026-11-24",
               "value": 12.33
+            },
+            {
+              "date": "2026-11-25",
+              "value": 12.88
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
             "synced_at": "2026-11-25"
           },
-          "last_updated": "2026-11-24",
-          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
+          "last_updated": "2026-11-25",
+          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
+          "data_source": "sina",
+          "collect_time": "2026-11-25T18:39:27"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -127408,11 +127414,13 @@
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "sina",
+          "collect_time": "2026-11-25T18:39:27"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129340,7 +129348,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-11-25T18:39:27"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

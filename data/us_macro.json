@@ -14,7 +14,7 @@
   "coincident": {
     "gdp_growth": {
       "value": 6.0157,
-      "date": "2026-07-01",
+      "date": "2026Q3",
       "ssot_source": "macro-econ-dashboard/data/indicators.json#us.economic_cycle.quadrant_indicators.gdp"
     },
     "unemployment": {
@@ -82,12 +82,12 @@
   },
   "market": {
     "sp500": {
-      "value": 7237.17,
-      "date": "2026-11-23"
+      "value": 7201.09,
+      "date": "2026-11-24"
     },
     "vix": {
-      "value": 26.62,
-      "date": "2026-11-23"
+      "value": 26.36,
+      "date": "2026-11-24"
     },
     "fed_balance": {
       "value": 6741452.0,
@@ -9935,10 +9935,6 @@
     ],
     "sp500": [
       {
-        "date": "2025-11-25",
-        "value": 6765.88
-      },
-      {
         "date": "2025-11-26",
         "value": 6812.61
       },
@@ -10933,13 +10929,13 @@
       {
         "date": "2026-11-23",
         "value": 7237.17
+      },
+      {
+        "date": "2026-11-24",
+        "value": 7201.09
       }
     ],
     "vix": [
-      {
-        "date": "2025-12-04",
-        "value": 15.78
-      },
       {
         "date": "2025-12-05",
         "value": 15.41
@@ -11935,6 +11931,10 @@
       {
         "date": "2026-11-23",
         "value": 26.62
+      },
+      {
+        "date": "2026-11-24",
+        "value": 26.36
       }
     ],
     "fed_balance": [

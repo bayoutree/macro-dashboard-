@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "update_time": "2026-11-25T21:46:21+08:00",
+    "update_time": "2026-11-26T02:38:11+08:00",
     "data_freshness_score": 86,
     "assessment_date": "2026-11-11",
     "version": "3.0",
@@ -72,7 +72,7 @@
         "phase_code": "late_deleveraging_to_smooth",
         "signal_weight": -2,
         "debt_to_gdp": 121.19,
-        "interest_to_revenue": 33.55,
+        "interest_to_revenue": 34.61,
         "fiscal_deficit_gdp": 6.5,
         "description": "债务/GDP超130%，利息支出占财政收入>20%",
         "implication": "利率敏感资产持续承压；硬资产和现金流资产修复",
@@ -433,13 +433,13 @@
           "interest_to_revenue": {
             "name": "利息支出/财政收入",
             "source": "FRED：联邦政府利息支出 A091RC1Q027SBEA / 经常性收入 W006RC1Q027SBEA",
-            "current": 33.55,
+            "current": 34.61,
             "unit": "%",
             "threshold": {
               "warning": 15,
               "critical": 20
             },
-            "last_updated": "2026-06-30",
+            "last_updated": "2026-09-30",
             "history": [
               {
                 "date": "1947Q1",
@@ -1711,7 +1711,11 @@
               },
               {
                 "date": "2026Q2",
-                "value": 33.55
+                "value": 33.59
+              },
+              {
+                "date": "2026Q3",
+                "value": 34.61
               }
             ],
             "frequency": "quarterly",
@@ -1719,7 +1723,7 @@
             "percentile": {
               "p25": 19.75,
               "p50": 26.17,
-              "p75": 33.54,
+              "p75": 33.59,
               "current_rank": ">p75"
             }
           },
@@ -47772,11 +47776,15 @@
               {
                 "date": "2026-11-23",
                 "value": 0.97
+              },
+              {
+                "date": "2026-11-24",
+                "value": 0.98
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.97
+            "current": 0.98
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -49611,10 +49619,14 @@
               {
                 "date": "2026-11-24",
                 "value": 31.96
+              },
+              {
+                "date": "2026-11-25",
+                "value": 31.79
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 31.96
+            "current": 31.79
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -53570,7 +53582,7 @@
         {
           "name": "美国利息/财政收入",
           "layer": "structural",
-          "current_value": 33.55,
+          "current_value": 34.61,
           "unit": "%",
           "threshold": "> 20%",
           "threshold_type": "greater_than",
@@ -54850,7 +54862,11 @@
             },
             {
               "date": "2026Q2",
-              "value": 33.55
+              "value": 33.59
+            },
+            {
+              "date": "2026Q3",
+              "value": 34.61
             }
           ]
         },
