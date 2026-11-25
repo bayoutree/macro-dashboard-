@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-24T21:46:47+08:00",
-    "data_freshness_score": 87,
+    "update_time": "2026-11-25T21:46:21+08:00",
+    "data_freshness_score": 86,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-24",
+      "as_of": "2026-11-25",
       "layers": {
         "layer_0_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 87
+          "score": 86
         },
         "layer_1_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 87
+          "score": 86
         },
         "layer_2_perez": {
           "last_updated": "2026-11-11",
-          "score": 87
+          "score": 86
         },
         "layer_3_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 87
+          "score": 86
         }
       },
       "excluded_no_date": [
@@ -4161,7 +4161,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -6279,7 +6279,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -18193,10 +18193,14 @@
               {
                 "date": "2026-11-20",
                 "value": 2.77
+              },
+              {
+                "date": "2026-11-23",
+                "value": 2.79
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 2.77
+            "current": 2.79
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
@@ -18997,7 +19001,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -30891,10 +30895,30 @@
               {
                 "date": "2026-11-13",
                 "value": 0.9864
+              },
+              {
+                "date": "2026-11-16",
+                "value": 0.9724
+              },
+              {
+                "date": "2026-11-17",
+                "value": 0.9613
+              },
+              {
+                "date": "2026-11-18",
+                "value": 0.9476
+              },
+              {
+                "date": "2026-11-19",
+                "value": 0.9333
+              },
+              {
+                "date": "2026-11-20",
+                "value": 0.8888
               }
             ],
             "source_url": "https://fred.stlouisfed.org/series/TSYOREA01",
-            "current": 0.9864
+            "current": 0.8888
           },
           "cn_tfp_trend": {
             "name": "TFP增速",
@@ -31788,7 +31812,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -43706,10 +43730,14 @@
               {
                 "date": "2026-11-23",
                 "value": 0.29
+              },
+              {
+                "date": "2026-11-24",
+                "value": 0.28
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.29
+            "current": 0.28
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -44534,7 +44562,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -47740,11 +47768,15 @@
               {
                 "date": "2026-11-20",
                 "value": 0.98
+              },
+              {
+                "date": "2026-11-23",
+                "value": 0.97
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.98
+            "current": 0.97
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48565,7 +48597,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-23",
+            "last_updated": "2026-11-25",
             "frequency": "daily",
             "history": [
               {
@@ -49575,10 +49607,14 @@
               {
                 "date": "2026-11-23",
                 "value": 26.53
+              },
+              {
+                "date": "2026-11-24",
+                "value": 31.96
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 26.53
+            "current": 31.96
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -51483,7 +51519,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-24",
+            "last_updated": "2026-11-25",
             "history": [
               {
                 "date": "2015-01-01",
@@ -55247,7 +55283,7 @@
         {
           "name": "核心PCE",
           "layer": "market_based",
-          "current_value": 3.12,
+          "current_value": 3.26,
           "unit": "%",
           "threshold": "> 3%",
           "threshold_type": "greater_than",
@@ -58455,11 +58491,15 @@
             },
             {
               "date": "2026-08",
-              "value": 3.03
+              "value": 3.05
             },
             {
               "date": "2026-09",
-              "value": 3.12
+              "value": 3.14
+            },
+            {
+              "date": "2026-10",
+              "value": 3.26
             }
           ]
         }

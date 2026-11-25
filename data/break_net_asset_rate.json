@@ -1,6 +1,6 @@
 {
-  "update_date": "2026-11-23",
-  "update_time": "2026-11-24T13:48:24",
+  "update_date": "2026-11-24",
+  "update_time": "2026-11-25T13:47:59",
   "source": "akshare stock_a_below_net_asset_statistics(全部A股)",
   "formula": "below_net_asset / total_company",
   "unit": "%",
@@ -31792,6 +31792,12 @@
       "date": "2026-11-23",
       "value": 11.85,
       "below": 619,
+      "total": 5224
+    },
+    {
+      "date": "2026-11-24",
+      "value": 12.33,
+      "below": 644,
       "total": 5224
     }
   ]
