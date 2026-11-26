@@ -49,7 +49,7 @@
       "date": "2026-10-29",
       "composite": 49.5,
       "price": 5070.47,
-      "ret20": null,
+      "ret20": -0.0784,
       "ret60": null
     },
     {
@@ -128,6 +128,13 @@
       "price": 4676.89,
       "ret20": null,
       "ret60": null
+    },
+    {
+      "date": "2026-11-26",
+      "composite": 49.2,
+      "price": 4672.96,
+      "ret20": null,
+      "ret60": null
     }
   ],
   "stats": {
@@ -151,7 +158,7 @@
     },
     "ic": {
       "ic20": null,
-      "ic20_n": 3,
+      "ic20_n": 4,
       "ic60": null,
       "ic60_n": 0
     },
@@ -159,5 +166,5 @@
     "disclose_min_n": 20,
     "cite_min_n": 50
   },
-  "updated": "2026-11-25"
+  "updated": "2026-11-26"
 }
