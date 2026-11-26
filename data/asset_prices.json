@@ -1,12 +1,12 @@
 {
-  "update_time": "2026-11-25",
+  "update_time": "2026-11-26",
   "prices": {
     "sp500": {
-      "latest": 7173.2998,
-      "ma200": 7352.4435,
-      "drawdown_from_high": -8.2573,
-      "momentum_3m": -7.2137,
-      "ma200_dev_pct": -2.4365,
+      "latest": 7182.7798,
+      "ma200": 7352.4909,
+      "drawdown_from_high": -8.136,
+      "momentum_3m": -7.0911,
+      "ma200_dev_pct": -2.3082,
       "daily": [
         {
           "date": "2026-09-02",
@@ -246,16 +246,16 @@
         },
         {
           "date": "2026-11-25",
-          "value": 7173.2998
+          "value": 7182.7798
         }
       ]
     },
     "nasdaq": {
-      "latest": 23526.9199,
-      "ma200": 25167.3528,
-      "drawdown_from_high": -14.7569,
-      "momentum_3m": -11.3575,
-      "ma200_dev_pct": -6.5181,
+      "latest": 23585.8008,
+      "ma200": 25167.6472,
+      "drawdown_from_high": -14.5435,
+      "momentum_3m": -11.1356,
+      "ma200_dev_pct": -6.2852,
       "daily": [
         {
           "date": "2026-09-02",
@@ -495,21 +495,17 @@
         },
         {
           "date": "2026-11-25",
-          "value": 23526.9199
+          "value": 23585.8008
         }
       ]
     },
     "gold": {
-      "latest": 3577.1001,
-      "ma200": 4423.1815,
-      "drawdown_from_high": -32.741,
-      "momentum_3m": -23.304,
-      "ma200_dev_pct": -19.1283,
+      "latest": 3600.0,
+      "ma200": 4415.4825,
+      "drawdown_from_high": -32.3105,
+      "momentum_3m": -20.528,
+      "ma200_dev_pct": -18.4687,
       "daily": [
-        {
-          "date": "2026-09-02",
-          "value": 4414.6001
-        },
         {
           "date": "2026-09-03",
           "value": 4539.8999
@@ -744,21 +740,21 @@
         },
         {
           "date": "2026-11-25",
-          "value": 3577.1001
+          "value": 3535.8
+        },
+        {
+          "date": "2026-11-26",
+          "value": 3600.0
         }
       ]
     },
     "copper": {
-      "latest": 12078.0104,
-      "ma200": 13707.4563,
-      "drawdown_from_high": -19.4753,
-      "momentum_3m": -16.8286,
-      "ma200_dev_pct": -11.8873,
+      "latest": 12042.737,
+      "ma200": 13700.4842,
+      "drawdown_from_high": -19.7104,
+      "momentum_3m": -16.7556,
+      "ma200_dev_pct": -12.0999,
       "daily": [
-        {
-          "date": "2026-09-02",
-          "value": 14332.2345
-        },
         {
           "date": "2026-09-03",
           "value": 14499.7861
@@ -993,23 +989,23 @@
         },
         {
           "date": "2026-11-25",
-          "value": 12078.0104
+          "value": 11756.1361
+        },
+        {
+          "date": "2026-11-26",
+          "value": 12042.737
         }
       ],
       "unit": "USD/t",
       "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
     },
     "crude_oil": {
-      "latest": 83.5,
-      "ma200": 88.5625,
-      "drawdown_from_high": -26.0735,
-      "momentum_3m": -0.0359,
-      "ma200_dev_pct": -5.7163,
+      "latest": 84.58,
+      "ma200": 88.6632,
+      "drawdown_from_high": -25.1173,
+      "momentum_3m": 1.4149,
+      "ma200_dev_pct": -4.6053,
       "daily": [
-        {
-          "date": "2026-09-02",
-          "value": 91.01
-        },
         {
           "date": "2026-09-03",
           "value": 91.3
@@ -1244,21 +1240,21 @@
         },
         {
           "date": "2026-11-25",
-          "value": 83.5
+          "value": 83.68
+        },
+        {
+          "date": "2026-11-26",
+          "value": 84.58
         }
       ]
     },
     "usd_index": {
-      "latest": 103.621,
-      "ma200": 100.1111,
-      "drawdown_from_high": -0.6701,
-      "momentum_3m": 4.4988,
-      "ma200_dev_pct": 3.506,
+      "latest": 103.705,
+      "ma200": 100.1457,
+      "drawdown_from_high": -0.5895,
+      "momentum_3m": 4.0171,
+      "ma200_dev_pct": 3.5541,
       "daily": [
-        {
-          "date": "2026-09-02",
-          "value": 99.56
-        },
         {
           "date": "2026-09-03",
           "value": 99.0
@@ -1493,16 +1489,20 @@
         },
         {
           "date": "2026-11-25",
-          "value": 103.621
+          "value": 103.67
+        },
+        {
+          "date": "2026-11-26",
+          "value": 103.705
         }
       ]
     },
     "us_10y_bond": {
-      "latest": 4.84,
+      "latest": 4.848,
       "ma200": 4.6135,
-      "drawdown_from_high": -8.8684,
-      "momentum_3m": 3.5959,
-      "ma200_dev_pct": 4.9095,
+      "drawdown_from_high": -8.7178,
+      "momentum_3m": 3.7671,
+      "ma200_dev_pct": 5.0829,
       "daily": [
         {
           "date": "2026-09-02",
@@ -1742,21 +1742,17 @@
         },
         {
           "date": "2026-11-25",
-          "value": 4.84
+          "value": 4.848
         }
       ]
     },
     "btc": {
-      "latest": 59798.9219,
-      "ma200": 72025.5626,
-      "drawdown_from_high": -30.9505,
-      "momentum_3m": -29.1339,
-      "ma200_dev_pct": -16.9754,
+      "latest": 60801.1211,
+      "ma200": 71921.7699,
+      "drawdown_from_high": -29.7932,
+      "momentum_3m": -27.9429,
+      "ma200_dev_pct": -15.4621,
       "daily": [
-        {
-          "date": "2026-09-27",
-          "value": 84458.0859
-        },
         {
           "date": "2026-09-28",
           "value": 83502.6094
@@ -1991,21 +1987,21 @@
         },
         {
           "date": "2026-11-25",
-          "value": 59798.9219
+          "value": 60378.1992
+        },
+        {
+          "date": "2026-11-26",
+          "value": 60801.1211
         }
       ]
     },
     "hs300": {
-      "latest": 3898.236,
-      "ma200": 4589.1567,
-      "drawdown_from_high": -22.9546,
-      "momentum_3m": -15.122,
-      "ma200_dev_pct": -15.0555,
+      "latest": 3900.548,
+      "ma200": 4585.131,
+      "drawdown_from_high": -22.9089,
+      "momentum_3m": -15.5524,
+      "ma200_dev_pct": -14.9305,
       "daily": [
-        {
-          "date": "2026-08-26",
-          "value": 4590.794
-        },
         {
           "date": "2026-08-27",
           "value": 4630.277
@@ -2241,24 +2237,24 @@
         {
           "date": "2026-11-25",
           "value": 3898.236
+        },
+        {
+          "date": "2026-11-26",
+          "value": 3900.548
         }
       ],
       "name": "沪深300",
       "symbol": "akshare:sh000300",
-      "update_time": "2026-11-25",
+      "update_time": "2026-11-26",
       "_source": "akshare(新浪)"
     },
     "cn_10y_yield": {
-      "latest": 1.5914,
-      "ma200": 1.725,
-      "drawdown_from_high": -16.3258,
-      "momentum_3m": -5.24,
-      "ma200_dev_pct": -7.7449,
+      "latest": 1.5912,
+      "ma200": 1.7239,
+      "drawdown_from_high": -16.3363,
+      "momentum_3m": -5.3702,
+      "ma200_dev_pct": -7.6977,
       "daily": [
-        {
-          "date": "2026-08-28",
-          "value": 1.6949
-        },
         {
           "date": "2026-08-31",
           "value": 1.6883
@@ -2494,24 +2490,24 @@
         {
           "date": "2026-11-25",
           "value": 1.5914
+        },
+        {
+          "date": "2026-11-26",
+          "value": 1.5912
         }
       ],
       "name": "中国10Y国债收益率",
       "symbol": "akshare:bond_china_yield",
       "unit": "%",
       "unit_note": "收益率口径：收益率↑=债价↓（与价格类资产反向，同美债卡）",
-      "update_time": "2026-11-25",
+      "update_time": "2026-11-26",
       "_source": "akshare(中债登)"
     }
   },
   "volatility": {
     "vix": {
-      "latest": 27.95,
+      "latest": 26.93,
       "history": [
-        {
-          "date": "2026-09-03",
-          "value": 14.32
-        },
         {
           "date": "2026-09-04",
           "value": 14.53
@@ -2746,7 +2742,11 @@
         },
         {
           "date": "2026-11-25",
-          "value": 27.95
+          "value": 28.29
+        },
+        {
+          "date": "2026-11-26",
+          "value": 26.93
         }
       ]
     }
