@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-26",
+  "update_time": "2026-11-27",
   "us_stock": {
     "shiller_pe": {
       "value": null,
@@ -119,8 +119,8 @@
   },
   "cn_stock": {
     "hs300_pe": {
-      "value": 12.6,
-      "percentile": 51.1538,
+      "value": 12.85,
+      "percentile": 55.7692,
       "history": [
         {
           "date": "2021-12-31",
@@ -359,8 +359,8 @@
           "value": 12.17
         },
         {
-          "date": "2026-11-26",
-          "value": 12.6
+          "date": "2026-11-27",
+          "value": 12.85
         }
       ]
     },
@@ -370,7 +370,7 @@
       "history": []
     },
     "csi500_pe": {
-      "value": 20.43,
+      "value": 21.86,
       "percentile": null,
       "history": []
     }
@@ -4399,12 +4399,8 @@
   },
   "cn_bond": {
     "yield_10y": {
-      "value": 1.5912,
+      "value": 1.5972,
       "history": [
-        {
-          "date": "2025-11-25",
-          "value": 1.8301
-        },
         {
           "date": "2025-11-26",
           "value": 1.8462
@@ -5400,13 +5396,17 @@
         {
           "date": "2026-11-26",
           "value": 1.5912
+        },
+        {
+          "date": "2026-11-27",
+          "value": 1.5972
         }
       ]
     }
   },
   "gold": {
     "price_usd": {
-      "value": 3592.8,
+      "value": 3668.5,
       "history": [
         {
           "date": "2026-09-03",
@@ -5645,8 +5645,8 @@
           "value": 3535.8
         },
         {
-          "date": "2026-11-26",
-          "value": 3592.8
+          "date": "2026-11-27",
+          "value": 3668.5
         }
       ]
     },
@@ -6684,7 +6684,7 @@
   },
   "commodity": {
     "copper": {
-      "price": 11987.6213,
+      "price": 12346.9745,
       "inventory": null,
       "history": [
         {
@@ -6924,13 +6924,13 @@
           "value": 11756.1361
         },
         {
-          "date": "2026-11-26",
-          "value": 11987.6213
+          "date": "2026-11-27",
+          "value": 12346.9745
         }
       ]
     },
     "crude_oil": {
-      "brent": 84.83,
+      "brent": 82.97,
       "history": [
         {
           "date": "2026-09-03",
@@ -7169,8 +7169,8 @@
           "value": 83.68
         },
         {
-          "date": "2026-11-26",
-          "value": 84.83
+          "date": "2026-11-27",
+          "value": 82.97
         }
       ]
     }

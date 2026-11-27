@@ -21,6 +21,17 @@
       "price": 4813.17,
       "settled20": null,
       "settled60": null
+    },
+    {
+      "type": "stage",
+      "from": "B",
+      "to": "C",
+      "direction": "reduce",
+      "date": "2026-11-27",
+      "composite": 50.2,
+      "price": 4951.92,
+      "settled20": null,
+      "settled60": null
     }
   ],
   "ic_points": [
@@ -56,7 +67,7 @@
       "date": "2026-10-30",
       "composite": 48.0,
       "price": 4952.5,
-      "ret20": null,
+      "ret20": -0.0001,
       "ret60": null
     },
     {
@@ -135,6 +146,13 @@
       "price": 4672.96,
       "ret20": null,
       "ret60": null
+    },
+    {
+      "date": "2026-11-27",
+      "composite": 50.2,
+      "price": 4951.92,
+      "ret20": null,
+      "ret60": null
     }
   ],
   "stats": {
@@ -158,13 +176,13 @@
     },
     "ic": {
       "ic20": null,
-      "ic20_n": 4,
+      "ic20_n": 5,
       "ic60": null,
       "ic60_n": 0
     },
-    "total_signals": 2,
+    "total_signals": 3,
     "disclose_min_n": 20,
     "cite_min_n": 50
   },
-  "updated": "2026-11-26"
+  "updated": "2026-11-27"
 }
