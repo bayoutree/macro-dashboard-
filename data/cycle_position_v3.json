@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "update_time": "2026-11-27T02:21:57+08:00",
-    "data_freshness_score": 85,
+    "update_time": "2026-11-28T21:46:26+08:00",
+    "data_freshness_score": 83,
     "assessment_date": "2026-11-11",
     "version": "3.0",
     "next_assessment_date": "2026-12-11",
@@ -35,23 +35,23 @@
     "data_cutoff_date": "2026-11-11",
     "freshness_detail": {
       "method": "min(layer.score); layer.score = max(0, 100 - days_since(last_updated)); 自然日线性衰减（P0-1 修复 2026-11-01，scripts/freshness_score.py 单一真值）",
-      "as_of": "2026-11-26",
+      "as_of": "2026-11-28",
       "layers": {
         "layer_0_debt_cycle": {
           "last_updated": "2026-11-11",
-          "score": 85
+          "score": 83
         },
         "layer_1_kondratieff": {
           "last_updated": "2026-11-11",
-          "score": 85
+          "score": 83
         },
         "layer_2_perez": {
           "last_updated": "2026-11-11",
-          "score": 85
+          "score": 83
         },
         "layer_3_rate_regime": {
           "last_updated": "2026-11-11",
-          "score": 85
+          "score": 83
         }
       },
       "excluded_no_date": [
@@ -4165,7 +4165,7 @@
               "frequency": "daily"
             },
             "description": "市场隐含的长期通胀预期，锚定央行利率路径",
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -6283,7 +6283,7 @@
               "frequency": "daily"
             },
             "description": "1年后开始的5年期远期实际利率，反映市场对长期中性利率的预期",
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -18205,10 +18205,14 @@
               {
                 "date": "2026-11-24",
                 "value": 2.79
+              },
+              {
+                "date": "2026-11-25",
+                "value": 2.73
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 2.79
+            "current": 2.73
           },
           "term_premium": {
             "name": "期限溢价(10Y)",
@@ -19009,7 +19013,7 @@
               "frequency": "daily"
             },
             "description": "长债相对于短债的额外补偿，上升=市场要求更高风险补偿",
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -31820,7 +31824,7 @@
               "frequency": "daily"
             },
             "description": "倒挂→正常化信号，当前已从深度倒挂恢复正斜率",
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -43746,10 +43750,14 @@
               {
                 "date": "2026-11-25",
                 "value": 0.24
+              },
+              {
+                "date": "2026-11-27",
+                "value": 0.25
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
-            "current": 0.24
+            "current": 0.25
           },
           "credit_spread_ig": {
             "name": "投资级信用利差",
@@ -44574,7 +44582,7 @@
               "frequency": "daily"
             },
             "description": "AAA企业债与国债利差，<1%表示信用环境宽松",
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -47788,11 +47796,19 @@
               {
                 "date": "2026-11-24",
                 "value": 0.98
+              },
+              {
+                "date": "2026-11-25",
+                "value": 0.99
+              },
+              {
+                "date": "2026-11-26",
+                "value": 0.99
               }
             ],
             "source_url": "https://fred.stlouisfed.org/",
             "unit": "%",
-            "current": 0.98
+            "current": 0.99
           },
           "realized_volatility": {
             "name": " realized波动率(VIX 3M)",
@@ -48613,7 +48629,7 @@
               "frequency": "daily"
             },
             "description": "市场波动率，低波环境=风险偏好稳定",
-            "last_updated": "2026-11-25",
+            "last_updated": "2026-11-28",
             "frequency": "daily",
             "history": [
               {
@@ -49631,10 +49647,14 @@
               {
                 "date": "2026-11-25",
                 "value": 31.79
+              },
+              {
+                "date": "2026-11-27",
+                "value": 31.71
               }
             ],
             "source_url": "https://www.cboe.com/",
-            "current": 31.79
+            "current": 31.71
           },
           "cn_real_rate": {
             "name": "实际利率(1Y存款-CPI)",
@@ -51539,7 +51559,7 @@
             "source": "BLS/FRED",
             "unit": "%",
             "current": 4.1,
-            "last_updated": "2026-11-26",
+            "last_updated": "2026-11-28",
             "history": [
               {
                 "date": "2015-01-01",

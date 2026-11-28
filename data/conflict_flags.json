@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-27T02:21:32+08:00",
+  "generated_at": "2026-11-28T21:46:05+08:00",
   "boards": [
     {
       "board": "macro_cross",
       "direction": -1,
       "raw_value": "滞胀加剧/现金>黄金>商品>债券>股票",
-      "as_of": "2026-11-26",
+      "as_of": "2026-11-27",
       "effective": true,
       "status": "normal"
     },
@@ -20,8 +20,8 @@
     {
       "board": "a_timing",
       "direction": 0,
-      "raw_value": "49.2/orange",
-      "as_of": "2026-11-26",
+      "raw_value": "50.2/orange",
+      "as_of": "2026-11-27",
       "effective": true,
       "status": "normal"
     }

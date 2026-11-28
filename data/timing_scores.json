@@ -1,5 +1,5 @@
 {
-  "update_date": "2026-11-27",
+  "update_date": "2026-11-28",
   "version": "v4.1",
   "composite_score": 50.2,
   "stage": "C",
@@ -1030,7 +1030,7 @@
           ],
           "_history_meta": {
             "source": "ak.stock_index_pe_lg 月频全量 expanding 分位（接口月频化后 V22-3 续点）",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           },
           "frequency": "monthly"
         },
@@ -2012,7 +2012,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           }
         },
         "buffett_ratio": {
@@ -2508,12 +2508,12 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           }
         },
         "break_net_rate": {
           "name": "破净率",
-          "value": 13.25,
+          "value": 11.77,
           "unit": "%",
           "score": 25,
           "sub_weight": 25,
@@ -23724,14 +23724,20 @@
             {
               "date": "2026-11-26",
               "value": 13.25
+            },
+            {
+              "date": "2026-11-27",
+              "value": 11.77
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           },
-          "last_updated": "2026-11-26",
-          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频"
+          "last_updated": "2026-11-27",
+          "caliber": "全A（沪深全部上市A股）市净率<1 的个股数 / 全部A股个股数；日频",
+          "data_source": "akshare",
+          "collect_time": "2026-11-28T13:50:18"
         },
         "median_pe_all_a": {
           "name": "中位数PE(全A)",
@@ -24004,7 +24010,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           }
         },
         "interest_rate": {
@@ -24520,7 +24526,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           }
         },
         "fed_policy": {
@@ -25710,7 +25716,7 @@
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           }
         },
         "wanda_erp": {
@@ -25726,7 +25732,7 @@
         },
         "dividend_bond_spread_red": {
           "name": "股息率利差（上证A股 − 10Y国债）",
-          "value": 1.2988,
+          "value": 1.2328,
           "score": 30,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -46036,13 +46042,17 @@
             {
               "date": "2026-11-26",
               "value": 1.2988
+            },
+            {
+              "date": "2026-11-27",
+              "value": 1.2328
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           },
-          "last_updated": "2026-11-26",
+          "last_updated": "2026-11-27",
           "unit": "%",
           "caliber": "上证A股股息率（非全A）− 中债10年期国债到期收益率；日频",
           "caliber_corrected": true,
@@ -46050,7 +46060,7 @@
         },
         "dividend_bond_spread_hs300": {
           "name": "股息率利差（上证A股 − 10Y国债）",
-          "value": 1.2988,
+          "value": 1.2328,
           "score": 50,
           "sub_weight": 20,
           "bottom_threshold": ">3%",
@@ -66360,13 +66370,17 @@
             {
               "date": "2026-11-26",
               "value": 1.2988
+            },
+            {
+              "date": "2026-11-27",
+              "value": 1.2328
             }
           ],
           "_history_meta": {
             "source": "sync_timing_scores_history.py (cn_macro/asset_valuation 真实采集)",
-            "synced_at": "2026-11-27"
+            "synced_at": "2026-11-28"
           },
-          "last_updated": "2026-11-26",
+          "last_updated": "2026-11-27",
           "unit": "%",
           "caliber": "上证A股股息率（非全A）− 中债10年期国债到期收益率；日频",
           "caliber_corrected": true,
@@ -127439,7 +127453,7 @@
       "indicators": {
         "crowding_ratio": {
           "name": "交易拥挤度(前5%占比)",
-          "value": "44.39%",
+          "value": "45.59%",
           "percentile": "98.3%",
           "score": 55,
           "sub_weight": 40,
@@ -127472,18 +127486,20 @@
               "value": 44.0
             },
             {
-              "date": "2026-11-26",
-              "value": 44.39
+              "date": "2026-11-28",
+              "value": 45.59
             }
           ],
           "_history_meta": {
             "source": "inherited external history (1 pts)",
             "inherited_at": "2026-10-17"
-          }
+          },
+          "data_source": "akshare",
+          "collect_time": "2026-11-28T13:50:18"
         },
         "industry_concentration": {
           "name": "行业成交集中度",
-          "value": 933.4,
+          "value": "HHI=933@2026-10-18（派生）",
           "score": 61,
           "sub_weight": 35,
           "bottom_threshold": "前三行业<25%",
@@ -129411,7 +129427,9 @@
             "source": "sw_l1_industry_turnover_20w_momentum (申万HHI 20周动量)",
             "restored_at": "2026-10-14",
             "original_count": 228
-          }
+          },
+          "data_source": "derived_from_hhi",
+          "collect_time": "2026-11-28T13:50:18"
         },
         "csi1000_hs300_ratio": {
           "name": "中证1000/沪深300比值",

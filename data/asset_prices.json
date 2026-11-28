@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-11-27",
+  "update_time": "2026-11-28",
   "prices": {
     "sp500": {
       "latest": 7297.4902,
@@ -500,11 +500,11 @@
       ]
     },
     "gold": {
-      "latest": 3668.5,
-      "ma200": 4415.825,
-      "drawdown_from_high": -31.0225,
-      "momentum_3m": -19.0159,
-      "ma200_dev_pct": -16.9238,
+      "latest": 3639.6001,
+      "ma200": 4415.6805,
+      "drawdown_from_high": -31.5659,
+      "momentum_3m": -19.6539,
+      "ma200_dev_pct": -17.5756,
       "daily": [
         {
           "date": "2026-09-03",
@@ -744,16 +744,16 @@
         },
         {
           "date": "2026-11-27",
-          "value": 3668.5
+          "value": 3639.6001
         }
       ]
     },
     "copper": {
-      "latest": 12346.9745,
-      "ma200": 13702.0054,
-      "drawdown_from_high": -17.6821,
-      "momentum_3m": -14.6525,
-      "ma200_dev_pct": -9.8893,
+      "latest": 12162.889,
+      "ma200": 13701.085,
+      "drawdown_from_high": -18.9094,
+      "momentum_3m": -15.925,
+      "ma200_dev_pct": -11.2268,
       "daily": [
         {
           "date": "2026-09-03",
@@ -993,18 +993,18 @@
         },
         {
           "date": "2026-11-27",
-          "value": 12346.9745
+          "value": 12162.889
         }
       ],
       "unit": "USD/t",
       "unit_note": "COMEX 主力连续(yfinance HG=F)×2204.62 写库时换算（P0-2 裁决2026-11-01）；月频准绳=FRED PCOPPUSDM(IMF/LME)"
     },
     "crude_oil": {
-      "latest": 82.97,
-      "ma200": 88.6551,
-      "drawdown_from_high": -26.5427,
-      "momentum_3m": -0.5156,
-      "ma200_dev_pct": -6.4126,
+      "latest": 83.08,
+      "ma200": 88.6557,
+      "drawdown_from_high": -26.4453,
+      "momentum_3m": -0.3837,
+      "ma200_dev_pct": -6.2892,
       "daily": [
         {
           "date": "2026-09-03",
@@ -1244,16 +1244,16 @@
         },
         {
           "date": "2026-11-27",
-          "value": 82.97
+          "value": 83.08
         }
       ]
     },
     "usd_index": {
-      "latest": 104.049,
-      "ma200": 100.1474,
-      "drawdown_from_high": -0.2598,
-      "momentum_3m": 4.3621,
-      "ma200_dev_pct": 3.8959,
+      "latest": 104.01,
+      "ma200": 100.1473,
+      "drawdown_from_high": -0.2972,
+      "momentum_3m": 4.323,
+      "ma200_dev_pct": 3.857,
       "daily": [
         {
           "date": "2026-09-03",
@@ -1493,7 +1493,7 @@
         },
         {
           "date": "2026-11-27",
-          "value": 104.049
+          "value": 104.01
         }
       ]
     },
@@ -1747,16 +1747,12 @@
       ]
     },
     "btc": {
-      "latest": 59898.8906,
-      "ma200": 71811.0908,
-      "drawdown_from_high": -30.835,
-      "momentum_3m": -28.7214,
-      "ma200_dev_pct": -16.5882,
+      "latest": 58940.0195,
+      "ma200": 71703.2409,
+      "drawdown_from_high": -31.9422,
+      "momentum_3m": -30.1712,
+      "ma200_dev_pct": -17.8001,
       "daily": [
-        {
-          "date": "2026-09-29",
-          "value": 83622.4297
-        },
         {
           "date": "2026-09-30",
           "value": 83553.8516
@@ -1991,7 +1987,11 @@
         },
         {
           "date": "2026-11-27",
-          "value": 59898.8906
+          "value": 59866.3711
+        },
+        {
+          "date": "2026-11-28",
+          "value": 58940.0195
         }
       ]
     },
@@ -2245,7 +2245,7 @@
       ],
       "name": "沪深300",
       "symbol": "akshare:sh000300",
-      "update_time": "2026-11-27",
+      "update_time": "2026-11-28",
       "_source": "akshare(新浪)"
     },
     "cn_10y_yield": {
@@ -2500,7 +2500,7 @@
       "symbol": "akshare:bond_china_yield",
       "unit": "%",
       "unit_note": "收益率口径：收益率↑=债价↓（与价格类资产反向，同美债卡）",
-      "update_time": "2026-11-27",
+      "update_time": "2026-11-28",
       "_source": "akshare(中债登)"
     }
   },
